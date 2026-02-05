@@ -1,0 +1,320 @@
+[debug] [2026-02-05T05:16:02.843Z] ----------------------------------------------------------------------
+[debug] [2026-02-05T05:16:02.845Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\122sp\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-02-05T05:16:02.845Z] CLI Version:   15.5.1
+[debug] [2026-02-05T05:16:02.846Z] Platform:      win32
+[debug] [2026-02-05T05:16:02.846Z] Node Version:  v24.13.0
+[debug] [2026-02-05T05:16:02.846Z] Time:          Thu Feb 05 2026 13:16:02 GMT+0800 (台北標準時間)
+[debug] [2026-02-05T05:16:02.846Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  D:\GitHub\Xuanwu
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-02-05T05:16:34.933Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T05:16:34.933Z] > authorizing via signed-in user (ac7x7x@gmail.com)
+[debug] [2026-02-05T05:16:34.934Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:34.934Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:34.935Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu [none]
+[debug] [2026-02-05T05:16:35.377Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu 200
+[debug] [2026-02-05T05:16:35.377Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu {"projectId":"lin-xuanwu","projectNumber":"608516305618","displayName":"lin-xuanwu","name":"projects/lin-xuanwu","resources":{"hostingSite":"lin-xuanwu"},"state":"ACTIVE","etag":"1_f2d82d8e-26b5-4cec-a3e8-e4ed99e1d177"}
+[info] i  Using project lin-xuanwu (lin-xuanwu) . 
+[info] 
+=== Firestore Setup
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-02-05T05:16:35.386Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:35.386Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:35.386Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases [none]
+[debug] [2026-02-05T05:16:35.996Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases 200
+[debug] [2026-02-05T05:16:35.996Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases {}
+[debug] [2026-02-05T05:16:35.996Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:35.996Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:35.996Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/locations [none]
+[debug] [2026-02-05T05:16:36.288Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/locations 200
+[debug] [2026-02-05T05:16:36.289Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/locations {"locations":[{"name":"projects/lin-xuanwu/locations/eur3","labels":{"appengine.googleapis.com/geo":"europe-west","cloud.googleapis.com/location":"eur3","cloud.googleapis.com/geo":"eur3"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"eur3","displayName":"Europe"},{"name":"projects/lin-xuanwu/locations/nam5","labels":{"appengine.googleapis.com/geo":"us-central","cloud.googleapis.com/location":"nam5","cloud.googleapis.com/geo":"nam5"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"nam5","displayName":"United States"},{"name":"projects/lin-xuanwu/locations/nam7","labels":{"cloud.googleapis.com/location":"nam7","cloud.googleapis.com/geo":"nam7"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"nam7","displayName":"United States"},{"name":"projects/lin-xuanwu/locations/africa-south1","labels":{"cloud.googleapis.com/location":"africa-south1","cloud.googleapis.com/region":"africa-south1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"africa-south1","displayName":"Johannesburg"},{"name":"projects/lin-xuanwu/locations/asia-east1","labels":{"appengine.googleapis.com/region":"asia-east1","cloud.googleapis.com/location":"asia-east1","cloud.googleapis.com/region":"asia-east1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-east1","displayName":"Taiwan"},{"name":"projects/lin-xuanwu/locations/asia-east2","labels":{"appengine.googleapis.com/region":"asia-east2","cloud.googleapis.com/location":"asia-east2","cloud.googleapis.com/region":"asia-east2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-east2","displayName":"Hong Kong"},{"name":"projects/lin-xuanwu/locations/asia-northeast1","labels":{"appengine.googleapis.com/region":"asia-northeast1","cloud.googleapis.com/location":"asia-northeast1","cloud.googleapis.com/region":"asia-northeast1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-northeast1","displayName":"Tokyo"},{"name":"projects/lin-xuanwu/locations/asia-northeast2","labels":{"appengine.googleapis.com/region":"asia-northeast2","cloud.googleapis.com/location":"asia-northeast2","cloud.googleapis.com/region":"asia-northeast2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-northeast2","displayName":"Osaka"},{"name":"projects/lin-xuanwu/locations/asia-northeast3","labels":{"appengine.googleapis.com/region":"asia-northeast3","cloud.googleapis.com/location":"asia-northeast3","cloud.googleapis.com/region":"asia-northeast3"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-northeast3","displayName":"Seoul"},{"name":"projects/lin-xuanwu/locations/asia-south1","labels":{"appengine.googleapis.com/region":"asia-south1","cloud.googleapis.com/location":"asia-south1","cloud.googleapis.com/region":"asia-south1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-south1","displayName":"Mumbai"},{"name":"projects/lin-xuanwu/locations/asia-south2","labels":{"cloud.googleapis.com/location":"asia-south2","cloud.googleapis.com/region":"asia-south2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-south2","displayName":"Delhi"},{"name":"projects/lin-xuanwu/locations/asia-southeast1","labels":{"appengine.googleapis.com/region":"asia-southeast1","cloud.googleapis.com/location":"asia-southeast1","cloud.googleapis.com/region":"asia-southeast1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-southeast1","displayName":"Singapore"},{"name":"projects/lin-xuanwu/locations/asia-southeast2","labels":{"appengine.googleapis.com/region":"asia-southeast2","cloud.googleapis.com/location":"asia-southeast2","cloud.googleapis.com/region":"asia-southeast2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-southeast2","displayName":"Jakarta"},{"name":"projects/lin-xuanwu/locations/asia-southeast3","labels":{"cloud.googleapis.com/location":"asia-southeast3","cloud.googleapis.com/region":"asia-southeast3"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"asia-southeast3","displayName":"Bangkok"},{"name":"projects/lin-xuanwu/locations/australia-southeast1","labels":{"appengine.googleapis.com/region":"australia-southeast1","cloud.googleapis.com/location":"australia-southeast1","cloud.googleapis.com/region":"australia-southeast1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"australia-southeast1","displayName":"Sydney"},{"name":"projects/lin-xuanwu/locations/australia-southeast2","labels":{"cloud.googleapis.com/location":"australia-southeast2","cloud.googleapis.com/region":"australia-southeast2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"australia-southeast2","displayName":"Melbourne"},{"name":"projects/lin-xuanwu/locations/europe-central2","labels":{"appengine.googleapis.com/region":"europe-central2","cloud.googleapis.com/location":"europe-central2","cloud.googleapis.com/region":"europe-central2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-central2","displayName":"Warsaw"},{"name":"projects/lin-xuanwu/locations/europe-north1","labels":{"cloud.googleapis.com/location":"europe-north1","cloud.googleapis.com/region":"europe-north1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-north1","displayName":"Finland"},{"name":"projects/lin-xuanwu/locations/europe-north2","labels":{"cloud.googleapis.com/location":"europe-north2","cloud.googleapis.com/region":"europe-north2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-north2","displayName":"Stockholm"},{"name":"projects/lin-xuanwu/locations/europe-southwest1","labels":{"cloud.googleapis.com/location":"europe-southwest1","cloud.googleapis.com/region":"europe-southwest1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-southwest1","displayName":"Madrid"},{"name":"projects/lin-xuanwu/locations/europe-west1","labels":{"cloud.googleapis.com/location":"europe-west1","cloud.googleapis.com/region":"europe-west1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west1","displayName":"Belgium"},{"name":"projects/lin-xuanwu/locations/europe-west10","labels":{"cloud.googleapis.com/location":"europe-west10","cloud.googleapis.com/region":"europe-west10"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west10","displayName":"Berlin"},{"name":"projects/lin-xuanwu/locations/europe-west12","labels":{"cloud.googleapis.com/location":"europe-west12","cloud.googleapis.com/region":"europe-west12"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west12","displayName":"Turin"},{"name":"projects/lin-xuanwu/locations/europe-west2","labels":{"appengine.googleapis.com/region":"europe-west2","cloud.googleapis.com/location":"europe-west2","cloud.googleapis.com/region":"europe-west2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west2","displayName":"London"},{"name":"projects/lin-xuanwu/locations/europe-west3","labels":{"appengine.googleapis.com/region":"europe-west3","cloud.googleapis.com/location":"europe-west3","cloud.googleapis.com/region":"europe-west3"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west3","displayName":"Frankfurt"},{"name":"projects/lin-xuanwu/locations/europe-west4","labels":{"cloud.googleapis.com/location":"europe-west4","cloud.googleapis.com/region":"europe-west4"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west4","displayName":"Netherlands"},{"name":"projects/lin-xuanwu/locations/europe-west6","labels":{"appengine.googleapis.com/region":"europe-west6","cloud.googleapis.com/location":"europe-west6","cloud.googleapis.com/region":"europe-west6"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west6","displayName":"Zurich"},{"name":"projects/lin-xuanwu/locations/europe-west8","labels":{"cloud.googleapis.com/location":"europe-west8","cloud.googleapis.com/region":"europe-west8"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west8","displayName":"Milan"},{"name":"projects/lin-xuanwu/locations/europe-west9","labels":{"cloud.googleapis.com/location":"europe-west9","cloud.googleapis.com/region":"europe-west9"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"europe-west9","displayName":"Paris"},{"name":"projects/lin-xuanwu/locations/me-central1","labels":{"cloud.googleapis.com/location":"me-central1","cloud.googleapis.com/region":"me-central1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"me-central1","displayName":"Doha"},{"name":"projects/lin-xuanwu/locations/me-central2","labels":{"cloud.googleapis.com/location":"me-central2","cloud.googleapis.com/region":"me-central2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"me-central2","displayName":"Dammam"},{"name":"projects/lin-xuanwu/locations/me-west1","labels":{"cloud.googleapis.com/location":"me-west1","cloud.googleapis.com/region":"me-west1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"me-west1","displayName":"Tel Aviv"},{"name":"projects/lin-xuanwu/locations/northamerica-northeast1","labels":{"appengine.googleapis.com/region":"northamerica-northeast1","cloud.googleapis.com/location":"northamerica-northeast1","cloud.googleapis.com/region":"northamerica-northeast1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"northamerica-northeast1","displayName":"Montréal"},{"name":"projects/lin-xuanwu/locations/northamerica-northeast2","labels":{"cloud.googleapis.com/location":"northamerica-northeast2","cloud.googleapis.com/region":"northamerica-northeast2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"northamerica-northeast2","displayName":"Toronto"},{"name":"projects/lin-xuanwu/locations/northamerica-south1","labels":{"cloud.googleapis.com/location":"northamerica-south1","cloud.googleapis.com/region":"northamerica-south1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"northamerica-south1","displayName":"Mexico"},{"name":"projects/lin-xuanwu/locations/southamerica-east1","labels":{"appengine.googleapis.com/region":"southamerica-east1","cloud.googleapis.com/location":"southamerica-east1","cloud.googleapis.com/region":"southamerica-east1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"southamerica-east1","displayName":"São Paulo"},{"name":"projects/lin-xuanwu/locations/southamerica-west1","labels":{"cloud.googleapis.com/location":"southamerica-west1","cloud.googleapis.com/region":"southamerica-west1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"southamerica-west1","displayName":"Santiago"},{"name":"projects/lin-xuanwu/locations/us-central1","labels":{"cloud.googleapis.com/location":"us-central1","cloud.googleapis.com/region":"us-central1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-central1","displayName":"Iowa"},{"name":"projects/lin-xuanwu/locations/us-east1","labels":{"appengine.googleapis.com/region":"us-east1","cloud.googleapis.com/location":"us-east1","cloud.googleapis.com/region":"us-east1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-east1","displayName":"South Carolina"},{"name":"projects/lin-xuanwu/locations/us-east4","labels":{"appengine.googleapis.com/region":"us-east4","cloud.googleapis.com/location":"us-east4","cloud.googleapis.com/region":"us-east4"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-east4","displayName":"Northern Virginia"},{"name":"projects/lin-xuanwu/locations/us-east5","labels":{"cloud.googleapis.com/location":"us-east5","cloud.googleapis.com/region":"us-east5"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-east5","displayName":"Columbus"},{"name":"projects/lin-xuanwu/locations/us-south1","labels":{"cloud.googleapis.com/location":"us-south1","cloud.googleapis.com/region":"us-south1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-south1","displayName":"Dallas"},{"name":"projects/lin-xuanwu/locations/us-west1","labels":{"appengine.googleapis.com/region":"us-west1","cloud.googleapis.com/location":"us-west1","cloud.googleapis.com/region":"us-west1"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-west1","displayName":"Oregon"},{"name":"projects/lin-xuanwu/locations/us-west2","labels":{"appengine.googleapis.com/region":"us-west2","cloud.googleapis.com/location":"us-west2","cloud.googleapis.com/region":"us-west2"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-west2","displayName":"Los Angeles"},{"name":"projects/lin-xuanwu/locations/us-west3","labels":{"appengine.googleapis.com/region":"us-west3","cloud.googleapis.com/location":"us-west3","cloud.googleapis.com/region":"us-west3"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-west3","displayName":"Salt Lake City"},{"name":"projects/lin-xuanwu/locations/us-west4","labels":{"appengine.googleapis.com/region":"us-west4","cloud.googleapis.com/location":"us-west4","cloud.googleapis.com/region":"us-west4"},"metadata":{"@type":"type.googleapis.com/google.firestore.admin.v1.LocationMetadata"},"locationId":"us-west4","displayName":"Las Vegas"}]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-02-05T05:16:54.947Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:54.947Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:54.947Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases pageSize=10&pageToken=
+[debug] [2026-02-05T05:16:56.158Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases 200
+[debug] [2026-02-05T05:16:56.158Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases {}
+[info] i  firestore.rules is unchanged 
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-02-05T05:16:58.267Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.267Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.267Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.267Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.267Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2026-02-05T05:16:58.268Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2026-02-05T05:16:58.938Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes 404
+[debug] [2026-02-05T05:16:58.939Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes {"error":{"code":404,"message":"Project 'lin-xuanwu' or database '(default)' does not exist.","status":"NOT_FOUND"}}
+[info] i  firestore.indexes.json is unchanged 
+[info] 
+=== Functions Setup
+[debug] [2026-02-05T05:16:58.942Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T05:16:58.942Z] > authorizing via signed-in user (ac7x7x@gmail.com)
+[debug] [2026-02-05T05:16:58.942Z] [iam] checking project lin-xuanwu for permissions ["firebase.projects.get"]
+[debug] [2026-02-05T05:16:58.942Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.942Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:58.942Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions [none]
+[debug] [2026-02-05T05:16:58.942Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:16:58.942Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-05T05:16:58.950Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 404
+[debug] [2026-02-05T05:16:58.950Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"error":{"code":404,"message":"Project 'lin-xuanwu' or database '(default)' does not exist.","status":"NOT_FOUND"}}
+[debug] [2026-02-05T05:16:59.867Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions 200
+[debug] [2026-02-05T05:16:59.868Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-05T05:16:59.868Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:59.868Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:59.868Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:59.868Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:16:59.868Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com [none]
+[debug] [2026-02-05T05:16:59.868Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:16:59.869Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/runtimeconfig.googleapis.com [none]
+[debug] [2026-02-05T05:16:59.869Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/runtimeconfig.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:17:01.115Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/runtimeconfig.googleapis.com 200
+[debug] [2026-02-05T05:17:01.115Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2026-02-05T05:17:01.123Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com 200
+[debug] [2026-02-05T05:17:01.123Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2026-02-05T05:17:01.123Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:17:01.123Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:17:01.124Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2026-02-05T05:17:01.124Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com:enable  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:17:02.360Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2026-02-05T05:17:02.360Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudfunctions.googleapis.com:enable [omitted]
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] +  Wrote functions/package.json 
+[info] +  Wrote functions/.eslintrc.js 
+[info] +  Wrote functions/tsconfig.dev.json 
+[info] +  Wrote functions/tsconfig.json 
+[info] +  Wrote functions/src/index.ts 
+[info] +  Wrote functions/.gitignore 
+[info] 
+=== App Hosting Setup
+[debug] [2026-02-05T05:18:00.747Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:00.747Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:00.747Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo [none]
+[debug] [2026-02-05T05:18:01.247Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo 200
+[debug] [2026-02-05T05:18:01.247Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo {"name":"projects/lin-xuanwu/billingInfo","projectId":"lin-xuanwu","billingAccountName":"billingAccounts/01B167-CD7CA3-F689F2","billingEnabled":true}
+[debug] [2026-02-05T05:18:01.248Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:01.248Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:01.248Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com [none]
+[debug] [2026-02-05T05:18:01.248Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:02.413Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com 200
+[debug] [2026-02-05T05:18:02.413Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:02.413Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:02.413Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:02.413Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com:enable [none]
+[debug] [2026-02-05T05:18:02.413Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com:enable  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:03.761Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com:enable 200
+[debug] [2026-02-05T05:18:03.762Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/firebaseapphosting.googleapis.com:enable [omitted]
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.783Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.784Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.784Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.784Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:13.784Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.784Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:13.785Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudbuild.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.785Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudbuild.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:13.786Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/secretmanager.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.786Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/secretmanager.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:13.787Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/run.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.787Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/run.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:13.787Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/artifactregistry.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.787Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/artifactregistry.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:13.788Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/iam.googleapis.com [none]
+[debug] [2026-02-05T05:18:13.788Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/iam.googleapis.com  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:14.391Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com 200
+[debug] [2026-02-05T05:18:14.392Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:14.392Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:14.392Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:14.392Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com:enable [none]
+[debug] [2026-02-05T05:18:14.392Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com:enable  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:15.002Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/iam.googleapis.com 200
+[debug] [2026-02-05T05:18:15.002Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/iam.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:15.014Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudbuild.googleapis.com 200
+[debug] [2026-02-05T05:18:15.014Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/cloudbuild.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:15.020Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/run.googleapis.com 200
+[debug] [2026-02-05T05:18:15.020Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/run.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:15.032Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/secretmanager.googleapis.com 200
+[debug] [2026-02-05T05:18:15.032Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/secretmanager.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:15.039Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/artifactregistry.googleapis.com 200
+[debug] [2026-02-05T05:18:15.039Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/artifactregistry.googleapis.com [omitted]
+[debug] [2026-02-05T05:18:15.591Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com:enable 200
+[debug] [2026-02-05T05:18:15.591Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/lin-xuanwu/services/developerconnect.googleapis.com:enable [omitted]
+[debug] [2026-02-05T05:18:25.603Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:25.603Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:25.603Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-05T05:18:25.603Z] >>> [apiv2][(partial)header] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T05:18:25.603Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-05T05:18:26.747Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions 404
+[debug] [2026-02-05T05:18:26.747Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions {"error":{"code":404,"message":"Unknown service account","status":"NOT_FOUND"}}
+[debug] [2026-02-05T05:18:26.748Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:26.748Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:26.748Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts [none]
+[debug] [2026-02-05T05:18:26.748Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts {"accountId":"firebase-app-hosting-compute","serviceAccount":{"displayName":"Firebase App Hosting compute service account","description":"Default service account used to run builds and deploys for Firebase App Hosting"}}
+[debug] [2026-02-05T05:18:27.357Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts 200
+[debug] [2026-02-05T05:18:27.357Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts [omitted]
+[debug] [2026-02-05T05:18:27.358Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:27.358Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:27.358Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:getIamPolicy [none]
+[debug] [2026-02-05T05:18:27.794Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:getIamPolicy 200
+[debug] [2026-02-05T05:18:27.794Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:getIamPolicy {"version":1,"etag":"BwZKDMxfKT4=","bindings":[{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:608516305618@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-608516305618@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-608516305618@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:608516305618-compute@developer.gserviceaccount.com","serviceAccount:lin-xuanwu@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-608516305618@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:ac7x7x@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-608516305618@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]}]}
+[debug] [2026-02-05T05:18:27.795Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:27.795Z] Checked if tokens are valid: true, expires at: 1770269688019
+[debug] [2026-02-05T05:18:27.795Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:setIamPolicy [none]
+[debug] [2026-02-05T05:18:27.795Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:setIamPolicy {"policy":{"version":1,"etag":"BwZKDMxfKT4=","bindings":[{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:608516305618@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-608516305618@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-608516305618@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:608516305618-compute@developer.gserviceaccount.com","serviceAccount:lin-xuanwu@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com","serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-608516305618@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:ac7x7x@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-608516305618@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.computeRunner","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.readTokenAccessor","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/storage.objectViewer","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]}]},"updateMask":"bindings"}
+[debug] [2026-02-05T05:18:29.102Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:setIamPolicy 200
+[debug] [2026-02-05T05:18:29.102Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:setIamPolicy {"version":1,"etag":"BwZKDM18hK0=","bindings":[{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:608516305618@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-608516305618@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-608516305618@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/developerconnect.readTokenAccessor","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:608516305618-compute@developer.gserviceaccount.com","serviceAccount:lin-xuanwu@appspot.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com","serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/firebaseapphosting.computeRunner","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-608516305618@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-608516305618@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:ac7x7x@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-608516305618@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@lin-xuanwu.iam.gserviceaccount.com"]},{"role":"roles/storage.objectViewer","members":["serviceAccount:firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com"]}]}
+[info] i  This command links your local project to Firebase App Hosting. You will be able to deploy your web app with `firebase deploy` after setup. 
+[debug] [2026-02-05T07:23:50.068Z] ----------------------------------------------------------------------
+[debug] [2026-02-05T07:23:50.071Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\122sp\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2026-02-05T07:23:50.071Z] CLI Version:   15.5.1
+[debug] [2026-02-05T07:23:50.071Z] Platform:      win32
+[debug] [2026-02-05T07:23:50.071Z] Node Version:  v24.13.0
+[debug] [2026-02-05T07:23:50.071Z] Time:          Thu Feb 05 2026 15:23:50 GMT+0800 (台北標準時間)
+[debug] [2026-02-05T07:23:50.071Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  D:\GitHub\Xuanwu
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-02-05T07:24:11.618Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T07:24:11.618Z] > authorizing via signed-in user (ac7x7x@gmail.com)
+[debug] [2026-02-05T07:24:11.619Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:11.619Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:11.620Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu [none]
+[debug] [2026-02-05T07:24:12.279Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu 200
+[debug] [2026-02-05T07:24:12.279Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/lin-xuanwu {"projectId":"lin-xuanwu","projectNumber":"608516305618","displayName":"lin-xuanwu","name":"projects/lin-xuanwu","resources":{"hostingSite":"lin-xuanwu"},"state":"ACTIVE","etag":"1_f2d82d8e-26b5-4cec-a3e8-e4ed99e1d177"}
+[info] i  Using project lin-xuanwu (lin-xuanwu) . 
+[info] 
+=== Firestore Setup
+[info] i  firestore: ensuring required API firestore.googleapis.com is enabled... 
+[debug] [2026-02-05T07:24:12.286Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:12.286Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:12.286Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases [none]
+[debug] [2026-02-05T07:24:13.013Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases 200
+[debug] [2026-02-05T07:24:13.013Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases {"databases":[{"name":"projects/lin-xuanwu/databases/(default)","uid":"1b0b269f-18bc-4eff-9334-849f3dfa9bbf","createTime":"2026-02-05T05:17:56.356512Z","updateTime":"2026-02-05T05:17:56.356512Z","locationId":"asia-east1","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2026-02-05T06:24:11.807516Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"zde","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"IIiM/PjowZIDMKDz8dzMwZID"}]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-02-05T07:24:14.312Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:14.312Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:14.312Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases pageSize=10&pageToken=
+[debug] [2026-02-05T07:24:14.941Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases 200
+[debug] [2026-02-05T07:24:14.941Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/releases {"releases":[{"name":"projects/lin-xuanwu/releases/cloud.firestore","rulesetName":"projects/lin-xuanwu/rulesets/68c8c775-8948-4ef0-89a1-2a2918b0e0db","createTime":"2026-02-05T05:18:04.411353Z","updateTime":"2026-02-05T05:18:04.411353Z"}]}
+[debug] [2026-02-05T07:24:14.941Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:14.941Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:14.941Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/rulesets/68c8c775-8948-4ef0-89a1-2a2918b0e0db [none]
+[debug] [2026-02-05T07:24:16.021Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/rulesets/68c8c775-8948-4ef0-89a1-2a2918b0e0db 200
+[debug] [2026-02-05T07:24:16.021Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/lin-xuanwu/rulesets/68c8c775-8948-4ef0-89a1-2a2918b0e0db [omitted]
+[info] i  Downloaded the existing Firestore Security Rules from the Firebase console 
+[info] i  Skipping write of firestore.rules 
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2026-02-05T07:24:19.991Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:19.991Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:19.992Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:19.992Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:19.992Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2026-02-05T07:24:19.993Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2026-02-05T07:24:20.334Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2026-02-05T07:24:20.334Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/indexes {}
+[debug] [2026-02-05T07:24:20.550Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2026-02-05T07:24:20.550Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/lin-xuanwu/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/lin-xuanwu/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[info] i  Downloaded the existing Firestore indexes from the Firebase console 
+[info] i  Skipping write of firestore.indexes.json 
+[info] 
+=== Functions Setup
+[debug] [2026-02-05T07:24:23.305Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T07:24:23.305Z] > authorizing via signed-in user (ac7x7x@gmail.com)
+[debug] [2026-02-05T07:24:23.305Z] [iam] checking project lin-xuanwu for permissions ["firebase.projects.get"]
+[debug] [2026-02-05T07:24:23.305Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:23.305Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:23.305Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions [none]
+[debug] [2026-02-05T07:24:23.305Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T07:24:23.305Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-05T07:24:24.565Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions 200
+[debug] [2026-02-05T07:24:24.565Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/lin-xuanwu:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] i  functions/package.json is unchanged 
+[info] i  functions/.eslintrc.js is unchanged 
+[info] i  functions/tsconfig.dev.json is unchanged 
+[info] i  functions/tsconfig.json is unchanged 
+[info] i  functions/src/index.ts is unchanged 
+[info] i  functions/.gitignore is unchanged 
+[info] 
+=== App Hosting Setup
+[debug] [2026-02-05T07:24:36.307Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:36.307Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:36.308Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo [none]
+[debug] [2026-02-05T07:24:37.559Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo 200
+[debug] [2026-02-05T07:24:37.560Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/lin-xuanwu/billingInfo {"name":"projects/lin-xuanwu/billingInfo","projectId":"lin-xuanwu","billingAccountName":"billingAccounts/01B167-CD7CA3-F689F2","billingEnabled":true}
+[debug] [2026-02-05T07:24:37.561Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:37.561Z] Checked if tokens are valid: true, expires at: 1770279832025
+[debug] [2026-02-05T07:24:37.561Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-05T07:24:37.561Z] >>> [apiv2][(partial)header] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions  x-goog-user-project=lin-xuanwu
+[debug] [2026-02-05T07:24:37.561Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/lin-xuanwu/serviceAccounts/firebase-app-hosting-compute@lin-xuanwu.iam.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
