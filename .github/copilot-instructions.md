@@ -54,3 +54,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+---
+
+## Custom Instructions
+
+For detailed guidelines, refer to these custom instruction files:
+
+- **Accessibility**: See [instructions/accessibility.md](./instructions/accessibility.md) for ARIA, WCAG, and assistive technology requirements
+- **Style Guide**: See [instructions/style-guide.md](./instructions/style-guide.md) for Angular coding conventions and file organization
+- **Governance**: See [instructions/README.md](./instructions/README.md) for adding new custom instructions
