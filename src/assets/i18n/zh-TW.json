@@ -1,0 +1,59 @@
+{
+  "app": {
+    "title": "玄武",
+    "description": "領域驅動設計的 Angular 應用程式（含伺服器端渲染）"
+  },
+  "common": {
+    "yes": "是",
+    "no": "否",
+    "ok": "確定",
+    "cancel": "取消",
+    "save": "儲存",
+    "delete": "刪除",
+    "edit": "編輯",
+    "add": "新增",
+    "close": "關閉",
+    "search": "搜尋",
+    "loading": "載入中...",
+    "error": "錯誤",
+    "success": "成功",
+    "warning": "警告",
+    "info": "資訊"
+  },
+  "nav": {
+    "home": "首頁",
+    "demo": "示範",
+    "dashboard": "儀表板",
+    "settings": "設定",
+    "profile": "個人資料"
+  },
+  "auth": {
+    "signIn": "登入",
+    "signOut": "登出",
+    "signUp": "註冊",
+    "email": "電子郵件",
+    "password": "密碼",
+    "forgotPassword": "忘記密碼？",
+    "rememberMe": "記住我"
+  },
+  "firebase": {
+    "demo": {
+      "title": "Firebase 基礎設施示範",
+      "subtitle": "展示 Firestore、Storage 和 Auth 整合",
+      "firestoreOperations": "Firestore 操作",
+      "addItem": "新增項目",
+      "deleteItem": "刪除",
+      "itemAdded": "已新增項目，ID: {id}",
+      "itemDeleted": "項目已成功刪除",
+      "noItems": "尚無項目。在上方新增一個以測試即時同步！",
+      "realTimeItems": "即時項目 ({count})"
+    }
+  },
+  "validation": {
+    "required": "此欄位為必填",
+    "email": "請輸入有效的電子郵件",
+    "minLength": "最小長度為 {min}",
+    "maxLength": "最大長度為 {max}",
+    "pattern": "格式無效"
+  }
+}
