@@ -95,7 +95,9 @@
 
 ---
 
-## ⚡ Angular 20+ Quick Rules
+## ⚡ Angular 21+ Quick Rules
+
+> **Note**: Angular 21 is part of the Angular 20+ generation with zoneless support
 
 - [ ] ✅ Use standalone components (no NgModules)
 - [ ] ✅ Use `signal()` for state (not `BehaviorSubject`)

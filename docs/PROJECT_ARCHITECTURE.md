@@ -271,7 +271,7 @@ This architecture leverages Angular 20+ modern features:
 3. **Signal Store (NgRx)**: Application-level state management
 4. **Control Flow**: Native \`@if\`, \`@for\`, \`@switch\` syntax
 5. **Deferrable Views**: \`@defer\` for lazy loading optimization
-6. **Zone-less**: Pure reactive architecture without Zone.js
+6. **Zoneless**: Pure reactive architecture without Zone.js
 7. **Resource API**: Modern data loading with \`rxResource()\`
 8. **Functional Guards**: Route protection with functions
 
@@ -321,7 +321,7 @@ This architecture leverages Angular 20+ modern features:
 - Use `npm run serve:ssr:Xuanwu` to test SSR locally
 - Package: `@angular/ssr` v21.1.2
 
-### Why Zone-less?
+### Why Zoneless?
 
 1. **Performance**: Eliminates Zone.js overhead (~30KB bundle reduction)
 2. **Predictability**: Explicit change detection via Signals

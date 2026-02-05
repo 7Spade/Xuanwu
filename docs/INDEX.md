@@ -187,6 +187,21 @@ This documentation follows the **[Diátaxis Framework](https://diataxis.fr/)** w
 
 ---
 
+### 8️⃣ [Glossary](./GLOSSARY.md)
+
+**Purpose**: Standardized terminology reference  
+**Target Audience**: All developers, technical writers  
+**Contains**:
+- Core terminology (DDD, Zoneless, SSR, Angular 21+)
+- Layer names and conventions
+- Package and technology names
+- Deprecated terms to avoid
+- Abbreviations and writing style
+
+**When to use**: Unfamiliar terms, writing documentation, ensuring consistency
+
+---
+
 ## 🎓 Tutorial Documents (Learning-oriented)
 
 *Step-by-step learning paths for newcomers*
@@ -249,7 +264,8 @@ docs/
 │   ├── NAMING_CONVENTIONS.md   (Naming standards)
 │   ├── TESTING_STANDARDS.md    (Testing requirements)
 │   ├── DATABASE_SCHEMA.md      (Data model)
-│   └── UI_UX_LAYOUT.md         (Design system)
+│   ├── UI_UX_LAYOUT.md         (Design system)
+│   └── GLOSSARY.md             (Terminology reference)
 │
 ├── 🎓 Tutorial/ (Coming Soon)
 │
