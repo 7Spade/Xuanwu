@@ -5,21 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "lint": "ng lint",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:Xuanwu": "node dist/Xuanwu/server/server.mjs"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
   },
   "private": true,
   "packageManager": "npm@11.6.2",
@@ -40,12 +29,21 @@
     "@angular/build": "^21.1.2",
     "@angular/cli": "^21.1.2",
     "@angular/compiler-cli": "^21.1.0",
+    "@angular-eslint/builder": "^21.1.0",
+    "@angular-eslint/eslint-plugin": "^21.1.0",
+    "@angular-eslint/eslint-plugin-template": "^21.1.0",
+    "@angular-eslint/template-parser": "^21.1.0",
+    "@eslint/js": "^9.20.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^10.1.0",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.3",
+    "prettier": "^3.5.2",
     "tailwindcss": "^4.1.12",
+    "typescript-eslint": "^8.32.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }
