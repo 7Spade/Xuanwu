@@ -1,0 +1,50 @@
+name: Repomix Context (Copilot Browser Agent)
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: repomix-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: Pack repo context
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - style: xml
+            output: repomix-output.xml
+          - style: markdown
+            output: repomix-output.md
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pack repository with Repomix (${{ matrix.config.style }})
+        id: repomix
+        uses: yamadashy/repomix/.github/actions/repomix@v1.11.1
+        with:
+          directories: .
+          output: ${{ matrix.config.output }}
+          style: ${{ matrix.config.style }}
+          compress: true
+          repomix-version: 1.11.1
+          include: '**/*.{ts,tsx,js,jsx,mjs,cjs,json,yml,yaml,md,html,scss,css,gql,graphql}'
+          ignore: '**/node_modules/**,**/dist/**,**/coverage/**,**/.angular/**,**/dataconnect-generated/**,**/.claude/skills/**,**/pnpm-lock.yaml,**/package-lock.json,**/yarn.lock,**/bun.lockb,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.pdf,**/*.zip,**/*.ico'
+
+      - name: Upload Repomix output (${{ matrix.config.style }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: repomix-${{ matrix.config.style }}
+          path: ${{ matrix.config.output }}
+          retention-days: 30
