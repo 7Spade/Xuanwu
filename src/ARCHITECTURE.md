@@ -11,23 +11,31 @@ This repository follows a strict **8-layer Domain-Driven Design (DDD)** architec
 ```
 src/
 ├── app/
-│   ├── core/                    # Layer 1: Global Infrastructure Core
-│   ├── domain/                  # Layer 2: Pure Domain (Framework-Free)
-│   ├── application/             # Layer 3: Application Orchestration
-│   ├── infrastructure/          # Layer 4: Infrastructure Implementation
-│   ├── features/                # Layer 5: Presentation (Smart Components)
-│   ├── shared/                  # Layer 6: Shared UI (Dumb Components)
-│   ├── app.ts                   # Root component
-│   ├── app.config.ts            # App configuration
-│   ├── app.routes.ts            # Root routes
-│   └── app.*.ts                 # App entry files
-├── shared-kernel/               # Layer 7: Cross-Domain Common Code
-├── environments/                # Environment configurations
-├── styles/                      # Layer 8: Global styles
-├── assets/                      # Static resources
-├── main.ts                      # Browser entry point
-├── main.server.ts               # Server entry point
-└── server.ts                    # Express server (SSR)
+│   ├── core/                      # Layer 1: Global Infrastructure Core
+│   │   ├── providers/             # App configuration & DI
+│   │   │   ├── app.config.ts      # Browser app config
+│   │   │   └── app.config.server.ts # SSR config
+│   │   ├── app.routes.ts          # Client routes
+│   │   ├── app.routes.server.ts   # Server routes
+│   │   └── index.ts               # Public API
+│   ├── domain/                    # Layer 2: Pure Domain (Framework-Free)
+│   ├── application/               # Layer 3: Application Orchestration
+│   ├── infrastructure/            # Layer 4: Infrastructure Implementation
+│   ├── features/                  # Layer 5: Presentation (Smart Components)
+│   │   └── layout/                # Global layout
+│   │       ├── app.component.html # Root template
+│   │       └── app.component.css  # Root styles
+│   ├── shared/                    # Layer 6: Shared UI (Dumb Components)
+│   ├── app.component.ts           # Root component
+│   └── app.component.spec.ts      # Root tests
+├── shared-kernel/                 # Layer 7: Cross-Domain Common Code
+├── environments/                  # Environment configurations
+├── styles/                        # Layer 8: Global styles
+│   └── global.css                 # Main stylesheet
+├── assets/                        # Static resources
+├── main.ts                        # Browser entry point
+├── main.server.ts                 # Server entry point
+└── server.ts                      # Express server (SSR)
 ```
 
 ## 📚 Layer Documentation
