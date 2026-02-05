@@ -14,7 +14,7 @@
 - 🔍 **Code review** - Verify test quality and coverage
 
 **Prerequisites**: Understanding of [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md)  
-**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
+**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference), [Glossary](./GLOSSARY.md) (Reference - terminology)
 
 ---
 

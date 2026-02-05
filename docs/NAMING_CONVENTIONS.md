@@ -16,7 +16,7 @@
 - 📋 **Code review** - Verify naming compliance
 
 **Prerequisites**: None (lookup reference)  
-**Related Docs**: [Quick Reference](./QUICK_REFERENCE.md) (Reference), [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference)
+**Related Docs**: [Quick Reference](./QUICK_REFERENCE.md) (Reference), [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Glossary](./GLOSSARY.md) (Reference - terminology)
 
 ---
 

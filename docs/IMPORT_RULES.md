@@ -14,7 +14,7 @@
 - 🔍 **Code review** - Verify import compliance
 
 **Prerequisites**: Understanding of [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md)  
-**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation)
+**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation), [Glossary](./GLOSSARY.md) (Reference - terminology)
 
 ---
 

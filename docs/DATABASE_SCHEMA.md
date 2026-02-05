@@ -15,7 +15,7 @@
 - 📊 **Planning features** - Check available data fields
 
 **Prerequisites**: Basic understanding of Firestore and NoSQL  
-**Related Docs**: [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
+**Related Docs**: [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference), [Glossary](./GLOSSARY.md) (Reference - for terminology)
 
 ---
 
