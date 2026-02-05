@@ -5,7 +5,8 @@
  * @layer Infrastructure Core
  * @package @angular/fire
  */
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
@@ -22,6 +23,8 @@ import { environment } from '../../../environments/environment';
  * - Storage (file storage)
  * - App Check (security)
  * - Auth (authentication)
+ * 
+ * Note: App Check only works in browser environment (client-side)
  */
 export const firebaseConfig: ApplicationConfig = {
   providers: [
@@ -29,17 +32,21 @@ export const firebaseConfig: ApplicationConfig = {
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
     provideAuth(() => getAuth()),
-    // App Check for production security
+    // App Check for production security (browser-only)
     // ⚠️ IMPORTANT: Replace the placeholder reCAPTCHA site key below with your actual key
     // Get your key from: https://www.google.com/recaptcha/admin
     // Note: In development, you can use debug tokens
     // Set self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; in browser console
     provideAppCheck(() => {
-      const appCheck = initializeAppCheck(undefined as any, {
-        provider: new ReCaptchaV3Provider('6LfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'), // ⚠️ Replace with your reCAPTCHA site key
-        isTokenAutoRefreshEnabled: true
-      });
-      return appCheck;
+      // App Check only works in browser environment
+      if (typeof window !== 'undefined') {
+        const appCheck = initializeAppCheck(undefined as any, {
+          provider: new ReCaptchaV3Provider('6LfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'), // ⚠️ Replace with your reCAPTCHA site key
+          isTokenAutoRefreshEnabled: true
+        });
+        return appCheck;
+      }
+      return null as any;
     })
   ]
 };
