@@ -17,6 +17,7 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 | Document | Type | Purpose | Target Audience |
 |----------|------|---------|-----------------|
 | **[README.md](../README.md)** | Overview | Project introduction & quick start | All users |
+| **[NEXTJS_TO_ANGULAR_MIGRATION.md](./NEXTJS_TO_ANGULAR_MIGRATION.md)** | Tutorial | Migration guide & development plan | Developers |
 | **[NEXTJS_PROJECT_TREE.md](./NEXTJS_PROJECT_TREE.md)** | Reference | Complete file structure | Developers |
 | **[NEXTJS_FUNCTION_REFERENCE.md](./NEXTJS_FUNCTION_REFERENCE.md)** | Reference | API catalog | Developers |
 | **[NEXTJS_NAMING_AUDIT.md](./NEXTJS_NAMING_AUDIT.md)** | Analysis | Naming compliance | Developers/Reviewers |
@@ -48,7 +49,32 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ---
 
-### 2. Project Tree
+### 2. Next.js to Angular Migration Guide
+**Location**: `docs/nextjs/docs/NEXTJS_TO_ANGULAR_MIGRATION.md`  
+**Size**: ~34 KB  
+**Type**: Tutorial (Learning-oriented)
+
+**Contains**:
+- ✅ Complete migration strategy
+- ✅ Technology mapping (Next.js → Angular)
+- ✅ File structure conversion
+- ✅ File count estimation (~592 core files)
+- ✅ Step-by-step development guide
+- ✅ 6-week implementation phases
+- ✅ Code examples for each layer
+- ✅ Testing strategy
+- ✅ Deployment guide
+
+**Use When**:
+- Planning the Angular migration
+- Implementing features in Angular
+- Understanding framework mappings
+- Estimating development effort
+- Following implementation phases
+
+---
+
+### 3. Project Tree
 **Location**: `docs/nextjs/docs/NEXTJS_PROJECT_TREE.md`  
 **Size**: ~15 KB  
 **Type**: Reference (Information-oriented)
@@ -78,7 +104,7 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ---
 
-### 3. Function Reference
+### 4. Function Reference
 **Location**: `docs/nextjs/docs/NEXTJS_FUNCTION_REFERENCE.md`  
 **Size**: ~20 KB  
 **Type**: Reference (Information-oriented)
@@ -116,7 +142,7 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ---
 
-### 4. Naming Audit
+### 5. Naming Audit
 **Location**: `docs/nextjs/docs/NEXTJS_NAMING_AUDIT.md`  
 **Size**: ~13 KB  
 **Type**: Analysis & Reference
@@ -149,7 +175,7 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ---
 
-### 5. Blueprint
+### 6. Blueprint
 **Location**: `docs/nextjs/docs/blueprint.md`  
 **Size**: ~2 KB  
 **Type**: Architecture (Vision)
@@ -175,7 +201,7 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ---
 
-### 6. Backend Schema
+### 7. Backend Schema
 **Location**: `docs/nextjs/docs/backend.json`  
 **Size**: ~2 KB  
 **Type**: Schema Definition
@@ -206,6 +232,11 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 #### ...understand the project
 → Start with **[README.md](../README.md)**  
 → Then read **[blueprint.md](./blueprint.md)**
+
+#### ...convert to Angular
+→ Start with **[NEXTJS_TO_ANGULAR_MIGRATION.md](./NEXTJS_TO_ANGULAR_MIGRATION.md)**  
+→ Follow the 6-week implementation plan  
+→ Reference **[NEXTJS_FUNCTION_REFERENCE.md](./NEXTJS_FUNCTION_REFERENCE.md)** for APIs
 
 #### ...find a specific file
 → Use **[NEXTJS_PROJECT_TREE.md](./NEXTJS_PROJECT_TREE.md)**  
@@ -246,12 +277,13 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 | Document | Lines | Size | Sections | Last Updated |
 |----------|-------|------|----------|--------------|
 | README.md | ~380 | 8 KB | 15 | 2026-02-05 |
-| NEXTJS_PROJECT_TREE.md | ~560 | 15 KB | 8 | 2026-02-05 |
+| NEXTJS_TO_ANGULAR_MIGRATION.md | ~1,100 | 34 KB | 9 | 2026-02-05 |
+| NEXTJS_PROJECT_TREE.md | ~560 | 17 KB | 8 | 2026-02-05 |
 | NEXTJS_FUNCTION_REFERENCE.md | ~800 | 20 KB | 10 | 2026-02-05 |
 | NEXTJS_NAMING_AUDIT.md | ~480 | 13 KB | 12 | 2026-02-05 |
 | blueprint.md | ~50 | 2 KB | 4 | Earlier |
 | backend.json | ~60 | 2 KB | 3 | Earlier |
-| **Total** | **~2330** | **~60 KB** | **52** | - |
+| **Total** | **~3,430** | **~96 KB** | **61** | - |
 
 ---
 
@@ -259,16 +291,17 @@ This documentation set provides complete coverage of the OrgVerse Next.js demons
 
 ### Coverage Matrix
 
-| Area | README | Project Tree | Function Ref | Naming Audit | Blueprint | Backend |
-|------|--------|--------------|--------------|--------------|-----------|---------|
-| **Overview** | ✅ | ✅ | ✅ | ✅ | ✅ | - |
-| **File Structure** | ⚡ | ✅ | - | ✅ | - | - |
-| **API Reference** | ⚡ | - | ✅ | - | - | - |
-| **Naming Rules** | ⚡ | ✅ | - | ✅ | - | - |
-| **Architecture** | ⚡ | ✅ | - | - | ✅ | - |
-| **Data Models** | ⚡ | - | ✅ | - | - | ✅ |
-| **Setup Guide** | ✅ | - | - | - | - | - |
-| **Usage Examples** | ⚡ | - | ✅ | - | - | - |
+| Area | README | Migration | Project Tree | Function Ref | Naming Audit | Blueprint | Backend |
+|------|--------|-----------|--------------|--------------|--------------|-----------|---------|
+| **Overview** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | - |
+| **File Structure** | ⚡ | ✅ | ✅ | - | ✅ | - | - |
+| **API Reference** | ⚡ | ⚡ | - | ✅ | - | - | - |
+| **Naming Rules** | ⚡ | ⚡ | ✅ | - | ✅ | - | - |
+| **Architecture** | ⚡ | ✅ | ✅ | - | - | ✅ | - |
+| **Data Models** | ⚡ | ⚡ | - | ✅ | - | - | ✅ |
+| **Setup Guide** | ✅ | - | - | - | - | - | - |
+| **Migration Plan** | - | ✅ | - | - | - | - | - |
+| **Usage Examples** | ⚡ | ✅ | - | ✅ | - | - | - |
 
 **Legend**:
 - ✅ Primary coverage
