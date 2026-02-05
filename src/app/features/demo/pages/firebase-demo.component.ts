@@ -9,7 +9,7 @@
  * 
  * @layer Features - Demo
  */
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { 
@@ -29,6 +29,7 @@ interface DemoItem {
 @Component({
   selector: 'app-firebase-demo',
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="demo-container">
       <h1>🔥 Firebase Infrastructure Demo</h1>
