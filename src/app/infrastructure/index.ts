@@ -5,11 +5,9 @@
  * Only items exported here are accessible to other layers.
  */
 
-// Persistence
-// export * from './persistence';
+// Firestore services
+export * from './persistence/firestore';
+export * from './persistence/repositories';
 
-// Messaging
-// export * from './messaging';
-
-// Adapters
-// export * from './adapters';
+// Firebase adapters
+export * from './adapters/firebase';
