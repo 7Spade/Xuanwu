@@ -125,7 +125,7 @@ src/
 │ │ │ ├── 📂 events/              # Domain Events
 │ │ │ ├── 📂 exceptions/          # Domain-Specific Exceptions
 │ │ │ ├── 📂 specifications/      # Specification Pattern - Complex Business Rules
-│ │ │ ├── �� repository-interfaces/ # Repository Interfaces (Define Persistence Abstraction)
+│ │ │ ├── 📂 repository-interfaces/ # Repository Interfaces (Define Persistence Abstraction)
 │ │ │ ├── 📂 services/            # Domain Services - Stateless Business Logic
 │ │ │ ├── 📂 state/               # Domain Local State (Signal-based Logic Containers)
 │ │ │ └── 📂 testing/             # Domain Test Fixtures (Mocks, Builders, Fakes)
