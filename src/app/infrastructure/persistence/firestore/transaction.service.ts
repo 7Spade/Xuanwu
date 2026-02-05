@@ -3,7 +3,7 @@
  * Handles Firestore transactions and batch operations
  * 
  * @layer Infrastructure
- * @package @angular/fire/firestore
+ * @package firebase/firestore
  * @responsibility Atomic operations and batch writes
  */
 import { inject, Injectable } from '@angular/core';
@@ -16,8 +16,9 @@ import {
   Transaction,
   WriteBatch,
   DocumentData
-} from '@angular/fire/firestore';
+} from 'firebase/firestore';
 import { from, Observable } from 'rxjs';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 /**
  * Transaction Service
@@ -43,7 +44,8 @@ import { from, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TransactionService {
-  private readonly firestore = inject(Firestore);
+  private readonly firebaseService = inject(FirebaseService);
+  private readonly firestore: Firestore = this.firebaseService.getFirestore();
 
   /**
    * Run a Firestore transaction

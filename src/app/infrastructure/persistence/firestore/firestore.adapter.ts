@@ -3,7 +3,7 @@
  * Generic wrapper for Firestore operations following DDD architecture
  * 
  * @layer Infrastructure
- * @package @angular/fire/firestore
+ * @package firebase/firestore
  * @responsibility Provide type-safe Firestore CRUD operations
  */
 import { inject, Injectable } from '@angular/core';
@@ -27,8 +27,9 @@ import {
   DocumentData,
   QuerySnapshot,
   DocumentSnapshot
-} from '@angular/fire/firestore';
+} from 'firebase/firestore';
 import { from, Observable } from 'rxjs';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 /**
  * Generic Firestore Adapter
@@ -49,7 +50,8 @@ import { from, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FirestoreAdapter {
-  private readonly firestore = inject(Firestore);
+  private readonly firebaseService = inject(FirebaseService);
+  private readonly firestore: Firestore = this.firebaseService.getFirestore();
 
   /**
    * Get a single document by ID

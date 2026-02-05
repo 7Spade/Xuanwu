@@ -3,14 +3,14 @@
  * Generic CRUD repository following the Repository pattern
  * 
  * @layer Infrastructure
- * @package @angular/fire/firestore
+ * @package firebase/firestore
  * @responsibility Provide generic repository operations for domain entities
  */
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FirestoreAdapter } from '../firestore/firestore.adapter';
 import { CollectionService } from '../firestore/collection.service';
-import { QueryConstraint, DocumentData } from '@angular/fire/firestore';
+import { QueryConstraint, DocumentData } from 'firebase/firestore';
 
 /**
  * Base entity interface

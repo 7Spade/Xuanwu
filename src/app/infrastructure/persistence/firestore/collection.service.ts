@@ -3,22 +3,24 @@
  * Provides reactive real-time collection operations
  * 
  * @layer Infrastructure
- * @package @angular/fire/firestore
+ * @package firebase/firestore
  * @responsibility Real-time collection subscriptions and batch operations
  */
 import { inject, Injectable } from '@angular/core';
 import {
   Firestore,
   collection,
-  collectionData,
-  docData,
+  onSnapshot,
   CollectionReference,
   DocumentReference,
   QueryConstraint,
   query,
-  doc
-} from '@angular/fire/firestore';
+  doc,
+  DocumentData,
+  Query
+} from 'firebase/firestore';
 import { Observable } from 'rxjs';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 /**
  * Collection Service
@@ -41,7 +43,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CollectionService {
-  private readonly firestore = inject(Firestore);
+  private readonly firebaseService = inject(FirebaseService);
+  private readonly firestore: Firestore = this.firebaseService.getFirestore();
 
   /**
    * Watch a collection for real-time updates
@@ -56,7 +59,20 @@ export class CollectionService {
     const collectionRef = collection(this.firestore, collectionName) as CollectionReference;
     const q = constraints.length > 0 ? query(collectionRef, ...constraints) : collectionRef;
     
-    return collectionData(q, { idField: 'id' }) as Observable<T[]>;
+    return new Observable(subscriber => {
+      const unsubscribe = onSnapshot(
+        q as Query<DocumentData>,
+        snapshot => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as T));
+          subscriber.next(data);
+        },
+        error => subscriber.error(error)
+      );
+      return () => unsubscribe();
+    });
   }
 
   /**
@@ -67,7 +83,22 @@ export class CollectionService {
    */
   watchDocument<T>(collectionName: string, id: string): Observable<T | undefined> {
     const docRef = doc(this.firestore, collectionName, id) as DocumentReference;
-    return docData(docRef, { idField: 'id' }) as Observable<T | undefined>;
+    
+    return new Observable(subscriber => {
+      const unsubscribe = onSnapshot(
+        docRef,
+        snapshot => {
+          if (snapshot.exists()) {
+            const data = { id: snapshot.id, ...snapshot.data() } as T;
+            subscriber.next(data);
+          } else {
+            subscriber.next(undefined);
+          }
+        },
+        error => subscriber.error(error)
+      );
+      return () => unsubscribe();
+    });
   }
 
   /**

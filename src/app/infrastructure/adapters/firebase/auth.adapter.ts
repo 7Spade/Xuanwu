@@ -3,7 +3,7 @@
  * Wrapper for Firebase Authentication operations
  * 
  * @layer Infrastructure
- * @package @angular/fire/auth
+ * @package firebase/auth
  * @responsibility User authentication and management
  */
 import { inject, Injectable } from '@angular/core';
@@ -12,15 +12,16 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  authState,
+  onAuthStateChanged,
   User,
   UserCredential,
   sendPasswordResetEmail,
   updateProfile,
   updateEmail,
   updatePassword
-} from '@angular/fire/auth';
+} from 'firebase/auth';
 import { from, Observable } from 'rxjs';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 /**
  * Auth Adapter
@@ -48,7 +49,8 @@ import { from, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthAdapter {
-  private readonly auth = inject(Auth);
+  private readonly firebaseService = inject(FirebaseService);
+  private readonly auth: Auth = this.firebaseService.getAuth();
 
   /**
    * Sign in with email and password
@@ -83,7 +85,15 @@ export class AuthAdapter {
    * @returns Observable stream of User or null
    */
   getCurrentUser$(): Observable<User | null> {
-    return authState(this.auth);
+    return new Observable(subscriber => {
+      const unsubscribe = onAuthStateChanged(
+        this.auth,
+        user => subscriber.next(user),
+        error => subscriber.error(error),
+        () => subscriber.complete()
+      );
+      return () => unsubscribe();
+    });
   }
 
   /**

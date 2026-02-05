@@ -3,12 +3,12 @@
  * Wrapper for Firebase Storage operations
  * 
  * @layer Infrastructure
- * @package @angular/fire/storage
+ * @package firebase/storage
  * @responsibility File upload, download, and management
  */
 import { inject, Injectable } from '@angular/core';
 import {
-  Storage,
+  FirebaseStorage,
   ref,
   uploadBytes,
   uploadBytesResumable,
@@ -18,8 +18,9 @@ import {
   StorageReference,
   UploadTask,
   UploadMetadata
-} from '@angular/fire/storage';
+} from 'firebase/storage';
 import { from, Observable } from 'rxjs';
+import { FirebaseService } from '../../../core/services/firebase.service';
 
 /**
  * Storage Adapter
@@ -47,7 +48,8 @@ import { from, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class StorageAdapter {
-  private readonly storage = inject(Storage);
+  private readonly firebaseService = inject(FirebaseService);
+  private readonly storage: FirebaseStorage = this.firebaseService.getStorage();
 
   /**
    * Upload a file to Firebase Storage
