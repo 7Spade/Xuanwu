@@ -1,0 +1,41 @@
+/**
+ * Angular Material Theme Configuration
+ * Using Material 3 (Material You) Design System
+ * 
+ * @see https://material.angular.io/guide/theming
+ */
+
+/* Include Material core styles and theming */
+@use '@angular/material' as mat;
+
+/* Include core Material styles */
+@include mat.core();
+
+/* Define a light theme */
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$yellow-palette,
+  ),
+));
+
+/* Define a dark theme */
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$yellow-palette,
+  ),
+));
+
+/* Apply light theme by default */
+html {
+  @include mat.all-component-themes($light-theme);
+}
+
+/* Dark theme support via class */
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
+}
+

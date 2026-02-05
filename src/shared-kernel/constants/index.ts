@@ -15,6 +15,7 @@ export const APP_CONSTANTS = {
 
 /**
  * HTTP status codes
+ * These are exported for use across the application
  */
 export enum HttpStatus {
   OK = 200,
@@ -29,6 +30,7 @@ export enum HttpStatus {
 
 /**
  * User roles
+ * These are exported for use across the application
  */
 export enum UserRole {
   ADMIN = 'ADMIN',

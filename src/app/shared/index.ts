@@ -5,6 +5,9 @@
  * These are reusable UI components and utilities.
  */
 
+// Services
+export * from './services';
+
 // UI Components
 // export * from './ui';
 

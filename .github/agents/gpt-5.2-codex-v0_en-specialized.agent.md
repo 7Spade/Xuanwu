@@ -426,13 +426,14 @@ export class UserEntity implements User {
 **Infrastructure Layer** (`infrastructure/repositories/user.repository.ts`):
 ```typescript
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { User } from '@domain/models/user.model';
+import { FirestoreAdapter } from '@infrastructure/persistence/firestore/firestore.adapter';
 
 @Injectable({ providedIn: 'root' })
 export class UserRepository {
+  private firestore = inject(FirestoreAdapter);
   private firestore = inject(Firestore);
 
   // ✅ Returns Observable, NOT Promise or subscribe

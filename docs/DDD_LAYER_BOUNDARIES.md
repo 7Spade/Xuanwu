@@ -61,7 +61,7 @@ import { TaskFormComponent } from '@app/features/tasks/components/form';
 
 // No cross-layer direct references
 import { HttpClient } from '@angular/common/http'; // Should use app/core provided
-import { Firebase } from '@angular/fire'; // Should use app/infrastructure
+import { getFirestore } from 'firebase/firestore'; // Should use app/infrastructure
 ```
 
 ### Rule Statement
@@ -153,7 +153,7 @@ During code review, check for these boundary violations:
 - [ ] Are there circular dependencies (A → B → A)?
 - [ ] Does app/infrastructure expose implementation details instead of interfaces?
 - [ ] Does shared-kernel contain framework-related code?
-- [ ] Does functions contain @angular/fire or browser APIs?
+- [ ] Does functions contain browser APIs?
 
 ---
 

@@ -153,7 +153,7 @@ src/app/
 │   └── mappers/            # DTO <-> Entity Transformations
 │
 ├── infrastructure/ (IMPURE, FRAMEWORK DEPENDENT)
-│   ├── persistence/        # Repo Implementations (@angular/fire, Firestore)
+│   ├── persistence/        # Repo Implementations (Firestore via FirebaseService)
 │   ├── firebase/           # SDK Wrappers (Auth, Functions)
 │   ├── adapters/           # External API Cliens
 │   └── dto/                # Wire Formats (JSON shapes)
@@ -230,7 +230,7 @@ You must strictly reject and correct the following anti-patterns:
 | **State** | `@ngrx/signals`, `signalStore`, `patchState` | `@ngrx/store`, `module`, `reducers`, `effects`, `BehaviorSubject` |
 | **Async** | `rxMethod`, `tapResponse`, `lastValueFrom` | `async/await` in template, manually managed promises in state |
 | **View** | Logic-less `@if`, `@for`, `Signal<T>` reading | `*ngIf`, `*ngFor`, Complex pipes in template, `zone.js` |
-| **Data** | `@angular/fire` (Stream based), Repository Pattern | Raw SDK calls in components, `HttpClient` in components |
+| **Data** | Firebase SDK (Stream based), Repository Pattern | Raw SDK calls in components, `HttpClient` in components |
 | **Build** | `tsc --noEmit` (Zero Errors) | `any`, `// @ts-ignore`, `as unknown as Type` |
 
 ## 6. Testing Strategy & Quality Assurance
