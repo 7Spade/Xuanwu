@@ -1,6 +1,29 @@
-# Xuanwu
+# Xuanwu (玄武 - Black Tortoise)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+> **Modern Enterprise Angular Application with SSR + Zoneless Architecture**
+
+## 🚀 Technology Stack
+
+- **Framework**: Angular 21.1.3 (Angular 20+)
+- **SSR**: Server-Side Rendering with `@angular/ssr` 21.1.2
+- **Architecture**: Zoneless (Pure Reactive without NgZone)
+- **State Management**: NgRx Signal Store
+- **Backend**: Firebase + Node.js/Express
+- **Styling**: Tailwind CSS 4.1+
+- **Testing**: Vitest 4.0+
+- **DDD**: 8-layer Domain-Driven Design
+
+This project implements a production-ready Angular 20+ application with **Server-Side Rendering (SSR)** and **Zoneless** reactive architecture for optimal performance and SEO.
+
+---
+
+## 📖 Documentation
+
+- [Architecture Overview](./docs/PROJECT_ARCHITECTURE.md) - Complete 8-layer DDD architecture
+- [Documentation Index](./docs/INDEX.md) - Full documentation navigation
+- [Quick Reference](./docs/QUICK_REFERENCE.md) - Developer cheat sheet
+
+---
 
 ## Development server
 
@@ -28,13 +51,46 @@ ng generate --help
 
 ## Building
 
-To build the project run:
+### Client-Side Build
+
+To build the project for client-side only:
 
 ```bash
 ng build
 ```
 
+### SSR Build
+
+To build the project with Server-Side Rendering:
+
+```bash
+ng build
+```
+
+The SSR build is configured by default in `angular.json` with `"outputMode": "server"`.
+
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+
+## Server-Side Rendering (SSR)
+
+This application uses Angular SSR for improved performance and SEO.
+
+### Running SSR in Production
+
+After building, serve the SSR application:
+
+```bash
+npm run serve:ssr:Xuanwu
+```
+
+This starts an Express server at `http://localhost:4000` that serves the pre-rendered application.
+
+### SSR Configuration
+
+- **SSR Entry**: `src/server.ts` (Express server configuration)
+- **Server Main**: `src/main.server.ts` (Angular server bootstrap)
+- **Output Mode**: `server` (configured in `angular.json`)
+- **Package**: `@angular/ssr` v21.1.2
 
 ## Running unit tests
 

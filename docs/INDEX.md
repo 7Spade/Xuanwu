@@ -1,8 +1,20 @@
 # Xuanwu Documentation Index
 
 > **Project**: Xuanwu (玄武 - Black Tortoise)  
+> **Stack**: Angular 21+ / SSR / Zoneless / DDD / NgRx Signals / Firebase  
 > **Purpose**: Central navigation hub for all project documentation  
 > **Last Updated**: 2026-02-05
+
+---
+
+## 🚀 Technology Highlights
+
+- **Angular 21+**: Latest Angular features (Signals, control flow, standalone components)
+- **SSR**: Server-Side Rendering with `@angular/ssr` for SEO and performance
+- **Zoneless**: Pure reactive architecture without Zone.js overhead
+- **DDD**: 8-layer Domain-Driven Design architecture
+- **NgRx Signals**: Signal-based state management
+- **Firebase**: Backend as a Service with Firestore
 
 ---
 
@@ -10,7 +22,7 @@
 
 New to the project? Start here:
 
-1. 📖 [Project Architecture](./PROJECT_ARCHITECTURE.md) - Understand the 8-layer DDD structure
+1. 📖 [Project Architecture](./PROJECT_ARCHITECTURE.md) - Understand the SSR + Zoneless + DDD structure
 2. 🔒 [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) - Learn layer responsibilities
 3. 📋 [Quick Reference](./QUICK_REFERENCE.md) - One-page cheat sheet for daily development
 

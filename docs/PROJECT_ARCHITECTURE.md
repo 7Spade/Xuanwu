@@ -2,14 +2,35 @@
 
 > **Version**: 1.0  
 > **Project**: Xuanwu (玄武 - Black Tortoise)  
-> **Stack**: Angular 20+ / DDD / NgRx Signals / Firebase / Zone-less Reactive  
+> **Stack**: Angular 21+ / SSR / Zoneless / DDD / NgRx Signals / Firebase  
 > **Last Updated**: 2026-02-05
+
+---
+
+## 🚀 Core Technology Features
+
+### Server-Side Rendering (SSR)
+- **Package**: `@angular/ssr` v21.1.2
+- **Runtime**: Express server with Node.js
+- **Benefits**: Improved SEO, faster initial load, better Core Web Vitals
+- **Configuration**: `outputMode: "server"` in `angular.json`
+
+### Zoneless Architecture
+- **Pure Reactive**: No NgZone dependency
+- **State Management**: NgRx Signal Store + Angular Signals
+- **Performance**: Eliminates change detection overhead
+- **Modern Angular**: Uses Angular 21+ native reactivity
+
+### Angular Version
+- **Framework**: Angular 21.1.3 (Angular 20+ generation)
+- **Build System**: Angular CLI 21.1.2 with `@angular/build`
+- **Features**: Standalone components, control flow syntax, deferred loading
 
 ---
 
 ## 🏗️ Architecture Overview
 
-Xuanwu follows a strict **8-layer Domain-Driven Design (DDD)** architecture, optimized for Angular 20+ with pure reactive (zone-less) architecture using Signals and NgRx Signal Store.
+Xuanwu follows a strict **8-layer Domain-Driven Design (DDD)** architecture, optimized for Angular 21+ with **Server-Side Rendering (SSR)** and **pure reactive (zoneless)** architecture using Signals and NgRx Signal Store.
 
 ### Architecture Principles
 
@@ -273,12 +294,33 @@ This architecture leverages Angular 20+ modern features:
 4. **Maintainability**: Clear boundaries prevent spaghetti code
 5. **Flexibility**: Easy to swap implementations (e.g., Firebase → PostgreSQL)
 
+### Why SSR (Server-Side Rendering)?
+
+1. **SEO**: Search engines can index pre-rendered content
+2. **Performance**: Faster Time to First Byte (TTFB) and First Contentful Paint (FCP)
+3. **Core Web Vitals**: Improved Largest Contentful Paint (LCP) scores
+4. **Social Sharing**: Meta tags work properly for Open Graph and Twitter Cards
+5. **User Experience**: Faster perceived load time
+
+**Configuration**:
+- SSR is enabled by default in `angular.json` with `outputMode: "server"`
+- Express server runs on port 4000 in production
+- Use `npm run serve:ssr:Xuanwu` to test SSR locally
+- Package: `@angular/ssr` v21.1.2
+
 ### Why Zone-less?
 
-1. **Performance**: Eliminates Zone.js overhead
+1. **Performance**: Eliminates Zone.js overhead (~30KB bundle reduction)
 2. **Predictability**: Explicit change detection via Signals
 3. **Debugging**: Easier to trace state changes
-4. **Modern**: Aligns with Angular's future direction
+4. **Modern**: Aligns with Angular's future direction (Angular 18+ official support)
+5. **SSR Compatible**: Works seamlessly with server-side rendering
+
+**Implementation**:
+- All state managed through Signals (`signal()`, `computed()`)
+- Components use `ChangeDetectionStrategy.OnPush`
+- NgRx Signal Store for global state
+- No `ngZone.run()` or Zone.js dependency
 
 ### Why Separate Frontend/Backend?
 
