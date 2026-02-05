@@ -15,9 +15,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { 
   FirestoreAdapter,
   CollectionService,
-  StorageAdapter,
-  AuthAdapter,
-  where,
   orderBy,
   limit
 } from '../../../infrastructure';

@@ -5,8 +5,7 @@
  * @layer Infrastructure Core
  * @package @angular/fire
  */
-import { ApplicationConfig, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { ApplicationConfig } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';

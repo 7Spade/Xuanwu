@@ -51,7 +51,7 @@ export class TransactionService {
    * @returns Observable that completes when transaction is committed
    */
   runTransaction<T>(
-    updateFunction: (transaction: Transaction) => Promise<T>
+    updateFunction: (_transaction: Transaction) => Promise<T>
   ): Observable<T> {
     return from(runTransaction(this.firestore, updateFunction));
   }
@@ -64,7 +64,7 @@ export class TransactionService {
    * @returns Observable that completes when batch is committed
    */
   batchWrite(
-    batchFunction: (batch: WriteBatch) => void
+    batchFunction: (_batch: WriteBatch) => void
   ): Observable<void> {
     const batch = writeBatch(this.firestore);
     batchFunction(batch);

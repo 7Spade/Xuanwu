@@ -44,7 +44,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
   protected readonly firestoreAdapter = inject(FirestoreAdapter);
   protected readonly collectionService = inject(CollectionService);
 
-  constructor(protected readonly collectionName: string) {}
+  // eslint-disable-next-line @angular-eslint/prefer-inject
+  constructor(protected readonly _collectionName: string) {}
+
+  /**
+   * Collection name accessor
+   */
+  protected get collectionName(): string {
+    return this._collectionName;
+  }
 
   /**
    * Find a single entity by ID

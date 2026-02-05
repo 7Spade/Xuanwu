@@ -16,7 +16,6 @@ import {
   deleteObject,
   listAll,
   StorageReference,
-  UploadResult,
   UploadTask,
   UploadMetadata
 } from '@angular/fire/storage';

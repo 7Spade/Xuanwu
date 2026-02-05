@@ -6,7 +6,7 @@
  * @package @angular/cdk/layout
  * @responsibility Provide responsive breakpoint detection
  */
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
