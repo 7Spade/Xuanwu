@@ -1,6 +1,12 @@
 /**
  * Development Environment Configuration
  * This configuration is used for local development
+ * 
+ * ⚠️ SECURITY NOTE:
+ * - The Firebase configuration is currently committed to the repository
+ * - This is acceptable for public Firebase projects with proper security rules
+ * - For production apps, consider using environment variables or secret management
+ * - Always ensure Firestore and Storage security rules are properly configured
  */
 export const environment = {
   production: false,

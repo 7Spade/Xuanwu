@@ -1,6 +1,13 @@
 /**
  * Production Environment Configuration
  * This configuration is used for production builds
+ * 
+ * ⚠️ SECURITY NOTE:
+ * - The Firebase configuration is currently committed to the repository
+ * - This is acceptable for public Firebase projects with proper security rules
+ * - For production apps, consider using environment variables or secret management
+ * - Always ensure Firestore and Storage security rules are properly configured
+ * - Replace the placeholder reCAPTCHA key in firebase.config.ts
  */
 export const environment = {
   production: true,

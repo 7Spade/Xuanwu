@@ -30,11 +30,13 @@ export const firebaseConfig: ApplicationConfig = {
     provideStorage(() => getStorage()),
     provideAuth(() => getAuth()),
     // App Check for production security
-    // Note: In development, you may want to use debug token
+    // ⚠️ IMPORTANT: Replace the placeholder reCAPTCHA site key below with your actual key
+    // Get your key from: https://www.google.com/recaptcha/admin
+    // Note: In development, you can use debug tokens
     // Set self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; in browser console
     provideAppCheck(() => {
       const appCheck = initializeAppCheck(undefined as any, {
-        provider: new ReCaptchaV3Provider('6LfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'), // Replace with your reCAPTCHA site key
+        provider: new ReCaptchaV3Provider('6LfXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'), // ⚠️ Replace with your reCAPTCHA site key
         isTokenAutoRefreshEnabled: true
       });
       return appCheck;
