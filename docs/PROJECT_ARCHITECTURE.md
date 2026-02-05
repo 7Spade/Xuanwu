@@ -1,113 +1,293 @@
-# src
+# Xuanwu Project Architecture
 
+> **Version**: 1.0  
+> **Project**: Xuanwu (玄武 - Black Tortoise)  
+> **Stack**: Angular 20+ / DDD / NgRx Signals / Firebase / Zone-less Reactive  
+> **Last Updated**: 2026-02-05
+
+---
+
+## 🏗️ Architecture Overview
+
+Xuanwu follows a strict **8-layer Domain-Driven Design (DDD)** architecture, optimized for Angular 20+ with pure reactive (zone-less) architecture using Signals and NgRx Signal Store.
+
+### Architecture Principles
+
+1. **Layer Responsibility Separation**: Each layer has a single, well-defined responsibility
+2. **Unidirectional Dependencies**: Higher layers depend on lower layers, never the reverse
+3. **Interface Isolation**: Cross-layer interaction only through public APIs via \`index.ts\`
+4. **Event-Driven Decoupling**: Use domain events for cross-layer communication
+5. **Framework-Free Domain**: \`app/domain\` must be 100% framework-agnostic
+
+---
+
+## 📦 Frontend Architecture (Browser Runtime)
+
+### src/
+
+\`\`\`
 src/
 ├── 📂 app/
-│ ├── 📂 core/ # 基礎建設 (Global Infrastructure Core)
-│ │ ├── 📂 auth/ # 認證與授權 (Signals-based Auth Store)
-│ │ ├── 📂 interceptors/ # 函式化攔截器 (Functional Interceptors)
-│ │ ├── 📂 providers/ # AppConfig 與全域依賴注入配置
-│ │ ├── 📂 error-handler/ # 全域異常捕獲與日誌上報
-│ │ └── 📂 services/ # 跨領域的技術服務 (例: StorageService)
+│ ├── 📂 core/                    # Global Infrastructure Core
+│ │ ├── 📂 auth/                  # Authentication & Authorization (Signals-based Auth Store)
+│ │ ├── 📂 interceptors/          # Functional Interceptors
+│ │ ├── 📂 providers/             # AppConfig & Global DI Configuration
+│ │ ├── 📂 error-handler/         # Global Exception Handling & Logging
+│ │ └── 📂 services/              # Cross-domain Technical Services (e.g., StorageService)
 │ │
-│ ├── 📂 domain/ # 核心領域層 (Pure Domain - 無框架依賴)
-│ │ ├── 📂 {bounded_context}/ # 依領域邊界劃分 (如: Sales, Inventory)
-│ │ │ ├── 📂 aggregates/ # 聚合根 (Aggregates) - 核心業務一致性邊界
-│ │ │ ├── 📂 entities/ # 領域實體 (Entities)
-│ │ │ ├── 📂 value-objects/ # 值對象 (Value Objects - 不可變性實作)
-│ │ │ ├── 📂 factories/ # 領域工廠 (Factories - 封裝複雜對象創建)
-│ │ │ ├── 📂 events/ # 領域事件 (Domain Events)
-│ │ │ ├── 📂 exceptions/ # 領域專屬異常 (Domain Exceptions)
-│ │ │ ├── 📂 specifications/ # 規格模式 (Specifications - 複雜業務規則)
-│ │ │ ├── 📂 repository-interfaces/# 倉儲介面 (定義持久化抽象)
-│ │ │ ├── 📂 services/ # 領域服務 (Domain Services - 無狀態業務邏輯)
-│ │ │ ├── 📂 state/ # 領域局部狀態 (Signal-based Logic Containers)
-│ │ │ └── 📂 testing/ # 領域測試治具 (Mocks, Builders, Fakes)
-│ │ └── 📂 shared/ # 領域層共通抽象 (BaseEntity, Identity)
+│ ├── 📂 domain/                  # Core Domain Layer (Pure Domain - Framework-Free)
+│ │ ├── 📂 {bounded_context}/    # Organized by Domain Boundaries (e.g., Sales, Inventory)
+│ │ │ ├── 📂 aggregates/          # Aggregate Roots - Business Consistency Boundaries
+│ │ │ ├── 📂 entities/            # Domain Entities
+│ │ │ ├── 📂 value-objects/       # Value Objects - Immutability Implementation
+│ │ │ ├── 📂 factories/           # Domain Factories - Encapsulate Complex Object Creation
+│ │ │ ├── 📂 events/              # Domain Events
+│ │ │ ├── 📂 exceptions/          # Domain-Specific Exceptions
+│ │ │ ├── 📂 specifications/      # Specification Pattern - Complex Business Rules
+│ │ │ ├── �� repository-interfaces/ # Repository Interfaces (Define Persistence Abstraction)
+│ │ │ ├── 📂 services/            # Domain Services - Stateless Business Logic
+│ │ │ ├── 📂 state/               # Domain Local State (Signal-based Logic Containers)
+│ │ │ └── 📂 testing/             # Domain Test Fixtures (Mocks, Builders, Fakes)
+│ │ └── 📂 shared/                # Domain Layer Common Abstractions (BaseEntity, Identity)
 │ │
-│ ├── 📂 application/ # 應用層 (Application Orchestration)
+│ ├── 📂 application/             # Application Layer (Orchestration)
 │ │ ├── 📂 {module_name}/
-│ │ │ ├── 📂 commands/ # 命令處理 (改變狀態的操作)
-│ │ │ ├── 📂 queries/ # 查詢處理 (唯讀資料流 - Signals/Resource)
-│ │ │ ├── 📂 dtos/ # 數據傳輸對象 (Request/Response)
-│ │ │ ├── 📂 mappers/ # 雙向映射器 (Domain ↔ DTO)
-│ │ │ └── 📂 use-cases/ # 業務用例 (具體業務流程流程排比)
-│ │ └── 📂 ports/ # 應用層輸出介面 (ILogger, INotification)
+│ │ │ ├── 📂 commands/            # Command Handling (State-changing Operations)
+│ │ │ ├── 📂 queries/             # Query Handling (Read-only Data Flow - Signals/Resource)
+│ │ │ ├── 📂 dtos/                # Data Transfer Objects (Request/Response)
+│ │ │ ├── 📂 mappers/             # Bidirectional Mappers (Domain ↔ DTO)
+│ │ │ └── 📂 use-cases/           # Business Use Cases (Concrete Business Process Orchestration)
+│ │ └── 📂 ports/                 # Application Layer Output Interfaces (ILogger, INotification)
 │ │
-│ ├── 📂 infrastructure/ # 基礎設施實作層 (Technical Implementation)
-│ │ ├── 📂 persistence/ # 持久化實作 (API/GraphQL/IndexDB)
-│ │ │ ├── 📂 repositories/ # Repo 具體實作
-│ │ │ └── 📂 models/ # 資料庫/API 專屬模型 (Data Models)
-│ │ ├── 📂 messaging/ # 消息傳遞 (EventBus, SignalR)
-│ │ └── 📂 adapters/ # 第三方插件適配 (StripeAdapter, Auth0Adapter)
+│ ├── 📂 infrastructure/          # Infrastructure Implementation Layer (Technical Implementation)
+│ │ ├── 📂 persistence/           # Persistence Implementation (API/GraphQL/IndexDB)
+│ │ │ ├── 📂 repositories/        # Concrete Repository Implementations
+│ │ │ └── 📂 models/              # Database/API-Specific Models (Data Models)
+│ │ ├── 📂 messaging/             # Messaging (EventBus, SignalR)
+│ │ └── 📂 adapters/              # Third-party Adapters (StripeAdapter, Auth0Adapter)
 │ │
-│ ├── 📂 features/ # 表現層 (UI Presentation - Smart Components)
+│ ├── 📂 features/                # Presentation Layer (UI Presentation - Smart Components)
 │ │ ├── 📂 {feature_name}/
-│ │ │ ├── 📂 pages/ # 路由級頁面 (使用 @defer 優化載入)
-│ │ │ ├── 📂 containers/ # 邏輯容器組件 (連接 Application Layer)
-│ │ │ ├── 📂 components/ # 視圖組件 (Presentational Components)
-│ │ │ ├── 📂 models/ # UI 專屬 ViewModel (View-only Signals)
-│ │ │ └── 📂 {name}.routes.ts # Standalone 路由定義
-│ │ └── 📂 layout/ # 全域佈局 (Header, Sidebar, Footer)
+│ │ │ ├── 📂 pages/               # Route-level Pages (Using @defer for Optimized Loading)
+│ │ │ ├── 📂 containers/          # Logic Container Components (Connect to Application Layer)
+│ │ │ ├── 📂 components/          # View Components (Presentational Components)
+│ │ │ ├── 📂 models/              # UI-Specific ViewModels (View-only Signals)
+│ │ │ └── 📂 {name}.routes.ts     # Standalone Route Definitions
+│ │ └── 📂 layout/                # Global Layout (Header, Sidebar, Footer)
 │ │
-│ └── 📂 shared/ # UI 共享層 (Dumb Components & Utilities)
-│ ├── 📂 ui/ # 原子組件 (Buttons, Cards, Modals)
-│ ├── 📂 directives/ # 功能性指令 (Highlight, Permission)
-│ ├── 📂 pipes/ # 響應式管道 (Pure Pipes)
-│ └── 📂 utils/ # 前端工具函式 (Date, Format)
+│ └── 📂 shared/                  # UI Shared Layer (Dumb Components & Utilities)
+│   ├── 📂 ui/                    # Atomic Components (Buttons, Cards, Modals)
+│   ├── 📂 directives/            # Functional Directives (Highlight, Permission)
+│   ├── 📂 pipes/                 # Reactive Pipes (Pure Pipes)
+│   └── 📂 utils/                 # Frontend Utility Functions (Date, Format)
 │
-├── 📂 shared-kernel/ # 共享內核 (跨領域界限的共通代碼)
-│ ├── 📂 constants/ # 全域枚舉與常量
-│ ├── 📂 types/ # 基礎 TypeScript 型別
-│ └── 📂 guards/ # 跨模組通用路由守衛
+├── 📂 shared-kernel/             # Shared Kernel (Cross-domain Common Code)
+│ ├── 📂 constants/               # Global Enums & Constants
+│ ├── 📂 types/                   # Base TypeScript Types
+│ └── 📂 guards/                  # Cross-module Common Route Guards
 │
-├── 📂 assets/ # 靜態資源 (Images, JSON, Icons)
-├── 📂 environments/ # 環境設定 (Dev, Prod, Staging)
-└── 📂 styles/ # 全域樣式系統 (Variables, Mixins, Theme)
+├── 📂 assets/                    # Static Resources (Images, JSON, Icons)
+├── 📂 environments/              # Environment Configuration (Dev, Prod, Staging)
+└── 📂 styles/                    # Global Style System (Variables, Mixins, Theme)
+\`\`\`
 
-# functions
+---
 
-├── 📂 functions/ # 【後端 - Serverless DDD 架構】
-│ ├── 📂 src/
-│ │ ├── 📂 interfaces/ # 接口層 (Entry Points / Triggers)
-│ │ │ ├── 📂 http/ # Https OnCall / OnRequest 處理器
-│ │ │ ├── 📂 triggers/ # DB 觸發器 (Firestore, Auth, PubSub)
-│ │ │ └── 📂 middleware/ # 後端中間件 (Auth Check, Validation)
-│ │ │
-│ │ ├── 📂 application/ # 應用層 (Orchestration)
-│ │ │ ├── 📂 use-cases/ # 核心業務流程排比
-│ │ │ ├── 📂 commands/ # 寫入操作意圖
-│ │ │ ├── 📂 queries/ # 讀取操作意圖
-│ │ │ ├── 📂 dtos/ # 接口輸入輸出模型
-│ │ │ └── 📂 mappers/ # Domain ↔ DTO 轉換
-│ │ │
-│ │ ├── 📂 domain/ # 核心領域層 (Pure Logic)
-│ │ │ ├── 📂 aggregates/ # 聚合根 (一致性邊界)
-│ │ │ ├── 📂 entities/ # 實體
-│ │ │ ├── 📂 value-objects/ # 值對象
-│ │ │ ├── 📂 factories/ # 複雜實體工廠
-│ │ │ ├── 📂 services/ # 領域服務 (跨實體邏輯)
-│ │ │ ├── 📂 repository-interfaces/# 倉儲契約 (Interface)
-│ │ │ └── 📂 events/ # 領域事件定義
-│ │ │
-│ │ ├── 📂 infrastructure/ # 基礎設施實作層
-│ │ │ ├── 📂 persistence/ # DB 實作 (Admin SDK / Firestore / SQL)
-│ │ │ ├── 📂 external-services/ # 外部 API 適配 (Stripe, SendGrid)
-│ │ │ ├── 📂 messaging/ # 消息發送實作 (PubSub, FCM)
-│ │ │ └── 📂 config/ # 環境變數與祕鑰管理 (Secret Manager)
-│ │ │
-│ │ └── 📂 shared/ # 後端內部共享工具
+## ⚡ Backend Architecture (Node.js Runtime)
+
+### functions/
+
+\`\`\`
+functions/
+├── 📂 src/
+│ ├── 📂 interfaces/              # Interface Layer (Entry Points / Triggers)
+│ │ ├── 📂 http/                  # HTTPS OnCall / OnRequest Handlers
+│ │ ├── 📂 triggers/              # DB Triggers (Firestore, Auth, PubSub)
+│ │ └── 📂 middleware/            # Backend Middleware (Auth Check, Validation)
 │ │
-│ ├── 📂 tests/ # 後端單元測試與整合測試
-│ ├── package.json
-│ └── tsconfig.json
+│ ├── 📂 application/             # Application Layer (Orchestration)
+│ │ ├── 📂 use-cases/             # Core Business Process Orchestration
+│ │ ├── 📂 commands/              # Write Operation Intents
+│ │ ├── 📂 queries/               # Read Operation Intents
+│ │ ├── 📂 dtos/                  # Interface Input/Output Models
+│ │ └── 📂 mappers/               # Domain ↔ DTO Conversion
+│ │
+│ ├── 📂 domain/                  # Core Domain Layer (Pure Logic)
+│ │ ├── 📂 aggregates/            # Aggregate Roots (Consistency Boundaries)
+│ │ ├── 📂 entities/              # Entities
+│ │ ├── 📂 value-objects/         # Value Objects
+│ │ ├── 📂 factories/             # Complex Entity Factories
+│ │ ├── 📂 services/              # Domain Services (Cross-entity Logic)
+│ │ ├── 📂 repository-interfaces/ # Repository Contracts (Interfaces)
+│ │ └── 📂 events/                # Domain Event Definitions
+│ │
+│ ├── 📂 infrastructure/          # Infrastructure Implementation Layer
+│ │ ├── 📂 persistence/           # DB Implementation (Admin SDK / Firestore / SQL)
+│ │ ├── 📂 external-services/     # External API Adapters (Stripe, SendGrid)
+│ │ ├── 📂 messaging/             # Message Sending Implementation (PubSub, FCM)
+│ │ └── 📂 config/                # Environment Variables & Secret Management (Secret Manager)
+│ │
+│ └── 📂 shared/                  # Backend Internal Shared Tools
 │
-├── 📂 shared-kernel/ # 【跨端共享核 - 前後端共用】
-│ ├── 📂 constants/ # 共享枚舉、狀態碼
-│ ├── 📂 types/ # 共享 TypeScript 介面/型別
-│ ├── 📂 validation/ # 共享驗證規則 (如 Zod Schema)
-│ └── 📂 utils/ # 共享純函式 (Date formatting, Math)
-│
-├── 📂 docs/ # 架構文檔與 API 規範 (Swagger/OpenAPI)
-├── angular.json
+├── 📂 tests/                     # Backend Unit Tests & Integration Tests
 ├── package.json
-└── README.md
+└── tsconfig.json
+\`\`\`
+
+---
+
+## 🔗 Cross-Runtime Shared Kernel
+
+### shared-kernel/ (Frontend + Backend Shared)
+
+\`\`\`
+shared-kernel/
+├── 📂 constants/                 # Shared Enums, Status Codes
+├── 📂 types/                     # Shared TypeScript Interfaces/Types
+├── 📂 validation/                # Shared Validation Rules (e.g., Zod Schemas)
+└── 📂 utils/                     # Shared Pure Functions (Date formatting, Math)
+\`\`\`
+
+**Key Constraint**: \`shared-kernel\` must be 100% Pure TypeScript with **zero external dependencies** and **no framework code**.
+
+---
+
+## 🎯 Layer Responsibilities
+
+| Layer               | Responsibility                                  | Owner                      | Runtime   |
+| ------------------- | ----------------------------------------------- | -------------------------- | --------- |
+| \`app/core\`          | Technical initialization & infrastructure       | Framework Team             | Browser   |
+| \`app/domain\`        | Pure business logic & domain rules              | Domain Experts             | Browser   |
+| \`app/application\`   | Use case orchestration & business workflows     | Application Layer Owners   | Browser   |
+| \`app/infrastructure\`| Technical implementation & external adapters    | Infrastructure Team        | Browser   |
+| \`app/features\`      | UI assembly & user interaction                  | Frontend/Feature Team      | Browser   |
+| \`app/shared\`        | UI common components & tools                    | Frontend Infrastructure    | Browser   |
+| \`shared-kernel\`     | Cross-layer shared types & constants            | Architecture Committee     | Universal |
+| \`functions\`         | Backend serverless business logic               | Backend Team               | Node.js   |
+
+---
+
+## 🔒 Technology Constraints by Layer
+
+| Layer                 | Runtime        | Allowed SDKs                                | Forbidden SDKs                                  |
+| --------------------- | -------------- | ------------------------------------------- | ----------------------------------------------- |
+| \`shared-kernel/\`      | Pure TS        | ❌ NO external deps                         | ✅ Pure TS + Type defs only                     |
+| \`app/shared/\`         | Browser        | ⚠️ Angular APIs only                        | ❌ Firebase, HttpClient (use injection)         |
+| \`app/domain/\`         | Pure TS        | ❌ NO framework, NO HTTP                    | ✅ Pure business logic                          |
+| \`app/application/\`    | Browser        | ⚠️ Dependency Injection                     | ❌ Direct SDK calls                             |
+| \`app/infrastructure/\` | Browser        | ✅ @angular/fire, SDK clients               | ❌ firebase-admin, @google-cloud/*             |
+| \`app/features/\`       | Browser        | ⚠️ Angular Components / Signals             | ❌ Direct API calls (use services)             |
+| \`app/core/\`           | Browser        | ✅ Angular, Firebase Client Auth            | ❌ Business logic                               |
+| \`functions/src/\`      | Node.js (GCP)  | ✅ firebase-admin, @google-cloud/*         | ❌ @angular/fire, Angular imports, Browser APIs |
+
+---
+
+## 📊 Dependency Flow
+
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│                      app/core                           │
+│         (Global Infrastructure & Configuration)         │
+└─────────────────────────────────────────────────────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ▼                    ▼                    ▼
+┌─────────────┐      ┌─────────────┐      ┌─────────────┐
+│             │      │             │      │             │
+│   features  │─────▶│ application │─────▶│   domain    │
+│             │      │             │      │             │
+└─────────────┘      └─────────────┘      └─────────────┘
+        │                    │                    │
+        │                    │                    │
+        │                    ▼                    │
+        │            ┌─────────────┐              │
+        │            │             │              │
+        └───────────▶│infrastructure│◀─────────────┘
+                     │             │
+                     └─────────────┘
+                             │
+                             ▼
+                   ┌─────────────────┐
+                   │                 │
+                   │  shared-kernel  │
+                   │   (Base Layer)  │
+                   │                 │
+                   └─────────────────┘
+
+functions/ (Independent Backend - Mirrors Frontend Structure)
+\`\`\`
+
+**Key Rules**:
+- ✅ \`features\` → \`application\` (through use-cases)
+- ✅ \`application\` → \`domain\` (direct call)
+- ✅ \`application\` → \`infrastructure\` (through DI)
+- ❌ \`features\` → \`domain\` (forbidden)
+- ❌ \`domain\` → any other layer (forbidden)
+- ❌ Deep imports into internal folders (forbidden)
+
+---
+
+## 🚀 Modern Angular Features
+
+This architecture leverages Angular 20+ modern features:
+
+1. **Standalone Components**: No NgModules, all components are standalone
+2. **Signals**: Reactive state management using \`signal()\` and \`computed()\`
+3. **Signal Store (NgRx)**: Application-level state management
+4. **Control Flow**: Native \`@if\`, \`@for\`, \`@switch\` syntax
+5. **Deferrable Views**: \`@defer\` for lazy loading optimization
+6. **Zone-less**: Pure reactive architecture without Zone.js
+7. **Resource API**: Modern data loading with \`rxResource()\`
+8. **Functional Guards**: Route protection with functions
+
+---
+
+## 🧪 Testing Strategy
+
+- **Domain Layer**: 100% unit tests, framework-free, no mocks needed
+- **Application Layer**: Unit tests with mocked infrastructure
+- **Infrastructure Layer**: Integration tests with Firebase emulators
+- **Features Layer**: Component tests with mocked application services
+- **E2E**: Cross-layer integration scenarios
+
+---
+
+## 📚 Related Documentation
+
+- [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) - Layer responsibility rules
+- [Import Rules](./IMPORT_RULES.md) - Dependency direction and import constraints
+- [Naming Conventions](./NAMING_CONVENTIONS.md) - File and code naming standards
+- [Testing Standards](./TESTING_STANDARDS.md) - Testing rules per layer
+- [Quick Reference](./QUICK_REFERENCE.md) - Developer cheat sheet
+
+---
+
+## 🎓 Architecture Decision Records
+
+### Why 8 Layers?
+
+1. **Separation of Concerns**: Each layer has a single, clear responsibility
+2. **Testability**: Pure domain layer can be tested in isolation
+3. **Scalability**: Features can be developed independently
+4. **Maintainability**: Clear boundaries prevent spaghetti code
+5. **Flexibility**: Easy to swap implementations (e.g., Firebase → PostgreSQL)
+
+### Why Zone-less?
+
+1. **Performance**: Eliminates Zone.js overhead
+2. **Predictability**: Explicit change detection via Signals
+3. **Debugging**: Easier to trace state changes
+4. **Modern**: Aligns with Angular's future direction
+
+### Why Separate Frontend/Backend?
+
+1. **Security**: Backend has elevated privileges (firebase-admin)
+2. **APIs**: Backend can access Google Cloud APIs (Document AI, Vertex AI)
+3. **Scalability**: Independent deployment and scaling
+4. **Type Safety**: Shared kernel ensures type consistency
+
+---
+
+**Version History**:
+- v1.0 (2026-02-05): Initial architecture definition
