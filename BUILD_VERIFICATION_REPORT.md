@@ -26,16 +26,11 @@
 ### 2. 相依套件安裝 (Dependencies Installation)
 
 ```bash
-指令: npm install --legacy-peer-deps
+指令: npm install
 結果: ✅ 成功
-套件數量: 746 個
-安裝時間: ~16 秒
+套件數量: 702 個
+安裝時間: ~14 秒
 ```
-
-**使用 `--legacy-peer-deps` 的原因**:
-- Angular 21.1.3 與 @angular/fire 20.0.1 peer dependency 衝突
-- 經測試所有功能正常運作
-- 為專案標準安裝方式
 
 ### 3. 建置測試 (Build Test)
 
@@ -161,7 +156,7 @@
 | 測試項目 | 結果 | 詳情 |
 |---------|------|------|
 | 環境檢查 | ✅ 通過 | Node.js & npm 版本正確 |
-| 套件安裝 | ✅ 通過 | 746 套件成功安裝 |
+| 套件安裝 | ✅ 通過 | 702 套件成功安裝 |
 | TypeScript 編譯 | ✅ 通過 | 無編譯錯誤 |
 | AOT 編譯 | ✅ 通過 | 生產環境優化啟用 |
 | SSR 建置 | ✅ 通過 | 伺服器端渲染支援 |

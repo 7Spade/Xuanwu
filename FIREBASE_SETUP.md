@@ -7,7 +7,7 @@ This implementation sets up the complete Firebase infrastructure for the Xuanwu 
 ## ✅ What Was Implemented
 
 ### 1. Firebase Dependencies
-- ✅ Installed `@angular/fire@20.0.1` and `firebase` packages
+- ✅ Installed `firebase` packages
 - ✅ Used `--legacy-peer-deps` due to Angular 21 compatibility
 
 ### 2. Environment Configuration
@@ -286,4 +286,4 @@ npm run build
 
 **Implementation Date**: 2026-02-05  
 **Angular Version**: 21.1.3  
-**Firebase Version**: @angular/fire@20.0.1
+**Firebase Version**: Firebase SDK 11.1.0 (Direct)

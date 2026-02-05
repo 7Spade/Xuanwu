@@ -256,10 +256,10 @@ shared-kernel/
 | \`app/shared/\`         | Browser        | ⚠️ Angular APIs only                        | ❌ Firebase, HttpClient (use injection)         |
 | \`app/domain/\`         | Pure TS        | ❌ NO framework, NO HTTP                    | ✅ Pure business logic                          |
 | \`app/application/\`    | Browser        | ⚠️ Dependency Injection                     | ❌ Direct SDK calls                             |
-| \`app/infrastructure/\` | Browser        | ✅ @angular/fire, SDK clients               | ❌ firebase-admin, @google-cloud/*             |
+| \`app/infrastructure/\` | Browser        | ✅ Firebase SDK, HTTP clients               | ❌ firebase-admin, @google-cloud/*             |
 | \`app/features/\`       | Browser        | ⚠️ Angular Components / Signals             | ❌ Direct API calls (use services)             |
 | \`app/core/\`           | Browser        | ✅ Angular, Firebase Client Auth            | ❌ Business logic                               |
-| \`functions/src/\`      | Node.js (GCP)  | ✅ firebase-admin, @google-cloud/*         | ❌ @angular/fire, Angular imports, Browser APIs |
+| \`functions/src/\`      | Node.js (GCP)  | ✅ firebase-admin, @google-cloud/*         | ❌ Angular imports, Browser APIs |
 
 ---
 

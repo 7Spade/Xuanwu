@@ -168,7 +168,7 @@ functions/src/ (Independent Backend Architecture)
 - Contains interfaces (HTTP / Triggers), application, domain, infrastructure
 - Backend domain and frontend domain can share types through shared-kernel
 - Only uses firebase-admin and @google-cloud/* SDKs
-- Must not contain Angular, @angular/fire, or other browser code
+- Must not contain Angular or other browser code
 
 #### Rule Statement:
 
@@ -212,7 +212,7 @@ import { TaskFormComponent } from '@app/features/tasks/components/form';
 
 // ❌ Cross-layer direct references
 import { HttpClient } from '@angular/common/http'; // Should use app/core provided wrapper
-import { Firebase } from '@angular/fire'; // Should use app/infrastructure adapter
+import { getFirestore } from 'firebase/firestore'; // Should use FirebaseService from app/infrastructure
 
 // ❌ Circular dependencies
 // File A imports from B, File B imports from A

@@ -321,7 +321,7 @@ src/app/core/app.routes.ts (Demo route)
 
 **Implementation Date**: February 5, 2026  
 **Angular Version**: 21.1.3  
-**Firebase Version**: @angular/fire@20.0.1  
+**Firebase Version**: Firebase SDK 11.1.0 (直接使用)  
 **Status**: ✅ COMPLETE AND READY FOR USE
 
 ---
