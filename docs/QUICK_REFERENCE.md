@@ -1,8 +1,20 @@
 # Quick Reference Guide
 
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: All developers (daily reference)  
+> **Purpose**: Fast lookup for common decisions and patterns  
 > **Version**: 1.0  
-> **Last Updated**: 2026-02-05  
-> **Purpose**: One-page cheat sheet for developers
+> **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- ⚡ **Quick decisions** - Where does this code go?
+- 🎯 **File naming** - What's the correct format?
+- ✅ **Import checks** - Is this import allowed?
+- 📝 **Daily development** - Keep this open while coding
+
+**Prerequisites**: None (designed for quick lookup)  
+**Related Docs**: All reference documents (NAMING_CONVENTIONS, IMPORT_RULES, DDD_LAYER_BOUNDARIES)
 
 ---
 

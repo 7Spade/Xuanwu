@@ -1,9 +1,22 @@
 # Xuanwu Project Architecture
 
+> **Document Type**: Explanation (Understanding-oriented)  
+> **Target Audience**: All developers (beginner to advanced)  
+> **Purpose**: Understand the "why" behind architectural decisions  
 > **Version**: 1.0  
 > **Project**: Xuanwu (玄武 - Black Tortoise)  
 > **Stack**: Angular 21+ / SSR / Zoneless / DDD / NgRx Signals / Firebase  
 > **Last Updated**: 2026-02-05
+
+## When to Read This
+
+- 📖 **Before starting development** - Understand system design philosophy
+- 🤔 **Making architectural decisions** - Learn the reasoning behind choices
+- 🏗️ **Designing new features** - Align with established patterns
+- ❓ **Wondering "why this way?"** - Find rationale for constraints
+
+**Prerequisites**: Basic understanding of Angular and TypeScript  
+**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Quick Reference](./QUICK_REFERENCE.md) (Reference)
 
 ---
 

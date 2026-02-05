@@ -1,8 +1,21 @@
 # DDD Layer Boundaries
 
-> **Based on**: `General Standard DDD.md` 8-layer architecture  
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: All developers  
+> **Purpose**: Technical specification of layer responsibilities and boundaries  
+> **Based on**: 8-layer DDD architecture  
 > **Version**: 1.0  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- 🔍 **Looking up layer rules** - Check what belongs where
+- ⚖️ **Resolving import questions** - Verify allowed dependencies
+- 🚫 **Identifying violations** - Understand what's prohibited
+- 📋 **Code review** - Reference for checking compliance
+
+**Prerequisites**: Read [Project Architecture](./PROJECT_ARCHITECTURE.md) first  
+**Related Docs**: [Import Rules](./IMPORT_RULES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
 
 ---
 

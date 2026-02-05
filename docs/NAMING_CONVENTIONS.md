@@ -1,10 +1,22 @@
 # Naming Conventions
 
-> **Based on**: `全局命名規範.md` (Global Naming Standards)  
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: All developers  
+> **Purpose**: Comprehensive naming rules for files, code, and patterns  
 > **Version**: 2.0  
 > **Project**: Xuanwu (玄武 - Black Tortoise)  
 > **Optimized For**: GitHub Copilot and AI-assisted development  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- 📝 **Creating files** - Check correct naming format
+- 🎯 **Naming variables/functions** - Follow conventions
+- 🤖 **AI code generation** - Ensure Copilot understands patterns
+- 📋 **Code review** - Verify naming compliance
+
+**Prerequisites**: None (lookup reference)  
+**Related Docs**: [Quick Reference](./QUICK_REFERENCE.md) (Reference), [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference)
 
 ---
 

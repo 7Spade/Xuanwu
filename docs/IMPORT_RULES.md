@@ -1,8 +1,20 @@
 # Import Rules and Dependency Direction
 
-> **Based on**: `全局邊界.md` (Global Boundary Rules)  
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: All developers  
+> **Purpose**: Technical specification of allowed imports and dependency rules  
 > **Version**: 1.0  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- 🔗 **Adding imports** - Check if an import is allowed
+- 🚫 **Circular dependency errors** - Understand dependency flow
+- 📦 **Organizing modules** - Learn communication patterns
+- 🔍 **Code review** - Verify import compliance
+
+**Prerequisites**: Understanding of [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md)  
+**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation)
 
 ---
 

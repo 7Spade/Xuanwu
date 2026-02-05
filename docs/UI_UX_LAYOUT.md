@@ -1,8 +1,21 @@
 # UI/UX Layout Concept (Wireframe)
 
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: Frontend developers, UI/UX designers  
+> **Purpose**: Technical specification of interface layout and design system  
 > **Version**: 1.0  
 > **Design System**: Linear/Vercel inspired  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- 🎨 **Building UI components** - Follow design patterns
+- 📐 **Layout decisions** - Understand container structure
+- 🎭 **Design tokens** - Use correct colors, spacing, typography
+- ♿ **Accessibility** - Implement ARIA patterns
+
+**Prerequisites**: Basic understanding of Angular and CSS  
+**Related Docs**: [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation), Custom Instructions: [style-guide.md](../.github/instructions/style-guide.md), [accessibility.md](../.github/instructions/accessibility.md)
 
 ---
 

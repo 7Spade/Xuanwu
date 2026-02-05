@@ -1,8 +1,20 @@
 # Testing Standards
 
-> **Based on**: Testing rules from `邊界檢查規範.md`  
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: All developers  
+> **Purpose**: Testing requirements and patterns for each layer  
 > **Version**: 1.0  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- ✅ **Writing tests** - Find required test patterns for your layer
+- 📊 **Coverage goals** - Check minimum coverage requirements
+- 🧪 **Test types** - Understand unit vs integration vs e2e
+- 🔍 **Code review** - Verify test quality and coverage
+
+**Prerequisites**: Understanding of [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md)  
+**Related Docs**: [DDD Layer Boundaries](./DDD_LAYER_BOUNDARIES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
 
 ---
 

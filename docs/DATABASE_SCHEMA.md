@@ -1,8 +1,21 @@
 # Database Schema (ER Diagram)
 
+> **Document Type**: Reference (Information-oriented)  
+> **Target Audience**: Backend developers, full-stack developers  
+> **Purpose**: Technical specification of database structure and relationships  
 > **Version**: 1.0  
 > **Database**: Firestore (NoSQL Document-based)  
 > **Last Updated**: 2026-02-05
+
+## When to Use This
+
+- 🗄️ **Designing data models** - Understand entity relationships
+- 🔍 **Writing queries** - Find collection structure
+- 🔐 **Setting permissions** - Review access control matrix
+- 📊 **Planning features** - Check available data fields
+
+**Prerequisites**: Basic understanding of Firestore and NoSQL  
+**Related Docs**: [Project Architecture](./PROJECT_ARCHITECTURE.md) (Explanation), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
 
 ---
 
