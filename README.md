@@ -19,9 +19,19 @@ This project implements a production-ready Angular 20+ application with **Server
 
 ## 📖 Documentation
 
-- [Architecture Overview](./docs/PROJECT_ARCHITECTURE.md) - Complete 8-layer DDD architecture
-- [Documentation Index](./docs/INDEX.md) - Full documentation navigation
-- [Quick Reference](./docs/QUICK_REFERENCE.md) - Developer cheat sheet
+**Core Documentation** (Diátaxis Framework):
+- [📑 Documentation Index](./docs/INDEX.md) - Complete navigation hub
+- [🏗️ Architecture Overview](./docs/PROJECT_ARCHITECTURE.md) - 8-layer DDD design (with implementation status)
+- [⚡ Quick Reference](./docs/QUICK_REFERENCE.md) - Developer cheat sheet
+- [📚 Glossary](./docs/GLOSSARY.md) - Standardized terminology
+
+**Governance & Customization**:
+- [🤖 Custom Agents](./AGENTS.md) - 60+ GitHub Copilot agents ([full catalog](./.github/agents/README.md))
+- [💡 Custom Instructions](./.github/instructions/README.md) - Coding guidelines for AI
+- [🎯 Prompts](./.github/prompts/README.md) - Reusable prompt templates
+- [🧠 Skills](./.github/skills/README.md) - Knowledge modules for agents
+
+**Documentation Status**: ✅ Complete - All docs follow [Diátaxis Framework](https://diataxis.fr/) principles
 
 ---
 

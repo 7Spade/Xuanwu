@@ -15,7 +15,7 @@
 - 📋 **Code review** - Reference for checking compliance
 
 **Prerequisites**: Read [Project Architecture](./PROJECT_ARCHITECTURE.md) first  
-**Related Docs**: [Import Rules](./IMPORT_RULES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference)
+**Related Docs**: [Import Rules](./IMPORT_RULES.md) (Reference), [Naming Conventions](./NAMING_CONVENTIONS.md) (Reference), [Quick Reference](./QUICK_REFERENCE.md) (Reference - cheat sheet), [Glossary](./GLOSSARY.md) (Reference - terminology)
 
 ---
 
