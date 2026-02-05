@@ -282,3 +282,43 @@ When updating documentation:
 **Last Updated**: 2026-02-05  
 **Maintained By**: Architecture Committee  
 **Status**: ✅ Active and Maintained
+
+---
+
+### 7️⃣ [Database Schema](./DATABASE_SCHEMA.md)
+
+**Purpose**: Database structure and entity relationships  
+**Contains**:
+- ER diagram (Mermaid format)
+- Entity descriptions with fields
+- Firestore collection structure
+- Query patterns
+- Access control model
+- Design decisions
+
+**Read this when**:
+- Implementing data persistence
+- Understanding the data model
+- Writing repository implementations
+- Designing new features that need storage
+
+---
+
+### 8️⃣ [UI/UX Layout](./UI_UX_LAYOUT.md)
+
+**Purpose**: Interface design and interaction patterns  
+**Contains**:
+- Layout regions and wireframes
+- Two-level context switcher design
+- Feature canvas concept
+- Design tokens (colors, typography, spacing)
+- Responsive behavior
+- Accessibility requirements
+- Component hierarchy
+
+**Read this when**:
+- Implementing UI components
+- Understanding navigation flow
+- Designing new features
+- Ensuring accessibility compliance
+
