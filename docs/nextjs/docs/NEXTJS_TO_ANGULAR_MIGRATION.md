@@ -25,10 +25,15 @@
 2. [Technology Mapping](#technology-mapping)
 3. [File Structure Conversion](#file-structure-conversion)
 4. [File Count Estimation](#file-count-estimation)
-5. [Development Guide](#development-guide)
-6. [Implementation Phases](#implementation-phases)
-7. [Testing Strategy](#testing-strategy)
-8. [Deployment](#deployment)
+5. [DDD Boundary Compliance Rules](#-ddd-boundary-compliance-rules)
+6. [Barrel Exports (index.ts) Pattern](#-barrel-exports-indexts-pattern)
+7. [Dependency Injection Configuration](#-dependency-injection-configuration)
+8. [Forbidden Imports Reference](#-forbidden-imports-reference)
+9. [Migration Validation Checklist](#-migration-validation-checklist)
+10. [Development Guide](#development-guide)
+11. [Implementation Phases](#implementation-phases)
+12. [Testing Strategy](#testing-strategy)
+13. [Deployment](#deployment)
 
 ---
 
@@ -276,6 +281,458 @@ Next.js (docs/nextjs/src/)          →    Angular (src/app/)
 | `.spec.ts` | ~150 | Unit tests |
 | `.json` | ~8 | Configuration |
 | **Total** | **~718** | **All files including tests and config** |
+
+---
+
+## 🚨 DDD Boundary Compliance Rules
+
+### ⚠️ CRITICAL: Domain Layer Purity
+
+The domain layer is the heart of the application and **MUST** remain framework-agnostic. This is NON-NEGOTIABLE.
+
+#### Domain Layer Rules
+
+**✅ ALLOWED in Domain Layer**:
+```typescript
+// Pure TypeScript - OK
+export class OrganizationId {
+  private constructor(private value: string) {}
+}
+
+// Business logic - OK
+export class OrganizationAggregate {
+  updateName(name: string): void {
+    if (name.length < 3) {
+      throw new DomainError('Name too short');
+    }
+    this.props.name = name;
+  }
+}
+
+// Domain events - OK
+export class OrganizationCreatedEvent {
+  constructor(public readonly orgId: string) {}
+}
+
+// Repository interfaces - OK
+export abstract class OrganizationRepository {
+  abstract save(org: OrganizationAggregate): Promise<void>;
+}
+```
+
+**❌ FORBIDDEN in Domain Layer**:
+```typescript
+// ❌ NO Angular imports!
+import { Injectable } from '@angular/core';
+import { signal, computed } from '@angular/core';
+
+// ❌ NO Firebase imports!
+import { Firestore, collection } from '@angular/fire/firestore';
+import { getAuth } from 'firebase/auth';
+
+// ❌ NO HTTP client!
+import { HttpClient } from '@angular/common/http';
+
+// ❌ NO dependency injection decorators!
+@Injectable({ providedIn: 'root' })  // WRONG!
+export class OrganizationAggregate { }
+
+// ❌ NO framework-specific code!
+export class Organization {
+  status = signal('active');  // WRONG! Use plain properties
+}
+```
+
+#### Why Domain Layer Must Be Pure
+
+1. **Testability**: Pure TypeScript is easy to unit test
+2. **Portability**: Can reuse logic in other frameworks
+3. **Maintainability**: No framework upgrade dependencies
+4. **DDD Principles**: Domain represents business, not technology
+
+---
+
+## 📦 Barrel Exports (index.ts) Pattern
+
+### Requirement: All Layers Must Export Through index.ts
+
+Every layer and sub-module **MUST** have an `index.ts` file that exports its public API. Direct imports to internal files are **FORBIDDEN**.
+
+#### Domain Layer Barrel Exports
+
+```typescript
+// src/app/domain/organization/index.ts
+export * from './organization.aggregate';
+export * from './organization-id.vo';
+export * from './organization.repository';
+export * from './organization-created.event';
+// DO NOT export internal implementation details
+```
+
+**✅ Correct Import**:
+```typescript
+import { OrganizationAggregate, OrganizationId } from '@app/domain/organization';
+```
+
+**❌ Wrong Import**:
+```typescript
+import { OrganizationAggregate } from '@app/domain/organization/organization.aggregate';
+import { OrganizationId } from '@app/domain/organization/organization-id.vo';
+```
+
+#### Application Layer Barrel Exports
+
+```typescript
+// src/app/application/use-cases/organization/index.ts
+export * from './create-organization.use-case';
+export * from './list-organizations.use-case';
+export * from './update-organization.use-case';
+export * from './delete-organization.use-case';
+```
+
+```typescript
+// src/app/application/dtos/organization/index.ts
+export * from './create-organization.dto';
+export * from './organization.dto';
+export * from './organization.mapper';
+```
+
+```typescript
+// src/app/application/index.ts
+export * from './use-cases/organization';
+export * from './dtos/organization';
+```
+
+**✅ Correct Import**:
+```typescript
+import { CreateOrganizationUseCase } from '@app/application/use-cases/organization';
+```
+
+#### Infrastructure Layer Barrel Exports
+
+```typescript
+// src/app/infrastructure/persistence/repositories/index.ts
+export * from './firestore-organization.repository';
+export * from './firestore-workspace.repository';
+```
+
+```typescript
+// src/app/infrastructure/index.ts
+export * from './persistence/repositories';
+export * from './adapters/firebase';
+```
+
+#### Features Layer Barrel Exports
+
+```typescript
+// src/app/features/dashboard/index.ts
+export * from './pages/dashboard-home.page';
+export * from './components/stat-cards.component';
+export * from './dashboard.routes';
+```
+
+### Migration Checklist: Barrel Exports
+
+For EVERY module created during migration:
+
+- [ ] Create `index.ts` in module root
+- [ ] Export all public APIs through `index.ts`
+- [ ] Do NOT export internal implementation details
+- [ ] Verify imports use module root, not deep paths
+- [ ] Add ESLint rule to prevent deep imports (recommended)
+
+---
+
+## 🔌 Dependency Injection Configuration
+
+### Critical: Repository Interface Binding
+
+The migration guide shows repository interfaces in domain and implementations in infrastructure. But Angular needs to know which implementation to use!
+
+#### Infrastructure Providers Configuration
+
+**Create this file** (ESSENTIAL):
+
+```typescript
+// src/app/infrastructure/infrastructure.providers.ts
+import { Provider } from '@angular/core';
+import { OrganizationRepository } from '../domain/organization';
+import { WorkspaceRepository } from '../domain/workspace';
+import { FirestoreOrganizationRepository } from './persistence/repositories/firestore-organization.repository';
+import { FirestoreWorkspaceRepository } from './persistence/repositories/firestore-workspace.repository';
+
+export const INFRASTRUCTURE_PROVIDERS: Provider[] = [
+  // Bind domain repository interfaces to infrastructure implementations
+  {
+    provide: OrganizationRepository,
+    useClass: FirestoreOrganizationRepository
+  },
+  {
+    provide: WorkspaceRepository,
+    useClass: FirestoreWorkspaceRepository
+  },
+  
+  // Other infrastructure services
+  FirestoreAdapter,
+  FirebaseAuthAdapter,
+  FirebaseStorageAdapter
+];
+```
+
+#### Register Providers in App Config
+
+```typescript
+// src/app/core/providers/app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { routes } from '../app.routes';
+import { INFRASTRUCTURE_PROVIDERS } from '../../infrastructure/infrastructure.providers';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZonelessChangeDetection(),
+    provideRouter(routes),
+    
+    // Firebase initialization
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth()),
+    
+    // Infrastructure layer providers (CRITICAL!)
+    ...INFRASTRUCTURE_PROVIDERS,
+  ]
+};
+```
+
+#### Use Case Dependency Injection
+
+Now use cases can inject repository interfaces:
+
+```typescript
+// src/app/application/use-cases/organization/create-organization.use-case.ts
+import { inject, Injectable } from '@angular/core';
+import { OrganizationRepository } from '../../../domain/organization';  // Interface
+import { OrganizationAggregate, OrganizationId } from '../../../domain/organization';
+
+@Injectable({ providedIn: 'root' })
+export class CreateOrganizationUseCase {
+  // Inject the INTERFACE, Angular provides the implementation
+  private repository = inject(OrganizationRepository);
+  
+  async execute(dto: CreateOrganizationDto): Promise<string> {
+    const id = OrganizationId.create(crypto.randomUUID());
+    const organization = OrganizationAggregate.create({
+      id,
+      name: dto.name,
+      ownerId: dto.ownerId,
+    });
+    
+    // This calls the Firestore implementation automatically
+    await this.repository.save(organization);
+    
+    return id.getValue();
+  }
+}
+```
+
+### Why This Matters
+
+**Without proper DI configuration**:
+```
+ERROR: No provider for OrganizationRepository!
+```
+
+**With proper DI configuration**:
+```
+✓ Use cases work seamlessly
+✓ Easy to swap implementations (e.g., mock for testing)
+✓ Maintains DDD layer boundaries
+```
+
+---
+
+## 🚫 Forbidden Imports Reference
+
+### Import Violations by Layer
+
+#### Domain Layer - NEVER Import
+
+```typescript
+// ❌ Domain layer violations
+import { Injectable } from '@angular/core';              // Framework
+import { signal } from '@angular/core';                  // Framework
+import { Firestore } from '@angular/fire/firestore';     // External service
+import { HttpClient } from '@angular/common/http';       // Framework
+import { Router } from '@angular/router';                // Framework
+import { ComponentRef } from '@angular/core';            // Framework
+```
+
+**Rule**: Domain layer can only import from `shared-kernel` or other domain modules.
+
+#### Application Layer - Limited Imports
+
+```typescript
+// ✅ Allowed in Application layer
+import { Injectable } from '@angular/core';              // For @Injectable decorator
+import { inject } from '@angular/core';                  // For dependency injection
+
+// ❌ Forbidden in Application layer
+import { Firestore } from '@angular/fire/firestore';     // Use repository instead
+import { HttpClient } from '@angular/common/http';       // Use adapter instead
+import { Component } from '@angular/core';               // No UI components
+import { signal } from '@angular/core';                  // No UI state management
+```
+
+**Rule**: Application layer can use Angular DI, but NO direct Firebase/HTTP calls, NO UI components.
+
+#### Infrastructure Layer - Allowed Imports
+
+```typescript
+// ✅ Allowed in Infrastructure layer
+import { Injectable, inject } from '@angular/core';      // Framework
+import { Firestore, collection, doc } from '@angular/fire/firestore';  // External services
+import { HttpClient } from '@angular/common/http';       // HTTP
+import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';  // Auth
+```
+
+**Rule**: Infrastructure layer can import anything needed to implement adapters.
+
+#### Features Layer - UI Imports Only
+
+```typescript
+// ✅ Allowed in Features layer
+import { Component, signal, computed } from '@angular/core';  // Angular
+import { RouterLink } from '@angular/router';                 // Routing
+import { MatButton } from '@angular/material/button';         // UI library
+
+// ❌ Forbidden in Features layer
+import { Firestore } from '@angular/fire/firestore';          // Use use-cases instead
+import { OrganizationAggregate } from '@app/domain/...';      // Don't import domain directly
+```
+
+**Rule**: Features layer imports use-cases and DTOs, never domain or infrastructure directly.
+
+---
+
+## ✅ Migration Validation Checklist
+
+Use this checklist during migration to ensure DDD boundaries are maintained.
+
+### Phase 1: Domain Layer Validation
+
+- [ ] **No Angular imports**: Search domain folder for `@angular` - should be ZERO
+- [ ] **No Firebase imports**: Search domain folder for `firebase` - should be ZERO
+- [ ] **No decorators**: Search domain folder for `@Injectable` - should be ZERO
+- [ ] **Pure TypeScript**: All domain classes use plain classes/interfaces
+- [ ] **Repository interfaces**: All repositories are abstract classes/interfaces
+- [ ] **index.ts exists**: Every domain module has barrel export
+- [ ] **Tests pass**: Domain layer tests run without Angular TestBed
+
+```bash
+# Validation commands
+cd src/app/domain
+grep -r "@angular" .  # Should return nothing
+grep -r "firebase" .   # Should return nothing
+grep -r "@Injectable" .  # Should return nothing
+```
+
+### Phase 2: Application Layer Validation
+
+- [ ] **Use cases use DI**: All use cases have `@Injectable` decorator
+- [ ] **Use cases inject interfaces**: Use `inject(OrganizationRepository)`, not concrete class
+- [ ] **No direct Firestore**: No `collection()`, `doc()`, or Firestore calls
+- [ ] **No direct HTTP**: No `HttpClient` usage
+- [ ] **DTOs are interfaces**: All DTOs are plain TypeScript interfaces
+- [ ] **index.ts exists**: Every application module has barrel export
+
+```bash
+# Validation commands
+cd src/app/application
+grep -r "collection\|doc\|getDoc" .  # Should return nothing
+grep -r "HttpClient" .  # Should return nothing
+```
+
+### Phase 3: Infrastructure Layer Validation
+
+- [ ] **Implements interfaces**: All repositories extend domain repository interfaces
+- [ ] **Provider configuration**: `infrastructure.providers.ts` exists
+- [ ] **Repository bindings**: All domain interfaces bound to implementations
+- [ ] **Firebase adapters**: Firestore access encapsulated in adapters
+- [ ] **index.ts exists**: Infrastructure has barrel exports
+
+```bash
+# Check provider bindings
+cat src/app/infrastructure/infrastructure.providers.ts
+# Should see: { provide: OrganizationRepository, useClass: ... }
+```
+
+### Phase 4: Features Layer Validation
+
+- [ ] **No domain imports**: Features don't import from domain
+- [ ] **No infrastructure imports**: Features don't import from infrastructure
+- [ ] **Use cases only**: Features inject use cases, not repositories
+- [ ] **OnPush change detection**: All components use `ChangeDetectionStrategy.OnPush`
+- [ ] **Signals for state**: All state uses `signal()`, not `BehaviorSubject`
+- [ ] **index.ts exists**: Every feature has barrel exports
+
+```bash
+# Validation commands
+cd src/app/features
+grep -r "from '@app/domain" .  # Should return nothing
+grep -r "from '@app/infrastructure" .  # Should return nothing
+grep -r "ChangeDetectionStrategy.Default" .  # Should return nothing
+```
+
+### Phase 5: Import Rules Validation
+
+- [ ] **No deep imports**: All imports use module roots, not deep paths
+- [ ] **Barrel exports exist**: Every layer/module has `index.ts`
+- [ ] **Circular dependencies**: No circular dependency errors
+- [ ] **ESLint passes**: No import rule violations
+
+```bash
+# Check for deep import violations
+grep -r "from '@app/domain/.*/.*'" src/app  # Should return nothing
+grep -r "from '@app/application/.*/.*'" src/app  # Should return nothing
+
+# Run ESLint
+npm run lint
+```
+
+### Phase 6: App Configuration Validation
+
+- [ ] **Providers registered**: `INFRASTRUCTURE_PROVIDERS` in `app.config.ts`
+- [ ] **Zoneless enabled**: `provideZonelessChangeDetection()` configured
+- [ ] **Firebase initialized**: `provideFirebaseApp()` configured
+- [ ] **Routes configured**: `provideRouter(routes)` configured
+- [ ] **SSR configured**: Server config exists for SSR
+
+```bash
+# Check app config
+cat src/app/core/providers/app.config.ts
+# Should include: ...INFRASTRUCTURE_PROVIDERS
+```
+
+### Phase 7: Build & Runtime Validation
+
+- [ ] **Build succeeds**: `npm run build` completes without errors
+- [ ] **No DI errors**: Application starts without "No provider for..." errors
+- [ ] **Routes work**: All lazy-loaded routes work correctly
+- [ ] **Tests pass**: All layer tests pass
+- [ ] **E2E tests pass**: Critical user flows work
+
+```bash
+# Build validation
+npm run build
+# Check for DI errors in console
+
+# Test validation
+npm test
+```
 
 ---
 
