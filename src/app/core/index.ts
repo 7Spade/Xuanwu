@@ -26,4 +26,7 @@ export { serverRoutes } from './app.routes.server';
 // export * from './error-handler';
 
 // Services
-// export * from './services';
+export * from './services';
+
+// Guards
+export * from './guards';
