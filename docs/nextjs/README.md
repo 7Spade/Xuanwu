@@ -27,7 +27,8 @@ OrgVerse is a modern workspace architecture system that deconstructs digital ide
 
 ### Complete Documentation Set
 
-- **[🚀 Migration Guide](./docs/NEXTJS_TO_ANGULAR_MIGRATION.md)** - Convert Next.js to Angular 20+ (NEW!)
+- **[🛠️ Implementation Guide](./docs/NEXTJS_TO_ANGULAR_IMPLEMENTATION_GUIDE.md)** ✨ - Step-by-step migration with file names (NEW!)
+- **[🚀 Migration Strategy](./docs/NEXTJS_TO_ANGULAR_MIGRATION.md)** - Convert Next.js to Angular 20+ architecture
 - **[📁 Project Tree](./docs/NEXTJS_PROJECT_TREE.md)** - Complete file structure and organization
 - **[📖 Function Reference](./docs/NEXTJS_FUNCTION_REFERENCE.md)** - API reference for all functions and components
 - **[✅ Naming Audit](./docs/NEXTJS_NAMING_AUDIT.md)** - Naming convention compliance analysis
@@ -36,7 +37,8 @@ OrgVerse is a modern workspace architecture system that deconstructs digital ide
 
 ### Quick Links
 
-- **Migration to Angular**: See [Migration Guide](./docs/NEXTJS_TO_ANGULAR_MIGRATION.md) for complete conversion plan
+- **Daily Implementation**: See [Implementation Guide](./docs/NEXTJS_TO_ANGULAR_IMPLEMENTATION_GUIDE.md) for numbered steps ✨
+- **Migration Strategy**: See [Migration Guide](./docs/NEXTJS_TO_ANGULAR_MIGRATION.md) for architecture plan
 - **Getting Started**: See [Project Tree](./docs/NEXTJS_PROJECT_TREE.md#-project-overview)
 - **API Reference**: See [Function Reference](./docs/NEXTJS_FUNCTION_REFERENCE.md)
 - **File Locations**: See [Project Tree](./docs/NEXTJS_PROJECT_TREE.md#-complete-directory-structure)
