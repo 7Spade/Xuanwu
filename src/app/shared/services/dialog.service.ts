@@ -72,13 +72,23 @@ export class DialogService {
    * Open a confirmation dialog
    * @param data - Confirmation dialog data
    * @returns Observable of confirmation result (true/false)
+   * 
+   * @remarks
+   * This method is SSR-safe and will work correctly during server-side rendering.
+   * On the server, it returns false immediately without attempting to access browser APIs.
    */
   confirm(data: ConfirmDialogData): Observable<boolean> {
-    // Note: You would create a ConfirmDialogComponent separately
-    // This is a placeholder implementation
+    // SSR-safe implementation: Use Material Dialog when available
+    // For now, use a simple platform-aware approach
     return new Observable(observer => {
-      const confirmed = window.confirm(`${data.title}\n\n${data.message}`);
-      observer.next(confirmed);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+        const confirmed = window.confirm(`${data.title}\n\n${data.message}`);
+        observer.next(confirmed);
+      } else {
+        // SSR fallback: Return false
+        observer.next(false);
+      }
       observer.complete();
     });
   }

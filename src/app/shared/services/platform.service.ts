@@ -104,8 +104,15 @@ export class PlatformService {
 
   /**
    * Whether touch events are supported
+   * 
+   * @remarks
+   * SSR-safe implementation that checks platform before accessing browser APIs
    */
   get isTouchDevice(): boolean {
+    // SSR-safe: Check if we're in a browser environment first
+    if (!this.isBrowser) {
+      return false;
+    }
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
 }
