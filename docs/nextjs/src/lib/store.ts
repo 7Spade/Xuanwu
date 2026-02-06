@@ -1,13 +1,15 @@
 import { create } from 'zustand';
-import { User, Organization, Workspace, Notification, CapabilitySpec, PulseLog } from '@/types/domain';
+import { User, Organization, Workspace, Notification, DailyLog, PulseLog, CapabilitySpec } from '@/types/domain';
 
 interface AppState {
   user: User | null;
+  authInitialized: boolean;
   organizations: Organization[];
   activeOrgId: string | null;
   workspaces: Workspace[];
+  dailyLogs: DailyLog[];
+  pulseLogs: PulseLog[];
   notifications: Notification[];
-  pulseLogs: PulseLog[]; 
   capabilitySpecs: CapabilitySpec[];
   
   // Actions
@@ -15,10 +17,12 @@ interface AppState {
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   setActiveOrg: (id: string) => void;
+  setAuthInitialized: (val: boolean) => void;
   
   // Data Sync
   setOrganizations: (orgs: Organization[]) => void;
   setWorkspaces: (workspaces: Workspace[]) => void;
+  setDailyLogs: (logs: DailyLog[]) => void;
   setPulseLogs: (logs: PulseLog[]) => void;
   
   addNotification: (notif: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
@@ -28,11 +32,13 @@ interface AppState {
 
 export const useAppStore = create<AppState>()((set, get) => ({
   user: null,
+  authInitialized: false,
   organizations: [],
   activeOrgId: null,
   workspaces: [],
-  notifications: [],
+  dailyLogs: [],
   pulseLogs: [],
+  notifications: [],
   capabilitySpecs: [
     { id: 'files', name: '檔案空間', type: 'data', status: 'stable', description: '管理維度內的文檔主權與技術資產。' },
     { id: 'tasks', name: '原子任務', type: 'ui', status: 'stable', description: '追蹤空間節點內的具體行動目標。' },
@@ -49,15 +55,15 @@ export const useAppStore = create<AppState>()((set, get) => ({
     user: null, 
     organizations: [], 
     workspaces: [], 
+    dailyLogs: [],
+    pulseLogs: [],
     activeOrgId: null,
     notifications: [],
-    pulseLogs: []
+    authInitialized: true
   }),
 
-  updateUser: (updates) => set((state) => ({
-    user: state.user ? { ...state.user, ...updates } : null
-  })),
-
+  setAuthInitialized: (val) => set({ authInitialized: val }),
+  updateUser: (updates) => set((state) => ({ user: state.user ? { ...state.user, ...updates } : null })),
   setActiveOrg: (id) => set({ activeOrgId: id }),
   
   setOrganizations: (orgs) => set({ 
@@ -66,16 +72,11 @@ export const useAppStore = create<AppState>()((set, get) => ({
   }),
 
   setWorkspaces: (workspaces) => set({ workspaces }),
-  
+  setDailyLogs: (logs) => set({ dailyLogs: logs }),
   setPulseLogs: (logs) => set({ pulseLogs: logs }),
 
   addNotification: (notif) => set((state) => ({
-    notifications: [{ 
-      ...notif, 
-      id: Math.random().toString(36).substring(2, 9), 
-      timestamp: Date.now(), 
-      read: false 
-    }, ...state.notifications]
+    notifications: [{ ...notif, id: Math.random().toString(36).substring(2, 9), timestamp: Date.now(), read: false }, ...state.notifications]
   })),
 
   markAsRead: (id) => set((state) => ({

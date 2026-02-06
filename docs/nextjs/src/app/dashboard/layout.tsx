@@ -8,20 +8,32 @@ import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { UIAdapter } from "@/components/dashboard/ui-adapter";
 import { useDimensionSync } from "@/hooks/use-dimension-sync";
+import { Loader2 } from "lucide-react";
 
-/**
- * DashboardLayout - 職責：提供維度治理的全域外殼與 UI 適配環境。
- */
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const user = useAppStore(state => state.user);
+  const { user, authInitialized } = useAppStore();
   const router = useRouter();
 
-  // 啟動全域數據同步共振
+  // 啟動全域數據同步
   useDimensionSync();
 
   useEffect(() => {
-    if (!user) router.push("/login");
-  }, [user, router]);
+    if (authInitialized && !user) {
+      router.push("/login");
+    }
+  }, [user, authInitialized, router]);
+
+  // 根除刷新登出守衛：在 Auth 確定前不顯示內容
+  if (!authInitialized) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center space-y-4 bg-background">
+        <div className="text-4xl animate-bounce">🐢</div>
+        <div className="flex items-center gap-2 text-muted-foreground font-black uppercase text-[10px] tracking-widest">
+          <Loader2 className="w-3 h-3 animate-spin" /> 維度主權恢復中...
+        </div>
+      </div>
+    );
+  }
 
   if (!user) return null;
 

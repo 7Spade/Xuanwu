@@ -44,6 +44,20 @@ export class FirebaseService {
   private storage: FirebaseStorage;
   private appCheck: AppCheck | null = null;
 
+  /**
+   * Constructor
+   * 
+   * @remarks
+   * **DOCUMENTED EXCEPTION to Less Zero Principle (Section 3.2)**
+   * 
+   * Firebase initialization MUST occur in constructor because:
+   * 1. Firebase SDK requires immediate initialization before any service methods
+   * 2. Delaying initialization would cause runtime errors in dependent services
+   * 3. This is a foundational infrastructure service, not application state
+   * 
+   * This is an **explicit, documented exception** for infrastructure initialization.
+   * Application-level state should NOT use constructor side effects.
+   */
   constructor() {
     // Initialize Firebase App
     this.app = initializeApp(environment.firebase);

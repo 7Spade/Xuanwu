@@ -7,22 +7,17 @@ import { useAppStore } from "@/lib/store";
 import { useMemo } from "react";
 
 /**
- * StatCards - 職責：展示維度運行的動態指標
- * 效能優化：極致記憶化所有複雜運算，並加入 isFinite 防禦除以零的崩潰。
+ * StatCards - 職責：展示維度運行的動態指標。
+ * 已修復 RangeError: 加入 isFinite 守衛防止除以零崩潰。
  */
 export function StatCards({ orgId, orgName }: { orgId: string, orgName: string }) {
   const { pulseLogs, workspaces } = useAppStore();
   
-  const safeWorkspaces = useMemo(() => workspaces || [], [workspaces]);
-  const safePulseLogs = useMemo(() => pulseLogs || [], [pulseLogs]);
-
   const orgWorkspaces = useMemo(() => 
-    safeWorkspaces.filter(w => w.orgId === orgId),
-    [safeWorkspaces, orgId]
+    (workspaces || []).filter(w => w.orgId === orgId),
+    [workspaces, orgId]
   );
   
-  // 記憶化：計算環境一致性 (基於 Protocol 的多樣性)
-  // 防禦性：若 uniqueProtocols 為 0，val 為 Infinity，需強制轉為合法數值。
   const consistency = useMemo(() => {
     if (orgWorkspaces.length === 0) return 100;
     const protocols = orgWorkspaces.map(w => w.protocol || 'Default');
@@ -31,14 +26,12 @@ export function StatCards({ orgId, orgName }: { orgId: string, orgName: string }
     return isFinite(val) ? val : 100;
   }, [orgWorkspaces]);
 
-  // 記憶化：計算脈動率
   const pulseRate = useMemo(() => {
-    const recentPulseCount = safePulseLogs.filter(l => l.orgId === orgId).length;
+    const recentPulseCount = (pulseLogs || []).filter(l => l.orgId === orgId).length;
     const val = (recentPulseCount / 20) * 100;
     return isFinite(val) ? Math.min(val, 100) : 0;
-  }, [safePulseLogs, orgId]);
+  }, [pulseLogs, orgId]);
 
-  // 記憶化：計算能力負載
   const capabilityLoad = useMemo(() => {
     const totalCapabilities = orgWorkspaces.reduce((acc, w) => acc + (w.capabilities?.length || 0), 0);
     const val = totalCapabilities * 10;

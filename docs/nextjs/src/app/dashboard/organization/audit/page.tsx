@@ -8,12 +8,13 @@ import { Activity, Clock, Zap, Terminal, Shield, ArrowRight } from "lucide-react
 import { format } from "date-fns";
 import { useState, useEffect, useMemo } from "react";
 import { useFirebase } from "@/firebase/provider";
-import { collection, query, orderBy, limit } from "firebase/firestore";
+import { collection, query, orderBy, limit, where } from "firebase/firestore";
 import { useCollection } from "@/firebase";
 import { cn } from "@/lib/utils";
 
 /**
- * DimensionPulsePage - 職責：維度脈動日誌 (技術規格演進牆)
+ * DimensionPulsePage - 職責：維度脈動日誌 (審計)
+ * 修復：過濾掉類型為 'daily' 的動態紀錄，僅顯示系統與架構變動紀錄。
  */
 export default function DimensionPulsePage() {
   const [mounted, setMounted] = useState(false);
@@ -28,6 +29,8 @@ export default function DimensionPulsePage() {
     if (!activeOrgId || !db) return null;
     return query(
       collection(db, "organizations", activeOrgId, "pulseLogs"),
+      where("type", "!=", "daily"), // 僅顯示非動態內容
+      orderBy("type"), 
       orderBy("timestamp", "desc"),
       limit(100)
     );
@@ -50,14 +53,14 @@ export default function DimensionPulsePage() {
     <div className="space-y-8 max-w-7xl mx-auto animate-in fade-in duration-700 pb-20">
       <PageHeader 
         title="維度脈動日誌" 
-        description="追蹤維度架構的所有演進。每一項紀錄均代表一次技術規格的共振與校準。"
+        description="追蹤架構的所有演進。每一項紀錄均代表一次技術規格的校準。"
       />
 
       {logs && logs.length > 0 ? (
         <div className="columns-1 md:columns-2 gap-6 space-y-6">
           {logs.map((log) => {
             const theme = getStatusTheme(log.type);
-            const safeId = String(log.id || "00000000");
+            const safeId = String(log.id || "");
             
             return (
               <div key={log.id} className="break-inside-avoid mb-6">
@@ -96,11 +99,8 @@ export default function DimensionPulsePage() {
 
                     <div className="pt-3 border-t border-border/10 flex items-center justify-between">
                       <span className="text-[8px] font-mono text-muted-foreground/60 uppercase">
-                        Pulse_Ref: {safeId.slice(-8).toUpperCase()}
+                        Pulse_Ref: {safeId.length >= 8 ? safeId.slice(-8).toUpperCase() : "NEW_NODE"}
                       </span>
-                      <div className="flex gap-1">
-                        <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", theme.color.replace('text', 'bg'))} />
-                      </div>
                     </div>
                   </CardContent>
                 </Card>

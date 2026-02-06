@@ -53,9 +53,37 @@ export class TranslationService {
    */
   readonly currentLanguage = this.currentLang.asReadonly();
 
+  /**
+   * Constructor
+   * 
+   * @remarks
+   * Constructor is now side-effect free per Less Zero principles (Section 3.2).
+   * Call `initialize()` explicitly to load the default language.
+   */
   constructor() {
-    // Load default language on init
-    this.use(this.defaultLocale).subscribe();
+    // No side effects - initialization must be explicit
+  }
+
+  /**
+   * Initialize the translation service with default language
+   * 
+   * @remarks
+   * This method should be called once during app initialization,
+   * typically in an APP_INITIALIZER or during app bootstrap.
+   * 
+   * @example
+   * ```typescript
+   * // In app.config.ts providers:
+   * {
+   *   provide: APP_INITIALIZER,
+   *   useFactory: (translation: TranslationService) => () => translation.initialize(),
+   *   deps: [TranslationService],
+   *   multi: true
+   * }
+   * ```
+   */
+  initialize(): Observable<Translation> {
+    return this.use(this.defaultLocale);
   }
 
   /**

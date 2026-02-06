@@ -1,87 +1,67 @@
-
 "use client";
 
 import { useEffect, useMemo } from "react";
 import { useAppStore } from "@/lib/store";
 import { useFirebase } from "@/firebase/provider";
 import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
-import { errorEmitter } from "@/firebase/error-emitter";
-import { FirestorePermissionError } from "@/firebase/errors";
+import { onAuthStateChanged } from "firebase/auth";
 
 /**
- * useDimensionSync - 職責：處理全域維度與空間的實時數據同步
- * 符合單一職責原則 (SRP)，將同步邏輯從 Layout 中解耦。
+ * useDimensionSync - 職責：全域數據同步中心
+ * 透過 authInitialized 守衛解決刷新登出，並同步 Daily 與 Pulse 兩大獨立集合。
  */
 export function useDimensionSync() {
-  const user = useAppStore(state => state.user);
-  const { setOrganizations, setWorkspaces, setPulseLogs, activeOrgId } = useAppStore();
-  const { db } = useFirebase();
+  const { user, login, setOrganizations, setWorkspaces, setDailyLogs, setPulseLogs, activeOrgId, setAuthInitialized } = useAppStore();
+  const { db, auth } = useFirebase();
 
-  // 1. 穩定化：維度查詢 (僅偵聽屬於自己的維度)
-  const orgsQuery = useMemo(() => {
-    if (!user || !db) return null;
-    return query(collection(db, "organizations"), where("ownerId", "==", user.id));
-  }, [user?.id, db]);
-
-  // 2. 穩定化：空間查詢
-  const wsQuery = useMemo(() => {
-    if (!db) return null;
-    return query(collection(db, "workspaces"));
-  }, [db]);
-
-  // 3. 穩定化：全域脈動偵聽
-  const pulseQuery = useMemo(() => {
-    if (!db || !activeOrgId) return null;
-    return query(
-      collection(db, "organizations", activeOrgId, "pulseLogs"),
-      orderBy("timestamp", "desc"),
-      limit(20)
-    );
-  }, [db, activeOrgId]);
-
+  // 1. 身分共振監聽器
   useEffect(() => {
-    if (!orgsQuery) return;
-    const unsubscribe = onSnapshot(orgsQuery, 
-      (snapshot) => {
-        const orgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
-        setOrganizations(orgs);
-      },
-      () => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: 'organizations',
-          operation: 'list',
-        }));
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        login({ id: firebaseUser.uid, name: firebaseUser.displayName || '維度成員', email: firebaseUser.email || '' });
       }
-    );
+      setAuthInitialized(true);
+    });
     return () => unsubscribe();
-  }, [orgsQuery, setOrganizations]);
+  }, [auth, login, setAuthInitialized]);
 
+  // 2. 維度與空間同步
   useEffect(() => {
-    if (!wsQuery) return;
-    const unsubscribe = onSnapshot(wsQuery, 
-      (snapshot) => {
-        const workspaces = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
-        setWorkspaces(workspaces);
-      },
-      () => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: 'workspaces',
-          operation: 'list',
-        }));
-      }
+    if (!user || !db) return;
+    
+    const orgsUnsubscribe = onSnapshot(
+      query(collection(db, "organizations"), where("members", "array-contains-any", [{ id: user.id, name: user.name, email: user.email, role: 'Owner', status: 'active' }])),
+      (snap) => setOrganizations(snap.docs.map(d => ({ id: d.id, ...d.data() })) as any)
     );
-    return () => unsubscribe();
-  }, [wsQuery, setWorkspaces]);
 
-  useEffect(() => {
-    if (!pulseQuery) return;
-    const unsubscribe = onSnapshot(pulseQuery, 
-      (snapshot) => {
-        const logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
-        setPulseLogs(logs);
-      },
-      () => {}
+    const wsUnsubscribe = onSnapshot(
+      collection(db, "workspaces"),
+      (snap) => setWorkspaces(snap.docs.map(d => ({ id: d.id, ...d.data() })) as any)
     );
-    return () => unsubscribe();
-  }, [pulseQuery, setPulseLogs]);
+
+    return () => {
+      orgsUnsubscribe();
+      wsUnsubscribe();
+    };
+  }, [user, db, setOrganizations, setWorkspaces]);
+
+  // 3. DailyLogs 與 PulseLogs 同步 (基於 ActiveOrg)
+  useEffect(() => {
+    if (!db || !activeOrgId) return;
+
+    const dailyUnsubscribe = onSnapshot(
+      query(collection(db, "organizations", activeOrgId, "dailyLogs"), orderBy("timestamp", "desc"), limit(50)),
+      (snap) => setDailyLogs(snap.docs.map(d => ({ id: d.id, ...d.data() })) as any)
+    );
+
+    const pulseUnsubscribe = onSnapshot(
+      query(collection(db, "organizations", activeOrgId, "pulseLogs"), orderBy("timestamp", "desc"), limit(50)),
+      (snap) => setPulseLogs(snap.docs.map(d => ({ id: d.id, ...d.data() })) as any)
+    );
+
+    return () => {
+      dailyUnsubscribe();
+      pulseUnsubscribe();
+    };
+  }, [db, activeOrgId, setDailyLogs, setPulseLogs]);
 }
