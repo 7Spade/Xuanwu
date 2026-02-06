@@ -27,3 +27,6 @@ export { serverRoutes } from './app.routes.server';
 
 // Services
 export * from './services';
+
+// Guards
+export * from './guards';
