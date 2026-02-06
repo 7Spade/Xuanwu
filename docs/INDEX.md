@@ -85,6 +85,23 @@ This documentation follows the **[Diátaxis Framework](https://diataxis.fr/)** w
 
 ---
 
+### 🔐 [Angular 20 + SSR + Less Zero Specification](./ANGULAR20_SSR_LESSZERO_SPEC.md) ✨ NEW
+
+**Purpose**: Technical boundaries and design principles for Angular 20 projects  
+**Target Audience**: All developers (mandatory reading)  
+**Contains**:
+- Control flow standards (@if/@for/@switch)
+- SSR safety requirements
+- Less Zero architecture principles (explicit, trackable state)
+- Pre-implementation gate checklist
+- Framework migration constraints
+
+**When to read**: Before implementing ANY feature, during code review, when migrating from other frameworks
+
+**Related**: [Chinese Version](./需求文件.md) | [Compliance Audit](./ANGULAR20_COMPLIANCE_AUDIT.md)
+
+---
+
 ## 📚 Reference Documents (Information-oriented)
 
 *Look up technical specifications and rules*
@@ -198,6 +215,26 @@ This documentation follows the **[Diátaxis Framework](https://diataxis.fr/)** w
 - Deprecated terms to avoid
 - Abbreviations and writing style
 
+**When to use**: Understanding project terminology, writing documentation
+
+---
+
+### 9️⃣ [Angular 20 Compliance Audit](./ANGULAR20_COMPLIANCE_AUDIT.md) ✨ NEW
+
+**Purpose**: Codebase compliance validation against Angular 20 specification  
+**Target Audience**: All developers, tech leads, reviewers  
+**Contains**:
+- Compliance scores by category
+- Violation detection and analysis
+- Critical issues (SSR safety, control flow, state management)
+- Remediation plans with code examples
+- Automated compliance check recommendations
+
+**When to use**: Code reviews, before deployment, regular audits, fixing violations
+
+**Related**: [Specification](./ANGULAR20_SSR_LESSZERO_SPEC.md)
+
+---
 **When to use**: Unfamiliar terms, writing documentation, ensuring consistency
 
 ---
