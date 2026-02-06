@@ -8,7 +8,7 @@
  */
 
 // Shared domain abstractions
-// export * from './shared';
+export * from './shared';
 
 // Bounded contexts will be exported here when created
 // Example:
