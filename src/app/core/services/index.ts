@@ -7,3 +7,4 @@
 
 export { FirebaseService } from './firebase.service';
 export { AppStateService } from './app-state.service';
+export { AuthService } from './auth.service';
