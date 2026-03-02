@@ -10,7 +10,8 @@
  *   Org admins explicitly activate tags they want to use; passively syncs with TagLifecycleEvents.
  *
  * UX:
- *   Displays all skills from the global dictionary (SKILLS constant) grouped by category.
+ *   Displays all skills from the global dictionary (SKILLS constant) grouped by
+ *   大項目 (SkillGroup) → 子項目 (SkillSubCategory) → individual skills.
  *   Activated skills (in org pool) are visually highlighted and can be removed.
  *   Inactive skills show an "加入" button to activate them into the org pool.
  *
@@ -24,27 +25,18 @@ import { useCallback, useEffect, useMemo, useOptimistic, useState, useTransition
 import { addOrgSkillTagAction, removeOrgSkillTagAction } from '@/features/skill-xp.slice';
 import { getOrgSkillTags } from '@/features/skill-xp.slice';
 import { useApp } from '@/shared/app-providers/app-context';
-import { SKILLS, type SkillCategory } from '@/shared/constants/skills';
+import {
+  SKILL_GROUPS,
+  SKILL_SUB_CATEGORY_BY_KEY,
+  SKILLS,
+  type SkillGroup,
+  type SkillSubCategory,
+} from '@/shared/constants/skills';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
 import { toast } from '@/shared/utility-hooks/use-toast';
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const CATEGORY_LABELS: Record<SkillCategory, string> = {
-  Civil: '土木 / 結構',
-  Electrical: '電氣',
-  Mechanical: '機械 / 暖通',
-  Finishing: '裝修',
-  HeavyEquipment: '重型設備',
-  Safety: '安全 / 品管',
-  Engineering: '工程 / 測量',
-  Management: '管理',
-};
 
 // ---------------------------------------------------------------------------
 // Main component
@@ -55,7 +47,7 @@ const CATEGORY_LABELS: Record<SkillCategory, string> = {
  *
  * Lets org admins select which skills from the global dictionary are applicable
  * to their organization. Selected skills appear in ProposalDialog's skill picker
- * instead of the full ~32-item global library (FR-K5).
+ * instead of the full global library (FR-K5).
  *
  * Writes to: orgSkillTagPool/{orgId}/tags/{tagSlug}  (via server actions)
  * Reads from: getOrgSkillTags(orgId)
@@ -133,13 +125,18 @@ export function OrgSkillPoolManager() {
     [orgId, applyOptimistic, startTransition]
   );
 
-  // Group global skills by category for display
+  // Build a 2-level map: SkillGroup → SkillSubCategory → skills[]
   const grouped = useMemo(() => {
-    const map = new Map<SkillCategory, (typeof SKILLS)[number][]>();
+    const map = new Map<SkillGroup, Map<SkillSubCategory, (typeof SKILLS)[number][]>>();
     for (const skill of SKILLS) {
-      const list = map.get(skill.category) ?? [];
+      let subMap = map.get(skill.group);
+      if (!subMap) {
+        subMap = new Map();
+        map.set(skill.group, subMap);
+      }
+      const list = subMap.get(skill.subCategory) ?? [];
       list.push(skill);
-      map.set(skill.category, list);
+      subMap.set(skill.subCategory, list);
     }
     return map;
   }, []);
@@ -172,54 +169,78 @@ export function OrgSkillPoolManager() {
             <p className="py-8 text-center text-xs text-muted-foreground">載入中…</p>
           ) : (
             <div className="divide-y">
-              {Array.from(grouped.entries()).map(([category, skills]) => (
-                <div key={category} className="p-4">
-                  <h4 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    {CATEGORY_LABELS[category] ?? category}
-                  </h4>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                    {skills.map((skill) => {
-                      const active = optimisticSlugs.has(skill.slug);
-                      return (
-                        <div
-                          key={skill.slug}
-                          className={`flex items-center gap-2 rounded-lg border p-2.5 transition-colors ${
-                            active
-                              ? 'border-primary/30 bg-primary/5'
-                              : 'border-border bg-background'
-                          }`}
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-medium">{skill.name}</p>
-                            {skill.description && (
-                              <p className="line-clamp-1 text-[10px] text-muted-foreground">
-                                {skill.description}
-                              </p>
-                            )}
+              {SKILL_GROUPS.map(({ group, zhLabel, enLabel, subCategories }) => {
+                const subMap = grouped.get(group);
+                if (!subMap) return null;
+                return (
+                  <div key={group} className="p-4">
+                    {/* 大項目 header */}
+                    <h3 className="mb-3 text-xs font-bold text-foreground">
+                      {zhLabel}
+                      <span className="ml-1.5 text-[10px] font-normal text-muted-foreground">
+                        {enLabel}
+                      </span>
+                    </h3>
+
+                    <div className="space-y-4">
+                      {subCategories.map((subCat) => {
+                        const skills = subMap.get(subCat);
+                        if (!skills?.length) return null;
+                        const subMeta = SKILL_SUB_CATEGORY_BY_KEY.get(subCat);
+                        return (
+                          <div key={subCat}>
+                            {/* 子項目 header */}
+                            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              {subMeta?.zhLabel ?? subCat}
+                            </p>
+                            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                              {skills.map((skill) => {
+                                const active = optimisticSlugs.has(skill.slug);
+                                return (
+                                  <div
+                                    key={skill.slug}
+                                    className={`flex items-center gap-2 rounded-lg border p-2.5 transition-colors ${
+                                      active
+                                        ? 'border-primary/30 bg-primary/5'
+                                        : 'border-border bg-background'
+                                    }`}
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <p className="truncate text-xs font-medium">{skill.name}</p>
+                                      {skill.description && (
+                                        <p className="line-clamp-1 text-[10px] text-muted-foreground">
+                                          {skill.description}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <Button
+                                      size="icon"
+                                      variant={active ? 'destructive' : 'outline'}
+                                      className="size-7 shrink-0"
+                                      onClick={() =>
+                                        active
+                                          ? handleRemove(skill.slug, skill.name)
+                                          : handleAdd(skill.slug, skill.name)
+                                      }
+                                      title={active ? '從技能庫移除' : '加入技能庫'}
+                                    >
+                                      {active ? (
+                                        <Trash2 className="size-3" />
+                                      ) : (
+                                        <Plus className="size-3" />
+                                      )}
+                                    </Button>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                          <Button
-                            size="icon"
-                            variant={active ? 'destructive' : 'outline'}
-                            className="size-7 shrink-0"
-                            onClick={() =>
-                              active
-                                ? handleRemove(skill.slug, skill.name)
-                                : handleAdd(skill.slug, skill.name)
-                            }
-                            title={active ? '從技能庫移除' : '加入技能庫'}
-                          >
-                            {active ? (
-                              <Trash2 className="size-3" />
-                            ) : (
-                              <Plus className="size-3" />
-                            )}
-                          </Button>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </ScrollArea>
