@@ -8,7 +8,6 @@ export default {
     './src/config/**/*.{ts,tsx,mdx}',
     './src/features/**/*.{ts,tsx,mdx}',
     './src/shared/**/*.{ts,tsx,mdx}',
-    './src/shared-infra/**/*.{ts,tsx,mdx}',
   ],
   theme: {
   	extend: {
