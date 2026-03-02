@@ -24,6 +24,7 @@ import {
   handleScheduleProposed,
   approveOrgScheduleProposal,
 } from './_aggregate';
+import { findEligibleCandidate } from './_eligibility';
 
 
 // ---------------------------------------------------------------------------
@@ -62,18 +63,6 @@ export interface SagaState {
 
 const SAGA_COLLECTION = 'sagaStates';
 
-const TIER_ORDER = [
-  'apprentice',
-  'journeyman',
-  'expert',
-  'artisan',
-  'grandmaster',
-  'legendary',
-  'titan',
-] as const;
-
-type Tier = (typeof TIER_ORDER)[number];
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -96,15 +85,6 @@ async function updateSagaStatus(
   >
 ): Promise<void> {
   await updateDocument(sagaPath(sagaId), { ...patch, updatedAt: new Date().toISOString() });
-}
-
-function tierIndex(tier: string): number {
-  const idx = TIER_ORDER.indexOf(tier as Tier);
-  if (idx === -1) {
-    console.warn(`[scheduling-saga] Unknown tier value "${tier}", defaulting to 0 (apprentice).`);
-    return 0;
-  }
-  return idx;
 }
 
 // ---------------------------------------------------------------------------
@@ -169,14 +149,7 @@ export async function startSchedulingSaga(
   // requirements = [] means "any eligible member can be assigned" (no skill filtering)
   const requirements = event.skillRequirements ?? [];
 
-  const candidate = eligibleMembers.find((member) => {
-    if (!member.eligible) return false;
-    return requirements.every((req) => {
-      const skill = member.skills.find((s) => s.skillId === req.tagSlug);
-      if (!skill) return false;
-      return tierIndex(skill.tier) >= tierIndex(req.minimumTier);
-    });
-  });
+  const candidate = findEligibleCandidate(eligibleMembers, requirements);
 
   // Step 3 — assign or compensate [A5]
   if (!candidate) {
