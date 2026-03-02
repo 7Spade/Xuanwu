@@ -3,7 +3,7 @@
  *
  * EVENT_FUNNEL_INPUT: unified entry point for the Projection Layer.
  *
- * Per logic-overview.md (VS8 Projection Bus):
+ * Per logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   WORKSPACE_EVENT_BUS  → |所有業務事件|  EVENT_FUNNEL_INPUT
  *   ORGANIZATION_EVENT_BUS → |所有組織事件| EVENT_FUNNEL_INPUT
  *   TAG_LIFECYCLE_BUS → |TagLifecycleEvent| EVENT_FUNNEL_INPUT  (v5 新增)
@@ -36,7 +36,7 @@ import {
   applyDemandProposalCancelled,
   applyDemandAssignRejected,
 } from '@/features/scheduling.slice';
-import { onTagEvent } from '@/features/shared-kernel/centralized-tag';
+import { onTagEvent } from '@/features/shared-kernel/tag-authority';
 import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
 import {
   handleTagUpdatedForPool,
@@ -332,7 +332,7 @@ export function registerOrganizationFunnel(): () => void {
  * Per logic-overview.md [R3]:
  *   IER BACKGROUND_LANE → VS4_TAG_SUBSCRIBER → SKILL_TAG_POOL
  *
- * Per logic-overview.md (VS8):
+ * Per logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   IER ==>|"#9 唯一寫入路徑"| FUNNEL
  *   FUNNEL --> TAG_SNAPSHOT
  *
