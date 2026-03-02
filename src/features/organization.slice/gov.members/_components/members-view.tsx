@@ -9,7 +9,7 @@ import { useState, useEffect, useMemo } from "react"
 import { type MemberReference } from "@/shared/types"
 import { useApp } from "@/shared/app-providers/app-context"
 import { useMemberManagement } from '../_hooks/use-member-management'
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/config/i18n/i18n-provider"
 import { PageHeader } from "@/shared/ui/page-header"
 import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"

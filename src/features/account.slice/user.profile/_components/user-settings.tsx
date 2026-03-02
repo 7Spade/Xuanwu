@@ -5,7 +5,7 @@ import { toast } from "@/shared/utility-hooks/use-toast";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { useUser } from "../_hooks/use-user";
 import { type SkillGrant } from "@/shared/types";
 import { findSkill } from "@/shared/constants/skills";

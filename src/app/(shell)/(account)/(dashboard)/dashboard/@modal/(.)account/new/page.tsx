@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/shadcn-ui/dialog"
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/config/i18n/i18n-provider"
 import { AccountNewForm } from "@/features/organization.slice"
 
 export default function AccountNewModalPage() {

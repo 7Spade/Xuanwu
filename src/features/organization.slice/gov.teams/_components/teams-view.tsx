@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "@/shared/utility-hooks/use-toast"
 import { useApp } from "@/shared/app-providers/app-context"
 import { useTeamManagement } from "@/features/organization.slice"
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/config/i18n/i18n-provider"
 import type { Team } from "@/shared/types"
 import { PageHeader } from "@/shared/ui/page-header"
 

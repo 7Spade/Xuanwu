@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
 import { Terminal } from "lucide-react";
 import { useApp } from "../_hooks/use-app";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { useWorkspaceFilters } from "../../business.files/_hooks/use-workspace-filters";
 import { WorkspaceListHeader } from "./workspace-list-header";
 import { WorkspaceGridView } from "./workspace-grid-view";
