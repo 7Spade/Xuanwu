@@ -287,4 +287,59 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
       expect(typeof contract.updatedAt).toBe('number');
     });
   });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [D25] IFileStore Adapter — StorageAdapter implements IFileStore
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[D25] StorageAdapter implements IFileStore port', () => {
+    it('storage.adapter.ts file exists in shared/infra/storage', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      expect(fs.existsSync(adapterPath)).toBe(true);
+    });
+
+    it('StorageAdapter class has upload, getDownloadURL, deleteFile methods', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      const content = fs.readFileSync(adapterPath, 'utf8');
+      expect(content).toMatch(/class StorageAdapter/);
+      expect(content).toMatch(/implements IFileStore/);
+      expect(content).toMatch(/async upload\(/);
+      expect(content).toMatch(/async getDownloadURL\(/);
+      expect(content).toMatch(/async deleteFile\(/);
+    });
+
+    it('StorageAdapter does not import firebase/storage directly (delegated to adapters)', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      const content = fs.readFileSync(adapterPath, 'utf8');
+      expect(/from ['"]firebase\/storage['"]/.test(content)).toBe(false);
+    });
+
+    it('storage/index.ts exports StorageAdapter', () => {
+      const indexPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'index.ts');
+      const content = fs.readFileSync(indexPath, 'utf8');
+      expect(content).toMatch(/StorageAdapter/);
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [QGWAY_SCHED] Scheduling queries route through projection.org-eligible-member-view
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[QGWAY_SCHED] Scheduling eligible-member queries use projection.bus', () => {
+    it('scheduling _queries.ts exports getEligibleMembersForSchedule', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/getEligibleMembersForSchedule/);
+    });
+
+    it('scheduling _queries.ts exports getEligibleMemberForSchedule', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/getEligibleMemberForSchedule/);
+    });
+
+    it('scheduling _queries.ts imports eligible members from projection.bus (QGWAY_SCHED channel)', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/@\/features\/projection\.bus/);
+    });
+  });
 });
