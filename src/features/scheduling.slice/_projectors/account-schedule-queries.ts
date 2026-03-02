@@ -1,29 +1,15 @@
 /**
  * scheduling.slice/_projectors — account-schedule-queries.ts
  *
+ * @deprecated Queries have been merged into scheduling.slice/_queries.ts.
+ * This file is retained only to avoid breaking any direct internal imports
+ * and will be removed in a future cleanup pass.
+ *
  * Read-side queries for the account schedule projection.
- * Used by scheduling.slice to filter available accounts.
+ * Canonical query logic now lives in scheduling.slice/_queries.ts.
  */
 
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
-import type { AccountScheduleProjection, AccountScheduleAssignment } from './account-schedule';
-
-export async function getAccountScheduleProjection(
-  accountId: string
-): Promise<AccountScheduleProjection | null> {
-  return getDocument<AccountScheduleProjection>(`scheduleProjection/${accountId}`);
-}
-
-/**
- * Returns active assignments for an account.
- * Used by scheduling.slice to check availability.
- */
-export async function getAccountActiveAssignments(
-  accountId: string
-): Promise<AccountScheduleAssignment[]> {
-  const projection = await getAccountScheduleProjection(accountId);
-  if (!projection) return [];
-  return Object.values(projection.assignmentIndex).filter(
-    (a) => a.status !== 'completed'
-  );
-}
+export {
+  getAccountScheduleProjection,
+  getAccountActiveAssignments,
+} from '../_queries';
