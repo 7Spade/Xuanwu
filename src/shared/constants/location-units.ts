@@ -4,7 +4,8 @@
  * Covers the common spatial / positional designators used in Taiwanese
  * technology parks, industrial estates, science parks and construction sites:
  *   棟 (building block), 樓 (floor), 區 (zone), 室 (room/unit), 號 (number),
- *   廠 (factory/plant), 倉 (warehouse), 期 (phase), 座 (tower), 基地 (campus/site)
+ *   廠 (factory/plant), 倉 (warehouse), 期 (phase), 座 (tower), 基地 (campus/site),
+ *   柱 (structural column / pillar position)
  *
  * Usage:
  *   import { LOCATION_UNITS, LOCATION_UNIT_BY_KEY, type LocationUnitKey }
@@ -26,7 +27,8 @@ export type LocationUnitKey =
   | 'cang'    // 倉 — warehouse / storage unit
   | 'qi'      // 期 — phase / stage (of a development)
   | 'zuo'     // 座 — tower / seat (high-rise identifier)
-  | 'jidi';   // 基地 — campus / site / base
+  | 'jidi'    // 基地 — campus / site / base
+  | 'zhu';    // 柱 — structural column / pillar position
 
 export interface LocationUnitMeta {
   key: LocationUnitKey;
@@ -114,6 +116,13 @@ export const LOCATION_UNITS: readonly LocationUnitMeta[] = [
     enLabel: 'Campus / Site',
     description: '整體園區或廠區，如 新竹基地',
     example: '新竹基地',
+  },
+  {
+    key: 'zhu',
+    zhLabel: '柱',
+    enLabel: 'Column / Pillar',
+    description: '以結構柱位定位，如 A3柱、第5柱',
+    example: 'A3柱',
   },
 ] as const;
 
