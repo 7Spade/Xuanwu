@@ -1,13 +1,15 @@
 "use client";
 
 import { useCallback } from 'react';
+
 import { useApp } from '@/shared/app-providers/app-context';
+import type { MemberReference } from '@/shared/types';
+
 import {
   createPartnerGroup as createPartnerGroupAction,
   sendPartnerInvite as sendPartnerInviteAction,
   dismissPartnerMember as dismissPartnerMemberAction,
 } from '../_actions';
-import type { MemberReference } from '@/shared/types';
 
 export function usePartnerManagement() {
   const { state: appState } = useApp();

@@ -6,9 +6,11 @@
  */
 
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
+
+import type { Account } from '@/shared/types'
+
 import { db } from '../firestore.client'
 import { setDocument } from '../firestore.write.adapter'
-import type { Account } from '@/shared/types'
 
 export const getUserProfile = async (
   userId: string

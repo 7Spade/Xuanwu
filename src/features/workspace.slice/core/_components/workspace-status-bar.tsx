@@ -1,8 +1,10 @@
 // [職責] 顯示 Mounted/Isolated 狀態
 "use client";
 
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Eye, EyeOff } from "lucide-react";
+
+import { Badge } from "@/shared/shadcn-ui/badge";
+
 import { useWorkspace } from "./workspace-provider";
 
 export function WorkspaceStatusBar() {

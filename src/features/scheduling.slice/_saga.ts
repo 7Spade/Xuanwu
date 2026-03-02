@@ -15,14 +15,16 @@
  * Persistence: sagaStates/{sagaId} in Firestore.
  */
 
-import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
+import type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+
 import {
   handleScheduleProposed,
   approveOrgScheduleProposal,
 } from './_aggregate';
-import type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
-import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
+
 
 // ---------------------------------------------------------------------------
 // Types

@@ -1,7 +1,10 @@
 
 "use client"
 
+import { Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
+
+import { Button } from "@/shared/shadcn-ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10,12 +13,11 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/shared/shadcn-ui/dialog"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Label } from "@/shared/shadcn-ui/label"
 import { Input } from "@/shared/shadcn-ui/input"
-import { Loader2 } from "lucide-react"
-import { toast } from "@/shared/utility-hooks/use-toast"
+import { Label } from "@/shared/shadcn-ui/label"
 import { type Account } from "@/shared/types"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
 import type { AppAction } from '../_components/app-provider'
 
 interface AccountCreateDialogProps {

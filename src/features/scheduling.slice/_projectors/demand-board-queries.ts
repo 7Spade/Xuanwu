@@ -20,9 +20,10 @@ import {
   type QueryDocumentSnapshot,
   type QuerySnapshot,
 } from 'firebase/firestore';
+
+import type { ImplementsStalenessContract } from '@/features/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import type { ScheduleItem } from '@/shared/types';
-import type { ImplementsStalenessContract } from '@/features/shared-kernel';
 
 /** Demand Board staleness declaration. [S4] */
 export const DEMAND_BOARD_STALENESS: ImplementsStalenessContract = {

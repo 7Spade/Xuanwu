@@ -12,12 +12,13 @@
  */
 "use client";
 
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { ImagePlusIcon, Send, Loader2, X } from "lucide-react";
+import Image from "next/image";
+
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card } from "@/shared/shadcn-ui/card";
 import { Input } from "@/shared/shadcn-ui/input";
-import { ImagePlusIcon, Send, Loader2, X } from "lucide-react";
-import Image from "next/image";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
 
 interface DailyLogComposerProps {
   content: string;

@@ -20,6 +20,10 @@ import { usePathname } from 'next/navigation';
 // ============================================================================
 // UI Components
 // ============================================================================
+import { useI18n } from "@/config/i18n/i18n-provider";
+import { useUser } from "@/features/account.slice";
+import { useOrganizationManagement } from "@/features/organization.slice";
+import { useAuth } from "@/shared/app-providers/auth-provider";
 import {
   Sidebar,
   SidebarContent,
@@ -35,20 +39,18 @@ import {
 // ============================================================================
 // Contexts & Hooks
 // ============================================================================
-import { useAuth } from "@/shared/app-providers/auth-provider";
-import { useI18n } from "@/config/i18n/i18n-provider";
+
 import { useApp } from "../_hooks/use-app";
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
-import { useUser } from "@/features/account.slice";
-import { useOrganizationManagement } from "@/features/organization.slice";
+
 
 // ============================================================================
 // Sidebar Sub-components
 // ============================================================================
 import { AccountSwitcher } from "./account-switcher";
 import { NavMain } from "./nav-main";
-import { NavWorkspaces } from "./nav-workspaces";
 import { NavUser } from "./nav-user";
+import { NavWorkspaces } from "./nav-workspaces";
 
 /**
  * The main sidebar component for the dashboard. It composes various

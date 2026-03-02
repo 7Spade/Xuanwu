@@ -16,6 +16,11 @@
  */
 
 import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/features/shared-kernel';
+import {
   createWorkspace as createWorkspaceFacade,
   authorizeWorkspaceTeam as authorizeWorkspaceTeamFacade,
   revokeWorkspaceTeam as revokeWorkspaceTeamFacade,
@@ -29,11 +34,6 @@ import {
   updateWorkspaceLocation as updateWorkspaceLocationFacade,
   deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
 } from "@/shared/infra/firestore/firestore.facade"
-import {
-  type CommandResult,
-  commandSuccess,
-  commandFailureFrom,
-} from '@/features/shared-kernel';
 import type { Account, Capability, WorkspaceRole, WorkspaceLifecycleState, WorkspaceLocation } from "@/shared/types"
 
 export async function createWorkspace(

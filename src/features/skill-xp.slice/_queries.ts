@@ -17,11 +17,13 @@
  */
 
 import { getDocs, collection, type QueryDocumentSnapshot } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
+import type { OrgSkillRecognitionRecord } from './_org-recognition';
 import type { AccountSkillEntry } from './_projector';
 import type { OrgSkillTagEntry } from './_tag-pool';
-import type { OrgSkillRecognitionRecord } from './_org-recognition';
 
 // ---------------------------------------------------------------------------
 // Account skill view queries

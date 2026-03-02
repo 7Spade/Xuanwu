@@ -7,9 +7,9 @@
  * Marks items as read when clicked.
  */
 
+import { cn } from '@/shared/lib';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
 import type { Notification } from '@/shared/types';
-import { cn } from '@/shared/lib';
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -40,14 +40,14 @@ export function NotificationList({ notifications, onMarkRead }: NotificationList
             >
               <div className="flex items-center gap-2">
                 {!notif.read && (
-                  <span className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />
                 )}
                 <span className={cn('text-sm font-medium', notif.read && 'text-muted-foreground')}>
                   {notif.title}
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground pl-4">{notif.message}</p>
-              <time className="text-xs text-muted-foreground/60 pl-4">
+              <p className="pl-4 text-xs text-muted-foreground">{notif.message}</p>
+              <time className="pl-4 text-xs text-muted-foreground/60">
                 {new Date(notif.timestamp).toLocaleString('zh-TW')}
               </time>
             </button>

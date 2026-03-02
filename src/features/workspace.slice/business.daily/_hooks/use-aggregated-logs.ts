@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAccount } from "../../core";
+
 import type { DailyLog } from "@/shared/types";
+
+import { useAccount } from "../../core";
 
 export function useAggregatedLogs() {
   const { state: accountState } = useAccount();

@@ -3,8 +3,8 @@
  * No async, no I/O, no React, no Firebase.
  */
 
-import type { Workspace, Account } from "@/shared/types"
 import { isOwner, getUserTeamIds } from "@/shared/lib/account.rules"
+import type { Workspace, Account } from "@/shared/types"
 
 // ---------------------------------------------------------------------------
 // Access predicates

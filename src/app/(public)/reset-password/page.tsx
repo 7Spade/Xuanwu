@@ -1,8 +1,9 @@
 // [職責] Canonical full-page reset-password — shown on direct URL access to /reset-password
 "use client"
 
-import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { ResetPasswordForm } from "@/features/identity.slice"
 

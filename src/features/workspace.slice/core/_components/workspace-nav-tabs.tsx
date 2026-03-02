@@ -1,11 +1,14 @@
 "use client"
 
-import { useMemo } from "react"
-import { useSelectedLayoutSegment } from "next/navigation"
 import Link from "next/link"
-import { useWorkspace } from "./workspace-provider";
-import { useApp } from "../_hooks/use-app"
+import { useSelectedLayoutSegment } from "next/navigation"
+import { useMemo } from "react"
+
 import type { Capability } from "@/shared/types"
+
+import { useApp } from "../_hooks/use-app"
+
+import { useWorkspace } from "./workspace-provider";
 
 // =================================================================
 // == Capability Registry — maps capability IDs to labels

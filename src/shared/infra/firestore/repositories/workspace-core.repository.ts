@@ -15,12 +15,7 @@ import {
   runTransaction,
   type FieldValue,
 } from 'firebase/firestore';
-import { db } from '../firestore.client';
-import {
-  updateDocument,
-  addDocument,
-  deleteDocument,
-} from '../firestore.write.adapter';
+
 import type {
   Workspace,
   WorkspaceRole,
@@ -31,6 +26,13 @@ import type {
   Account,
   WorkspaceLocation,
 } from '@/shared/types';
+
+import { db } from '../firestore.client';
+import {
+  updateDocument,
+  addDocument,
+  deleteDocument,
+} from '../firestore.write.adapter';
 
 /**
  * Creates a new workspace with default values, based on the active account context.

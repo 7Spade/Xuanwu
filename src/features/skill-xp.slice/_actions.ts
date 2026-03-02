@@ -15,13 +15,14 @@
 
 'use server';
 
-import { addXp, deductXp } from './_aggregate';
 import { publishOrgEvent } from '@/features/organization.slice';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+
+import { addXp, deductXp } from './_aggregate';
 
 export interface AddXpInput {
   accountId: string;

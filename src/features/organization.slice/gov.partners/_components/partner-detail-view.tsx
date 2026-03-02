@@ -1,9 +1,5 @@
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
 import { 
   ArrowLeft, 
   MailPlus, 
@@ -13,9 +9,13 @@ import {
   ShieldCheck,
   SendHorizontal
 } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import type { PartnerInvite, MemberReference , Team } from "@/shared/types"
+
+import { useApp } from "@/shared/app-providers/app-context"
+import { Badge } from "@/shared/shadcn-ui/badge"
+import { Button } from "@/shared/shadcn-ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
 import { 
   Dialog, 
   DialogContent, 
@@ -27,10 +27,13 @@ import {
 import { Input } from "@/shared/shadcn-ui/input"
 import { Label } from "@/shared/shadcn-ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs"
-import { useApp } from "@/shared/app-providers/app-context"
+import type { PartnerInvite, MemberReference , Team } from "@/shared/types"
+import { PageHeader } from "@/shared/ui/page-header"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
 import { usePartnerManagement } from "../_hooks/use-partner-management"
 import { subscribeToOrgPartnerInvites } from "../_queries"
-import { PageHeader } from "@/shared/ui/page-header"
+
 
 /**
  * PartnerDetailView - Manages recruitment and identity governance within a specific partner team.

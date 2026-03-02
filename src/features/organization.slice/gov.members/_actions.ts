@@ -12,15 +12,15 @@
  */
 
 import {
-  recruitOrganizationMember,
-  dismissOrganizationMember,
-} from "@/shared/infra/firestore/firestore.facade";
-import type { MemberReference } from "@/shared/types";
-import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from "@/features/shared-kernel";
+import {
+  recruitOrganizationMember,
+  dismissOrganizationMember,
+} from "@/shared/infra/firestore/firestore.facade";
+import type { MemberReference } from "@/shared/types";
 
 export async function recruitMember(
   organizationId: string,

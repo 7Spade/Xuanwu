@@ -14,14 +14,16 @@
  * Stored at: tagDictionary/{tagSlug}
  */
 
+import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
   deleteDocument,
 } from '@/shared/infra/firestore/firestore.write.adapter';
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import { buildIdempotencyKey, type DlqTier } from '../outbox-contract';
 import type { TagCategory } from '../tag-authority';
+
 import { publishTagEvent } from './_bus';
 
 // ---------------------------------------------------------------------------

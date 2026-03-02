@@ -1,7 +1,10 @@
 
 "use client"
 
+import { Globe, MoreVertical, Users, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+import { useApp } from "@/shared/app-providers/app-context"
 import { Button } from "@/shared/shadcn-ui/button"
 import {
   Card,
@@ -11,8 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/shadcn-ui/card"
-import { Globe, MoreVertical, Users, ArrowUpRight } from "lucide-react"
-import { useApp } from "@/shared/app-providers/app-context"
 import { type Account } from "@/shared/types"
 
 interface AccountGridProps {

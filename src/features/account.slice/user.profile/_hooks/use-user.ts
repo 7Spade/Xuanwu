@@ -1,16 +1,18 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { onSnapshot, doc } from 'firebase/firestore'
+import { useState, useEffect, useCallback } from 'react'
+
 import { useAuth } from '@/shared/app-providers/auth-provider'
 import { useFirebase } from '@/shared/app-providers/firebase-provider'
+import { uploadProfilePicture } from '@/shared/infra/storage/storage.facade'
+import type { Account } from '@/shared/types'
+
 import {
   updateUserProfile as updateUserProfileAction,
 } from '../_actions'
 import { getUserProfile as getUserProfileQuery } from '../_queries'
-import { uploadProfilePicture } from '@/shared/infra/storage/storage.facade'
-import type { Account } from '@/shared/types'
 
 /**
  * @fileoverview A hook for managing the current user's profile data.

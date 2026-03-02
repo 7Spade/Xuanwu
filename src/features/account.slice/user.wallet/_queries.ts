@@ -5,6 +5,7 @@
  */
 
 import { doc, collection, query, orderBy, limit, onSnapshot, type Unsubscribe } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import type { Account, Wallet } from '@/shared/types';

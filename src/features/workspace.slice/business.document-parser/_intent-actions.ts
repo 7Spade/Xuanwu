@@ -5,12 +5,12 @@
  * No 'use server' — runs in the browser with the authenticated user's Firestore context.
  */
 
+import type { SkillRequirement } from '@/features/shared-kernel'
 import {
   createParsingIntent as createParsingIntentFacade,
   updateParsingIntentStatus as updateParsingIntentStatusFacade,
 } from '@/shared/infra/firestore/firestore.facade'
 import type { ParsedLineItem, IntentID, SourcePointer } from '@/shared/types'
-import type { SkillRequirement } from '@/features/shared-kernel'
 
 export async function saveParsingIntent(
   workspaceId: string,

@@ -9,6 +9,7 @@
  */
 
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { WalletBalanceView } from './_projector';
 
 /**

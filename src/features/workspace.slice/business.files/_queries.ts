@@ -11,6 +11,7 @@
  */
 
 import { collection, query, orderBy, onSnapshot, type Unsubscribe } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared/infra/firestore/firestore.facade';
 import type { WorkspaceFile } from '@/shared/types';

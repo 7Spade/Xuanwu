@@ -14,6 +14,7 @@ import {
   type Unsubscribe,
   type FirestoreDataConverter,
 } from 'firebase/firestore';
+
 import { db } from './firestore.client';
 
 /**

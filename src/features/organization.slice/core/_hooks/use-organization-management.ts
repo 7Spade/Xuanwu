@@ -1,14 +1,16 @@
 "use client";
 
 import { useCallback } from 'react';
+
 import { useApp } from '@/shared/app-providers/app-context';
 import { useAuth } from '@/shared/app-providers/auth-provider';
+import type { ThemeConfig } from '@/shared/types';
+
 import {
   createOrganization as createOrganizationAction,
   updateOrganizationSettings as updateOrganizationSettingsAction,
   deleteOrganization as deleteOrganizationAction,
 } from '../_actions';
-import type { ThemeConfig } from '@/shared/types';
 
 export function useOrganizationManagement() {
   const { state: appState } = useApp();

@@ -1,5 +1,6 @@
-import type { SkillGrant } from './skill.types'
 import type { Timestamp } from '@/shared/ports'
+
+import type { SkillGrant } from './skill.types'
 
 export type AccountType = 'user' | 'organization'
 export type OrganizationRole = 'Owner' | 'Admin' | 'Member' | 'Guest';

@@ -2,6 +2,7 @@
 "use client";
 
 import { useMemo, useDeferredValue } from "react";
+
 import type { Workspace } from "@/shared/types";
 
 export function useWorkspaceFilters(

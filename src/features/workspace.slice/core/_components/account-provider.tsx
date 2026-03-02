@@ -1,13 +1,15 @@
 "use client";
 
-import {type ReactNode} from 'react';
-import type React from 'react';
-import { createContext, useReducer, useEffect } from 'react';
-import { useFirebase } from "@/shared/app-providers/firebase-provider";
 import { collection, query, where, onSnapshot, type QuerySnapshot, orderBy, limit } from "firebase/firestore";
-import { type Workspace, type DailyLog, type AuditLog, type PartnerInvite, type ScheduleItem } from '@/shared/types';
-import { useApp } from '../_hooks/use-app';
+import type React from 'react';
+import {type ReactNode} from 'react';
+import { createContext, useReducer, useEffect } from 'react';
+
+import { useFirebase } from "@/shared/app-providers/firebase-provider";
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils';
+import { type Workspace, type DailyLog, type AuditLog, type PartnerInvite, type ScheduleItem } from '@/shared/types';
+
+import { useApp } from '../_hooks/use-app';
 
 // State and Action Types
 interface AccountState {

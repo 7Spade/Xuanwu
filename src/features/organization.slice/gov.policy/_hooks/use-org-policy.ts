@@ -7,8 +7,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToOrgPolicies } from '../_queries';
+
 import type { OrgPolicy } from '../_actions';
+import { subscribeToOrgPolicies } from '../_queries';
 
 export function useOrgPolicy(orgId: string | null) {
   const [policies, setPolicies] = useState<OrgPolicy[]>([]);

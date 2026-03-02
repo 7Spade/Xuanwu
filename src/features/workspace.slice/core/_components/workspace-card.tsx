@@ -1,7 +1,12 @@
 // [職責] 單個 Workspace 的卡片展示
 "use client";
 
+import { MoreVertical, Eye, EyeOff, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+import { useI18n } from "@/config/i18n/i18n-provider";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
 import {
   Card,
   CardContent,
@@ -10,11 +15,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/shared/shadcn-ui/card";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { MoreVertical, Eye, EyeOff, Shield } from "lucide-react";
 import type { Workspace } from "@/shared/types";
-import { useI18n } from "@/config/i18n/i18n-provider";
 
 interface WorkspaceCardProps {
   workspace: Workspace;

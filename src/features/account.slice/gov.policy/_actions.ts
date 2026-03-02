@@ -16,13 +16,13 @@
  *   policy record for auditability. Must NOT be regenerated here.
  */
 
-import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
 // ---------------------------------------------------------------------------
 // TOKEN_REFRESH_SIGNAL helper [S6]

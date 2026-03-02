@@ -1,7 +1,6 @@
 
 "use client"
 
-import * as React from "react"
 import {
   type ColumnDef,
   flexRender,
@@ -14,7 +13,17 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table"
+import { ChevronDown } from "lucide-react"
+import * as React from "react"
 
+import { Button } from "@/shared/shadcn-ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/shared/shadcn-ui/dropdown-menu"
+import { Input } from "@/shared/shadcn-ui/input"
 import {
   Table,
   TableBody,
@@ -23,15 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/shadcn-ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Input } from "@/shared/shadcn-ui/input"
-import { ChevronDown } from "lucide-react"
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

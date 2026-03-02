@@ -3,9 +3,11 @@
  * No React. No UI. Callable from hooks, context, or Server Actions.
  */
 
-import { createWorkspace, mountCapabilities , updateWorkspaceSettings, deleteWorkspace } from "./_actions"
-import type { Account, Capability , WorkspaceLifecycleState, Address } from "@/shared/types"
 import type { CommandResult } from '@/features/shared-kernel';
+import type { Account, Capability, WorkspaceLifecycleState, Address } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { createWorkspace, mountCapabilities, updateWorkspaceSettings, deleteWorkspace } from "./_actions";
 
 /**
  * Creates a workspace and immediately mounts a set of initial capabilities.
@@ -30,8 +32,6 @@ export async function createWorkspaceWithCapabilities(
   }
   return result;
 }
-
-import { toast } from "@/shared/utility-hooks/use-toast"
 
 export const handleCreateWorkspace = async (
   name: string,

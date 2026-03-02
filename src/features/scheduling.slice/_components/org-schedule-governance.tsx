@@ -19,22 +19,20 @@
  * FR-W2: Skill match indicators — show per-member skill match against item requirements.
  */
 
+import { CheckCircle, XCircle, Users, Flag } from 'lucide-react';
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useApp } from '@/shared/app-providers/app-context';
-import { useAccount } from '@/features/workspace.slice';
-import {
-  approveScheduleItemWithMember,
-  updateScheduleItemStatus,
-} from '../_actions';
-import { toast } from '@/shared/utility-hooks/use-toast';
-import type { ScheduleItem } from '@/shared/types';
-import type { SkillRequirement } from '@/features/shared-kernel';
+
 import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
+import type { SkillRequirement } from '@/features/shared-kernel';
+import { tierSatisfies } from '@/features/shared-kernel';
+import { useAccount } from '@/features/workspace.slice';
+import { useApp } from '@/shared/app-providers/app-context';
+import type { Timestamp } from '@/shared/ports';
+import { Badge } from '@/shared/shadcn-ui/badge';
+import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Badge } from '@/shared/shadcn-ui/badge';
 import {
   Select,
   SelectContent,
@@ -42,9 +40,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/shadcn-ui/select';
-import { CheckCircle, XCircle, Users, Flag } from 'lucide-react';
-import type { Timestamp } from '@/shared/ports';
-import { tierSatisfies } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared/types';
+import { toast } from '@/shared/utility-hooks/use-toast';
+
+import {
+  approveScheduleItemWithMember,
+  updateScheduleItemStatus,
+} from '../_actions';
 
 // ---------------------------------------------------------------------------
 // Helpers

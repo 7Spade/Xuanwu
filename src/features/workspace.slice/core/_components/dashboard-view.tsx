@@ -2,18 +2,21 @@
 // Extracted from app/dashboard/page.tsx to follow the features/ view pattern.
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
 import { User as UserIcon } from "lucide-react"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { useAuth } from "@/shared/app-providers/auth-provider"
+import { useEffect, useMemo, useState } from "react"
+
 import { useI18n } from "@/config/i18n/i18n-provider"
+import { PermissionTree } from "@/features/account.slice"
+import { AccountGrid } from "@/features/organization.slice"
+import { useAuth } from "@/shared/app-providers/auth-provider"
+import { Badge } from "@/shared/shadcn-ui/badge"
+import { PageHeader } from "@/shared/ui/page-header"
+
 import { useApp } from "../_hooks/use-app"
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
+
 import { StatCards } from "./stat-cards"
-import { AccountGrid } from "@/features/organization.slice"
-import { PermissionTree } from "@/features/account.slice"
 import { WorkspaceList } from "./workspace-list"
-import { PageHeader } from "@/shared/ui/page-header"
 
 
 /**

@@ -1,11 +1,13 @@
 "use client";
 
+import { ShieldCheck, Activity, Layers, Zap } from "lucide-react";
 import { useMemo } from "react";
-import { useAccount } from "../_hooks/use-account";
-import { useApp } from "../_hooks/use-app";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 import { Progress } from "@/shared/shadcn-ui/progress";
-import { ShieldCheck, Activity, Layers, Zap } from "lucide-react";
+
+import { useAccount } from "../_hooks/use-account";
+import { useApp } from "../_hooks/use-app";
 
 export function StatCards() {
   const { state: accountState } = useAccount();

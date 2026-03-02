@@ -61,14 +61,25 @@ export default tseslint.config(
       ],
 
       // --- 檔案命名規範 ---
+      // 允許 kebab-case 及 _ 前綴（架構慣例 _actions.ts / _gateway.ts / _funnel.ts）
+      // ignoreMiddleExtensions: true 使 tailwind.config.ts 只驗證最外層名稱 tailwind
       "check-file/filename-naming-convention": [
         "warn",
-        { "**/*.{tsx,ts}": "PASCAL_CASE" },
+        { "**/*.{tsx,ts}": "+([-a-z0-9_])" },
         { "ignoreMiddleExtensions": true }
       ],
+      // --- 資料夾命名規範 ---
+      // 允許 kebab-case、dot-notation（account.slice / infra.dlq-manager）及 _ 前綴
+      // 不套用至 src/app/**（Next.js App Router 保留語法：(group)、@slot、[param]、(.)intercept）
       "check-file/folder-naming-convention": [
         "warn",
-        { "src/**": "KEBAB_CASE" }
+        {
+          "src/features/**": "+([-a-z0-9_.])",
+          "src/shared/**": "+([-a-z0-9_.])",
+          "src/shared-infra/**": "+([-a-z0-9_.])",
+          "src/config/**": "+([-a-z0-9_.])",
+          "src/app-runtime/**": "+([-a-z0-9_.])"
+        }
       ]
     },
   }

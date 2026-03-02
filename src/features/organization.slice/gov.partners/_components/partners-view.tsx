@@ -1,10 +1,14 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Handshake, Plus, ArrowRight, Globe, AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect, useMemo } from "react"
+
+import { useI18n } from "@/config/i18n/i18n-provider"
+import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
-import { Handshake, Plus, ArrowRight, Globe, AlertCircle } from "lucide-react"
-import { useState, useEffect, useMemo } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
 import { 
   Dialog, 
   DialogContent, 
@@ -13,15 +17,14 @@ import {
   DialogFooter,
   DialogDescription
 } from "@/shared/shadcn-ui/dialog"
-import { Label } from "@/shared/shadcn-ui/label"
 import { Input } from "@/shared/shadcn-ui/input"
-import { useRouter } from "next/navigation"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import { useApp } from "@/shared/app-providers/app-context"
-import { usePartnerManagement } from "../_hooks/use-partner-management"
-import { useI18n } from "@/config/i18n/i18n-provider"
+import { Label } from "@/shared/shadcn-ui/label"
 import type { Team } from "@/shared/types"
 import { PageHeader } from "@/shared/ui/page-header"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
+import { usePartnerManagement } from "../_hooks/use-partner-management"
+
 
 /**
  * PartnersView - Manages logical groupings of EXTERNAL partners (Partner Teams).

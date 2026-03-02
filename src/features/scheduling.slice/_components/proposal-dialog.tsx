@@ -1,7 +1,18 @@
 "use client";
 
+import { format } from "date-fns";
+import { CalendarIcon, MapPin, Plus, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { type DateRange } from "react-day-picker";
+
+import type { SkillRequirement } from "@/features/shared-kernel";
+import { TIER_DEFINITIONS } from "@/features/shared-kernel";
+import { getOrgSkillTags } from "@/features/skill-xp.slice";
+import { SKILLS } from "@/shared/constants/skills";
+import { cn } from "@/shared/lib";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Calendar } from "@/shared/shadcn-ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -10,23 +21,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/shared/shadcn-ui/dialog";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Label } from "@/shared/shadcn-ui/label";
 import { Input } from "@/shared/shadcn-ui/input";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Label } from "@/shared/shadcn-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { Calendar } from "@/shared/shadcn-ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { CalendarIcon, MapPin, Plus, X } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/shared/lib";
-import { toast } from "@/shared/utility-hooks/use-toast";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { type Location, type SkillTier } from "@/shared/types";
-import type { SkillRequirement } from "@/features/shared-kernel";
-import { SKILLS } from "@/shared/constants/skills";
-import { TIER_DEFINITIONS } from "@/features/shared-kernel";
-import { getOrgSkillTags } from "@/features/skill-xp.slice";
+import { toast } from "@/shared/utility-hooks/use-toast";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;
 

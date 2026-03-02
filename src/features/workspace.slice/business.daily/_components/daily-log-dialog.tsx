@@ -12,25 +12,34 @@
  */
 "use client";
 
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
-import { type DailyLog, type DailyLogComment, type Account } from "@/shared/types";
-import type { Timestamp } from "@/shared/ports";
-import { ImageCarousel } from "./image-carousel";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { LikeButton } from './actions/like-button';
-import { CommentButton } from './actions/comment-button';
-import { BookmarkButton } from "./actions/bookmark-button";
-import { ShareButton } from './actions/share-button';
-import { useFirebase } from "@/shared/app-providers/firebase-provider";
-import { useAuth } from "@/shared/app-providers/auth-provider";
-import { addDailyLogComment } from "../_actions";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-import { toast } from "@/shared/utility-hooks/use-toast";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { Button } from "@/shared/shadcn-ui/button";
 import { CornerUpLeft, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useFirebase } from "@/shared/app-providers/firebase-provider";
+import type { Timestamp } from "@/shared/ports";
+import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
+import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { type DailyLog, type DailyLogComment, type Account } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { addDailyLogComment } from "../_actions";
+
+import { BookmarkButton } from "./actions/bookmark-button";
+import { CommentButton } from './actions/comment-button';
+import { LikeButton } from './actions/like-button';
+import { ShareButton } from './actions/share-button';
+import { ImageCarousel } from "./image-carousel";
+
+
+
+
+
+
 
 interface DailyLogDialogProps {
   log: DailyLog | null;

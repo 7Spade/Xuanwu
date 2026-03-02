@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { Search, Command } from "lucide-react";
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from "@/shared/shadcn-ui/button";
-import { SidebarTrigger } from "@/shared/shadcn-ui/sidebar";
-import { Separator } from "@/shared/shadcn-ui/separator";
+import { useState, useEffect } from 'react';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,13 +14,19 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/shared/shadcn-ui/breadcrumb";
-import { Search, Command } from "lucide-react";
-import { NotificationCenter } from "./notification-center";
-import { GlobalSearch } from "./global-search";
-import { useApp } from "../_hooks/use-app";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Separator } from "@/shared/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shared/shadcn-ui/sidebar";
 import type { Account } from '@/shared/types'
+
+import { useApp } from "../_hooks/use-app";
 import { useVisibleWorkspaces } from '../_hooks/use-visible-workspaces';
-import Link from 'next/link';
+
+import { GlobalSearch } from "./global-search";
+import { NotificationCenter } from "./notification-center";
+
+
+
 
 const SEGMENT_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',

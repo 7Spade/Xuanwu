@@ -12,10 +12,12 @@ import {
   limit as firestoreLimit,
   where,
 } from 'firebase/firestore'
-import { db } from '../firestore.client'
-import { getDocuments } from '../firestore.read.adapter'
-import { createConverter } from '../firestore.converter'
+
 import type { AuditLog } from '@/shared/types'
+
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
 
 export const getAuditLogs = async (
   accountId: string,

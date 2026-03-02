@@ -18,20 +18,21 @@
  */
 
 import {
+  type CommandResult,
+  type SkillRequirement,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/features/shared-kernel';
+import {
   assignMemberToScheduleItem,
   unassignMemberFromScheduleItem,
   createScheduleItem as createScheduleItemFacade,
   updateScheduleItemStatus as updateScheduleItemStatusFacade,
   assignMemberAndApprove,
 } from '@/shared/infra/firestore/firestore.facade';
-import { approveOrgScheduleProposal, cancelOrgScheduleProposal, completeOrgSchedule } from './_aggregate';
-import {
-  type CommandResult,
-  type SkillRequirement,
-  commandSuccess,
-  commandFailureFrom,
-} from '@/features/shared-kernel';
 import type { ScheduleItem } from '@/shared/types';
+
+import { approveOrgScheduleProposal, cancelOrgScheduleProposal, completeOrgSchedule } from './_aggregate';
 
 // =================================================================
 // A. Workspace-level mutations

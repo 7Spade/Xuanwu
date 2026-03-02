@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Label } from "@/shared/shadcn-ui/label";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
 import { Mail } from "lucide-react";
+import { useState } from "react";
+
 import { useI18n } from "@/config/i18n/i18n-provider";
+import { Button } from "@/shared/shadcn-ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
+import { Label } from "@/shared/shadcn-ui/label";
 import { toast } from "@/shared/utility-hooks/use-toast";
+
 import { sendPasswordResetEmail } from "../_actions";
 
 interface ResetPasswordFormProps {

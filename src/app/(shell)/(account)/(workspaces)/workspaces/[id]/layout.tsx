@@ -2,12 +2,13 @@
 // [職責] 為特定工作區的所有頁面提供共享的 Context 和 UI 佈局。
 "use client";
 
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
-import { Button } from "@/shared/shadcn-ui/button";
 import { ArrowLeft, Settings, Trash2, ChevronRight, MapPin } from "lucide-react";
+import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, use } from "react";
+
 import { WorkspaceProvider, useWorkspace , useWorkspaceEventHandler , WorkspaceStatusBar , WorkspaceNavTabs , useWorkspaceCommands, useApp } from "@/features/workspace.slice"
 import { ROUTES } from "@/shared/constants/routes";
+import { Button } from "@/shared/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,

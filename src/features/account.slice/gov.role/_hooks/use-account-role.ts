@@ -7,8 +7,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToAccountRoles } from '../_queries';
+
 import type { AccountRoleRecord } from '../_actions';
+import { subscribeToAccountRoles } from '../_queries';
 
 export function useAccountRole(accountId: string | null) {
   const [roles, setRoles] = useState<AccountRoleRecord[]>([]);

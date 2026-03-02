@@ -5,9 +5,11 @@
  */
 
 import { collection, query, orderBy, limit } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
-import { getDocuments } from '@/shared/infra/firestore/firestore.read.adapter';
 import { createConverter } from '@/shared/infra/firestore/firestore.converter';
+import { getDocuments } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { AuditProjectionEntry } from './_projector';
 
 export async function getAccountAuditEntries(

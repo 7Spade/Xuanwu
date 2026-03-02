@@ -1,15 +1,16 @@
 "use client"
 
-import { useParams, useRouter } from "next/navigation"
-import { Card, CardContent } from "@/shared/shadcn-ui/card"
-import { Button } from "@/shared/shadcn-ui/button"
 import { ArrowLeft, UserPlus, Trash2, Users } from "lucide-react"
+import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import { useApp } from "@/shared/app-providers/app-context"
+
 import { useTeamManagement } from "@/features/organization.slice"
+import { useApp } from "@/shared/app-providers/app-context"
+import { Button } from "@/shared/shadcn-ui/button"
+import { Card, CardContent } from "@/shared/shadcn-ui/card"
 import type { MemberReference, Team } from "@/shared/types"
 import { PageHeader } from "@/shared/ui/page-header"
+import { toast } from "@/shared/utility-hooks/use-toast"
 
 /**
  * TeamDetailView - 職責：管理特定團隊內的成員 (Team Member 清單)

@@ -8,9 +8,11 @@
  */
 
 import { serverTimestamp } from 'firebase/firestore';
-import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import { versionGuardAllows } from '@/features/shared-kernel';
+import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+
 import type { WorkspaceScopeGuardView } from './_read-model';
 
 /**

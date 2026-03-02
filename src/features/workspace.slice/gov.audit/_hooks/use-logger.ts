@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useFirebase } from "@/shared/app-providers/firebase-provider";
 import { serverTimestamp, type FieldValue } from "firebase/firestore";
-import { addDocument } from "@/shared/infra/firestore/firestore.write.adapter";
 import { useCallback } from "react";
-import type { AuditLog, Account } from "@/shared/types";
+
 import { useApp } from "@/shared/app-providers/app-context";
+import { useFirebase } from "@/shared/app-providers/firebase-provider";
+import { addDocument } from "@/shared/infra/firestore/firestore.write.adapter";
+import type { AuditLog, Account } from "@/shared/types";
 
 /**
  * useLogger - Zero-cognition logging interface.

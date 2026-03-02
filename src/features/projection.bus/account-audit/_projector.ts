@@ -24,6 +24,7 @@
  */
 
 import { serverTimestamp, doc, setDoc, collection } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { addDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 

@@ -26,20 +26,8 @@
  * `registerTagFunnel()` once at app startup.
  */
 
-import type { WorkspaceEventBus } from '@/features/workspace.slice';
-import { upsertProjectionVersion } from './_registry';
-import { appendAuditEntry } from './account-audit';
-import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
 import { onOrgEvent } from '@/features/organization.slice';
-import { applyMemberJoined, applyMemberLeft } from './organization-view';
 import { handleScheduleProposed } from '@/features/scheduling.slice';
-import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
-import {
-  applyOrgMemberSkillXp,
-  initOrgMemberEntry,
-  removeOrgMemberEntry,
-  updateOrgMemberEligibility,
-} from './org-eligible-member-view';
 import {
   applyDemandProposed,
   applyDemandAssigned,
@@ -49,17 +37,31 @@ import {
   applyDemandAssignRejected,
 } from '@/features/scheduling.slice';
 import { onTagEvent } from '@/features/shared-kernel/centralized-tag';
+import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
+import {
+  handleTagUpdatedForPool,
+  handleTagDeprecatedForPool,
+  handleTagDeletedForPool,
+} from '@/features/skill-xp.slice';
+import type { WorkspaceEventBus } from '@/features/workspace.slice';
+
+import { upsertProjectionVersion } from './_registry';
+import { appendAuditEntry } from './account-audit';
+import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
+import {
+  applyOrgMemberSkillXp,
+  initOrgMemberEntry,
+  removeOrgMemberEntry,
+  updateOrgMemberEligibility,
+} from './org-eligible-member-view';
+import { applyMemberJoined, applyMemberLeft } from './organization-view';
 import {
   applyTagCreated,
   applyTagUpdated,
   applyTagDeprecated,
   applyTagDeleted,
 } from './tag-snapshot';
-import {
-  handleTagUpdatedForPool,
-  handleTagDeprecatedForPool,
-  handleTagDeletedForPool,
-} from '@/features/skill-xp.slice';
+
 
 /**
  * Registers workspace event handlers on the bus to keep projections in sync.

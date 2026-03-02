@@ -5,6 +5,7 @@
  */
 
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { OrganizationViewRecord } from './_projector';
 
 export async function getOrganizationView(orgId: string): Promise<OrganizationViewRecord | null> {

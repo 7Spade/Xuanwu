@@ -14,10 +14,11 @@
  */
 
 import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
-import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
+
 import { getAccountView } from './account-view';
-import { queryWorkspaceAccess } from './workspace-scope-guard';
+import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
 import { getDisplayWalletBalance } from './wallet-balance';
+import { queryWorkspaceAccess } from './workspace-scope-guard';
 
 /**
  * Register all four v9 QUERY_ROUTES with their projection handlers.

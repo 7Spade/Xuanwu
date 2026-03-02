@@ -1,14 +1,17 @@
 // [職責] Shared schedule proposal form logic for both canonical and intercepting routes.
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
-import { useWorkspace } from "@/features/workspace.slice"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import type { ScheduleItem, Location } from "@/shared/types"
-import type { SkillRequirement } from "@/features/shared-kernel"
 import { parseISO } from "date-fns"
-import { ProposalDialog } from "./proposal-dialog"
 import { Timestamp } from "firebase/firestore"
+import { useRouter, useSearchParams } from "next/navigation"
+
+import type { SkillRequirement } from "@/features/shared-kernel"
+import { useWorkspace } from "@/features/workspace.slice"
+import type { ScheduleItem, Location } from "@/shared/types"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
+import { ProposalDialog } from "./proposal-dialog"
+
 
 interface ScheduleProposalContentProps {
   /** Wrap the dialog in a full-page centering container (for canonical route). */

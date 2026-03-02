@@ -2,10 +2,12 @@
 "use client"
 
 import { useMemo } from 'react'
-import { useApp } from './use-app'
+
 import { useAuth } from '@/shared/app-providers/auth-provider'
-import { useAccount } from './use-account'
 import { filterVisibleWorkspaces } from '@/shared/lib'
+
+import { useAccount } from './use-account'
+import { useApp } from './use-app'
 
 /**
  * A hook that centralizes the logic for determining which workspaces are visible to the current user

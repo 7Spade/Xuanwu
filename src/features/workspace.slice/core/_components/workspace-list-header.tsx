@@ -8,11 +8,12 @@ import {
   LayoutGrid,
   List as ListIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { useI18n } from "@/config/i18n/i18n-provider";
+import { ROUTES } from "@/shared/constants/routes";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Input } from "@/shared/shadcn-ui/input";
-import { useI18n } from "@/config/i18n/i18n-provider";
-import { useRouter } from "next/navigation";
-import { ROUTES } from "@/shared/constants/routes";
 import { PageHeader } from "@/shared/ui/page-header";
 
 interface WorkspaceListHeaderProps {

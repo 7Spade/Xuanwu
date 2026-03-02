@@ -1,10 +1,15 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Users, Plus, FolderTree, ArrowRight, AlertCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect, useMemo } from "react"
+
+import { useI18n } from "@/config/i18n/i18n-provider"
+import { useTeamManagement } from "@/features/organization.slice"
+import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
-import { Users, Plus, FolderTree, ArrowRight, AlertCircle } from "lucide-react"
-import { useState, useEffect, useMemo } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
 import { 
   Dialog, 
   DialogContent, 
@@ -12,15 +17,11 @@ import {
   DialogTitle, 
   DialogFooter 
 } from "@/shared/shadcn-ui/dialog"
-import { Label } from "@/shared/shadcn-ui/label"
 import { Input } from "@/shared/shadcn-ui/input"
-import { useRouter } from "next/navigation"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import { useApp } from "@/shared/app-providers/app-context"
-import { useTeamManagement } from "@/features/organization.slice"
-import { useI18n } from "@/config/i18n/i18n-provider"
+import { Label } from "@/shared/shadcn-ui/label"
 import type { Team } from "@/shared/types"
 import { PageHeader } from "@/shared/ui/page-header"
+import { toast } from "@/shared/utility-hooks/use-toast"
 
 /**
  * TeamsView - Manages the logical groupings of INTERNAL members within the dimension.

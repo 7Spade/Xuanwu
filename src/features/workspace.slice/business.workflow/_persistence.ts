@@ -10,9 +10,11 @@
  */
 
 import { collection, getDocs, query, type QueryDocumentSnapshot, type DocumentData, where } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+
 import type { WorkflowAggregateState, WorkflowStage } from './_aggregate';
 
 const workflowPath = (workspaceId: string, workflowId: string) =>

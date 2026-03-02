@@ -17,6 +17,7 @@
  */
 
 import { onOrgEvent } from '@/features/organization.slice';
+
 import { deliverNotification } from '../user.notification';
 
 export interface RouterRegistration {

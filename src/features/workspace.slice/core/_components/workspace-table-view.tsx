@@ -1,12 +1,13 @@
 // [職責] 列表佈局容器
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Eye, EyeOff, Shield, ArrowUpRight } from "lucide-react";
-import type { Workspace } from "@/shared/types";
+import { useRouter } from "next/navigation";
+
 import { useI18n } from "@/config/i18n/i18n-provider";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import type { Workspace } from "@/shared/types";
 
 interface WorkspaceListItemProps {
   workspace: Workspace;

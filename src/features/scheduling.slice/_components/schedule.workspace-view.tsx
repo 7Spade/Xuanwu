@@ -1,12 +1,15 @@
 // [職責] Business — 單一 Workspace 排程提案與檢視
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Shield } from "lucide-react";
-import { Button } from "@/shared/shadcn-ui/button";
-import { UnifiedCalendarGrid } from "./unified-calendar-grid";
-import { useWorkspaceSchedule } from "../_hooks/use-workspace-schedule";
+import { useRouter } from "next/navigation";
+
 import { useWorkspace } from "@/features/workspace.slice";
+import { Button } from "@/shared/shadcn-ui/button";
+
+import { useWorkspaceSchedule } from "../_hooks/use-workspace-schedule";
+
+import { UnifiedCalendarGrid } from "./unified-calendar-grid";
 
 export function WorkspaceSchedule() {
   const router = useRouter();

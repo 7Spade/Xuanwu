@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback } from 'react';
+
 import { useApp } from '@/shared/app-providers/app-context';
+import type { MemberReference } from '@/shared/types';
+
 import {
   recruitMember as recruitMemberAction,
   dismissMember as dismissMemberAction,
 } from '../_actions';
-import type { MemberReference } from '@/shared/types';
 
 export function useMemberManagement() {
   const { state: appState } = useApp();

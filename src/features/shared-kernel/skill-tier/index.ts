@@ -21,8 +21,9 @@
  * Type definitions from @/shared/types/skill.types are acceptable (shared→features direction).
  */
 
-import type { SkillTier, TierDefinition } from '@/shared/types/skill.types';
-export type { SkillTier, TierDefinition };
+import type { SkillTier, TierDefinition, SkillRequirement } from '@/shared/types/skill.types';
+
+export type { SkillTier, TierDefinition, SkillRequirement };
 
 // ─── Canonical tier table ─────────────────────────────────────────────────────
 
@@ -91,9 +92,8 @@ export function tierSatisfies(grantedTier: SkillTier, minimumTier: SkillTier): b
  * minimum XP threshold.
  *
  * Re-exported from @/shared/types/skill.types to keep the dependency direction clean.
+ * See top-of-file import for the consolidated re-export.
  */
-import type { SkillRequirement } from '@/shared/types/skill.types';
-export type { SkillRequirement };
 
 // ─── Cross-BC event payload (Workspace BC → Organization BC) [A5] ────────────
 

@@ -13,8 +13,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToOrgScheduleProposals, subscribeToPendingProposals, subscribeToConfirmedProposals } from '../_queries';
+
 import type { ScheduleItem, ScheduleStatus } from '@/shared/types';
+
+import { subscribeToOrgScheduleProposals, subscribeToPendingProposals, subscribeToConfirmedProposals } from '../_queries';
 
 /**
  * Subscribes to all org schedule items for the given orgId.

@@ -3,13 +3,14 @@
 // or when the intercepting route is not active (e.g., hard refresh, direct URL).
 "use client"
 
-import { use } from "react"
-import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
-import { Button } from "@/shared/shadcn-ui/button"
+import { useRouter } from "next/navigation"
+import { use } from "react"
+
 import { DailyLogDialog } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
 import { useAuth } from "@/shared/app-providers/auth-provider"
+import { Button } from "@/shared/shadcn-ui/button"
 
 interface PageProps {
   params: Promise<{ id: string; logId: string }>

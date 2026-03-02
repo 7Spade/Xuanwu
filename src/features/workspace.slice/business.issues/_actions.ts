@@ -6,15 +6,15 @@
  */
 
 import {
-  createIssue as createIssueFacade,
-  addCommentToIssue as addCommentToIssueFacade,
-  resolveIssue as resolveIssueFacade,
-} from "@/shared/infra/firestore/firestore.facade"
-import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+import {
+  createIssue as createIssueFacade,
+  addCommentToIssue as addCommentToIssueFacade,
+  resolveIssue as resolveIssueFacade,
+} from "@/shared/infra/firestore/firestore.facade"
 
 export async function createIssue(
   workspaceId: string,

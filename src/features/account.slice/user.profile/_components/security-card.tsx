@@ -1,8 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { Button } from "@/shared/shadcn-ui/button";
 import { AlertTriangle } from "lucide-react";
+
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 
 interface SecurityCardProps {
   onWithdraw: () => void;

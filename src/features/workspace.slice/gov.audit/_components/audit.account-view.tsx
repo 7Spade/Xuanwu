@@ -2,10 +2,13 @@
 "use client";
 
 import { AlertCircle, Terminal } from "lucide-react";
-import { AuditTimeline } from "./audit-timeline";
-import { AuditEventItem } from "./audit-event-item";
-import { AuditDetailSheet } from "./audit-detail-sheet";
+
 import { useAccountAudit } from "../_hooks/use-account-audit";
+
+import { AuditDetailSheet } from "./audit-detail-sheet";
+import { AuditEventItem } from "./audit-event-item";
+import { AuditTimeline } from "./audit-timeline";
+
 
 export function AccountAuditComponent() {
   const { logs, isOrganizationContext, selectedLog, setSelectedLog, clearSelection } = useAccountAudit();

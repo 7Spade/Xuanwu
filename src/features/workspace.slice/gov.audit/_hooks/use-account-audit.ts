@@ -13,9 +13,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+
 import { useApp } from "@/shared/app-providers/app-context";
-import { useAccount } from "../../core";
 import { type AuditLog } from "@/shared/types";
+
+import { useAccount } from "../../core";
 
 export function useAccountAudit() {
   const { state: appState } = useApp();

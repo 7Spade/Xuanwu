@@ -3,8 +3,9 @@
  * This file contains functions for logging custom events to Firebase Analytics,
  * allowing for detailed tracking of user behavior and application performance.
  */
-import { analytics } from './analytics.client';
 import { logEvent } from 'firebase/analytics';
+
+import { analytics } from './analytics.client';
 
 /**
  * Logs a custom event to Firebase Analytics.

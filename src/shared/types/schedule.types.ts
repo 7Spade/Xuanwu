@@ -1,6 +1,7 @@
-import type { Location } from './workspace.types'
-import type { SkillRequirement } from './skill.types'
 import type { Timestamp } from '@/shared/ports'
+
+import type { SkillRequirement } from './skill.types'
+import type { Location } from './workspace.types'
 
 export type ScheduleStatus = 'PROPOSAL' | 'OFFICIAL' | 'REJECTED' | 'COMPLETED';
 

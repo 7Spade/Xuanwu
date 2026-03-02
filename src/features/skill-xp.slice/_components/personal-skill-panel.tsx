@@ -8,15 +8,17 @@
  * Invariant #12: tier is NEVER read from DB; derived via resolveSkillTier(xp).
  */
 
-import { useEffect, useState } from 'react';
-import { useApp } from '@/shared/app-providers/app-context';
-import { getAccountSkillView } from '../_queries';
-import type { AccountSkillEntry } from '../_projector';
-import { resolveSkillTier, TIER_DEFINITIONS } from '@/features/shared-kernel';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Progress } from '@/shared/shadcn-ui/progress';
 import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { resolveSkillTier, TIER_DEFINITIONS } from '@/features/shared-kernel';
+import { useApp } from '@/shared/app-providers/app-context';
+import { Badge } from '@/shared/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
+import { Progress } from '@/shared/shadcn-ui/progress';
+
+import type { AccountSkillEntry } from '../_projector';
+import { getAccountSkillView } from '../_queries';
 
 interface SkillRow {
   skillId: string;

@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useEffect } from "react";
+
 import { useI18n } from "@/config/i18n/i18n-provider";
+import { useAuth } from "@/shared/app-providers/auth-provider";
 import { Button } from "@/shared/shadcn-ui/button";
 
 /**

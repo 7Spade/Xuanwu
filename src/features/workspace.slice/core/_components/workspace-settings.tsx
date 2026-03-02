@@ -2,6 +2,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
+import { Button } from "@/shared/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +11,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/shared/shadcn-ui/dialog";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Label } from "@/shared/shadcn-ui/label";
 import { Input } from "@/shared/shadcn-ui/input";
-import { Switch } from "@/shared/shadcn-ui/switch";
+import { Label } from "@/shared/shadcn-ui/label";
 import {
   Select,
   SelectContent,
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/shadcn-ui/select";
+import { Switch } from "@/shared/shadcn-ui/switch";
 import type { Workspace, WorkspaceLifecycleState, Address } from "@/shared/types";
 
 interface WorkspaceSettingsDialogProps {

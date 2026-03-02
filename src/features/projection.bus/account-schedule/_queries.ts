@@ -8,6 +8,7 @@
  */
 
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { AccountScheduleProjection, AccountScheduleAssignment } from './_projector';
 
 /**

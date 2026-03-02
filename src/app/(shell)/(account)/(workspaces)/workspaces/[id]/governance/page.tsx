@@ -1,11 +1,12 @@
 // [職責] Canonical governance route — full-page fallback for direct URL access
 "use client"
 
-import { useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { useMemo } from "react"
+
+import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.slice"
 import { useWorkspace } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
-import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.slice"
 import type { ScheduleItem } from "@/shared/types"
 
 export default function GovernancePage() {

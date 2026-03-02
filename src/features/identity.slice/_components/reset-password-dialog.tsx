@@ -1,12 +1,13 @@
 
 "use client";
 
+import { Mail } from "lucide-react";
+
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { Button } from "@/shared/shadcn-ui/button";
-import { Label } from "@/shared/shadcn-ui/label";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Mail } from "lucide-react";
-import { useI18n } from "@/config/i18n/i18n-provider";
+import { Label } from "@/shared/shadcn-ui/label";
 
 interface ResetPasswordDialogProps {
   isOpen: boolean;

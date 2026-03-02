@@ -14,14 +14,11 @@
  *   All mutations use Server Actions from workspace-core/_actions.ts.
  */
 
+import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
 import { useState, useCallback } from 'react';
-import { createWorkspaceLocation, updateWorkspaceLocation, deleteWorkspaceLocation } from '../_actions';
-import { toast } from '@/shared/utility-hooks/use-toast';
-import type { WorkspaceLocation } from '@/shared/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
+
 import { Button } from '@/shared/shadcn-ui/button';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +26,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/shared/shadcn-ui/dialog';
-import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
+import { Input } from '@/shared/shadcn-ui/input';
+import { Label } from '@/shared/shadcn-ui/label';
+import type { WorkspaceLocation } from '@/shared/types';
+import { toast } from '@/shared/utility-hooks/use-toast';
+
+import { createWorkspaceLocation, updateWorkspaceLocation, deleteWorkspaceLocation } from '../_actions';
 
 // ---------------------------------------------------------------------------
 // Location form dialog (create + edit)

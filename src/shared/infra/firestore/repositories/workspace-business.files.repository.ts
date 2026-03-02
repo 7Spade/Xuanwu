@@ -14,11 +14,13 @@ import {
   arrayUnion,
   type FieldValue,
 } from 'firebase/firestore';
-import { db } from '../firestore.client';
-import { updateDocument, addDocument } from '../firestore.write.adapter';
-import { getDocuments } from '../firestore.read.adapter';
-import { createConverter } from '../firestore.converter';
+
 import type { WorkspaceFile, WorkspaceFileVersion } from '@/shared/types';
+
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import { updateDocument, addDocument } from '../firestore.write.adapter';
 
 /**
  * Creates a new file document in the workspace files subcollection.

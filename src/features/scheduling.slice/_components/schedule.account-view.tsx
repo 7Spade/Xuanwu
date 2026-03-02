@@ -16,16 +16,13 @@
  */
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { AlertCircle, UserPlus, Calendar, ListChecks, History, Users } from "lucide-react";
-import type { ScheduleItem } from "@/shared/types";
-import { UnifiedCalendarGrid } from "./unified-calendar-grid";
-import { ScheduleDataTable } from "./schedule-data-table";
-import { useGlobalSchedule } from "../_hooks/use-global-schedule";
-import { decisionHistoryColumns } from "./decision-history-columns";
-import { upcomingEventsColumns } from "./upcoming-events-columns";
 import { addMonths, subMonths } from "date-fns";
+import { AlertCircle, UserPlus, Calendar, ListChecks, History, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+
+import { useApp } from "@/shared/app-providers/app-context";
+import { Button } from "@/shared/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,11 +31,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu";
-import { Button } from "@/shared/shadcn-ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
+import type { ScheduleItem } from "@/shared/types";
+
+import { useGlobalSchedule } from "../_hooks/use-global-schedule";
 import { useScheduleActions } from "../_hooks/use-schedule-commands";
-import { useApp } from "@/shared/app-providers/app-context";
+
+import { decisionHistoryColumns } from "./decision-history-columns";
 import { OrgScheduleGovernance } from "./org-schedule-governance";
+import { ScheduleDataTable } from "./schedule-data-table";
+import { UnifiedCalendarGrid } from "./unified-calendar-grid";
+import { upcomingEventsColumns } from "./upcoming-events-columns";
 
 export function AccountScheduleSection() {
   const { state } = useApp();

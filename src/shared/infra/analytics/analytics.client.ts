@@ -5,6 +5,7 @@
  * It ensures Analytics is only initialized on the client side.
  */
 import { getAnalytics, type Analytics } from 'firebase/analytics';
+
 import { app } from '../app.client';
 
 let analytics: Analytics | null = null;

@@ -6,8 +6,8 @@
  */
 "use client";
 
-import { useWorkspace } from "../../../core";
-import { type DailyLog } from "@/shared/types";
+import { Share2 } from "lucide-react";
+
 import { Button } from "@/shared/shadcn-ui/button";
 import {
   DropdownMenu,
@@ -15,8 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu";
-import { Share2 } from "lucide-react";
+import { type DailyLog } from "@/shared/types";
 import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useWorkspace } from "../../../core";
 
 interface ShareButtonProps {
   log: DailyLog;

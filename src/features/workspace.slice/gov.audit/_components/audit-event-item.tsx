@@ -2,11 +2,13 @@
 "use client";
 
 import { format } from "date-fns";
+
+import { cn } from "@/shared/lib";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { type AuditLog } from "@/shared/types";
-import { cn } from "@/shared/lib";
-import { AuditTypeIcon } from "./audit-type-icon";
+
 import { AuditEventItemContainer } from "./audit-timeline";
+import { AuditTypeIcon } from "./audit-type-icon";
 
 interface AuditEventItemProps {
     log: AuditLog;

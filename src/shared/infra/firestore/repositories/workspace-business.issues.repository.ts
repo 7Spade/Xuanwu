@@ -14,14 +14,16 @@ import {
   orderBy,
   type FieldValue,
 } from 'firebase/firestore';
+
+import type { WorkspaceIssue, IssueComment } from '@/shared/types';
+
 import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
 import {
   updateDocument,
   addDocument,
 } from '../firestore.write.adapter';
-import { getDocuments } from '../firestore.read.adapter';
-import { createConverter } from '../firestore.converter';
-import type { WorkspaceIssue, IssueComment } from '@/shared/types';
 
 /**
  * Creates a new issue in a workspace (e.g., when a task is rejected).

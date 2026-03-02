@@ -9,6 +9,7 @@
  */
 
 import { collection, query, orderBy, onSnapshot, type Unsubscribe } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import type { ParsingIntent } from '@/shared/types';
 

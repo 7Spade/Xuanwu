@@ -7,8 +7,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToAccountPolicies } from '../_queries';
+
 import type { AccountPolicy } from '../_actions';
+import { subscribeToAccountPolicies } from '../_queries';
 
 export function useAccountPolicy(accountId: string | null) {
   const [policies, setPolicies] = useState<AccountPolicy[]>([]);

@@ -1,20 +1,23 @@
 'use client';
 
-import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
 import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
-import { useToast } from '@/shared/utility-hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/shadcn-ui/card';
+import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
+
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/shadcn-ui/card';
+import type { SourcePointer, ParsingIntent } from '@/shared/types';
+import { useToast } from '@/shared/utility-hooks/use-toast';
+
+import { useWorkspace } from '../../core';
 import {
   extractDataFromDocument,
   type ActionState,
 } from '../_form-actions';
 import { saveParsingIntent } from '../_intent-actions';
 import { subscribeToParsingIntents } from '../_queries';
-import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
-import type { SourcePointer, ParsingIntent } from '@/shared/types';
-import { useWorkspace } from '../../core';
+
 
 const initialState: ActionState = {
   data: undefined,

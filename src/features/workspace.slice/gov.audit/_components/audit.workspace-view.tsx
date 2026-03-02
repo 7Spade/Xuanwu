@@ -1,13 +1,16 @@
 // [職責] Projection — 單一 Workspace 事件流 (本地、唯讀)
 "use client";
 
-import { Activity } from "lucide-react";
 import { format } from "date-fns";
+import { Activity } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { AuditTypeIcon } from "./audit-type-icon";
-import { AuditDetailSheet } from "./audit-detail-sheet";
+
 import { useWorkspaceAudit } from "../_hooks/use-workspace-audit";
+
+import { AuditDetailSheet } from "./audit-detail-sheet";
+import { AuditTypeIcon } from "./audit-type-icon";
 
 export function WorkspaceAudit() {
   const { localAuditLogs, selectedLog, setSelectedLog, clearSelection } = useWorkspaceAudit();

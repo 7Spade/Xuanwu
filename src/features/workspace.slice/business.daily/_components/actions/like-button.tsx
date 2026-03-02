@@ -6,12 +6,14 @@
  */
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useDailyActions } from '../../_hooks/use-daily-commands';
-import { type DailyLog, type Account } from "@/shared/types";
-import { Button } from "@/shared/shadcn-ui/button";
 import { Heart } from "lucide-react";
+import { useState, useEffect, useCallback } from 'react';
+
 import { cn } from "@/shared/lib";
+import { Button } from "@/shared/shadcn-ui/button";
+import { type DailyLog, type Account } from "@/shared/types";
+
+import { useDailyActions } from '../../_hooks/use-daily-commands';
 
 interface LikeButtonProps {
   log: DailyLog;

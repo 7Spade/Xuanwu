@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { type Locale, type TranslationMessages } from '@/config/i18n/i18n-types';
+
 import { getPreferredLocale, setLocalePreference, loadMessages, i18nConfig } from '@/config/i18n/i18n';
+import { type Locale, type TranslationMessages } from '@/config/i18n/i18n-types';
 
 interface I18nContextValue {
   locale: Locale;

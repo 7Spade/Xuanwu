@@ -5,6 +5,7 @@
  */
 
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { WorkspaceViewRecord } from './_projector';
 
 export async function getWorkspaceView(workspaceId: string): Promise<WorkspaceViewRecord | null> {
