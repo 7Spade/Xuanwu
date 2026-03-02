@@ -50,6 +50,18 @@ export interface EventEnvelope<TPayload = unknown> {
    * FUNNEL upserts by this key. DLQ replay MUST NOT regenerate it.
    */
   readonly idempotencyKey?: string;
+  /**
+   * ID of the command or event that directly caused this event. [SK_ENV]
+   * Enables precise causal tracing across the event chain.
+   * Set by the producing Aggregate or TX Runner; MUST NOT be overwritten downstream.
+   */
+  readonly causationId?: string;
+  /**
+   * Saga or replay correlation identifier. [SK_ENV]
+   * All events belonging to the same saga/compensating-flow share this ID.
+   * Injected at saga entry; propagated unchanged through the chain.
+   */
+  readonly correlationId?: string;
 }
 
 // ─── Conformance marker ───────────────────────────────────────────────────────

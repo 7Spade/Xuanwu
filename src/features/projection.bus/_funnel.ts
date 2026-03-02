@@ -29,7 +29,7 @@
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
 import { upsertProjectionVersion } from './_registry';
 import { appendAuditEntry } from './account-audit';
-import { applyScheduleAssigned, applyScheduleCompleted } from '@/features/scheduling.slice';
+import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
 import { onOrgEvent } from '@/features/organization.slice';
 import { applyMemberJoined, applyMemberLeft } from './organization-view';
 import { handleScheduleProposed } from '@/features/scheduling.slice';

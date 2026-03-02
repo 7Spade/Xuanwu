@@ -7,7 +7,7 @@
  *   QGWAY_SCHED  → projection.org-eligible-member-view  [#14][#15][#16][P4][R7]
  *   QGWAY_NOTIF  → projection.account-view             [#6 FCM Token]
  *   QGWAY_SCOPE  → projection.workspace-scope-guard    [#A9]
- *   QGWAY_WALLET → account-user.wallet (STRONG_READ [Q8][D5])
+ *   QGWAY_WALLET → projection.wallet-balance (EVENTUAL_READ [Q8][D5])
  *
  * Call registerAllQueryHandlers() once at app startup, after all projection
  * slices are initialized. Follows the same pattern as registerWorkspaceFunnel().
@@ -17,7 +17,7 @@ import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
 import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
 import { getAccountView } from './account-view';
 import { queryWorkspaceAccess } from './workspace-scope-guard';
-import { getWalletBalance } from '@/features/account.slice';
+import { getDisplayWalletBalance } from './wallet-balance';
 
 /**
  * Register all four v9 QUERY_ROUTES with their projection handlers.
@@ -51,8 +51,8 @@ export function registerAllQueryHandlers(): Array<() => void> {
 
   const unregWallet = registerQuery(
     QUERY_ROUTES.WALLET_BALANCE,
-    ({ accountId }: { accountId: string }) => getWalletBalance(accountId),
-    '[Q8][D5] account-user.wallet — STRONG_READ balance'
+    ({ accountId }: { accountId: string }) => getDisplayWalletBalance(accountId),
+    '[Q8][D5] projection.wallet-balance — EVENTUAL_READ display balance'
   );
 
   return [unregOrgEligible, unregAccountView, unregScopeGuard, unregWallet];

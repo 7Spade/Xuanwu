@@ -98,11 +98,8 @@ export {
   applyDemandAssignRejected,
 } from './_projectors/demand-board';
 
-export {
-  initAccountScheduleProjection,
-  applyScheduleAssigned,
-  applyScheduleCompleted,
-} from './_projectors/account-schedule';
+// AccountScheduleProjection types — read model types for scheduling queries.
+// Write-side projection logic lives in projection.bus/account-schedule/.
 export type { AccountScheduleProjection, AccountScheduleAssignment } from './_projectors/account-schedule';
 
 // =================================================================
