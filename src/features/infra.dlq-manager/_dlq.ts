@@ -5,9 +5,10 @@
  *
  * Per logic-overview.md [R5] DLQ 三級策略:
  *
- *   SAFE_AUTO       — TagLifecycle・MemberJoined (idempotent, auto-retry)
- *   REVIEW_REQUIRED — WalletDeducted・ScheduleAssigned (financial/assignment, human review before replay)
- *   SECURITY_BLOCK  — RoleChanged・PolicyChanged・ClaimsRefresh failure
+ *   SAFE_AUTO       — TagLifecycle・MemberJoined/Left (idempotent, auto-retry)
+ *   REVIEW_REQUIRED — WalletDeducted・ScheduleAssigned・SkillRecognitionGranted/Revoked
+ *                     (financial/assignment, human review before replay)
+ *   SECURITY_BLOCK  — RoleChanged・PolicyChanged・OrgPolicyChanged・ClaimsRefresh failure
  *                     (security event: alert + entity freeze + manual authorization before any replay)
  *                     [GEMINI.md §4: auto-replay FORBIDDEN for SECURITY_BLOCK]
  *
@@ -16,8 +17,10 @@
  * event payload again.
  *
  * Invariant: WalletDeducted MUST NOT be auto-replayed — double-deduction risk.
- * Invariant: RoleChanged/PolicyChanged MUST route to SECURITY_BLOCK — not REVIEW_REQUIRED.
- *            [logic-overview.md VS2 ACC_OUTBOX, GEMINI.md §4]
+ * Invariant: RoleChanged/PolicyChanged (account AND org) MUST route to SECURITY_BLOCK.
+ *            [logic-overview.md VS2 ACC_OUTBOX, VS4 ORG_OUTBOX, GEMINI.md §4]
+ * Invariant: SkillRecognitionGranted/Revoked MUST route to REVIEW_REQUIRED.
+ *            [logic-overview.md VS4 ORG_OUTBOX: SkillRecog → REVIEW_REQUIRED]
  * Invariant: ClaimsRefresh failure MUST trigger security alert and account freeze.
  */
 
@@ -59,14 +62,22 @@ const EVENT_TYPE_DLQ_LEVEL: Readonly<Record<string, DlqLevel>> = {
   'identity:claims:refreshFailed': 'SECURITY_BLOCK',
   'account:role:changed': 'SECURITY_BLOCK',
   'account:policy:changed': 'SECURITY_BLOCK',
+  // [logic-overview.md VS4 ORG_OUTBOX: "RoleChanged・PolicyChanged → SECURITY_BLOCK"]
+  // Org role changes affect access control with the same severity as account role changes.
+  'organization:role:changed': 'SECURITY_BLOCK',
+  // SECURITY_BLOCK: org policy changes carry security implications identical to account
+  // policy changes — alert + org freeze + manual authorization required.
+  // [logic-overview.md VS4 ORG_OUTBOX: PolicyChanged → SECURITY_BLOCK]
+  'organization:policy:changed': 'SECURITY_BLOCK',
 
   // REVIEW_REQUIRED: financial and irreversible assignment events must not auto-replay.
   'account:wallet:deducted': 'REVIEW_REQUIRED',
   'account:wallet:credited': 'REVIEW_REQUIRED',
   'organization:schedule:assigned': 'REVIEW_REQUIRED',
-  'organization:role:changed': 'REVIEW_REQUIRED',
-
-  // SAFE_AUTO: compensating / lifecycle events are idempotent — safe to auto-retry.
+  // SkillRecognitionGranted/Revoked: org-level acknowledgment events that affect member
+  // standing — require human review before replay. [logic-overview.md VS4 ORG_OUTBOX]
+  'organization:skill:recognitionGranted': 'REVIEW_REQUIRED',
+  'organization:skill:recognitionRevoked': 'REVIEW_REQUIRED',
   // Per logic-overview.md VS6 SCHED_OUTBOX: "Compensating Events → SAFE_AUTO".
   'organization:schedule:completed': 'SAFE_AUTO',
   'organization:schedule:assignmentCancelled': 'SAFE_AUTO',
