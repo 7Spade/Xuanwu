@@ -91,7 +91,7 @@ describe('detectTemporalConflicts', () => {
     });
     const candidate = makeAssignment({
       startDate: '2025-01-01',
-      endDate: '2025-02-01',
+      endDate: '2025-01-31',
     });
     const result = detectTemporalConflicts({
       candidate,

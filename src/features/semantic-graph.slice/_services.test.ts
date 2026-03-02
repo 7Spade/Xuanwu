@@ -82,9 +82,18 @@ describe('Semantic Index — Query', () => {
     const hits = querySemanticIndex('', { limit: 1000 });
     for (const hit of hits) removeFromIndex(hit.domain, hit.id);
 
-    indexEntity(makeEntry({ id: 'ws-1', domain: 'workspace', title: 'Alpha', searchableText: 'alpha construction', tags: ['loc-tp'] }));
-    indexEntity(makeEntry({ id: 'mem-1', domain: 'member', title: 'Bob Builder', searchableText: 'bob builder', tags: ['skill-welding'] }));
-    indexEntity(makeEntry({ id: 'sch-1', domain: 'schedule', title: 'Q1 Schedule', searchableText: 'q1 schedule planning', tags: ['loc-tp'] }));
+    indexEntity(makeEntry({
+      id: 'ws-1', domain: 'workspace', title: 'Alpha',
+      searchableText: 'alpha construction', tags: ['loc-tp'],
+    }));
+    indexEntity(makeEntry({
+      id: 'mem-1', domain: 'member', title: 'Bob Builder',
+      searchableText: 'bob builder', tags: ['skill-welding'],
+    }));
+    indexEntity(makeEntry({
+      id: 'sch-1', domain: 'schedule', title: 'Q1 Schedule',
+      searchableText: 'q1 schedule planning', tags: ['loc-tp'],
+    }));
   });
 
   it('filters by domain', () => {

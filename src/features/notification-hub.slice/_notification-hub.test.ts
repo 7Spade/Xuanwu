@@ -253,8 +253,8 @@ describe('ProjectionBusSubscriber', () => {
     });
     emitProjectionBusEvent(event);
 
-    // Give the async fire-and-forget a tick to resolve
-    await new Promise((r) => setTimeout(r, 10));
+    // Flush microtask queue deterministically
+    await vi.waitFor(() => Promise.resolve());
     unsub();
   });
 });
