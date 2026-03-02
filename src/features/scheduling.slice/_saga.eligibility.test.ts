@@ -15,7 +15,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { tierSatisfies } from '@/features/shared-kernel/skill-tier';
-import type { SkillRequirement, WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
+import type { SkillTier, SkillRequirement, WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Helpers — mirrors the eligibility logic inside _saga.ts
@@ -25,7 +25,7 @@ import type { SkillRequirement, WorkspaceScheduleProposedPayload } from '@/featu
 interface MockMember {
   accountId: string;
   eligible: boolean;
-  skills: { skillId: string; tier: string }[];
+  skills: { skillId: string; tier: SkillTier }[];
 }
 
 /**
@@ -41,7 +41,7 @@ function selectCandidate(
     return requirements.every((req) => {
       const skill = member.skills.find((s) => s.skillId === req.tagSlug);
       if (!skill) return false;
-      return tierSatisfies(skill.tier as never, req.minimumTier);
+      return tierSatisfies(skill.tier, req.minimumTier);
     });
   });
 }
