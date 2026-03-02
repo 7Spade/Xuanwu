@@ -241,8 +241,8 @@
         "#1 Each BC may only modify its own Aggregate.",
         "#2 Cross-BC interaction only via Domain Event / Projection / ACL anti-corruption layer.",
         "#3 Application Layer coordinates only; domain rules live in Aggregates exclusively.",
-        "#9 Projections must be fully rebuildable from events (replay-safe).",
-        "#12 Skill Tier is a pure function of XP and must not be persisted.",
+        "#9 Projections must be fully rebuildable via event-store replay (replay-safe).",
+        "#12 Skill Tier = getTier(xp) pure function; never persisted to DB.",
         "#14 Scheduling workforce demand reads only from ORG_ELIGIBLE_MEMBER_VIEW.",
         "#19 Projection updates require aggregateVersion monotonic guard (applyVersionGuard)."
       ]
@@ -255,7 +255,8 @@
         "#A2 org-account.binding uses ACL/projection anti-corruption layer only.",
         "#A3 blockWorkflow → blockedBy Set; allIssuesResolved → unblockWorkflow.",
         "#A8 TX Runner enforces 1 command / 1 aggregate atomic commit.",
-        "#A9 Scope Guard provides fast path; high-risk operations must re-source from Aggregate."
+        "#A9 Scope Guard provides fast path; high-risk operations must re-source from Aggregate.",
+        "A4-A7/A10-A11 remain required: ParsingIntent workflow, scheduling saga, centralized-tag authority boundary, event-funnel-only projection writes, stateless notification routing, eligible-member snapshot rules."
       ]
     },
     {
@@ -267,7 +268,8 @@
         "D3 All mutations: src/features/{slice}/_actions.ts only.",
         "D7 Cross-slice references must use public {slice}/index.ts only.",
         "D24 Feature slices must not import firebase/* directly; use FIREBASE_ACL adapters via SK_PORTS.",
-        "D25 New Firebase capabilities require corresponding FIREBASE_ACL adapter implementations."
+        "D25 New Firebase capabilities require corresponding FIREBASE_ACL adapter implementations.",
+        "D4-D6/D8-D23 stay in force (including D10 traceId injection at CBG_ENTRY, D12 getTier source in SK, D14 VERSION_GUARD on projection writes, D21 tag-category centralization)."
       ]
     },
     {
