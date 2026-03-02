@@ -198,7 +198,7 @@ export function validateTaxonomyPath(
     return { valid: false, errors };
   }
 
-  const nodeMap = buildNodeMap(tree.roots);
+  const nodeMap = buildNodeMap(tree);
 
   for (let i = 0; i < path.length; i++) {
     const slug = path[i]!;
@@ -226,17 +226,16 @@ export function validateTaxonomyPath(
   }
 
   if (path.length > MAX_TAXONOMY_DEPTH) {
-    errors.push(makeError('DEPTH_EXCEEDED', path[path.length - 1]!, `Path depth ${path.length} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`));
+    errors.push(makeError('DEPTH_EXCEEDED', path[path.length - 1]!, `Path depth ${path.length} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`, tree.dimension));
   }
 
   return { valid: errors.length === 0, errors };
 }
 
-function buildNodeMap(roots: readonly TaxonomyNode[]): Map<string, TaxonomyNode> {
+function buildNodeMap(tree: TaxonomyTree): Map<string, TaxonomyNode> {
+  const source = tree.nodes ?? tree.roots;
   const map = new Map<string, TaxonomyNode>();
-  const queue = [...roots];
-  while (queue.length > 0) {
-    const node = queue.shift()!;
+  for (const node of source) {
     map.set(node.slug, node);
   }
   return map;

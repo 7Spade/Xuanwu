@@ -79,6 +79,8 @@ export interface TemporalConflictCheckResult {
 export interface TaxonomyTree {
   readonly dimension: TaxonomyDimension;
   readonly roots: readonly TaxonomyNode[];
+  /** Flat list of ALL nodes in the tree (roots + descendants). */
+  readonly nodes?: readonly TaxonomyNode[];
   readonly nodeCount: number;
 }
 

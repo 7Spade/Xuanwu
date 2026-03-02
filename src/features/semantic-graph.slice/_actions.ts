@@ -125,18 +125,12 @@ export async function removeTag(tagSlug: string): Promise<CommandResult> {
 // =================================================================
 
 /**
- * Assigns a semantic tag to an entity after validating taxonomy constraints
- * and checking for temporal conflicts.
+ * Assigns a semantic tag — semantic alias for upsertTagWithConflictCheck.
  *
- * This is the D3-compliant entry point that must be used instead of
- * directly writing to Firestore. Delegates all validation to _aggregate.ts
- * before indexing the entity in the semantic index.
- *
- * Flow:
- *   1. Validate taxonomy via validateTaxonomyAssignment
- *   2. If temporal assignment provided, check for conflicts
- *   3. Index entity in semantic index
- *   4. Return CommandResult per [R4]
+ * Provides the assignSemanticTag entry point requested by the VS8
+ * architecture spec. Currently delegates all validation and indexing
+ * to upsertTagWithConflictCheck; exists as a distinct API name for
+ * clarity in consumer code and future extensibility.
  */
 export async function assignSemanticTag(
   node: TaxonomyNode,
