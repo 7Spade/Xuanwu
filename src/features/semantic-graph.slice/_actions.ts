@@ -91,7 +91,6 @@ export async function upsertTagWithConflictCheck(
       subtitle: `${node.dimension} · depth ${node.depth}`,
       tags: [node.slug, node.dimension],
       searchableText: `${node.label} ${node.slug} ${node.dimension}`,
-      href: undefined,
       updatedAt: new Date().toISOString(),
     };
     indexEntity(entry);

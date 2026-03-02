@@ -241,7 +241,9 @@ export function emitProjectionBusEvent(event: NotificationSourceEvent): void {
  */
 export function initTagChangedSubscriber(): () => void {
   return subscribeToProjectionBus(TAG_CHANGED_EVENT_KEY, (event) => {
-    void processNotificationEvent(event);
+    processNotificationEvent(event).catch(() => {
+      /* fire-and-forget: errors logged inside processNotificationEvent */
+    });
   });
 }
 
