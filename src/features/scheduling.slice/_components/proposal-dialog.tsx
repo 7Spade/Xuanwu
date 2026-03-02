@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { CalendarIcon, ChevronsUpDown, MapPin, Plus, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { type DateRange } from "react-day-picker";
 
 import type { SkillRequirement } from "@/features/shared-kernel";
@@ -107,6 +107,34 @@ export function ProposalDialog({
       setSkillOptions(SKILLS.map((s) => ({ slug: s.slug, name: s.name })));
     }
   }, [isOpen, initialDate, orgId]);
+
+  // Pre-compute a slug → SkillDefinition map for O(1) lookups in the grouped picker.
+  const skillBySlug = useMemo(
+    () => new Map(SKILLS.map(s => [s.slug, s])),
+    []
+  );
+
+  // Pre-compute grouped structure: group → subCategory → skillOptions entries.
+  const groupedSkillOptions = useMemo(() => {
+    return SKILL_GROUPS.map(group => {
+      const subCategoryEntries = group.subCategories.flatMap(subCatKey => {
+        const subCatMeta = SKILL_SUB_CATEGORY_BY_KEY.get(subCatKey);
+        const subSkills = skillOptions.filter(s => {
+          const def = skillBySlug.get(s.slug);
+          return def?.group === group.group && def?.subCategory === subCatKey;
+        });
+        return subSkills.map(skill => ({
+          slug: skill.slug,
+          name: skill.name,
+          subCatZhLabel: subCatMeta?.zhLabel ?? '',
+          subCatEnLabel: subCatMeta?.enLabel ?? '',
+          /** Value string for cmdk filtering — covers zh + en + sub-category labels. */
+          searchValue: `${skill.name} ${subCatMeta?.zhLabel ?? ''} ${subCatMeta?.enLabel ?? ''} ${group.zhLabel} ${group.enLabel}`,
+        }));
+      });
+      return { group, subCategoryEntries };
+    }).filter(g => g.subCategoryEntries.length > 0);
+  }, [skillOptions, skillBySlug]);
 
   const handleLocationChange = (field: keyof Location, value: string) => {
     setLocation(prev => ({
@@ -257,46 +285,31 @@ export function ProposalDialog({
                       <CommandInput placeholder="Search skills..." className="h-9 text-xs" />
                       <CommandList>
                         <CommandEmpty className="text-xs">No skill found.</CommandEmpty>
-                        {SKILL_GROUPS.map(group => {
-                          const groupSkills = skillOptions.filter(s => {
-                            const def = SKILLS.find(d => d.slug === s.slug);
-                            return def?.group === group.group;
-                          });
-                          if (groupSkills.length === 0) return null;
-                          return (
-                            <CommandGroup
-                              key={group.group}
-                              heading={`${group.zhLabel} — ${group.enLabel}`}
-                            >
-                              {group.subCategories.map(subCatKey => {
-                                const subCatMeta = SKILL_SUB_CATEGORY_BY_KEY.get(subCatKey);
-                                const subSkills = groupSkills.filter(s => {
-                                  const def = SKILLS.find(d => d.slug === s.slug);
-                                  return def?.subCategory === subCatKey;
-                                });
-                                if (subSkills.length === 0) return null;
-                                return subSkills.map(skill => (
-                                  <CommandItem
-                                    key={skill.slug}
-                                    value={`${skill.name} ${subCatMeta?.zhLabel ?? ''} ${group.zhLabel}`}
-                                    onSelect={() => {
-                                      setSelectedSkillSlug(skill.slug);
-                                      setSkillPickerOpen(false);
-                                    }}
-                                    className="text-xs"
-                                  >
-                                    <span className="flex-1">{skill.name}</span>
-                                    {subCatMeta && (
-                                      <span className="ml-2 text-[10px] text-muted-foreground">
-                                        {subCatMeta.zhLabel}
-                                      </span>
-                                    )}
-                                  </CommandItem>
-                                ));
-                              })}
-                            </CommandGroup>
-                          );
-                        })}
+                        {groupedSkillOptions.map(({ group, subCategoryEntries }) => (
+                          <CommandGroup
+                            key={group.group}
+                            heading={`${group.zhLabel} — ${group.enLabel}`}
+                          >
+                            {subCategoryEntries.map(skill => (
+                              <CommandItem
+                                key={skill.slug}
+                                value={skill.searchValue}
+                                onSelect={() => {
+                                  setSelectedSkillSlug(skill.slug);
+                                  setSkillPickerOpen(false);
+                                }}
+                                className="text-xs"
+                              >
+                                <span className="flex-1">{skill.name}</span>
+                                {skill.subCatZhLabel && (
+                                  <span className="ml-2 text-[10px] text-muted-foreground">
+                                    {skill.subCatZhLabel}
+                                  </span>
+                                )}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        ))}
                       </CommandList>
                     </Command>
                   </PopoverContent>

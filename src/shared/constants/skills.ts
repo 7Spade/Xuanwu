@@ -5,7 +5,7 @@
  * Any user account can hold any of these skills via SkillGrant.tagSlug.
  *
  * Taxonomy (two-level):
- *   SkillGroup (大項目, 9 groups)  →  SkillSubCategory (子項目, 26 sub-categories)  →  SkillDefinition
+ *   SkillGroup (大項目, 9 groups)  →  SkillSubCategory (子項目, 25 sub-categories)  →  SkillDefinition
  *
  * To add a new skill: append an entry to SKILLS.
  * The `slug` is the stable identifier used in SkillGrant.tagSlug and
