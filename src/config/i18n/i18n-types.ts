@@ -3,8 +3,10 @@
  *
  * Locale: supported locale codes.
  * I18nConfig: runtime configuration shape.
- * TranslationMessages: recursive shape of locale JSON files (e.g. public/localized-files/en.json).
+ * TranslationMessages: message schema imported from i18n.schema.
  */
+
+import type { TranslationMessages } from './i18n.schema';
 
 export type Locale = 'en' | 'zh-TW';
 
@@ -13,6 +15,4 @@ export interface I18nConfig {
   locales: Locale[];
 }
 
-export type TranslationMessages = {
-  [key: string]: string | TranslationMessages;
-};
+export type { TranslationMessages };
