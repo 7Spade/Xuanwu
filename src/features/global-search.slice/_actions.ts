@@ -38,7 +38,7 @@ export async function executeSearch(
   input: ExecuteSearchInput
 ): Promise<CommandResult> {
   try {
-    await executeSearchService(input);
+    const _result = executeSearchService(input);
     return commandSuccess(input.query, 0);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

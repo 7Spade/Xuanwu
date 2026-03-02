@@ -40,6 +40,7 @@ const subscriptions = new Map<string, NotificationSubscription>();
 let dispatchCount = 0;
 let errorCount = 0;
 let lastDispatchedAt = '';
+const dispatchCountByChannel: Record<string, number> = {};
 
 // =================================================================
 // Routing Rule Management
@@ -157,16 +158,19 @@ export async function processNotificationEvent(
     dispatchedAt: new Date().toISOString(),
   }));
 
-  const totalTargets = dispatches.reduce((sum, d) => sum + d.targetAccountIds.length, 0);
-
   dispatchCount += dispatches.length;
+  for (const d of dispatches) {
+    dispatchCountByChannel[d.channel] = (dispatchCountByChannel[d.channel] ?? 0) + 1;
+  }
   lastDispatchedAt = new Date().toISOString();
+
+  const targetCount = dispatches.reduce((sum, d) => sum + d.targetAccountIds.length, 0);
 
   return {
     dispatchId: generateDispatchId(),
     channel: routing.channels[0] ?? 'in-app',
-    targetCount: totalTargets,
-    successCount: totalTargets,
+    targetCount,
+    successCount: targetCount,
     failureCount: 0,
     errors: [],
   };
@@ -180,14 +184,9 @@ export async function processNotificationEvent(
  * Returns notification hub operational statistics.
  */
 export function getHubStats(): NotificationHubStats {
-  const dispatchedByChannel: Record<string, number> = {};
-  for (const rule of routingRules.values()) {
-    dispatchedByChannel[rule.channel] = (dispatchedByChannel[rule.channel] ?? 0);
-  }
-
   return {
     totalDispatched: dispatchCount,
-    dispatchedByChannel: dispatchedByChannel as NotificationHubStats['dispatchedByChannel'],
+    dispatchedByChannel: { ...dispatchCountByChannel } as NotificationHubStats['dispatchedByChannel'],
     totalErrors: errorCount,
     activeSubscriptions: subscriptions.size,
     activeRoutingRules: routingRules.size,

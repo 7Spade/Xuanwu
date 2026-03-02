@@ -33,9 +33,9 @@ import type {
  * Execute a cross-domain search via VS8's semantic index.
  * Groups results by domain for structured UI rendering.
  */
-export async function executeSearch(
+export function executeSearch(
   input: ExecuteSearchInput
-): Promise<SearchResponse> {
+): SearchResponse {
   const { query, filters, limit, traceId } = input;
 
   const hits = querySemanticIndex(query, {

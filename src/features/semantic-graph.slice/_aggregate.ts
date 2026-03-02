@@ -17,6 +17,7 @@
  * Dependency rule: ZERO infrastructure imports. Pure functions only.
  */
 
+import { TAXONOMY_DIMENSIONS } from '@/features/shared-kernel/semantic-primitives';
 import type { TaxonomyDimension, TaxonomyNode } from '@/features/shared-kernel/semantic-primitives';
 
 import type {
@@ -103,7 +104,7 @@ function isOverlapping(a: TemporalTagAssignment, b: TemporalTagAssignment): bool
 export function validateTaxonomyAssignment(
   node: TaxonomyNode,
   existingNodes: readonly TaxonomyNode[],
-  validDimensions: readonly TaxonomyDimension[] = ['skill', 'location', 'temporal', 'organizational', 'compliance']
+  validDimensions: readonly TaxonomyDimension[] = TAXONOMY_DIMENSIONS
 ): TaxonomyValidationResult {
   const errors: TaxonomyValidationError[] = [];
 

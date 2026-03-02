@@ -17,7 +17,8 @@
  * Dependency rule: Pure in-memory index. No infrastructure imports.
  */
 
-import type { SemanticSearchHit } from '@/features/shared-kernel/semantic-primitives';
+import type { SearchDomain, SemanticSearchHit } from '@/features/shared-kernel/semantic-primitives';
+import { SEARCH_DOMAINS } from '@/features/shared-kernel/semantic-primitives';
 
 import type { SemanticIndexEntry, SemanticIndexStats } from './_types';
 
@@ -82,11 +83,13 @@ export function querySemanticIndex(
       if (!hasAllTags) continue;
     }
 
+    if (!isValidSearchDomain(entry.domain)) continue;
+
     const score = computeRelevanceScore(entry, terms);
     if (score > 0) {
       hits.push({
         id: entry.id,
-        domain: entry.domain as SemanticSearchHit['domain'],
+        domain: entry.domain,
         title: entry.title,
         subtitle: entry.subtitle,
         score,
@@ -122,6 +125,10 @@ export function getIndexStats(): SemanticIndexStats {
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
+
+function isValidSearchDomain(domain: string): domain is SearchDomain {
+  return (SEARCH_DOMAINS as readonly string[]).includes(domain);
+}
 
 function computeRelevanceScore(entry: SemanticIndexEntry, terms: string[]): number {
   if (terms.length === 0) return 1;
