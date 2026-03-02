@@ -2,6 +2,9 @@
 "use client";
 
 import { useState } from "react";
+
+import { useI18n } from "@/config/i18n/i18n-provider";
+import { Button } from "@/shared/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +13,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/shared/shadcn-ui/dialog";
-import { Button } from "@/shared/shadcn-ui/button";
 import { Input } from "@/shared/shadcn-ui/input";
 import { Label } from "@/shared/shadcn-ui/label";
-import { handleCreateWorkspace } from "../_use-cases";
+
 import { useApp } from "../_hooks/use-app";
-import { useI18n } from "@/config/i18n/i18n-provider";
+import { handleCreateWorkspace } from "../_use-cases";
 
 interface CreateWorkspaceDialogProps {
   open: boolean;

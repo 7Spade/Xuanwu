@@ -15,14 +15,16 @@ import {
   query,
   orderBy,
 } from 'firebase/firestore';
+
+import type { ParsingIntent } from '@/shared/types';
+
 import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
 import {
   updateDocument,
   addDocument,
 } from '../firestore.write.adapter';
-import { getDocuments } from '../firestore.read.adapter';
-import { createConverter } from '../firestore.converter';
-import type { ParsingIntent } from '@/shared/types';
 
 export const createParsingIntent = async (
   workspaceId: string,

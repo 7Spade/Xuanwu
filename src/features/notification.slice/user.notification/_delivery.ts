@@ -24,6 +24,7 @@ import {
   getDoc,
   doc,
 } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 
 export interface NotificationDeliveryInput {

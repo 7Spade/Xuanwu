@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Eye, EyeOff, Shield, Trash2, ArrowUpRight, Terminal } from "lucide-react";
-import { type Workspace } from "@/shared/types";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+
 import { ROUTES } from "@/shared/constants/routes";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { type Workspace } from "@/shared/types";
 
 interface WorkspaceListItemProps {
   workspace: Workspace;

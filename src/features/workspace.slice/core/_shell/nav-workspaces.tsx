@@ -1,7 +1,9 @@
 
 "use client";
 
+import { Terminal } from "lucide-react";
 import Link from "next/link";
+
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -11,7 +13,6 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/shared/shadcn-ui/sidebar";
-import { Terminal } from "lucide-react";
 import type { Workspace } from "@/shared/types";
 
 interface NavWorkspacesProps {

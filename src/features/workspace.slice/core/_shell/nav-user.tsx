@@ -1,7 +1,12 @@
 "use client"
 
+import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useMemo } from "react"
+
+import { ROUTES } from "@/shared/constants/routes"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,12 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shared/shadcn-ui/sidebar"
-import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
 import type { Account } from "@/shared/types"
-import { useMemo } from "react"
-import { ROUTES } from "@/shared/constants/routes"
+
+
 
 interface NavUserProps {
   user: Account | null

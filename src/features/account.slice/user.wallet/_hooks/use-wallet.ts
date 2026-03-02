@@ -7,8 +7,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToWalletBalance, subscribeToWalletTransactions } from '../_queries';
+
 import type { Wallet } from '@/shared/types';
+
+import { subscribeToWalletBalance, subscribeToWalletTransactions } from '../_queries';
 import type { WalletTransactionRecord } from '../_queries';
 
 export function useWallet(accountId: string | null) {

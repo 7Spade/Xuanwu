@@ -1,25 +1,34 @@
 
 "use client";
 
+import { serverTimestamp, type FieldValue, type Firestore } from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
 import type React from 'react';
 import { createContext, useContext, useMemo, useCallback, useEffect, useState } from 'react';
-import { type Workspace, type AuditLog, type WorkspaceTask, type WorkspaceRole, type Capability, type WorkspaceLifecycleState, type ScheduleItem } from '@/shared/types';
-import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '../../core.event-bus';
+
 import { registerNotificationRouter } from '@/features/notification.slice';
-import { registerOrgPolicyCache, runTransaction } from '../../application';
-import { serverTimestamp, type FieldValue, type Firestore } from 'firebase/firestore';
-import { useAccount } from '../_hooks/use-account';
+import {
+  createScheduleItem as createScheduleItemAction,
+} from '@/features/scheduling.slice'
+import type { CommandResult } from '@/features/shared-kernel';
 import { useFirebase } from '@/shared/app-providers/firebase-provider';
 import { addDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 import { firestoreTimestampToISO } from '@/shared/lib';
-import { useApp } from '../_hooks/use-app';
-import { Loader2 } from 'lucide-react';
+import { type Workspace, type AuditLog, type WorkspaceTask, type WorkspaceRole, type Capability, type WorkspaceLifecycleState, type ScheduleItem } from '@/shared/types';
+
+import { registerOrgPolicyCache, runTransaction } from '../../application';
+import {
+  createIssue as createIssueAction,
+  addCommentToIssue as addCommentToIssueAction,
+  resolveIssue as resolveIssueAction,
+} from '../../business.issues'
 import { 
   createTask as createTaskAction,
   updateTask as updateTaskAction,
   deleteTask as deleteTaskAction,
   getWorkspaceTask as getWorkspaceTaskAction,
 } from '../../business.tasks'
+import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '../../core.event-bus';
 import {
   authorizeWorkspaceTeam as authorizeWorkspaceTeamAction,
   revokeWorkspaceTeam as revokeWorkspaceTeamAction,
@@ -30,15 +39,9 @@ import {
   updateWorkspaceSettings as updateWorkspaceSettingsAction,
   deleteWorkspace as deleteWorkspaceAction,
 } from '../_actions'
-import {
-  createIssue as createIssueAction,
-  addCommentToIssue as addCommentToIssueAction,
-  resolveIssue as resolveIssueAction,
-} from '../../business.issues'
-import {
-  createScheduleItem as createScheduleItemAction,
-} from '@/features/scheduling.slice'
-import type { CommandResult } from '@/features/shared-kernel';
+import { useAccount } from '../_hooks/use-account';
+import { useApp } from '../_hooks/use-app';
+
 
 
 interface WorkspaceContextType {
@@ -87,6 +90,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   const { activeAccount } = appState;
   const workspace = workspaces[workspaceId];
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- workspaceId is an intentional reset key: recreate bus when active workspace changes
   const eventBus = useMemo(() => new WorkspaceEventBus(), [workspaceId]);
 
   // Pending parse file — bridges the cross-tab gap between files-view (publisher)

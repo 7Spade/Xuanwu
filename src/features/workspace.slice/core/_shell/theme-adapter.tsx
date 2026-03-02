@@ -2,9 +2,11 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useApp } from "../_hooks/use-app";
+
 import { hexToHsl } from "@/shared/lib";
 import { Skeleton } from "@/shared/shadcn-ui/skeleton";
+
+import { useApp } from "../_hooks/use-app";
 
 // [S4] Named constant — disambiguates from PROJ_STALE_CRITICAL (500ms).
 // This is a placeholder AI-adapt simulation delay, not a staleness SLA value.
@@ -71,6 +73,6 @@ export function ThemeAdapter({ children }: ThemeAdapterProps) {
     );
   }
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+   
   return <>{children}</>;
 }

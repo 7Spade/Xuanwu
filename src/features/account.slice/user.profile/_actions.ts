@@ -9,15 +9,15 @@
  */
 
 import {
-  createUserAccount as createUserAccountFacade,
-  updateUserProfile as updateUserProfileFacade,
-} from "@/shared/infra/firestore/firestore.facade";
-import type { Account } from "@/shared/types";
-import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from "@/features/shared-kernel";
+import {
+  createUserAccount as createUserAccountFacade,
+  updateUserProfile as updateUserProfileFacade,
+} from "@/shared/infra/firestore/firestore.facade";
+import type { Account } from "@/shared/types";
 
 export async function createUserAccount(
   userId: string,

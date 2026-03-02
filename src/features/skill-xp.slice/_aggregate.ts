@@ -21,8 +21,9 @@
  *   by _actions.ts (application coordinator), NOT the aggregate (Invariant #3, E1).
  */
 
-import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+
 import { appendXpLedgerEntry } from './_ledger';
 
 // ---------------------------------------------------------------------------

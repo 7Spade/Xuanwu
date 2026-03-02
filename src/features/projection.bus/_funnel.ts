@@ -3,7 +3,7 @@
  *
  * EVENT_FUNNEL_INPUT: unified entry point for the Projection Layer.
  *
- * Per logic-overview.md (VS8 Projection Bus):
+ * Per logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   WORKSPACE_EVENT_BUS  → |所有業務事件|  EVENT_FUNNEL_INPUT
  *   ORGANIZATION_EVENT_BUS → |所有組織事件| EVENT_FUNNEL_INPUT
  *   TAG_LIFECYCLE_BUS → |TagLifecycleEvent| EVENT_FUNNEL_INPUT  (v5 新增)
@@ -26,20 +26,8 @@
  * `registerTagFunnel()` once at app startup.
  */
 
-import type { WorkspaceEventBus } from '@/features/workspace.slice';
-import { upsertProjectionVersion } from './_registry';
-import { appendAuditEntry } from './account-audit';
-import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
 import { onOrgEvent } from '@/features/organization.slice';
-import { applyMemberJoined, applyMemberLeft } from './organization-view';
 import { handleScheduleProposed } from '@/features/scheduling.slice';
-import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
-import {
-  applyOrgMemberSkillXp,
-  initOrgMemberEntry,
-  removeOrgMemberEntry,
-  updateOrgMemberEligibility,
-} from './org-eligible-member-view';
 import {
   applyDemandProposed,
   applyDemandAssigned,
@@ -48,18 +36,32 @@ import {
   applyDemandProposalCancelled,
   applyDemandAssignRejected,
 } from '@/features/scheduling.slice';
-import { onTagEvent } from '@/features/shared-kernel/centralized-tag';
+import { onTagEvent } from '@/features/shared-kernel/tag-authority';
+import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
+import {
+  handleTagUpdatedForPool,
+  handleTagDeprecatedForPool,
+  handleTagDeletedForPool,
+} from '@/features/skill-xp.slice';
+import type { WorkspaceEventBus } from '@/features/workspace.slice';
+
+import { upsertProjectionVersion } from './_registry';
+import { appendAuditEntry } from './account-audit';
+import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
+import {
+  applyOrgMemberSkillXp,
+  initOrgMemberEntry,
+  removeOrgMemberEntry,
+  updateOrgMemberEligibility,
+} from './org-eligible-member-view';
+import { applyMemberJoined, applyMemberLeft } from './organization-view';
 import {
   applyTagCreated,
   applyTagUpdated,
   applyTagDeprecated,
   applyTagDeleted,
 } from './tag-snapshot';
-import {
-  handleTagUpdatedForPool,
-  handleTagDeprecatedForPool,
-  handleTagDeletedForPool,
-} from '@/features/skill-xp.slice';
+
 
 /**
  * Registers workspace event handlers on the bus to keep projections in sync.
@@ -330,7 +332,7 @@ export function registerOrganizationFunnel(): () => void {
  * Per logic-overview.md [R3]:
  *   IER BACKGROUND_LANE → VS4_TAG_SUBSCRIBER → SKILL_TAG_POOL
  *
- * Per logic-overview.md (VS8):
+ * Per logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   IER ==>|"#9 唯一寫入路徑"| FUNNEL
  *   FUNNEL --> TAG_SNAPSHOT
  *

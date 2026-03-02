@@ -2,16 +2,17 @@
 // Client nav: modal overlay; direct URL: falls through to (auth)/reset-password/page.tsx
 "use client"
 
-import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+
+import { useI18n } from "@/config/i18n/i18n-provider"
+import { ResetPasswordForm } from "@/features/identity.slice"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/shared/shadcn-ui/dialog"
-import { useI18n } from "@/config/i18n/i18n-provider"
-import { ResetPasswordForm } from "@/features/identity.slice"
 
 function ResetPasswordModalContent() {
   const router = useRouter()

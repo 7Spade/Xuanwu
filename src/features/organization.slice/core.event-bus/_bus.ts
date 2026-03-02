@@ -11,6 +11,7 @@
  */
 
 import type { ImplementsEventEnvelopeContract } from '@/features/shared-kernel';
+
 import type { OrganizationEventPayloadMap, OrganizationEventKey } from './_events';
 
 type OrgEventHandler<K extends OrganizationEventKey> = (

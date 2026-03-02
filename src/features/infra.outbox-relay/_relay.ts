@@ -33,9 +33,10 @@ import {
   type DocumentData,
   type DocumentChange,
 } from 'firebase/firestore';
-import { db } from '@/shared/infra/firestore/firestore.client';
+
 import { getDlqLevel, type DlqEntry } from '@/features/infra.dlq-manager';
 import { logDomainError } from '@/features/observability';
+import { db } from '@/shared/infra/firestore/firestore.client';
 
 /** Delivery status of an outbox entry. */
 export type OutboxStatus = 'pending' | 'delivered' | 'dlq';

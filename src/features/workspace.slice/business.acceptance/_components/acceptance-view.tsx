@@ -1,13 +1,15 @@
 "use client";
 
-import { useWorkspace } from '../../core';
-import { Button } from "@/shared/shadcn-ui/button";
 import { Trophy, CheckCircle2, Search, XCircle, AlertTriangle } from "lucide-react";
-import { toast } from "@/shared/utility-hooks/use-toast";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import type { WorkspaceTask } from "@/shared/types";
 import { useState, useEffect } from "react";
+
 import { useAuth } from "@/shared/app-providers/auth-provider";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import type { WorkspaceTask } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useWorkspace } from '../../core';
 
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;

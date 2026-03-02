@@ -15,13 +15,14 @@
  * Invariant #1: This BC only writes its own aggregate.
  */
 
-import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
-import { publishOrgEvent } from '../core.event-bus';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+
+import { publishOrgEvent } from '../core.event-bus';
 
 export interface OrgPolicy {
   id: string;

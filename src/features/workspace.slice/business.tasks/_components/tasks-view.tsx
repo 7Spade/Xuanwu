@@ -1,10 +1,6 @@
 
 'use client';
 
-import { useWorkspace } from '../../core';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Textarea } from '@/shared/shadcn-ui/textarea';
 import {
   Plus,
   ChevronRight,
@@ -25,10 +21,13 @@ import {
   Paperclip,
   MapPin,
 } from 'lucide-react';
+import Image from "next/image";
 import { useState, useMemo, useEffect } from 'react';
-import { toast } from '@/shared/utility-hooks/use-toast';
+
+import { cn } from '@/shared/lib';
+import { buildTaskTree } from '@/shared/lib';
 import { Badge } from '@/shared/shadcn-ui/badge';
-import { type WorkspaceTask, type Location , type TaskWithChildren } from '@/shared/types';
+import { Button } from '@/shared/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
@@ -37,14 +36,6 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/shared/shadcn-ui/dialog';
-import { Label } from '@/shared/shadcn-ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/shadcn-ui/select';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -53,11 +44,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/shared/shadcn-ui/dropdown-menu';
+import { Input } from '@/shared/shadcn-ui/input';
+import { Label } from '@/shared/shadcn-ui/label';
 import { Progress } from '@/shared/shadcn-ui/progress';
-import { cn } from '@/shared/lib';
-import { buildTaskTree } from '@/shared/lib';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/shadcn-ui/select';
+import { Textarea } from '@/shared/shadcn-ui/textarea';
+import { type WorkspaceTask, type Location , type TaskWithChildren } from '@/shared/types';
+import { toast } from '@/shared/utility-hooks/use-toast';
+
 import { useStorage } from '../../business.files';
-import Image from "next/image";
+import { useWorkspace } from '../../core';
 
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;

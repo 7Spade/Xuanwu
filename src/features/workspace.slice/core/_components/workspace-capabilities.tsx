@@ -1,11 +1,6 @@
 
 "use client";
 
-import { useWorkspace } from './workspace-provider';
-import { useApp } from '../_hooks/use-app';
-import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
 import { 
   Box, 
   Trash2, 
@@ -26,9 +21,8 @@ import {
   FileScan,
   Loader2,
 } from "lucide-react";
-import { toast } from "@/shared/utility-hooks/use-toast";
 import { useCallback, useState, useMemo } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/shadcn-ui/dialog";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,9 +33,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/shared/shadcn-ui/alert-dialog";
-import { type Capability } from "@/shared/types";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
 import { Checkbox } from "@/shared/shadcn-ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/shadcn-ui/dialog";
 import { Label } from "@/shared/shadcn-ui/label";
+import { type Capability } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useApp } from '../_hooks/use-app';
+
+import { useWorkspace } from './workspace-provider';
 
 // Capabilities available for personal (user-owned) workspaces.
 const PERSONAL_CAPABILITY_IDS = new Set([

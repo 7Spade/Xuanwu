@@ -1,19 +1,20 @@
 "use client"
 
 import { type ColumnDef } from "@tanstack/react-table"
-import { type MemberReference, type ScheduleItem } from "@/shared/types"
+import { format } from "date-fns"
+import { ArrowUpDown } from "lucide-react"
+
+import { SKILLS } from "@/shared/constants/skills"
 import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar"
 import { Badge } from "@/shared/shadcn-ui/badge"
+import { Button } from "@/shared/shadcn-ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip"
-import { format } from "date-fns"
-import { Button } from "@/shared/shadcn-ui/button"
-import { ArrowUpDown } from "lucide-react"
-import { SKILLS } from "@/shared/constants/skills"
+import { type MemberReference, type ScheduleItem } from "@/shared/types"
 
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 

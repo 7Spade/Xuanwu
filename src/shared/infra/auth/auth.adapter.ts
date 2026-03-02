@@ -3,7 +3,6 @@
  * This file contains all functions related to Firebase Authentication services,
  * serving as a single point of interaction for the UI layer with auth logic.
  */
-import { auth } from './auth.client';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -14,6 +13,8 @@ import {
   onAuthStateChanged,
   type User as FirebaseUser,
 } from 'firebase/auth';
+
+import { auth } from './auth.client';
 
 // By exporting the functions directly, we create a clean, testable adapter.
 export const authAdapter = {

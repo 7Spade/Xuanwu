@@ -27,13 +27,13 @@
  * Stored at: orgSkillRecognition/{orgId}/members/{accountId}/skills/{skillId}
  */
 
+import { publishOrgEvent } from '@/features/organization.slice';
+import { findSkill } from '@/shared/constants/skills';
+import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
 } from '@/shared/infra/firestore/firestore.write.adapter';
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
-import { publishOrgEvent } from '@/features/organization.slice';
-import { findSkill } from '@/shared/constants/skills';
 
 // ---------------------------------------------------------------------------
 // Types

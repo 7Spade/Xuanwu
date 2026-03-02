@@ -16,6 +16,7 @@
  */
 
 import { collection, doc, onSnapshot, orderBy, query, type Unsubscribe } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import type { Account, PartnerInvite, Team } from '@/shared/types';

@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect } from "react"
-import { Button } from "@/shared/shadcn-ui/button"
 import { AlertCircle } from "lucide-react"
+import { useEffect } from "react"
+
+import { Button } from "@/shared/shadcn-ui/button"
 
 export default function BusinessTabError({
   error,

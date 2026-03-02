@@ -1,11 +1,13 @@
 
 "use client";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { Button } from "@/shared/shadcn-ui/button";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { Bell, Trash2, Check } from "lucide-react";
+
+import { Button } from "@/shared/shadcn-ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
+import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { type Notification } from "@/shared/types";
+
 import type { AppAction } from '../_components/app-provider'
 
 interface NotificationCenterProps {

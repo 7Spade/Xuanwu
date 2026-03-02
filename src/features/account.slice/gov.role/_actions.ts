@@ -21,13 +21,13 @@
  *   R2  — CRITICAL_LANE semantics: high-priority, not synchronous.
  */
 
-import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 import { publishOrgEvent } from '@/features/organization.slice';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 import type { OrganizationRole } from '@/shared/types';
 
 export interface AccountRoleRecord {

@@ -1,9 +1,10 @@
 
 "use client";
 
+import { Shield } from "lucide-react";
+
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Card, CardContent } from "@/shared/shadcn-ui/card";
-import { Shield } from "lucide-react";
 import { type OrganizationRole } from "@/shared/types";
 
 interface PermissionTreeProps {

@@ -15,19 +15,18 @@
  *   REJECTED / COMPLETED → hidden from board
  */
 
+import { UserCheck, XCircle, Clock, CheckCircle2 } from 'lucide-react';
 import { useState, useCallback, useMemo } from 'react';
+
+import type { SkillRequirement } from '@/features/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
-import {
-  approveScheduleItemWithMember,
-  updateScheduleItemStatus,
-} from '../_actions';
 import { useApp } from '@/shared/app-providers/app-context';
-import { toast } from '@/shared/utility-hooks/use-toast';
-import type { ScheduleItem } from '@/shared/types';
+import { SKILLS } from '@/shared/constants/skills';
+import type { Timestamp } from '@/shared/ports';
+import { Badge } from '@/shared/shadcn-ui/badge';
+import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Badge } from '@/shared/shadcn-ui/badge';
 import {
   Select,
   SelectContent,
@@ -35,10 +34,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/shadcn-ui/select';
-import { UserCheck, XCircle, Clock, CheckCircle2 } from 'lucide-react';
-import type { Timestamp } from '@/shared/ports';
-import type { SkillRequirement } from '@/features/shared-kernel';
-import { SKILLS } from '@/shared/constants/skills';
+import type { ScheduleItem } from '@/shared/types';
+import { toast } from '@/shared/utility-hooks/use-toast';
+
+import {
+  approveScheduleItemWithMember,
+  updateScheduleItemStatus,
+} from '../_actions';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -79,11 +81,11 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
   const isOpen = item.status === 'PROPOSAL';
 
   const statusBadge = isOpen ? (
-    <Badge variant="outline" className="shrink-0 border-amber-500 text-[9px] text-amber-600 uppercase tracking-widest">
+    <Badge variant="outline" className="shrink-0 border-amber-500 text-[9px] uppercase tracking-widest text-amber-600">
       <Clock className="mr-1 size-2.5" /> 待指派
     </Badge>
   ) : (
-    <Badge variant="outline" className="shrink-0 border-emerald-500 text-[9px] text-emerald-600 uppercase tracking-widest">
+    <Badge variant="outline" className="shrink-0 border-emerald-500 text-[9px] uppercase tracking-widest text-emerald-600">
       <CheckCircle2 className="mr-1 size-2.5" /> 已指派
     </Badge>
   );

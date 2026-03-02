@@ -174,3 +174,13 @@ export interface ImplementsTagStaleGuard {
    */
   readonly maxStalenessMs: number;
 }
+
+// ─── Tag event bus subscription (re-exported for infrastructure consumers) ───
+
+/**
+ * Re-exported from centralized-tag._bus.
+ *
+ * Infrastructure consumers (L5 ProjectionBus) MUST subscribe to tag lifecycle
+ * events via this import path — never via centralized-tag directly. [D7]
+ */
+export { onTagEvent } from '../centralized-tag/_bus';

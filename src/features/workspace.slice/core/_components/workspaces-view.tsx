@@ -1,18 +1,24 @@
 "use client";
 // [職責] Workspaces list view — contains all state and rendering logic
 
-import { useState, useEffect } from "react";
-import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
 import { Terminal } from "lucide-react";
-import { useApp } from "../_hooks/use-app";
-import { useI18n } from "@/config/i18n/i18n-provider";
-import { useWorkspaceFilters } from "../../business.files/_hooks/use-workspace-filters";
-import { WorkspaceListHeader } from "./workspace-list-header";
-import { WorkspaceGridView } from "./workspace-grid-view";
-import { WorkspaceTableView } from "./workspace-table-view";
-import { Button } from "@/shared/shadcn-ui/button";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { ROUTES } from "@/shared/constants/routes";
+import { Button } from "@/shared/shadcn-ui/button";
+
+import { useWorkspaceFilters } from "../../business.files/_hooks/use-workspace-filters";
+import { useApp } from "../_hooks/use-app";
+import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
+
+
+
+import { WorkspaceGridView } from "./workspace-grid-view";
+import { WorkspaceListHeader } from "./workspace-list-header";
+import { WorkspaceTableView } from "./workspace-table-view";
+
 
 export function WorkspacesView() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

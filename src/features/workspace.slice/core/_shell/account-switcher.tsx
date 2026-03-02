@@ -1,7 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+
+import { ROUTES } from "@/shared/constants/routes"
+import { cn } from "@/shared/lib"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import {
   DropdownMenu,
@@ -17,12 +22,12 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/shared/shadcn-ui/sidebar"
-import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
 import type { Account } from "@/shared/types"
+
 import type { AppAction } from '../_components/app-provider'
-import { cn } from "@/shared/lib"
-import Link from "next/link"
-import { ROUTES } from "@/shared/constants/routes"
+
+
+
 
 interface AccountSwitcherProps {
   user: Account | null

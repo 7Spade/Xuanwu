@@ -1,5 +1,10 @@
 "use client";
 
+import { Globe, Layers, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { ROUTES } from "@/shared/constants/routes";
+import { Badge } from "@/shared/shadcn-ui/badge";
 import {
   CommandDialog,
   CommandEmpty,
@@ -8,11 +13,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/shared/shadcn-ui/command";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Globe, Layers, User } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { type Account, type Workspace, type MemberReference } from "@/shared/types";
-import { ROUTES } from "@/shared/constants/routes";
 
 interface GlobalSearchProps {
   isOpen: boolean;

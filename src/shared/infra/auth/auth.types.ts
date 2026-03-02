@@ -6,6 +6,7 @@
  */
 
 import type { User as FirebaseUser, UserCredential } from 'firebase/auth';
+
 import type { AuthUser } from '@/shared/ports/i-auth.service';
 
 /** Re-alias Firebase SDK types for internal use only. */

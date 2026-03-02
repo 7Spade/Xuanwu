@@ -4,9 +4,10 @@
  * Read-side queries for the account projection view.
  */
 
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
-import type { AccountViewRecord } from './_projector';
 import type { AuthoritySnapshot } from '@/features/shared-kernel';
+import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
+import type { AccountViewRecord } from './_projector';
 
 export async function getAccountView(accountId: string): Promise<AccountViewRecord | null> {
   return getDocument<AccountViewRecord>(`accountView/${accountId}`);

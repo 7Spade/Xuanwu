@@ -15,6 +15,7 @@ import {
   type DocumentData,
   type FirestoreDataConverter,
 } from 'firebase/firestore';
+
 import { db } from './firestore.client';
 
 /**

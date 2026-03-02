@@ -14,15 +14,17 @@ import {
   doc,
   getDoc,
 } from 'firebase/firestore';
+
+import type { WorkspaceTask } from '@/shared/types';
+
 import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
 import {
   updateDocument,
   addDocument,
   deleteDocument,
 } from '../firestore.write.adapter';
-import { getDocuments } from '../firestore.read.adapter';
-import { createConverter } from '../firestore.converter';
-import type { WorkspaceTask } from '@/shared/types';
 
 /**
  * Creates a new task in a specific workspace.

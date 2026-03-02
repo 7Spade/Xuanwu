@@ -1,12 +1,13 @@
 // [職責] @panel intercept: governance sidebar — pending proposals review panel
 "use client"
 
-import { useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shared/shadcn-ui/sheet"
+import { useMemo } from "react"
+
+import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.slice"
 import { useWorkspace } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
-import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.slice"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shared/shadcn-ui/sheet"
 import type { ScheduleItem } from "@/shared/types"
 
 export default function GovernancePanelPage() {

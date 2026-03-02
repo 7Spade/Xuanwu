@@ -1,13 +1,14 @@
 "use client";
 
-import { type ScheduleItem } from "@/shared/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Check, X } from "lucide-react";
+
 import type { SkillRequirement } from '@/features/shared-kernel';
 import { SKILLS } from '@/shared/constants/skills';
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
+import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { type ScheduleItem } from "@/shared/types";
 
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];

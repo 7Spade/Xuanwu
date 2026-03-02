@@ -17,12 +17,13 @@
  */
 
 import { collection, doc, runTransaction, serverTimestamp, type Transaction } from 'firebase/firestore';
-import { db } from '@/shared/infra/firestore/firestore.client';
+
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel';
+import { db } from '@/shared/infra/firestore/firestore.client';
 
 export interface WalletTransaction {
   id?: string;

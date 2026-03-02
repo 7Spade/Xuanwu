@@ -11,8 +11,10 @@
 "use client";
 
 import { useState } from "react";
-import { useWorkspace } from "../../core";
+
 import { type AuditLog } from "@/shared/types";
+
+import { useWorkspace } from "../../core";
 
 export function useWorkspaceAudit() {
   const { localAuditLogs } = useWorkspace();

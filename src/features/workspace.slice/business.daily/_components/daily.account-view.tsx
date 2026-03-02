@@ -11,14 +11,17 @@
  */
 "use client";
 
+import { AlertCircle, MessageSquare } from "lucide-react";
 import { useState } from "react";
-import { WorkspaceProvider } from "../../core";
+
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { AlertCircle, MessageSquare } from "lucide-react";
-import { DailyLogCard } from "./daily-log-card";
-import { useAggregatedLogs } from "../_hooks/use-aggregated-logs";
 import type { DailyLog } from "@/shared/types";
+
+import { WorkspaceProvider } from "../../core";
+import { useAggregatedLogs } from "../_hooks/use-aggregated-logs";
+
+import { DailyLogCard } from "./daily-log-card";
 import { DailyLogDialog } from "./daily-log-dialog";
 
 export function AccountDailyComponent() {

@@ -10,6 +10,7 @@
  */
 
 import type { ImplementsEventEnvelopeContract } from '../event-envelope';
+
 import type { TagLifecycleEventPayloadMap, TagLifecycleEventKey } from './_events';
 
 type TagEventHandler<K extends TagLifecycleEventKey> = (

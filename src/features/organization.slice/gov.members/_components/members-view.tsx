@@ -1,18 +1,20 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
 import { UserPlus, Trash2, Mail, AlertCircle, Sparkles } from "lucide-react"
-import { toast } from "@/shared/utility-hooks/use-toast"
 import { useState, useEffect, useMemo } from "react"
-import { type MemberReference } from "@/shared/types"
-import { useApp } from "@/shared/app-providers/app-context"
-import { useMemberManagement } from '../_hooks/use-member-management'
+
 import { useI18n } from "@/config/i18n/i18n-provider"
-import { PageHeader } from "@/shared/ui/page-header"
 import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"
+import { useApp } from "@/shared/app-providers/app-context"
+import { Badge } from "@/shared/shadcn-ui/badge"
+import { Button } from "@/shared/shadcn-ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"
+import { type MemberReference } from "@/shared/types"
+import { PageHeader } from "@/shared/ui/page-header"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
+import { useMemberManagement } from '../_hooks/use-member-management'
 
 export function MembersView() {
   const [mounted, setMounted] = useState(false)

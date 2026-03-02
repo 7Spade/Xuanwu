@@ -5,13 +5,13 @@
  * without any React dependencies.
  */
 
-import { authAdapter } from "@/shared/infra/auth/auth.adapter"
 import { createUserAccount } from '@/features/account.slice'
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/features/shared-kernel'
+import { authAdapter } from "@/shared/infra/auth/auth.adapter"
 
 /**
  * Signs in an existing user with email and password.

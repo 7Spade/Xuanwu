@@ -5,8 +5,9 @@
  * - adaptUIColorToAccountContext - Determines appropriate colors based on the dimension identity description.
  */
 
-import {ai} from '@/app-runtime/ai/genkit';
 import {z} from 'genkit';
+
+import {ai} from '@/app-runtime/ai/genkit';
 
 const AdaptUIColorToAccountContextInputSchema = z.object({
   accountContext: z

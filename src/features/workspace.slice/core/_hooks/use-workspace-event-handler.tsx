@@ -1,17 +1,22 @@
 // [職責] 監聽事件並執行副作用 (The Orchestrator)
 "use client";
+import { Timestamp } from "firebase/firestore";
 import { useEffect } from "react";
-import { useWorkspace } from '../_components/workspace-provider';
-import { useApp } from './use-app';
-import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { handleScheduleProposed } from "@/features/scheduling.slice";
 import { ToastAction } from "@/shared/shadcn-ui/toast";
 import type { WorkspaceTask } from "@/shared/types";
-import type { DocumentParserItemsExtractedPayload } from '../../core.event-bus';
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { markParsingIntentImported } from "../../business.document-parser";
 import { createIssue } from "../../business.issues";
 import { batchImportTasks } from "../../business.tasks";
-import { markParsingIntentImported } from "../../business.document-parser";
-import { handleScheduleProposed } from "@/features/scheduling.slice";
-import { Timestamp } from "firebase/firestore";
+import type { DocumentParserItemsExtractedPayload } from '../../core.event-bus';
+import { useWorkspace } from '../_components/workspace-provider';
+
+import { useApp } from './use-app';
+
+
 
 // [S4] Named constant — disambiguates from PROJ_STALE_STANDARD (10s).
 // This is a UI toast duration, not a staleness SLA value.
@@ -348,5 +353,5 @@ export function useWorkspaceEventHandler() {
       unsubTaskBlocked();
       unsubScheduleProposed();
     };
-  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, updateTask]);
+  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, updateTask, createScheduleItem]);
 }

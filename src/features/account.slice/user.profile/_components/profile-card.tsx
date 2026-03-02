@@ -1,17 +1,19 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Button } from "@/shared/shadcn-ui/button";
 import { User, Loader2, Upload } from "lucide-react";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import type React from "react"
+
+import { SKILLS, type SkillCategory } from "@/shared/constants/skills"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
 import { Checkbox } from "@/shared/shadcn-ui/checkbox";
+import { Input } from "@/shared/shadcn-ui/input";
+import { Label } from "@/shared/shadcn-ui/label";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
 import { type SkillGrant, type Account } from "@/shared/types"
-import { SKILLS, type SkillCategory } from "@/shared/constants/skills"
-import type React from "react"
+
 
 const SKILL_CATEGORIES: SkillCategory[] = [
   'Civil', 'Electrical', 'Mechanical', 'Finishing',

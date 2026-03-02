@@ -7,8 +7,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getWorkspaceGrant } from '../_queries';
+
 import type { WorkspaceGrant } from '@/shared/types';
+
+import { getWorkspaceGrant } from '../_queries';
 
 export function useWorkspaceRole(workspaceId: string | null, userId: string | null) {
   const [grant, setGrant] = useState<WorkspaceGrant | null>(null);

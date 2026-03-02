@@ -1,19 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/shadcn-ui/collapsible";
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarMenuButton,
-} from "@/shared/shadcn-ui/sidebar";
 import {
   LayoutDashboard,
   Layers,
@@ -28,7 +14,22 @@ import {
   History,
   BookOpen,
 } from "lucide-react";
+import Link from "next/link";
+
 import { ROUTES } from "@/shared/constants/routes";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/shadcn-ui/collapsible";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarMenuButton,
+} from "@/shared/shadcn-ui/sidebar";
 
 interface NavMainProps {
   pathname: string;

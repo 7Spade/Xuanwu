@@ -1,21 +1,23 @@
 "use client";
 
-import { useWorkspace } from '../../core';
-import { Button } from "@/shared/shadcn-ui/button";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, MessageSquare, CornerUpLeft, CheckCircle2 } from "lucide-react";
-import { toast } from "@/shared/utility-hooks/use-toast";
-import { useMemo, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
-import { useAuth } from "@/shared/app-providers/auth-provider";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shared/shadcn-ui/sheet";
-import { type WorkspaceIssue } from "@/shared/types";
 import { format } from "date-fns";
+import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, MessageSquare, CornerUpLeft, CheckCircle2 } from "lucide-react";
+import { useMemo, useState } from "react";
+
+import { useAuth } from "@/shared/app-providers/auth-provider";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";
+import { Input } from "@/shared/shadcn-ui/input";
+import { Label } from "@/shared/shadcn-ui/label";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shared/shadcn-ui/sheet";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { type WorkspaceIssue } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useWorkspace } from '../../core';
 
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;

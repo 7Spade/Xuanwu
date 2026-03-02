@@ -12,8 +12,10 @@
  */
 
 import { collection, getDocs, type QueryDocumentSnapshot } from 'firebase/firestore';
+
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+
 import type { TagSnapshotEntry } from './_projector';
 
 /**

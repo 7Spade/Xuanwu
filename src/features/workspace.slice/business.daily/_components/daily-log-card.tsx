@@ -12,16 +12,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import type { Timestamp } from "@/shared/ports";
+import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import { Card } from "@/shared/shadcn-ui/card";
 import { type DailyLog, type Account } from "@/shared/types";
-import type { Timestamp } from "@/shared/ports";
+
+import { BookmarkButton } from "./actions/bookmark-button";
+import { CommentButton } from "./actions/comment-button";
+import { LikeButton } from "./actions/like-button";
 import { ImageCarousel } from "./image-carousel";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
+
 
 // Import the new single-responsibility action components
-import { LikeButton } from "./actions/like-button";
-import { CommentButton } from "./actions/comment-button";
-import { BookmarkButton } from "./actions/bookmark-button";
 
 
 // Internal component for displaying workspace avatar

@@ -15,9 +15,11 @@
  * - Invariant #4b: Transaction Runner only delivers to Outbox; does not produce Domain Events.
  */
 
-import { appendDomainEvent } from '../core.event-store';
-import { createOutbox, type Outbox, type OutboxEvent } from './_outbox';
 import { generateTraceId, logDomainError } from '@/features/observability';
+
+import { appendDomainEvent } from '../core.event-store';
+
+import { createOutbox, type Outbox, type OutboxEvent } from './_outbox';
 
 export interface TransactionContext {
   workspaceId: string;

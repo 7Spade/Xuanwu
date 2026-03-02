@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+
 import { Card, CardContent } from "@/shared/shadcn-ui/card";
 import {
   Carousel,

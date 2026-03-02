@@ -2,6 +2,7 @@
 "use client";
 
 import type { Workspace } from "@/shared/types";
+
 import { WorkspaceCard } from "./workspace-card";
 
 interface WorkspaceGridViewProps {

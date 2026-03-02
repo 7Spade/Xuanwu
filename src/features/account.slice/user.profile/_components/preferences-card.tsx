@@ -1,10 +1,11 @@
 "use client";
 
+import { Bell } from "lucide-react";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 import { Label } from "@/shared/shadcn-ui/label";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { Switch } from "@/shared/shadcn-ui/switch";
-import { Bell } from "lucide-react";
 
 export function PreferencesCard() {
   return (

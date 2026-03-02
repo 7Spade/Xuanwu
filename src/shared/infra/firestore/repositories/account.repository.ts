@@ -13,14 +13,16 @@ import {
   getDoc,
   deleteDoc,
 } from 'firebase/firestore'
-import { db } from '../firestore.client'
-import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'
+
 import type {
   Account,
   MemberReference,
   Team,
   ThemeConfig,
 } from '@/shared/types'
+
+import { db } from '../firestore.client'
+import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'
 
 /**
  * Creates a user account in the accounts collection.

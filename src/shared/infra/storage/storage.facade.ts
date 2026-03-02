@@ -5,8 +5,8 @@
  * Its purpose is to encapsulate more complex business-specific operations.
  */
 
-import { uploadFile } from './storage.write.adapter';
 import { getFileDownloadURL } from './storage.read.adapter';
+import { uploadFile } from './storage.write.adapter';
 
 /**
  * Uploads a photo for a daily log entry to a structured path and returns its public URL.

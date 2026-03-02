@@ -3,6 +3,9 @@
 //   WORKSPACE_EVENT_BUS -.->|事件契約遵循| SK_EVENT_ENVELOPE
 //   WORKSPACE_EVENT_BUS --> TRACE_IDENTIFIER (Observability)
 //   WORKSPACE_EVENT_BUS --> DOMAIN_METRICS   (Observability)
+import { recordEventPublished } from "@/features/observability"
+import type { ImplementsEventEnvelopeContract } from '@/features/shared-kernel'
+
 import type {
   WorkspaceEventName,
   WorkspaceEventHandler,
@@ -10,11 +13,9 @@ import type {
   SubscribeFn,
   WorkspaceEventPayloadMap,
 } from "./_events"
-import type { ImplementsEventEnvelopeContract } from '@/features/shared-kernel'
-import { recordEventPublished } from "@/features/observability"
 
 // A map where keys are event names (strings) and values are arrays of handler functions (Observers).
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type HandlerRegistry = Map<WorkspaceEventName, WorkspaceEventHandler<any>[]>
 
 /**

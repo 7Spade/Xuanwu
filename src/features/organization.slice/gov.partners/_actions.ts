@@ -12,16 +12,16 @@
  */
 
 import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from "@/features/shared-kernel";
+import {
   createTeam as createTeamFacade,
   sendPartnerInvite as sendPartnerInviteFacade,
   dismissPartnerMember as dismissPartnerMemberFacade,
 } from "@/shared/infra/firestore/firestore.facade";
 import type { MemberReference } from "@/shared/types";
-import {
-  type CommandResult,
-  commandSuccess,
-  commandFailureFrom,
-} from "@/features/shared-kernel";
 
 export async function createPartnerGroup(
   organizationId: string,

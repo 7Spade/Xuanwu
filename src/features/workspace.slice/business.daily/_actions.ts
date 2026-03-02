@@ -9,14 +9,14 @@
  */
 
 import {
-  toggleDailyLogLike,
-  addDailyLogComment as addDailyLogCommentFacade,
-} from "@/shared/infra/firestore/firestore.facade";
-import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from "@/features/shared-kernel";
+import {
+  toggleDailyLogLike,
+  addDailyLogComment as addDailyLogCommentFacade,
+} from "@/shared/infra/firestore/firestore.facade";
 
 /**
  * Toggles a like on a daily log entry.

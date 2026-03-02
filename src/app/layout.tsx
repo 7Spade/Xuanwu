@@ -1,13 +1,14 @@
 
 import type {Metadata} from 'next';
+
 import './globals.css';
-import {Toaster} from '@/shared/shadcn-ui/toaster';
-import { cn } from '@/shared/lib';
-import { ThemeProvider } from '@/shared/app-providers/theme-provider';
-import { FirebaseClientProvider } from '@/shared/app-providers/firebase-provider';
-import { AuthProvider } from '@/shared/app-providers/auth-provider';
-import { AppProvider } from '@/features/workspace.slice';
 import { I18nProvider } from '@/config/i18n/i18n-provider';
+import { AppProvider } from '@/features/workspace.slice';
+import { AuthProvider } from '@/shared/app-providers/auth-provider';
+import { FirebaseClientProvider } from '@/shared/app-providers/firebase-provider';
+import { ThemeProvider } from '@/shared/app-providers/theme-provider';
+import { cn } from '@/shared/lib';
+import {Toaster} from '@/shared/shadcn-ui/toaster';
 
 export const metadata: Metadata = {
   title: 'OrgVerse | Modern Workspace Architecture',

@@ -14,15 +14,16 @@
  */
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { addMonths, subMonths, format } from "date-fns";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+
 import { useWorkspace } from "@/features/workspace.slice";
 import { useApp } from "@/shared/app-providers/app-context";
 import { useFirebase } from "@/shared/app-providers/firebase-provider";
-import { useRouter } from "next/navigation";
-import { toast } from "@/shared/utility-hooks/use-toast";
-import { addMonths, subMonths, format } from "date-fns";
 import type { ScheduleItem } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
 
 export function useWorkspaceSchedule() {
   const { workspace } = useWorkspace();

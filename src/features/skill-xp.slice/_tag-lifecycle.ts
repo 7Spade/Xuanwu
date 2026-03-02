@@ -26,12 +26,14 @@ import {
   getDocs,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
-import { db } from '@/shared/infra/firestore/firestore.client';
+
 import type {
   TagUpdatedPayload,
   TagDeprecatedPayload,
   TagDeletedPayload,
 } from '@/features/shared-kernel';
+import { db } from '@/shared/infra/firestore/firestore.client';
+
 import {
   syncTagUpdateToPool,
   syncTagDeprecationToPool,

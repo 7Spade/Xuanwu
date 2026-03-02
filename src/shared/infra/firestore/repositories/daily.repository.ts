@@ -19,10 +19,12 @@ import {
   writeBatch,
   type FieldValue,
 } from 'firebase/firestore'
-import { db } from '../firestore.client'
-import { getDocuments } from '../firestore.read.adapter'
-import { createConverter } from '../firestore.converter'
+
 import type { DailyLog, DailyLogComment } from '@/shared/types'
+
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
 
 export const toggleDailyLogLike = async (
   organizationId: string,

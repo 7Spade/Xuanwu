@@ -9,7 +9,7 @@
  * All ignore patterns and configuration are centralized here.
  * Optimized for Copilot Browser Agent to reduce noise and improve context quality.
  */
-export default {
+const repomixConfig = {
   $schema: 'https://repomix.com/schemas/latest/schema.json',
 
   input: {
@@ -204,5 +204,7 @@ export default {
   tokenCount: {
     encoding: 'o200k_base', // OpenAI's encoding for GPT-4 and newer
   },
-}
+};
+
+export default repomixConfig;
 

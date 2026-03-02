@@ -2,11 +2,15 @@
 // Extracted from app/(auth)/login/page.tsx to follow the features/ view pattern.
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { toast } from "@/shared/utility-hooks/use-toast"
-import { completeRegistration , signIn, signInAnonymously } from "../_actions"
+import { useState } from "react"
+
 import { useI18n } from "@/config/i18n/i18n-provider"
+import { toast } from "@/shared/utility-hooks/use-toast"
+
+import { completeRegistration , signIn, signInAnonymously } from "../_actions"
+
+
 import { AuthBackground } from "./auth-background"
 import { AuthTabsRoot } from "./auth-tabs-root"
 

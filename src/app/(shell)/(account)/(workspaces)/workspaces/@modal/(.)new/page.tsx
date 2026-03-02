@@ -2,6 +2,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+
 import { CreateWorkspaceDialog } from "@/features/workspace.slice"
 
 export default function NewWorkspaceModalPage() {

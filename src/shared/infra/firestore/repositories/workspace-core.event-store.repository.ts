@@ -16,10 +16,11 @@ import {
   orderBy,
   type Timestamp,
 } from 'firebase/firestore';
+
 import { db } from '../firestore.client';
-import { addDocument } from '../firestore.write.adapter';
-import { getDocuments } from '../firestore.read.adapter';
 import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import { addDocument } from '../firestore.write.adapter';
 
 export interface StoredWorkspaceEvent {
   id: string;

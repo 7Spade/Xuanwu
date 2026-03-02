@@ -18,13 +18,16 @@
  * workspace context and must be accessible to Subject Center slices.
  */
 
-import { type ReactNode, createContext, useReducer, useEffect } from 'react'
-import type React from 'react'
 import { collection, query, where, onSnapshot, type QuerySnapshot } from 'firebase/firestore'
-import { useFirebase } from './firebase-provider'
-import { useAuth } from './auth-provider'
+import type React from 'react'
+import { type ReactNode, createContext, useReducer, useEffect } from 'react'
+import { useContext } from 'react'
+
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils'
 import { type Account, type CapabilitySpec, type Notification } from '@/shared/types'
+
+import { useAuth } from './auth-provider'
+import { useFirebase } from './firebase-provider'
 
 // ---------------------------------------------------------------------------
 // State shape
@@ -170,7 +173,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 // Hook
 // ---------------------------------------------------------------------------
 
-import { useContext } from 'react'
 
 export function useApp() {
   const context = useContext(AppContext)

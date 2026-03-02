@@ -1,9 +1,7 @@
 
 "use client";
 
-import { useWorkspace } from '../../core';
-import { Button } from "@/shared/shadcn-ui/button";
-import { Badge } from "@/shared/shadcn-ui/badge";
+import { serverTimestamp, type FieldValue } from "firebase/firestore";
 import { 
   FileText, 
   UploadCloud, 
@@ -23,16 +21,26 @@ import {
   Loader2,
   FileScan,
 } from "lucide-react";
-import { toast } from "@/shared/utility-hooks/use-toast";
-import { serverTimestamp, type FieldValue } from "firebase/firestore";
-import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { subscribeToWorkspaceFiles } from '../_queries';
+import { useState, useRef, useEffect } from "react";
+
+import { useAuth } from "@/shared/app-providers/auth-provider";
+import { ROUTES } from "@/shared/constants/routes";
 import {
   createWorkspaceFile,
   addWorkspaceFileVersion,
   restoreWorkspaceFileVersion,
 } from '@/shared/infra/firestore/firestore.facade';
+import { cn, formatBytes } from "@/shared/lib";
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/shadcn-ui/dropdown-menu";
+import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { 
   Sheet, 
   SheetContent, 
@@ -40,16 +48,6 @@ import {
   SheetHeader, 
   SheetTitle 
 } from "@/shared/shadcn-ui/sheet";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu";
-import { cn, formatBytes } from "@/shared/lib";
-import { useAuth } from "@/shared/app-providers/auth-provider";
-import type { WorkspaceFile, WorkspaceFileVersion } from "@/shared/types";
 import {
   Table,
   TableBody,
@@ -58,8 +56,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/shadcn-ui/table";
+import type { WorkspaceFile, WorkspaceFileVersion } from "@/shared/types";
+import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useWorkspace } from '../../core';
+import { subscribeToWorkspaceFiles } from '../_queries';
 import { uploadRawFile } from '../_storage-actions';
-import { ROUTES } from "@/shared/constants/routes";
 
 
 const getErrorMessage = (error: unknown, fallback: string) =>

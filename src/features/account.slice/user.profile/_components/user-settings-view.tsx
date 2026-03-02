@@ -1,8 +1,9 @@
 "use client"
 
-import { UserSettings } from "./user-settings"
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { PageHeader } from "@/shared/ui/page-header"
+
+import { UserSettings } from "./user-settings"
 
 export function UserSettingsView() {
   const { t } = useI18n()

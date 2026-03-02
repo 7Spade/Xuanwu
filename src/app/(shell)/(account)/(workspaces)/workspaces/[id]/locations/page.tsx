@@ -2,10 +2,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+
 import { useWorkspace } from '@/features/workspace.slice';
 import { WorkspaceLocationsPanel } from '@/features/workspace.slice';
-import { Button } from '@/shared/shadcn-ui/button';
 import { ROUTES } from '@/shared/constants/routes';
+import { Button } from '@/shared/shadcn-ui/button';
 
 export default function WorkspaceLocationsPage() {
   const router = useRouter();

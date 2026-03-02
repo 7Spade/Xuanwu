@@ -7,8 +7,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { subscribeToNotifications, markNotificationRead } from '../_queries';
+
 import type { Notification } from '@/shared/types';
+
+import { subscribeToNotifications, markNotificationRead } from '../_queries';
 
 export function useUserNotifications(accountId: string | undefined, maxCount = 20) {
   const [notifications, setNotifications] = useState<Notification[]>([]);

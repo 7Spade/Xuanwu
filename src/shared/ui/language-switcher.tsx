@@ -1,5 +1,7 @@
 "use client"
 
+import { Globe } from "lucide-react"
+
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { type Locale } from "@/config/i18n/i18n-types"
 import { Button } from "@/shared/shadcn-ui/button"
@@ -9,7 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu"
-import { Globe } from "lucide-react"
 
 const LOCALE_NAMES: Record<Locale, string> = {
   en: "English",

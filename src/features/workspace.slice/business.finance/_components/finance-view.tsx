@@ -1,14 +1,16 @@
 
 "use client";
 
-import { useWorkspace } from '../../core';
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { Badge } from "@/shared/shadcn-ui/badge";
 import { Wallet, Landmark, TrendingUp, CheckCircle2, AlertCircle, ArrowUpRight, FileSearch } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
+
+import { Badge } from "@/shared/shadcn-ui/badge";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 import { type WorkspaceTask } from "@/shared/types";
 import { toast } from "@/shared/utility-hooks/use-toast";
+
+import { useWorkspace } from '../../core';
 
 type ParsedFinanceItem = {
   name: string;
