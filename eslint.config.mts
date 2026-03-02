@@ -24,6 +24,7 @@ export default tseslint.config(
       ".next/**",
       "node_modules/**",
       "src/shared-infra/firebase/**",
+      "src/shared/shadcn-ui/**",
       "dist/**"
     ],
   },
