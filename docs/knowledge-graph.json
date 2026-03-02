@@ -1,12 +1,4 @@
 {
-  "meta": {
-    "version": "6.0.0",
-    "initializedAt": "2026-03-01",
-    "updatedAt": "2026-03-02",
-    "source": "docs/logic-overview.md (SSOT — sole authoritative source)",
-    "ssot": "docs/logic-overview.md",
-    "note": "v6.0.0: ontology fixes — VS8/VS9 removed from VS namespace (now L5/L9 infrastructure only); Tag Authority extracted from Shared Kernel as standalone domain authority; EventEnvelope gains causationId + correlationId; Hard Invariants (R/S/A/#) vs Governance Rules (D/P/T/E) distinction added; L3 Domain Slices explicitly declared as VS1-VS7; Quick Reference tables added to logic-overview.md header."
-  },
   "entities": [
     {
       "name": "Logic_Overview_SSOT",
@@ -16,8 +8,7 @@
         "Defines 10-layer architecture: L0 External Triggers → L1 Shared Kernel → L2 Command Gateway → L3 Domain Slices (VS1-VS7) → L4 IER → L5 Projection Bus (infrastructure only, no VS designation) → L6 Query Gateway → L7 Firebase ACL → L8 Firebase Infra → L9 Observability (cross-cutting infrastructure, no VS designation).",
         "Design principles: ① top-down unified flow; ② SK contracts centralised, no re-declarations; ③ Firebase boundary explicit (FIREBASE_ACL sole SDK call point); ④ three gateway separation CMD/IER/QGWAY; ⑤ all invariants indexed inline [#N]/[SN]/[RN].",
         "Key invariants: [R8] traceId injected once at CBG_ENTRY, read-only; [S2] all Projections must call applyVersionGuard(); [S4] SLA values only from SK_STALENESS_CONTRACT; [D7] cross-slice refs only via {slice}/index.ts; [D21] new tag categories only in CTA TAG_ENTITIES; [D24] feature slices must not import firebase/* directly.",
-        "Forbidden patterns: BC_X direct write to BC_Y aggregate; TX Runner producing Domain Events; SECURITY_BLOCK DLQ auto-replay; B-track calling back A-track; direct firebase/* imports in feature slices.",
-        "Quick Reference: VS0–VS7 are Business Capability Domains only. L5(ProjectionBus) and L9(Observability) are Infrastructure — they hold NO VS designation. Hard Invariants: R(Runtime)·S(SystemContract)·A(Architecture)·#(SSOT-index). Governance Rules: D(DesignRule)·P(Policy)·T(TagSemantics)·E(EventSemantics). EventEnvelope fields: version·traceId·causationId·correlationId·timestamp."
+        "Forbidden patterns: BC_X direct write to BC_Y aggregate; TX Runner producing Domain Events; SECURITY_BLOCK DLQ auto-replay; B-track calling back A-track; direct firebase/* imports in feature slices."
       ]
     },
     {
