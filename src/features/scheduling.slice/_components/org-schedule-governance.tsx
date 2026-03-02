@@ -194,12 +194,12 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
       </div>
 
       {hasRequirements && (
-        <div className="space-y-1">
-          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+        <div className="space-y-1" role="group" aria-label="所需技能">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground" aria-hidden="true">
             所需技能
           </p>
           <div className="flex flex-wrap gap-1">
-            {item.requiredSkills!.map((req: SkillRequirement) => (
+            {item.requiredSkills?.map((req: SkillRequirement) => (
               <Badge key={req.tagSlug} variant="secondary" className="text-[10px]">
                 {getSkillName(req.tagSlug)} × {req.quantity}
               </Badge>
@@ -219,7 +219,7 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
               <>
                 {fullMatch.length > 0 && (
                   <SelectGroup>
-                    <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-green-600">
+                    <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-green-600" aria-label={`全部符合技能，共 ${fullMatch.length} 人`}>
                       ✓ 全部符合技能（{fullMatch.length}）
                     </SelectLabel>
                     {fullMatch.map((m) => (
@@ -233,9 +233,9 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
                   <>
                     {fullMatch.length > 0 && <SelectSeparator />}
                     <SelectGroup>
-                      <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-amber-600">
+                    <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-amber-600" aria-label={`部分符合技能，共 ${partialMatch.length} 人`}>
                         ◑ 部分符合（{partialMatch.length}）
-                      </SelectLabel>
+                    </SelectLabel>
                       {partialMatch.map((m) => {
                         const view = eligibleMembers.find((e) => e.accountId === m.id);
                         const [matched, total] = view
