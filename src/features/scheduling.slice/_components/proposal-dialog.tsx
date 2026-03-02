@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { type DateRange } from "react-day-picker";
 
 import type { SkillRequirement } from "@/features/shared-kernel";
-import { TIER_DEFINITIONS } from "@/features/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { SKILLS } from "@/shared/constants/skills";
 import { cn } from "@/shared/lib";
@@ -26,7 +25,7 @@ import { Label } from "@/shared/shadcn-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { type Location, type SkillTier } from "@/shared/types";
+import { type Location } from "@/shared/types";
 import { toast } from "@/shared/utility-hooks/use-toast";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;
@@ -69,7 +68,6 @@ export function ProposalDialog({
   const [location, setLocation] = useState<Location>({ description: '' });
   const [requiredSkills, setRequiredSkills] = useState<SkillRequirement[]>([]);
   const [selectedSkillSlug, setSelectedSkillSlug] = useState("");
-  const [selectedTier, setSelectedTier] = useState<SkillTier>("apprentice");
   const [selectedQuantity, setSelectedQuantity] = useState<string>("1");
 
   // FR-K5: Org skill tag pool — loaded once per dialog open when orgId is provided.
@@ -83,7 +81,6 @@ export function ProposalDialog({
     setLocation({ description: '' });
     setRequiredSkills([]);
     setSelectedSkillSlug("");
-    setSelectedTier("apprentice");
     setSelectedQuantity("1");
 
     if (orgId) {
@@ -119,7 +116,7 @@ export function ProposalDialog({
     }
     const requirement: SkillRequirement = {
       tagSlug: selectedSkillSlug,
-      minimumTier: selectedTier,
+      minimumTier: 'apprentice',
       quantity: Math.max(1, parseInt(selectedQuantity) || 1),
     };
     setRequiredSkills(prev => [...prev, requirement]);
@@ -215,7 +212,7 @@ export function ProposalDialog({
                   const skillName = skillOptions.find(s => s.slug === req.tagSlug)?.name ?? req.tagSlug;
                   return (
                     <Badge key={req.tagSlug} variant="secondary" className="gap-1 pr-1">
-                      {skillName} · {req.minimumTier} · ×{req.quantity}
+                      {skillName} · ×{req.quantity}
                       <button
                         type="button"
                         onClick={() => handleRemoveSkillRequirement(req.tagSlug)}
@@ -238,20 +235,6 @@ export function ProposalDialog({
                     {skillOptions.map(skill => (
                       <SelectItem key={skill.slug} value={skill.slug} className="text-xs">
                         {skill.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-32">
-                <Select value={selectedTier} onValueChange={(v) => setSelectedTier(v as SkillTier)}>
-                  <SelectTrigger className="h-9 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TIER_DEFINITIONS.map(def => (
-                      <SelectItem key={def.tier} value={def.tier} className="text-xs">
-                        {def.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

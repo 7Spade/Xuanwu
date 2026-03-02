@@ -28,6 +28,7 @@ import type { SkillRequirement } from '@/features/shared-kernel';
 import { tierSatisfies } from '@/features/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/shared/app-providers/app-context';
+import { SKILLS } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared/ports';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
@@ -36,7 +37,10 @@ import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/shared/shadcn-ui/select';
@@ -52,6 +56,13 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Static slug → display-name lookup so we never show raw tagSlug in the UI. */
+const SKILL_NAME_MAP = new Map<string, string>(SKILLS.map((s) => [s.slug, s.name]));
+
+function getSkillName(slug: string): string {
+  return SKILL_NAME_MAP.get(slug) ?? slug;
+}
+
 function formatTimestamp(ts: Timestamp | string | undefined): string {
   if (!ts) return '';
   if (typeof ts === 'string') return ts;
@@ -65,6 +76,10 @@ function formatTimestamp(ts: Timestamp | string | undefined): string {
 // FR-W2 — Skill match helper
 // ---------------------------------------------------------------------------
 
+/**
+ * Returns [matchedCount, totalRequired].
+ * A skill is "matched" when the member holds it at the required tier or above.
+ */
 function computeSkillMatch(
   member: OrgEligibleMemberView,
   skillRequirements?: SkillRequirement[]
@@ -135,6 +150,32 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
     return computeSkillMatch(view, item.requiredSkills);
   }, [selectedMemberId, eligibleMembers, item.requiredSkills]);
 
+  /**
+   * Pre-compute skill match for every org member so we can group the dropdown
+   * into "全部符合" → "部分符合" → "其他成員" without re-computing per render.
+   */
+  const { fullMatch, partialMatch, noMatch } = useMemo(() => {
+    const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+    const full: typeof orgMembers = [];
+    const partial: typeof orgMembers = [];
+    const none: typeof orgMembers = [];
+
+    for (const m of orgMembers) {
+      if (!hasRequirements) {
+        none.push(m);
+        continue;
+      }
+      const view = eligibleMembers.find((e) => e.accountId === m.id);
+      const [matched, total] = view ? computeSkillMatch(view, item.requiredSkills) : [0, 0];
+      if (matched === total) full.push(m);
+      else if (matched > 0) partial.push(m);
+      else none.push(m);
+    }
+    return { fullMatch: full, partialMatch: partial, noMatch: none };
+  }, [orgMembers, eligibleMembers, item.requiredSkills]);
+
+  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+
   return (
     <div className="space-y-3 rounded-lg border bg-background p-4">
       <div className="flex items-start justify-between gap-2">
@@ -152,13 +193,18 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
         </Badge>
       </div>
 
-      {item.requiredSkills && item.requiredSkills.length > 0 && (
-        <div className="flex flex-wrap gap-1">
-          {item.requiredSkills.map((req: SkillRequirement) => (
-            <Badge key={req.tagSlug} variant="secondary" className="text-[10px]">
-              {req.tagSlug} ≥ {req.minimumTier} × {req.quantity}
-            </Badge>
-          ))}
+      {hasRequirements && (
+        <div className="space-y-1">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+            所需技能
+          </p>
+          <div className="flex flex-wrap gap-1">
+            {item.requiredSkills!.map((req: SkillRequirement) => (
+              <Badge key={req.tagSlug} variant="secondary" className="text-[10px]">
+                {getSkillName(req.tagSlug)} × {req.quantity}
+              </Badge>
+            ))}
+          </div>
         </div>
       )}
 
@@ -169,26 +215,74 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
             <SelectValue placeholder="選擇指派成員" />
           </SelectTrigger>
           <SelectContent>
-            {orgMembers.map((m) => {
-              const view = eligibleMembers.find((e) => e.accountId === m.id);
-              const [matched, total] = view
-                ? computeSkillMatch(view, item.requiredSkills)
-                : [0, 0];
-              const isEligible = view?.eligible ?? false;
-              return (
-                <SelectItem key={m.id} value={m.id} className="text-xs">
-                  <span className="flex items-center gap-1.5">
-                    <span className={`size-1.5 rounded-full ${isEligible ? 'bg-green-500' : 'bg-muted'}`} />
+            {hasRequirements ? (
+              <>
+                {fullMatch.length > 0 && (
+                  <SelectGroup>
+                    <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-green-600">
+                      ✓ 全部符合技能（{fullMatch.length}）
+                    </SelectLabel>
+                    {fullMatch.map((m) => (
+                      <SelectItem key={m.id} value={m.id} className="text-xs">
+                        {m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )}
+                {partialMatch.length > 0 && (
+                  <>
+                    {fullMatch.length > 0 && <SelectSeparator />}
+                    <SelectGroup>
+                      <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-amber-600">
+                        ◑ 部分符合（{partialMatch.length}）
+                      </SelectLabel>
+                      {partialMatch.map((m) => {
+                        const view = eligibleMembers.find((e) => e.accountId === m.id);
+                        const [matched, total] = view
+                          ? computeSkillMatch(view, item.requiredSkills)
+                          : [0, 0];
+                        return (
+                          <SelectItem key={m.id} value={m.id} className="text-xs">
+                            <span className="flex items-center gap-1.5">
+                              {m.name}
+                              <span className="text-[9px] font-bold text-amber-500">
+                                {matched}/{total}
+                              </span>
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </>
+                )}
+                {noMatch.length > 0 && (
+                  <>
+                    {(fullMatch.length > 0 || partialMatch.length > 0) && <SelectSeparator />}
+                    <SelectGroup>
+                      <SelectLabel className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                        其他成員（{noMatch.length}）
+                      </SelectLabel>
+                      {noMatch.map((m) => (
+                        <SelectItem key={m.id} value={m.id} className="text-xs text-muted-foreground">
+                          {m.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </>
+                )}
+                {orgMembers.length === 0 && (
+                  <p className="px-2 py-3 text-center text-xs text-muted-foreground">尚無組織成員</p>
+                )}
+              </>
+            ) : (
+              <>
+                {orgMembers.map((m) => (
+                  <SelectItem key={m.id} value={m.id} className="text-xs">
                     {m.name}
-                    {total > 0 && (
-                      <span className={`ml-1 text-[9px] font-bold ${matched === total ? 'text-green-600' : 'text-amber-500'}`}>
-                        {matched}/{total}
-                      </span>
-                    )}
-                  </span>
-                </SelectItem>
-              );
-            })}
+                  </SelectItem>
+                ))}
+              </>
+            )}
           </SelectContent>
         </Select>
 
