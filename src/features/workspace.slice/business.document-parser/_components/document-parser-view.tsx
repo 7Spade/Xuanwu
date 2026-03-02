@@ -12,7 +12,7 @@ import {
 } from '../_form-actions';
 import { saveParsingIntent } from '../_intent-actions';
 import { subscribeToParsingIntents } from '../_queries';
-import type { WorkItem } from '@/shared/ai/schemas/docu-parse';
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 import type { SourcePointer, ParsingIntent } from '@/shared/types';
 import { useWorkspace } from '../../core';
 

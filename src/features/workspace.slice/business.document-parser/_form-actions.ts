@@ -1,8 +1,8 @@
 'use server';
 
-import { extractInvoiceItems } from '@/shared/ai/flows/extract-invoice-items';
+import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
 import { z } from 'zod';
-import type { WorkItem } from '@/shared/ai/schemas/docu-parse';
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 
 const actionInputSchema = z.object({
   documentDataUri: z.string().startsWith('data:'),
