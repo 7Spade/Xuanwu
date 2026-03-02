@@ -385,7 +385,7 @@ This comment was written to rationalize a legacy constraint, not to establish an
 | `OrganizationRole` | `account.types.ts` | `account.slice`, `workspace.slice` |
 | `ThemeConfig` | `account.types.ts` | `organization.slice` |
 | `Wallet` | `account.types.ts` | `account.slice` |
-| `Notification` | `account.types.ts` | `notification.slice` |
+| `Notification` | `account.types.ts` | `notification-hub.slice` |
 | `PartnerInvite` | `account.types.ts` | `organization.slice`, `workspace.slice` |
 | `Workspace` | `workspace.types.ts` | `workspace.slice`, `projection.bus` |
 | `WorkspaceTask` | `workspace.types.ts` | `workspace.slice` |
@@ -408,9 +408,9 @@ src/features/account.slice/gov.role/_actions.ts:31
 src/features/account.slice/user.profile/_hooks/use-user.ts:9
 src/features/account.slice/user.wallet/_hooks/use-wallet.ts:11
 src/features/account.slice/user.wallet/_queries.ts:11
-src/features/notification.slice/user.notification/_components/notification-list.tsx:12
-src/features/notification.slice/user.notification/_hooks/use-user-notifications.ts:11
-src/features/notification.slice/user.notification/_queries.ts:20
+src/features/notification-hub.slice/user.notification/_components/notification-list.tsx:12
+src/features/notification-hub.slice/user.notification/_hooks/use-user-notifications.ts:11
+src/features/notification-hub.slice/user.notification/_queries.ts:20
 src/features/organization.slice/core/_hooks/use-organization-management.ts:7
 src/features/organization.slice/core/_queries.ts:14
 src/features/organization.slice/gov.members/_hooks/use-member-management.ts:6
@@ -467,7 +467,7 @@ The following cross-slice import patterns correctly go through the public `index
 | `scheduling.slice/_projectors/demand-board.ts` | `organization.slice` | ✅ |
 | `scheduling.slice/_components/demand-board.tsx` | `workspace.slice` | ✅ |
 | `scheduling.slice/_components/org-skill-pool-manager.tsx` | `skill-xp.slice` | ✅ |
-| `notification.slice/gov.notification-router/_router.ts` | `organization.slice` | ✅ |
+| `notification-hub.slice/gov.notification-router/_router.ts` | `organization.slice` | ✅ |
 | `projection.bus/_funnel.ts` | `organization.slice` | ✅ |
 | `projection.bus/_funnel.ts` | `scheduling.slice` | ✅ |
 | `projection.bus/_funnel.ts` | `skill-xp.slice` | ✅ |

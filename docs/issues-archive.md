@@ -69,7 +69,7 @@ Import in `_funnel.ts` was updated to use the public `@/features/shared-kernel` 
 **Fix reference**: Commit `fix(D24): eliminate all direct firebase/firestore imports from feature slices`
 
 **Original Violation**:  
-43 files across `account.slice`, `identity.slice`, `notification.slice`, `organization.slice`, `projection.bus`, `scheduling.slice`, `skill-xp.slice`, and `workspace.slice` imported directly from `firebase/firestore` (e.g., `import { doc, collection, onSnapshot } from 'firebase/firestore'`). This bypassed the ACL adapter layer that provides testability, mocking, and platform isolation.
+43 files across `account.slice`, `identity.slice`, `notification-hub.slice`, `organization.slice`, `projection.bus`, `scheduling.slice`, `skill-xp.slice`, and `workspace.slice` imported directly from `firebase/firestore` (e.g., `import { doc, collection, onSnapshot } from 'firebase/firestore'`). This bypassed the ACL adapter layer that provides testability, mocking, and platform isolation.
 
 **Resolution**:  
 All 43 direct Firebase SDK import sites were migrated to use the `@/shared/infra/firestore/firestore.read.adapter` and `@/shared/infra/firestore/firestore.write.adapter` ACL adapters. An architecture compliance test in `src/features/workspace.slice/business.parsing-intent/architecture-compliance.test.ts` validates that no direct `firebase/firestore` imports remain.
