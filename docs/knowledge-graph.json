@@ -4,8 +4,10 @@
       "name": "VS_Category",
       "entityType": "Domain_Category",
       "observations": [
-        "VS mapping: VS0=SharedKernel foundation (not a business vertical slice); VS1=Identity; VS2=Account; VS3=SkillXP; VS4=Organization; VS5=Workspace; VS6=Scheduling; VS7=Notification.",
-        "Cross-slice rule: each slice mutates only its own aggregate; collaboration via contracts/events/projections."
+        "VS mapping: VS0=SharedKernel foundation (not a business vertical slice); VS1=Identity; VS2=Account; VS3=SkillXP; VS4=Organization; VS5=Workspace; VS6=Scheduling; VS7=Notification; VS8=SemanticGraph (The Brain).",
+        "VS8 replaces the former TAG_AUTH (Tag Authority Center) and elevates it to a first-class business vertical slice with taxonomy, causality tracking, and scheduling conflict semantic detection.",
+        "Cross-slice rule: each slice mutates only its own aggregate; collaboration via contracts/events/projections.",
+        "Tag write rule: all business slices (VS1–VS7) must write tag changes through L2 Command Gateway into VS8; direct tag mutation is forbidden."
       ]
     },
     {
@@ -44,7 +46,8 @@
         "Critical retained references: #9 replay rebuildability, #12 getTier(xp) purity, #14 scheduling reads ORG_ELIGIBLE_MEMBER_VIEW, #19 monotonic aggregateVersion guard, A8 one-command-one-aggregate TX, A9 scope-guard re-source.",
         "SSOT fallback: use docs/logic-overview.md for full definitions and implementation details.",
         "A11 Occam's Razor: Simplicity is a hard constraint. Do not multiply entities or abstractions beyond necessity. Use 'sequential-thinking mcp' to validate the simplest path before implementation.",
-        "A12 Unified IO: All state mutations must pass through L2 Command Gateway; all data reads via L6 Query Gateway. Direct infrastructure access (L8) is strictly forbidden."
+        "A12 Unified IO: All state mutations must pass through L2 Command Gateway; all data reads via L6 Query Gateway. Direct infrastructure access (L8) is strictly forbidden.",
+        "A13 Everything as a Tag: All domain concepts (skills, roles, teams, partners, user-levels) are modeled as semantic tags governed by VS8 Semantic Graph. This enables uniform taxonomy, causality tracking, and cross-slice semantic matching."
       ]
     },
     {
@@ -70,7 +73,7 @@
       "name": "T_Category",
       "entityType": "Tag_Semantics",
       "observations": [
-        "Tag semantics source: standalone TAG_AUTH authority (outside SharedKernel) under D21 governance.",
+        "Tag semantics source: VS8 Semantic Graph (formerly TAG_AUTH) is the sole domain authority under D21 governance.",
         "Critical retained references: T4 scheduling demand uses SK_SKILL_REQ × tagSlug; T5 TAG_SNAPSHOT is read-only to consumers.",
         "Tooling MCP governance is modeled via dedicated Tooling_MCP entities and relations.",
         "Relation note: T_Category → A_Category (validates) denotes tooling-assisted conformance checks against architecture invariants and applies to all Tooling_MCP entities unless a narrower relation overrides it."
@@ -158,6 +161,32 @@
       "entityType": "Tooling_MCP",
       "observations": [
         "Used to model type contracts, architecture boundaries, and domain modeling workflows."
+      ]
+    },
+    {
+      "name": "VS8 Semantic Graph",
+      "entityType": "Domain_Slice",
+      "observations": [
+        "VS8 Semantic Graph (The Brain): the system's semantic hub, elevated from the former TAG_AUTH (Tag Authority Center) to a first-class vertical slice.",
+        "Responsibilities: Tag Taxonomy (tagSlug / label / category lifecycle), Causality Tracking (cross-slice tag event provenance), Scheduling Conflict Semantic Detection (semantic matching for VS6 scheduling combinations).",
+        "All business slices (VS1–VS7) register semantic changes through L2 Command Gateway into VS8; VS8 provides semantic data outward to consumers via L6 Query Gateway.",
+        "Invariant #17 and A6 still apply: VS8 is the sole authority for tagSlug uniqueness and deletion rules."
+      ]
+    },
+    {
+      "name": "Global Search",
+      "entityType": "System_Consumer",
+      "observations": [
+        "Global Search is the core consumer of L6 Query Gateway, providing cross-slice semantic search capabilities.",
+        "Queries VS8 Semantic Graph for semantic-index lookups, enabling unified search across all tagged domain entities.",
+        "Positioned at the read boundary: Global Search → L6 Query Gateway → VS8 Semantic Graph → tag-snapshot projections."
+      ]
+    },
+    {
+      "name": "A13 Everything as a Tag",
+      "entityType": "Architecture_Invariant",
+      "observations": [
+        "All domain concepts (skills, roles, teams, partners, user-levels) are modeled as semantic tags governed by VS8 Semantic Graph. This enables uniform taxonomy, causality tracking, and cross-slice semantic matching."
       ]
     },
     {
@@ -274,6 +303,36 @@
       "from": "E_Category",
       "to": "S_Category",
       "relationType": "bounded_by"
+    },
+    {
+      "from": "VS8 Semantic Graph",
+      "to": "VS_Category",
+      "relationType": "provides_scheduling_match_to_VS6"
+    },
+    {
+      "from": "VS8 Semantic Graph",
+      "to": "VS_Category",
+      "relationType": "provides_semantic_tags_to_VS5"
+    },
+    {
+      "from": "Global Search",
+      "to": "VS8 Semantic Graph",
+      "relationType": "queries_semantic_index"
+    },
+    {
+      "from": "Global Search",
+      "to": "L_Category",
+      "relationType": "consumes_query_gateway"
+    },
+    {
+      "from": "VS8 Semantic Graph",
+      "to": "D_Category",
+      "relationType": "governed_by"
+    },
+    {
+      "from": "VS8 Semantic Graph",
+      "to": "A_Category",
+      "relationType": "constrained_by"
     }
   ]
 }

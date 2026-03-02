@@ -6,22 +6,25 @@
 %%  ║    ③ Firebase 邊界明確：FIREBASE_ACL 為唯一 SDK 呼叫點                   ║
 %%  ║    ④ 三道閘道職責分離：CMD（寫）/ IER（事件）/ QGWAY（讀）               ║
 %%  ║    ⑤ 所有不變量以 [#N] / [SN] / [RN] 行內索引，完整定義於文末            ║
+%%  ║    ⑥ Everything as a Tag：所有領域概念以語義標籤建模，由 VS8 統一治理      ║
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  SSOT Mapping:
 %%    Architecture rules   → docs/logic-overview.md  ← THIS FILE
 %%    Semantic relations   → docs/knowledge-graph.json
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  QUICK REFERENCE（快速索引 — 最速取得上下文）
-%%  ── Vertical Slice（業務域 · VS0–VS7 only）──
+%%  ── Vertical Slice（業務域 · VS0–VS8）──
 %%    VS0=SharedKernel  VS1=Identity   VS2=Account      VS3=Skill
 %%    VS4=Organization  VS5=Workspace  VS6=Scheduling   VS7=Notification
+%%    VS8=SemanticGraph(The Brain)
 %%    ※ L5(ProjectionBus) 與 L9(Observability) 為 Infrastructure，不佔用 VS 編號
 %%  ── Layer（系統層）──
 %%    L0=ExternalTriggers   L1=SharedKernel       L2=CommandGateway
 %%    L3=DomainSlices       L4=IER                L5=ProjectionBus
 %%    L6=QueryGateway       L7=FirebaseACL         L8=FirebaseInfra      L9=Observability
 %%    ※ L3 Domain Slices = VS1(Identity) · VS2(Account) · VS3(Skill) ·
-%%                          VS4(Organization) · VS5(Workspace) · VS6(Scheduling) · VS7(Notification)
+%%                          VS4(Organization) · VS5(Workspace) · VS6(Scheduling) ·
+%%                          VS7(Notification) · VS8(SemanticGraph)
 %%  ── Hard Invariants（不可違反）: R · S · A · # ──
 %%    R1=relay-lag-metrics   R5=DLQ-failure-rule   R6=workflow-state-rule
 %%    R7=aggVersion-relay    R8=traceId-readonly
@@ -40,7 +43,7 @@
 %%    [S2]  所有 Projection 寫入前必須呼叫 applyVersionGuard()
 %%    [S4]  SLA 數值只能引用 SK_STALENESS_CONTRACT，禁止硬寫
 %%    [D7]  跨切片引用只能透過 {slice}/index.ts 公開 API
-%%    [D21] 新 tag 類別只在 TAG_AUTH（Tag Authority Center）定義
+%%    [D21] 新 tag 類別只在 VS8（Semantic Graph）定義
 %%    [D24] Feature slice 禁止直接 import firebase/*，必須走 SK_PORTS
 %%  FORBIDDEN:
 %%    BC_X 禁止直接寫入 BC_Y aggregate → 必須透過 IER Domain Event
@@ -104,10 +107,11 @@ subgraph SK["🔷 L1 · Shared Kernel — 全域契約中心（VS0）"]
     end
 end
 
-%% ─── Tag Authority Center（跨域語義權威 · 獨立於 Shared Kernel 之外）
-%% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority，
-%% ─── 不屬被動契約層 → 從 Shared Kernel 獨立出來 [#A6 #17]
-subgraph TAG_AUTH["🏷️ Tag Authority Center [#A6 #17]（跨域語義權威）"]
+%% ─── VS8 Semantic Graph（語義中樞 · The Brain）
+%% ─── 前身為 TAG_AUTH (Tag Authority Center)，升級為正式業務垂直切片
+%% ─── 職責：標籤分類學 (Taxonomy)、因果追蹤 (Causality)、排班衝突語義檢測
+%% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority [#A6 #17]
+subgraph VS8["🧠 VS8 · Semantic Graph — The Brain [#A6 #17 A13]（語義中樞）"]
     direction TB
     CTA["centralized-tag.aggregate\n【全域語義字典・唯一真相】\ntagSlug / label / category\ndeprecatedAt / deleteRule"]
 
@@ -157,9 +161,10 @@ subgraph GW_CMD["🔵 L2 · Command Gateway（統一寫入入口）"]
 end
 
 %% ═══════════════════════════════════════════════════════════════
-%% LAYER 3 ── L3 · Domain Slices（領域切片 · VS1–VS7）
+%% LAYER 3 ── L3 · Domain Slices（領域切片 · VS1–VS8）
 %% ── VS1=Identity · VS2=Account · VS3=Skill · VS4=Organization
 %% ── VS5=Workspace · VS6=Scheduling · VS7=Notification
+%% ── VS8=Semantic Graph (The Brain)
 %% ═══════════════════════════════════════════════════════════════
 
 %% ── VS1 Identity ──
@@ -555,15 +560,26 @@ subgraph GW_QUERY["🟢 L6 · Query Gateway（統一讀取出口）[S2 S3]"]
     QGWAY_NOTIF["→ .account-view\n[#6] FCM Token"]
     QGWAY_SCOPE["→ .workspace-scope-guard-view\n[#A9]"]
     QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
-    QGWAY --> QGWAY_SCHED & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET
+    QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
+    QGWAY --> QGWAY_SCHED & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH
 end
 
 ORG_ELIG_V -.-> QGWAY_SCHED
 ACC_PROJ_V -.-> QGWAY_NOTIF
 WS_SCOPE_V -.-> QGWAY_SCOPE
 WALLET_V -.-> QGWAY_WALLET
+TAG_SNAP -.-> QGWAY_SEARCH
 ACTIVE_CTX -->|"查詢鍵"| QGWAY_SCOPE
 QGWAY_SCOPE --> CBG_AUTH
+
+%% ── Global Search（語義搜索消費者）──
+GLOBAL_SEARCH["🔍 Global Search\nL6 Query Gateway 核心消費者\n語義化索引檢索"]
+GLOBAL_SEARCH -->|"語義化索引檢索"| QGWAY_SEARCH
+GLOBAL_SEARCH -.->|"語義查詢路徑"| VS8
+
+%% ── VS8 Semantic Graph 跨切片語義提供 ──
+VS8 -.->|"排班組合匹配"| VS6
+VS8 -.->|"任務語義標籤"| VS5
 
 %% ═══════════════════════════════════════════════════════════════
 %% LAYER 7 ── FIREBASE ACL（防腐層）
@@ -690,6 +706,8 @@ classDef talent fill:#fff1f2,stroke:#f43f5e,color:#000
 classDef serverAct fill:#fed7aa,stroke:#f97316,color:#000
 classDef aclAdapter fill:#fce4ec,stroke:#ad1457,color:#000,font-weight:bold
 classDef firebaseExt fill:#fff9c4,stroke:#f9a825,color:#000,font-weight:bold
+classDef semanticGraph fill:#e0e7ff,stroke:#4f46e5,color:#000,font-weight:bold
+classDef globalSearch fill:#fef3c7,stroke:#d97706,color:#000,font-weight:bold
 
 class SK,SK_ENV,SK_AUTH_SNAP,SK_SKILL_TIER,SK_SKILL_REQ,SK_CMD_RESULT sk
 class SK_OUTBOX,SK_VERSION,SK_READ,SK_STALE,SK_RESILIENCE skInfra
@@ -730,7 +748,7 @@ class DLQ dlqNode
 class DLQ_S dlqSafe
 class DLQ_R dlqReview
 class DLQ_B dlqBlock
-class GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET qgway
+class GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH qgway
 class PROJ_BUS,FUNNEL,PROJ_VER,READ_REG stdProj
 class CRIT_PROJ,WS_SCOPE_V,ORG_ELIG_V,WALLET_V critProj
 class STD_PROJ,WS_PROJ,ACC_SCHED_V,ACC_PROJ_V,ORG_PROJ_V,SKILL_V stdProj
@@ -742,6 +760,8 @@ class OBS_LAYER,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_ACL,AUTH_ADP,FSTORE_ADP,FCM_ADP,STORE_ADP aclAdapter
 class FIREBASE_EXT,F_AUTH,F_DB,F_FCM,F_STORE firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
+class VS8 semanticGraph
+class GLOBAL_SEARCH globalSearch
 
 %%  ╔══════════════════════════════════════════════════════════════════════════╗
 %%  ║  CONSISTENCY INVARIANTS 完整索引                                         ║
@@ -780,7 +800,7 @@ class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 %%  #A10 Notification Router 無狀態路由
 %%  #A11 eligible = 「無衝突排班」快照，非靜態狀態
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  TAG AUTHORITY 擴展規則（TAG_AUTH · 跨域語義權威 · 獨立於 Shared Kernel）
+%%  TAG SEMANTICS 擴展規則（VS8 · Semantic Graph — The Brain）
 %%  T1  新切片訂閱 TagLifecycleEvent（BACKGROUND_LANE）即可擴展
 %%  T2  SKILL_TAG_POOL = Tag Authority 組織作用域唯讀投影
 %%  T3  ORG_ELIGIBLE_MEMBER_VIEW.skills{tagSlug→xp} 交叉快照
@@ -834,7 +854,7 @@ class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 %%  D19 型別歸屬規則：跨 BC 契約優先放 shared.kernel.*；shared/types 僅為 legacy fallback
 %%  D20 匯入優先序：shared.kernel.* > feature slice index.ts > shared/types
 %%  ── 語義 Tag 守則（D21~D23）──
-%%  D21 新增 tag 語義類別：必須在 TAG_AUTH（Tag Authority Center）CTA TAG_ENTITIES 定義，禁止各 slice 自行創建
+%%  D21 新增 tag 語義類別：必須在 VS8（Semantic Graph）CTA TAG_ENTITIES 定義，禁止各 slice 自行創建
 %%  D22 跨切片 tag 語義引用：必須指向 TE1~TE6 實體節點，禁止隱式 tagSlug 字串引用
 %%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
