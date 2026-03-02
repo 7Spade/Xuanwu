@@ -36,7 +36,7 @@ import {
 // Contexts & Hooks
 // ============================================================================
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { useApp } from "../_hooks/use-app";
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
 import { useUser } from "@/features/account.slice";

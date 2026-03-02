@@ -14,4 +14,4 @@ export {
   getPreferredLocale,
   setLocalePreference,
   loadMessages
-} from "./i18n";
+} from "@/config/i18n/i18n";

@@ -6,7 +6,7 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Eye, EyeOff, Shield, ArrowUpRight } from "lucide-react";
 import type { Workspace } from "@/shared/types";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 
 interface WorkspaceListItemProps {
   workspace: Workspace;

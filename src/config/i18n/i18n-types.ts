@@ -1,3 +1,11 @@
+/**
+ * i18n type contracts.
+ *
+ * Locale: supported locale codes.
+ * I18nConfig: runtime configuration shape.
+ * TranslationMessages: message schema imported from i18n.schema.
+ */
+
 import type { TranslationMessages } from './i18n.schema';
 
 export type Locale = 'en' | 'zh-TW';
@@ -7,6 +15,4 @@ export interface I18nConfig {
   locales: Locale[];
 }
 
-// The schema is now imported and re-exported for consumers.
-// This keeps the schema definition in a separate file without breaking imports.
 export type { TranslationMessages };

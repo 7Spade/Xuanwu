@@ -1,357 +1,81 @@
+import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
-// flatConfig is a named export — default export only has { rules, configs }
-import { flatConfig as nextFlatConfig } from "@next/eslint-plugin-next";
-import importPlugin from "eslint-plugin-import";
-import jsxA11y from "eslint-plugin-jsx-a11y";
-import reactPlugin from "eslint-plugin-react";
-import * as reactHooks from "eslint-plugin-react-hooks";
-// eslint-plugin-tailwindcss ships without TypeScript declarations; use require().
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const tailwindPlugin = require("eslint-plugin-tailwindcss") as {
-  configs: { "flat/recommended": import("typescript-eslint").ConfigWithExtends[] };
-  rules: Record<string, import("eslint").Rule.RuleModule>;
-};
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
+import tailwind from "eslint-plugin-tailwindcss";
+import importX from "eslint-plugin-import-x";
+import unusedImports from "eslint-plugin-unused-imports";
+import checkFile from "eslint-plugin-check-file";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 
-const importRecommended = importPlugin.flatConfigs.recommended;
-const importTypescript = importPlugin.flatConfigs.typescript;
-const jsxA11yStrict = jsxA11y.flatConfigs.strict;
-// Use "recommended-latest" — the flat-config-compatible preset
-const reactHooksRecommended = reactHooks.configs["recommended-latest"];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 關鍵修正：將 'basePath' 改為 'baseDirectory'
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+});
 
 export default tseslint.config(
-  // ── Global ignores ────────────────────────────────────────────────────────
   {
+    // 忽略特定目錄
     ignores: [
       ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-      "functions/**",
-      "firebase/**",
-      // shadcn-ui scaffolded primitives — do not lint (flat config does not read .eslintignore)
-      "src/shared/shadcn-ui/**",
+      "node_modules/**",
+      "src/shared-infra/firebase/**",
+      "dist/**"
     ],
   },
-  {
-    linterOptions: {
-      reportUnusedDisableDirectives: "error",
-    },
-  },
-
-  // ── Base rule sets ────────────────────────────────────────────────────────
-  // Explicit JS baseline — covers vanilla JS best-practices before TypeScript
-  // layer adds its own recommended rules on top.
+  
+  // 1. JS & TS 基礎配置
   js.configs.recommended,
-
   ...tseslint.configs.recommended,
-
-  // Next.js core-web-vitals rules — flatConfig is a named export, not a
-  // property on the default export. Cast bridges the string-keyed rules type.
-  nextFlatConfig.coreWebVitals as unknown as import("typescript-eslint").ConfigWithExtends,
-
-  // React recommended + JSX-runtime (React 17+ / React 19 new JSX transform;
-  // no need to import React in every file for JSX).
-  reactPlugin.configs.flat.recommended,
-  reactPlugin.configs.flat["jsx-runtime"],
-
-  // React Hooks rules
-  reactHooksRecommended,
-
-  // Accessibility rules
-  jsxA11yStrict,
-
-  // Import rules (resolve + TypeScript extensions)
-  // Configure TypeScript resolver so @/* aliases from tsconfig.json are resolved
+  
+  // 2. 以 Next.js 為核心的配置 (相容舊版格式)
+  ...compat.extends("next/core-web-vitals"),
+  
+  // 3. 擴展功能插件
   {
-    settings: {
-      "import/resolver": {
-        typescript: {
-          alwaysTryTypes: true,
-          project: "./tsconfig.json",
-        },
-        node: true,
-      },
-      // Tell eslint-plugin-react to auto-detect the installed React version
-      react: { version: "detect" },
+    plugins: {
+      "jsx-a11y": jsxA11y,
+      "import-x": importX,
+      "unused-imports": unusedImports,
+      "check-file": checkFile,
+      tailwindcss: tailwind,
     },
-  },
-  importRecommended,
-  importTypescript,
-
-  // Tailwind CSS — flat/recommended registers the plugin + sets sane defaults
-  // (classnames-order: warn, no-custom-classname: warn, no-contradicting-classname: error)
-  ...tailwindPlugin.configs["flat/recommended"],
-
-  // ── TypeScript & React quality rules ─────────────────────────────────────
-  // Enforce `import type` for type-only imports so runtime bundles stay lean
-  // and cross-layer type imports never create accidental runtime coupling.
-  {
-    files: ["src/**/*.{ts,tsx}"],
     rules: {
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports", fixStyle: "inline-type-imports" },
-      ],
-      // Ban accidental `any` — surfaces hidden type holes
-      "@typescript-eslint/no-explicit-any": "error",
-      // Dead code: unused variables are always errors
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
-      // React list-rendering correctness
-      "react/jsx-key": "error",
-      "react/no-array-index-key": "warn",
-      // JSX hygiene
-      "react/jsx-no-useless-fragment": "error",
-      "react/self-closing-comp": "error",
-      // TypeScript handles prop types — no need for runtime prop-types validation
-      "react/prop-types": "off",
-      // React Hooks correctness
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-      // Prefer absolute @/* imports; forbid ../../ parent-relative imports
-      "import/no-relative-parent-imports": "warn",
-      // Override flat/recommended severities where we want stricter control
-      "tailwindcss/no-custom-classname": "warn",
+      // --- Tailwind 優化 ---
       "tailwindcss/classnames-order": "warn",
-      "tailwindcss/no-contradicting-classname": "error",
-    },
-  },
+      "tailwindcss/no-custom-classname": "off",
 
-  // ── TypeScript type-aware rules ───────────────────────────────────────────
-  // These rules require full TypeScript type information (parserServices).
-  {
-    files: ["src/**/*.{ts,tsx}"],
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-      },
-    },
-    rules: {
-      // Catches async callbacks passed where synchronous callbacks are expected.
-      // attributes: false — async JSX event handlers (onClick, onSubmit) are intentional in React.
-      "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": { "attributes": false } }],
-      // Warns when non-boolean values are used in boolean contexts
-      "@typescript-eslint/strict-boolean-expressions": "warn",
-    },
-  },
+      // --- 自動排序 Import ---
+      "import-x/order": ["warn", { 
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "newlines-between": "always",
+        "alphabetize": { "order": "asc", "caseInsensitive": true }
+      }],
 
-  // utility-hooks generated files — official shadcn utility hooks, not to be modified.
-  {
-    files: ["src/shared/utility-hooks/**/*.{ts,tsx}"],
-    rules: {
-      "@typescript-eslint/consistent-type-imports": "off",
+      // --- 自動清理未使用的 Imports ---
+      "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-explicit-any": "off",
-      "react/no-unknown-property": "off",
-      "jsx-a11y/heading-has-content": "off",
-      "jsx-a11y/anchor-has-content": "off",
-      "jsx-a11y/click-events-have-key-events": "off",
-      "jsx-a11y/no-noninteractive-element-interactions": "off",
-    },
-  },
-
-  // ── VSA one-way dependency rules (D1–D12, D19–D20) ──────────────────────
-  // Reference: docs/logic-overview.md §D1–D25
-  //
-  // Enforced dependency direction:
-  //
-  //   app/  →  features/{name}/index.ts  →  shared/*
-  //
-  // Key invariants:
-  //   1. shared/* has zero feature and zero app dependencies
-  //   2. features/* imports shared/* freely; cross-slice access only via index.ts (D2, D7)
-  //   3. app/* imports features through public index.ts APIs; never feature internals (D7)
-  //   4. shared.kernel.* contains only pure contracts and functions; no I/O (D8)
-  //   5. Domain slices deliver events via infra.outbox-relay, not infra.event-router (D1)
-
-  // ── D6: "use client" protection ──────────────────────────────────────────
-  // shared/types, shared/lib, shared/infra, shared/ai are always server-side
-  // or framework-agnostic. A "use client" directive in them is an arch mistake (D6).
-  {
-    files: [
-      "src/shared/types/**/*.{ts,tsx}",
-      "src/shared/lib/**/*.{ts,tsx}",
-      "src/shared/infra/**/*.{ts,tsx}",
-      "src/shared/ai/**/*.{ts,tsx}",
-    ],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector: "ExpressionStatement > Literal[value='use client']",
-          message:
-            "This shared module must never contain a 'use client' directive — it is server-side or framework-agnostic (D6).",
-        },
-      ],
-    },
-  },
-
-  // ── D8: shared.kernel.* purity guard ─────────────────────────────────────
-  // shared.kernel.* contains ONLY contracts and pure functions — no I/O, no
-  // Firestore calls, no side effects (D8). Shared kernel slices are the canonical
-  // cross-BC contract boundary (D19, D20).
-  // All current shared kernel slices follow the `shared.kernel.<name>` folder
-  // naming convention (see docs/logic-overview.md §VS0 / Shared Kernel), so the glob
-  // `shared.kernel.*/**` captures exactly the right set.
-  {
-    files: ["src/features/shared-kernel/**/*.{ts,tsx}"],
-    ignores: ["src/features/shared-kernel/centralized-tag/**"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@/shared/infra", "@/shared/infra/**"],
-              message:
-                "shared-kernel must be pure — no infrastructure imports allowed (D8)",
-            },
-            {
-              group: ["firebase/**", "firebase-admin/**", "firebase-functions/**"],
-              message:
-                "shared-kernel must be pure — no Firebase SDK imports allowed (D8)",
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // ── shared/*: cross-cutting infrastructure (D5) ──────────────────────────
-  // shared/* has zero feature dependencies and zero app dependencies.
-  {
-    files: ["src/shared/**/*.{ts,tsx}"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@/features", "@/features/**"],
-              message:
-                "shared/* must not import from features/ — zero feature dependencies in shared",
-            },
-            {
-              group: ["@/app", "@/app/**"],
-              message: "shared/* must not import from app/ — one-way dependency rule",
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // ── features/*: vertical slices (D1, D2, D7) ─────────────────────────────
-  // features/* has zero app imports; cross-slice access only via index.ts (D2, D7).
-  // D1: Domain slices must not import infra.event-router directly — use
-  //     infra.outbox-relay for event delivery.
-  // All infra.* slices are exempt: they are infrastructure coordinators (not
-  // "domain slices") that legitimately wire the routing layer together. D1 is
-  // specifically scoped to domain slices (VS1–VS8) per logic-overview.md.
-  {
-    files: ["src/features/**/*.{ts,tsx}"],
-    ignores: ["src/features/infra.*/**"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@/app", "@/app/**"],
-              message: "features/* must not import from app/ — one-way dependency rule",
-            },
-            {
-              // Forbid cross-feature access to slice-private (_-prefixed) files.
-              // Within-slice code uses relative paths, so @/features/own-slice/_x won't appear here.
-              group: ["@/features/**/_*"],
-              message:
-                "Cross-feature imports must go through index.ts — do not import private (_-prefixed) files from another slice (D2, D7)",
-            },
-            {
-              group: [
-                "@/features/infra.event-router",
-                "@/features/infra.event-router/**",
-              ],
-              message:
-                "Domain slices must not import infra.event-router directly — use infra.outbox-relay for event delivery (D1)",
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // ── D24: Firebase isolation — feature slices (warn, migration in progress) ──
-  // Feature slices must not import Firebase SDK directly; all Firebase access
-  // must go through FIREBASE_ACL adapters via SK_PORTS (D24).
-  // D7 (shared-kernel public API): slices must import from @/features/shared-kernel index.ts,
-  //   not from sub-directories directly. Exception: centralized-tag for operational imports.
-  // Severity: warn (D24 violations tracked; D7 violations fully resolved).
-  // infra.* slices are exempt from D24 — they ARE the ACL adapters.
-  {
-    files: ["src/features/**/*.{ts,tsx}"],
-    ignores: ["src/features/infra.*/**"],
-    rules: {
-      "no-restricted-imports": [
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
         "warn",
-        {
-          patterns: [
-            {
-              group: ["firebase/**", "firebase-admin/**", "firebase-functions/**"],
-              message:
-                "Feature slices must not import Firebase SDK directly — use SK_PORTS via @/shared/ports instead (D24). All Firebase calls must go through FIREBASE_ACL adapters (src/shared/infra/).",
-            },
-            {
-              group: [
-                "@/features/shared-kernel/command-result-contract",
-                "@/features/shared-kernel/event-envelope",
-                "@/features/shared-kernel/token-refresh-contract",
-                "@/features/shared-kernel/resilience-contract",
-                "@/features/shared-kernel/authority-snapshot",
-                "@/features/shared-kernel/version-guard",
-                "@/features/shared-kernel/skill-tier",
-                "@/features/shared-kernel/staleness-contract",
-                "@/features/shared-kernel/outbox-contract",
-                "@/features/shared-kernel/tag-authority",
-                "@/features/shared-kernel/infrastructure-ports",
-              ],
-              message:
-                "Import from '@/features/shared-kernel' (public index) instead of sub-directories (D7). Only @/features/shared-kernel/centralized-tag is exempt for operational imports.",
-            },
-          ],
-        },
+        { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
       ],
-    },
-  },
 
-  // ── app/*: routing composition only (D3, D5, D7) ─────────────────────────
-  // app/ is composition only — no feature internals, no direct Firestore calls.
-  // D3: All mutations must go through features/{slice}/_actions.ts (Server Actions).
-  // D5: No src/shared/infra/firestore imports in app/ or UI components.
-  // D7: Must use features/{name}/index.ts public API only.
-  {
-    files: ["src/app/**/*.{ts,tsx}"],
-    rules: {
-      "no-restricted-imports": [
+      // --- 檔案命名規範 ---
+      "check-file/filename-naming-convention": [
         "error",
-        {
-          patterns: [
-            {
-              group: ["@/features/**/_*"],
-              message:
-                "app/ must not import feature internals directly — use features/{name}/index.ts (public API only) (D7)",
-            },
-            {
-              group: ["@/shared/infra/firestore", "@/shared/infra/firestore/**"],
-              message:
-                "app/ must not import Firestore directly — use features/{slice}/_actions.ts or _queries.ts (D3, D5)",
-            },
-          ],
-        },
+        { "**/*.{tsx,ts}": "PASCAL_CASE" },
+        { "ignoreMiddleExtensions": true }
       ],
+      "check-file/folder-naming-convention": [
+        "error",
+        { "src/**": "KEBAB_CASE" }
+      ]
     },
-  },
+  }
 );

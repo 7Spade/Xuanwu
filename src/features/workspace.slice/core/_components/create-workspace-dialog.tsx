@@ -15,7 +15,7 @@ import { Input } from "@/shared/shadcn-ui/input";
 import { Label } from "@/shared/shadcn-ui/label";
 import { handleCreateWorkspace } from "../_use-cases";
 import { useApp } from "../_hooks/use-app";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 
 interface CreateWorkspaceDialogProps {
   open: boolean;

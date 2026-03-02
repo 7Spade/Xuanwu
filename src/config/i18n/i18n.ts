@@ -1,4 +1,4 @@
-import { type Locale, type I18nConfig } from "@/shared/i18n-types/i18n"
+import { type Locale, type I18nConfig } from "@/config/i18n/i18n-types"
 
 export const i18nConfig: I18nConfig = {
   defaultLocale: "en",

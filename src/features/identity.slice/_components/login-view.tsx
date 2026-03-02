@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "@/shared/utility-hooks/use-toast"
 import { completeRegistration , signIn, signInAnonymously } from "../_actions"
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/config/i18n/i18n-provider"
 import { AuthBackground } from "./auth-background"
 import { AuthTabsRoot } from "./auth-tabs-root"
 

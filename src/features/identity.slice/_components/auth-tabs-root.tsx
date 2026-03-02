@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/shared/shadcn-ui/ca
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Ghost, Loader2 } from "lucide-react";
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/config/i18n/i18n-provider";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
 import { LanguageSwitcher } from "@/shared/ui/language-switcher";
