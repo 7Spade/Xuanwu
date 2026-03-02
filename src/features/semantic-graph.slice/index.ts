@@ -51,7 +51,9 @@ export type {
 // =================================================================
 export {
   detectTemporalConflicts,
+  checkTemporalConflict,
   validateTaxonomyAssignment,
+  validateTaxonomyPath,
 } from './_aggregate';
 
 // =================================================================
@@ -59,6 +61,7 @@ export {
 // =================================================================
 export {
   upsertTagWithConflictCheck,
+  assignSemanticTag,
   removeTag,
 } from './_actions';
 

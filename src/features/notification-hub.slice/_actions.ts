@@ -99,3 +99,21 @@ export async function unregisterRoutingRule(
     return commandFailureFrom('ROUTING_RULE_UNREGISTRATION_FAILED', message);
   }
 }
+
+// =================================================================
+// Final Dispatch Action (D3)
+// =================================================================
+
+/**
+ * Trigger the final notification dispatch — executes transmission
+ * and records the dispatch status.
+ *
+ * This is an alias for dispatchNotification that emphasises the
+ * "trigger → delivery" semantics requested by the event routing
+ * architecture (VS7 · TagEventRouter pipeline).
+ */
+export async function triggerDispatch(
+  event: NotificationSourceEvent
+): Promise<DispatchNotificationResult> {
+  return dispatchNotification(event);
+}

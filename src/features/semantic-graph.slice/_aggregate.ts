@@ -25,6 +25,7 @@ import type {
   TemporalConflict,
   TemporalConflictCheckInput,
   TemporalConflictCheckResult,
+  TaxonomyTree,
   TaxonomyValidationResult,
   TaxonomyValidationError,
   TaxonomyErrorCode,
@@ -159,6 +160,89 @@ function hasCircularReference(
 
   return false;
 }
+
+// =================================================================
+// Convenience Wrappers (requested API surface)
+// =================================================================
+
+/**
+ * Simplified API for checking a single new assignment against
+ * a set of existing assignments.
+ *
+ * Delegates to detectTemporalConflicts internally.
+ */
+export function checkTemporalConflict(
+  newAssignment: TemporalTagAssignment,
+  existingAssignments: readonly TemporalTagAssignment[]
+): TemporalConflictCheckResult {
+  return detectTemporalConflicts({
+    candidate: newAssignment,
+    existingAssignments,
+  });
+}
+
+/**
+ * Validates a taxonomy path (sequence of slugs from root to leaf)
+ * against a TaxonomyTree, ensuring every segment exists, the chain is
+ * unbroken (each node's parentSlug equals the previous), and the path
+ * does not exceed maximum depth.
+ */
+export function validateTaxonomyPath(
+  path: readonly string[],
+  tree: TaxonomyTree
+): TaxonomyValidationResult {
+  const errors: TaxonomyValidationError[] = [];
+
+  if (path.length === 0) {
+    errors.push(makeError('INVALID_PARENT', '', 'Taxonomy path is empty.', tree.dimension));
+    return { valid: false, errors };
+  }
+
+  const nodeMap = buildNodeMap(tree.roots);
+
+  for (let i = 0; i < path.length; i++) {
+    const slug = path[i]!;
+    const node = nodeMap.get(slug);
+
+    if (!node) {
+      errors.push(makeError('INVALID_PARENT', slug, `Slug "${slug}" not found in taxonomy "${tree.dimension}".`, tree.dimension));
+      continue;
+    }
+
+    if (node.dimension !== tree.dimension) {
+      errors.push(makeError('UNKNOWN_DIMENSION', slug, `Slug "${slug}" belongs to dimension "${node.dimension}", expected "${tree.dimension}".`, tree.dimension));
+    }
+
+    if (i === 0) {
+      if (node.parentSlug) {
+        errors.push(makeError('INVALID_PARENT', slug, `Root slug "${slug}" should not have a parent, but has "${node.parentSlug}".`, tree.dimension));
+      }
+    } else {
+      const expectedParent = path[i - 1];
+      if (node.parentSlug !== expectedParent) {
+        errors.push(makeError('INVALID_PARENT', slug, `Expected parent "${expectedParent}" for slug "${slug}", but found "${node.parentSlug ?? 'none'}".`, tree.dimension));
+      }
+    }
+  }
+
+  if (path.length > MAX_TAXONOMY_DEPTH) {
+    errors.push(makeError('DEPTH_EXCEEDED', path[path.length - 1]!, `Path depth ${path.length} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`));
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+function buildNodeMap(roots: readonly TaxonomyNode[]): Map<string, TaxonomyNode> {
+  const map = new Map<string, TaxonomyNode>();
+  const queue = [...roots];
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    map.set(node.slug, node);
+  }
+  return map;
+}
+
+// ─── Internal helpers ─────────────────────────────────────────────────────────
 
 function makeError(
   code: TaxonomyErrorCode,

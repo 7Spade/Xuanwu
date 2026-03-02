@@ -46,6 +46,7 @@ export {
   dispatchNotification,
   registerRoutingRule,
   unregisterRoutingRule,
+  triggerDispatch,
 } from './_actions';
 export type { DispatchNotificationResult } from './_actions';
 

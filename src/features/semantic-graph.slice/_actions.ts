@@ -19,7 +19,7 @@ import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel';
 import type { TaxonomyNode } from '@/features/shared-kernel/semantic-primitives';
 
 import { detectTemporalConflicts, validateTaxonomyAssignment } from './_aggregate';
-import { indexEntity } from './_services';
+import { indexEntity, removeFromIndex } from './_services';
 import type {
   TemporalTagAssignment,
   SemanticIndexEntry,
@@ -112,11 +112,42 @@ export async function upsertTagWithConflictCheck(
  */
 export async function removeTag(tagSlug: string): Promise<CommandResult> {
   try {
-    const { removeFromIndex } = await import('./_services');
     removeFromIndex('tag', tagSlug);
     return commandSuccess(tagSlug, 0);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return commandFailureFrom('TAG_REMOVAL_FAILED', message);
   }
+}
+
+// =================================================================
+// Tag Assignment Action (D3)
+// =================================================================
+
+/**
+ * Assigns a semantic tag to an entity after validating taxonomy constraints
+ * and checking for temporal conflicts.
+ *
+ * This is the D3-compliant entry point that must be used instead of
+ * directly writing to Firestore. Delegates all validation to _aggregate.ts
+ * before indexing the entity in the semantic index.
+ *
+ * Flow:
+ *   1. Validate taxonomy via validateTaxonomyAssignment
+ *   2. If temporal assignment provided, check for conflicts
+ *   3. Index entity in semantic index
+ *   4. Return CommandResult per [R4]
+ */
+export async function assignSemanticTag(
+  node: TaxonomyNode,
+  temporalAssignment: TemporalTagAssignment | null,
+  existingNodes: readonly TaxonomyNode[],
+  existingAssignments: readonly TemporalTagAssignment[]
+): Promise<CommandResult> {
+  return upsertTagWithConflictCheck(
+    node,
+    temporalAssignment,
+    existingNodes,
+    existingAssignments
+  );
 }
