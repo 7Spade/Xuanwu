@@ -130,8 +130,8 @@ export function WorkspaceFiles() {
         };
 
         const result = await addWorkspaceFileVersion(workspace.id, existingFile.id, newVersion, versionId);
-        if (!result.ok) {
-          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error });
+        if (!result.success) {
+          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error.message });
           return;
         }
         
@@ -161,8 +161,8 @@ export function WorkspaceFiles() {
         };
 
         const result = await createWorkspaceFile(workspace.id, newFileData);
-        if (!result.ok) {
-          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error });
+        if (!result.success) {
+          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error.message });
           return;
         }
         logAuditEvent("Mounted New Document", file.name, 'create');
@@ -184,12 +184,12 @@ export function WorkspaceFiles() {
 
   const handleRestore = async (file: WorkspaceFile, versionId: string) => {
     const result = await restoreWorkspaceFileVersion(workspace.id, file.id, versionId);
-    if (!result.ok) {
-      console.error("Error restoring version:", result.error);
+    if (!result.success) {
+      console.error("Error restoring version:", result.error.message);
       toast({
         variant: "destructive",
         title: "Failed to Restore Version",
-        description: result.error,
+        description: result.error.message,
       });
       return;
     }
