@@ -42,10 +42,18 @@ export const createParsingIntent = async (
     skillRequirements: intentData.skillRequirements ?? [],
     status: intentData.status,
     createdAt: serverTimestamp(),
+    sourceType: intentData.sourceType,
+    reviewStatus: intentData.reviewStatus,
     // Optional fields — omitted when undefined so Firestore never sees undefined.
     ...(intentData.sourceFileDownloadURL !== undefined ? { sourceFileDownloadURL: intentData.sourceFileDownloadURL } : {}),
     ...(intentData.sourceFileId !== undefined ? { sourceFileId: intentData.sourceFileId } : {}),
     ...(intentData.supersededByIntentId !== undefined ? { supersededByIntentId: intentData.supersededByIntentId } : {}),
+    ...(intentData.baseIntentId !== undefined ? { baseIntentId: intentData.baseIntentId } : {}),
+    ...(intentData.parserVersion !== undefined ? { parserVersion: intentData.parserVersion } : {}),
+    ...(intentData.modelVersion !== undefined ? { modelVersion: intentData.modelVersion } : {}),
+    ...(intentData.reviewedBy !== undefined ? { reviewedBy: intentData.reviewedBy } : {}),
+    ...(intentData.reviewedAt !== undefined ? { reviewedAt: intentData.reviewedAt } : {}),
+    ...(intentData.semanticHash !== undefined ? { semanticHash: intentData.semanticHash } : {}),
   };
   const ref = await addDocument(
     `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}`,
@@ -57,7 +65,7 @@ export const createParsingIntent = async (
 export const updateParsingIntentStatus = async (
   workspaceId: string,
   intentId: string,
-  status: 'imported' | 'failed' | 'superseded'
+  status: 'importing' | 'imported' | 'failed' | 'superseded'
 ): Promise<void> => {
   const updates: Record<string, unknown> = { status };
   if (status === 'imported') {

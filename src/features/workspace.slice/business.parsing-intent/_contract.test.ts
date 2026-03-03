@@ -30,6 +30,7 @@ const BASE_INPUT = {
   workspaceId: 'ws-abc',
   sourceFileId: 'file-xyz',
   sourceVersionId: 'v1',
+  intentVersion: 1,
   taskDraftCount: 5,
 };
 
@@ -60,6 +61,12 @@ describe('createParsingIntentContract [#A4]', () => {
   it('defaults skillRequirements to [] when not provided', () => {
     const contract = createParsingIntentContract(BASE_INPUT);
     expect(contract.skillRequirements).toEqual([]);
+  });
+
+  it('defaults sourceType and reviewStatus for AI pipeline contracts', () => {
+    const contract = createParsingIntentContract(BASE_INPUT);
+    expect(contract.sourceType).toBe('ai');
+    expect(contract.reviewStatus).toBe('pending_review');
   });
 
   it('stores SkillRequirement[] when provided [TE_SK]', () => {
@@ -173,6 +180,7 @@ describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', (
   it('accepts required fields only', () => {
     const payload: IntentDeltaProposedPayload = {
       intentId: 'intent-001',
+      intentVersion: 1,
       workspaceId: 'ws-abc',
       sourceFileName: 'BOQ-2026-Q1.xlsx',
       taskDraftCount: 12,
@@ -186,6 +194,7 @@ describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', (
   it('accepts optional skillRequirements for TE_SK propagation', () => {
     const payload: IntentDeltaProposedPayload = {
       intentId: 'intent-002',
+      intentVersion: 2,
       workspaceId: 'ws-xyz',
       sourceFileName: 'Schedule.pdf',
       taskDraftCount: 3,
@@ -200,14 +209,16 @@ describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', (
     // Mirrors the shape built in handleImport() — prevents shape drift
     const simulatedDispatch = (
       intentId: string,
+      intentVersion: number,
       workspaceId: string,
       sourceFileName: string,
       taskDraftCount: number,
-    ): IntentDeltaProposedPayload => ({ intentId, workspaceId, sourceFileName, taskDraftCount });
+    ): IntentDeltaProposedPayload => ({ intentId, intentVersion, workspaceId, sourceFileName, taskDraftCount });
 
-    const payload = simulatedDispatch('intent-003', 'ws-001', 'doc.xlsx', 5);
+    const payload = simulatedDispatch('intent-003', 3, 'ws-001', 'doc.xlsx', 5);
     expect(payload).toEqual({
       intentId: 'intent-003',
+      intentVersion: 3,
       workspaceId: 'ws-001',
       sourceFileName: 'doc.xlsx',
       taskDraftCount: 5,

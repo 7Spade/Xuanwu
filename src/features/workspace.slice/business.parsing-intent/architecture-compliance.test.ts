@@ -118,6 +118,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
       // TypeScript compile-time proof — if this compiles, the interface exists
       const sample: IntentDeltaProposedPayload = {
         intentId: 'i1',
+        intentVersion: 1,
         workspaceId: 'w1',
         sourceFileName: 'plan.pdf',
         taskDraftCount: 3,
@@ -130,6 +131,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
       const skills: SkillRequirement[] = [{ tagSlug: 'mep:hvac', minimumTier: 'journeyman', quantity: 1 }];
       const payload: IntentDeltaProposedPayload = {
         intentId: 'i1',
+        intentVersion: 1,
         workspaceId: 'w1',
         sourceFileName: 'plan.pdf',
         taskDraftCount: 2,
@@ -141,6 +143,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
     it('payload type supports optional traceId [R8]', () => {
       const payload: IntentDeltaProposedPayload = {
         intentId: 'i1',
+        intentVersion: 1,
         workspaceId: 'w1',
         sourceFileName: 'plan.pdf',
         taskDraftCount: 1,

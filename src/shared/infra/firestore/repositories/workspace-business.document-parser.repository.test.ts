@@ -47,6 +47,8 @@ describe('workspace-business.document-parser repository', () => {
       intentVersion: 2,
       supersededByIntentId: 'intent-002' as IntentID,
       lineItems: [],
+      sourceType: 'ai',
+      reviewStatus: 'pending_review',
       status: 'pending',
     };
 
@@ -56,6 +58,8 @@ describe('workspace-business.document-parser repository', () => {
       'workspaces/workspace-1/parsingIntents',
       expect.objectContaining({
         supersededByIntentId: 'intent-002',
+        sourceType: 'ai',
+        reviewStatus: 'pending_review',
       })
     );
   });
@@ -66,6 +70,8 @@ describe('workspace-business.document-parser repository', () => {
       sourceFileName: 'quote.pdf',
       intentVersion: 1,
       lineItems: [],
+      sourceType: 'ai',
+      reviewStatus: 'pending_review',
       status: 'pending',
     };
 
@@ -73,5 +79,9 @@ describe('workspace-business.document-parser repository', () => {
 
     const [, persistedData] = mockAddDocument.mock.calls[0];
     expect(persistedData).not.toHaveProperty('supersededByIntentId');
+    expect(persistedData).not.toHaveProperty('baseIntentId');
+    expect(persistedData).not.toHaveProperty('parserVersion');
+    expect(persistedData).not.toHaveProperty('modelVersion');
+    expect(persistedData).not.toHaveProperty('semanticHash');
   });
 });

@@ -20,9 +20,60 @@ import type {
   SourcePointer,
   ParsingImport,
   ParsingImportStatus,
+  ParsingIntentReviewStatus,
+  ParsingIntentSourceType,
 } from '@/shared/types'
 
 export const INITIAL_PARSING_INTENT_VERSION = 1
+
+const DEFAULT_INTENT_SOURCE_TYPE: ParsingIntentSourceType = 'ai'
+const DEFAULT_INTENT_REVIEW_STATUS: ParsingIntentReviewStatus = 'pending_review'
+
+/**
+ * Deterministic serializer for semantic hash payloads.
+ *
+ * - Sorts object keys recursively so property insertion order never changes output.
+ * - Tracks visited objects via WeakSet and throws on circular structures.
+ * - Produces a stable JSON-like string suitable for SHA-256 snapshot hashing.
+ */
+function stableSerialize(value: unknown, seen = new WeakSet<object>()): string {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableSerialize(item, seen)).join(',')}]`
+  }
+  if (value != null && typeof value === 'object') {
+    if (seen.has(value as object)) {
+      throw new Error('Circular structure is not supported in ParsingIntent semantic hash payload')
+    }
+    seen.add(value as object)
+    const entries = Object.entries(value as Record<string, unknown>)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, nested]) => `${JSON.stringify(key)}:${stableSerialize(nested, seen)}`)
+    seen.delete(value as object)
+    return `{${entries.join(',')}}`
+  }
+  return JSON.stringify(value)
+}
+
+/**
+ * Computes the immutable semantic snapshot hash for ParsingIntent lineItems.
+ *
+ * The hash is used as a verification anchor: if parsed semantics change,
+ * semanticHash must also change. SHA-256 is used for strong collision resistance.
+ */
+async function createSemanticHash(lineItems: ParsedLineItem[]): Promise<string> {
+  try {
+    const payload = stableSerialize(lineItems)
+    const encoded = new TextEncoder().encode(payload)
+    const digest = await crypto.subtle.digest('SHA-256', encoded)
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('')
+  } catch (error) {
+    throw new Error(
+      `Failed to compute ParsingIntent semanticHash via Web Crypto SHA-256: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
+}
 
 export type ParsingImportStartResult = {
   importId: string
@@ -64,8 +115,18 @@ export async function saveParsingIntent(
     sourceFileId?: string
     skillRequirements?: SkillRequirement[]
     intentVersion?: number
+    parserVersion?: string
+    modelVersion?: string
+    sourceType?: ParsingIntentSourceType
+    reviewStatus?: ParsingIntentReviewStatus
+    reviewedBy?: string
+    reviewedAt?: Date
+    semanticHash?: string
+    baseIntentId?: IntentID
   }
 ): Promise<IntentID> {
+  const semanticHash =
+    options?.semanticHash ?? (await createSemanticHash(lineItems))
   const id = await createParsingIntentFacade(workspaceId, {
     workspaceId,
     sourceFileName,
@@ -74,6 +135,14 @@ export async function saveParsingIntent(
     intentVersion: options?.intentVersion ?? INITIAL_PARSING_INTENT_VERSION,
     lineItems,
     skillRequirements: options?.skillRequirements,
+    parserVersion: options?.parserVersion,
+    modelVersion: options?.modelVersion,
+    sourceType: options?.sourceType ?? DEFAULT_INTENT_SOURCE_TYPE,
+    reviewStatus: options?.reviewStatus ?? DEFAULT_INTENT_REVIEW_STATUS,
+    reviewedBy: options?.reviewedBy,
+    reviewedAt: options?.reviewedAt,
+    semanticHash,
+    baseIntentId: options?.baseIntentId,
     status: 'pending',
   })
   return id as IntentID

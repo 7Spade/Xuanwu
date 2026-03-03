@@ -56,9 +56,13 @@ describe('workspace document-parser intent actions', () => {
       expect.objectContaining({
         sourceFileName: 'invoice.pdf',
         intentVersion: 1,
+        sourceType: 'ai',
+        reviewStatus: 'pending_review',
         status: 'pending',
       })
     )
+    const [, persistedData] = mockCreateParsingIntent.mock.calls[0]
+    expect(persistedData.semanticHash).toMatch(/^[a-f0-9]{64}$/)
   })
 
   it('returns duplicate start result when parsing import already exists', async () => {
