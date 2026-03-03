@@ -141,3 +141,8 @@ export type { ScheduleItemWithWorkspace, ScheduleItemWithMembers } from './_sele
 // =================================================================
 export { startSchedulingSaga, getSagaState } from './_saga';
 export type { SagaState, SagaStep, SagaStatus } from './_saga';
+
+// =================================================================
+// Domain rules
+// =================================================================
+export { canTransitionScheduleStatus, VALID_STATUS_TRANSITIONS } from './_schedule.rules';
