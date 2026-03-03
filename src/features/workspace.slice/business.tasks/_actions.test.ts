@@ -4,23 +4,28 @@ import type { WorkspaceTask } from '@/shared/types';
 
 import { updateTask } from './_actions';
 
-const { updateTaskMock } = vi.hoisted(() => ({
-  updateTaskMock: vi.fn(),
+const { mockUpdateTaskFacade } = vi.hoisted(() => ({
+  mockUpdateTaskFacade: vi.fn(),
 }));
 
-vi.mock('@/shared/infra/firestore/firestore.facade', () => ({
-  createTask: vi.fn(),
-  updateTask: updateTaskMock,
-  deleteTask: vi.fn(),
-}));
+vi.mock('@/shared/infra/firestore/firestore.facade', async () => {
+  const actual = await vi.importActual<typeof import('@/shared/infra/firestore/firestore.facade')>(
+    '@/shared/infra/firestore/firestore.facade'
+  );
+
+  return {
+    ...actual,
+    updateTask: mockUpdateTaskFacade,
+  };
+});
 
 describe('workspace business.tasks updateTask', () => {
   beforeEach(() => {
-    updateTaskMock.mockReset();
+    mockUpdateTaskFacade.mockReset();
   });
 
   it('strips immutable SourcePointer fields from updates', async () => {
-    updateTaskMock.mockResolvedValue(undefined);
+    mockUpdateTaskFacade.mockResolvedValue(undefined);
 
     const updates: Partial<WorkspaceTask> = {
       title: 'Updated title',
@@ -31,14 +36,14 @@ describe('workspace business.tasks updateTask', () => {
 
     await updateTask('ws-1', 'task-1', updates);
 
-    expect(updateTaskMock).toHaveBeenCalledTimes(1);
-    expect(updateTaskMock).toHaveBeenCalledWith('ws-1', 'task-1', {
+    expect(mockUpdateTaskFacade).toHaveBeenCalledTimes(1);
+    expect(mockUpdateTaskFacade).toHaveBeenCalledWith('ws-1', 'task-1', {
       title: 'Updated title',
     });
   });
 
   it('passes through normal updates when SourcePointer fields are absent', async () => {
-    updateTaskMock.mockResolvedValue(undefined);
+    mockUpdateTaskFacade.mockResolvedValue(undefined);
 
     const updates: Partial<WorkspaceTask> = {
       title: 'Only editable fields',
@@ -47,11 +52,11 @@ describe('workspace business.tasks updateTask', () => {
 
     await updateTask('ws-1', 'task-2', updates);
 
-    expect(updateTaskMock).toHaveBeenCalledWith('ws-1', 'task-2', updates);
+    expect(mockUpdateTaskFacade).toHaveBeenCalledWith('ws-1', 'task-2', updates);
   });
 
   it('returns structured failure when facade update throws', async () => {
-    updateTaskMock.mockRejectedValue(new Error('db down'));
+    mockUpdateTaskFacade.mockRejectedValue(new Error('db down'));
 
     const result = await updateTask('ws-1', 'task-3', { title: 'x' });
 
