@@ -46,7 +46,7 @@ workspaces/{workspaceId}
 
 | 領域責任 | 現有主要路徑 | 建議調整 | 是否需新增資料夾 |
 |---|---|---|---|
-| ParsingIntent 產生與版本鏈 | `src/features/workspace.slice/business.document-parser/` | 保留現位址，補齊 contract/invariants 測試 | 否 |
+| ParsingIntent 產生與版本鏈 | `src/features/workspace.slice/business.document-parser/` | 保留現位址，補齊 contract/invariants 測試（unit + integration，沿用既有 `*.test.ts`） | 否 |
 | IntentDelta 對帳與 task materialization | `src/features/workspace.slice/business.tasks/` | 保留現位址，增設 `intent-delta` 細分模組（可先用檔案分層） | 否（可選） |
 | Workflow blockedBy / unblockWorkflow | `src/features/workspace.slice/business.workflow/` | 保留現位址，集中 unblock command | 否 |
 | Issue 事件與回流治理 | `src/features/workspace.slice/business.issues/` | 保留現位址，僅發布/消費事件，不直寫 A-track | 否 |
@@ -84,7 +84,7 @@ interface ParsingIntent {
 1. **Provenance（來源可追溯）**
    - `parserVersion`：解析器版本
    - `modelVersion`：AI 模型版本（若為 AI 解析）
-   - `actorType`: `'ai' | 'human' | 'system'`
+   - `sourceType`：`'ai' | 'human' | 'system'`
 2. **Lineage（版本血緣）**
    - `supersededByIntentId`：舊 → 新指標（既有）
    - `baseIntentId?`：同一語義鏈根節點（可選）
@@ -92,7 +92,7 @@ interface ParsingIntent {
    - `reviewStatus`: `'not_required' | 'pending_review' | 'approved' | 'rejected'`
    - `reviewedBy?`, `reviewedAt?`
 4. **Snapshot Integrity（語義快照完整性）**
-   - `semanticHash?`：`extractedTasks` 快照雜湊（防篡改與重放比對）
+   - `semanticHash?`：`extractedTasks` 快照雜湊值（必須使用 SHA-256，防篡改與重放比對）
 
 > 實作原則：`extractedTasks` 與語義快照欄位屬 immutable；僅 lifecycle metadata 與 review metadata 可變。
 
@@ -161,9 +161,9 @@ stateDiagram-v2
     [*] --> PendingIntent : file parsed
     PendingIntent --> DeltaProposed : emit workspace:parsing-intent:deltaProposed
     DeltaProposed --> ATrackReconciling : A-track consume proposal
-    DeltaProposed --> BTrackIssueing : conflict detected
+    DeltaProposed --> BTrackIssuing : conflict detected
     ATrackReconciling --> ImportedIntent : sync/create/ignore done
-    BTrackIssueing --> WorkflowBlocked : emit workspace:workflow:blocked
+    BTrackIssuing --> WorkflowBlocked : emit workspace:workflow:blocked
     WorkflowBlocked --> IssueResolved : emit workspace:issues:resolved
     IssueResolved --> WorkflowUnblocked : unblockWorkflow(issueId) in workflow aggregate
     WorkflowUnblocked --> ImportedIntent : emit workspace:workflow:unblocked
@@ -177,7 +177,8 @@ sequenceDiagram
     participant PARSER as business.document-parser
     participant BUS as core.event-bus/outbox
     participant A as business.tasks (A-track)
-    participant B as business.issues/workflow (B-track)
+    participant I as business.issues (B-track)
+    participant W as business.workflow aggregate
 
     UI->>CMD: parseDocument(command)
     CMD->>PARSER: saveParsingIntent(pending)
@@ -186,10 +187,13 @@ sequenceDiagram
     alt todo/new-item
       A->>A: sync or create task
     else in_progress/blocked conflict
-      A-->>B: workspace:workflow:blocked
-      B-->>B: issue lifecycle + unblockWorkflow(issueId)
-      B-->>A: workspace:workflow:unblocked
+      A-->>W: workspace:workflow:blocked
+      W-->>I: issue lifecycle
+      I-->>W: workspace:issues:resolved
+      W-->>A: workspace:workflow:unblocked
     end
+    A-->>BUS: workspace:parsing-intent:imported
+    BUS-->>PARSER: update intent status -> imported
     A-->>PARSER: intent imported
 ```
 
@@ -235,7 +239,7 @@ if (blockedBy.size === 0) {
 
 | Event | Producer | Consumer | Allowed Write Target | Forbidden Write Target |
 |---|---|---|---|---|
-| `workspace:parsing-intent:deltaProposed` | document-parser | tasks/workflow handlers | `parsingImports`, `tasks`（A-track） | `issues` lifecycle direct mutation by parser |
+| `workspace:parsing-intent:deltaProposed` | business.document-parser | tasks/workflow handlers | `parsingImports`, `tasks`（A-track） | `issues` lifecycle direct mutation by parser |
 | `workspace:workflow:blocked` | workflow aggregate | issues | `issues`, `workflow.blockedBy` | direct `tasks.status` mutation |
 | `workspace:issues:resolved` | issues aggregate | workflow aggregate | `workflow.blockedBy` | direct task unblock write |
 | `workspace:workflow:unblocked` | workflow aggregate | tasks/view handlers | task 可繼續流轉（經 command） | bypass command-gateway direct DB write |
