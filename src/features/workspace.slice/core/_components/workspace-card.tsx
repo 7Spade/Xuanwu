@@ -61,7 +61,7 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
       toast({ variant: "destructive", title: "Failed to Destroy Space", description: result.error.message });
       return;
     }
-    toast({ title: "Workspace node destroyed" });
+    toast({ variant: "default", title: "Workspace node destroyed", description: `Space "${workspace.name}" has been permanently removed.` });
     setIsDestroyOpen(false);
     router.push(ROUTES.WORKSPACES);
   };
@@ -204,7 +204,7 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
               .slice(0, 3)
               .map((g, i) => (
                 <div
-                  key={i}
+                  key={g.userId ?? i}
                   className="flex size-6 items-center justify-center rounded-full border-2 border-background bg-primary/10 text-[8px] font-bold shadow-sm"
                 >
                   {g.userId?.[0].toUpperCase() || "U"}
