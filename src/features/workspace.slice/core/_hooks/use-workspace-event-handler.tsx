@@ -3,13 +3,17 @@
 import { useEffect } from "react";
 
 import { handleScheduleProposed } from "@/features/scheduling.slice";
+import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 import { ToastAction } from "@/shared/shadcn-ui/toast";
 import type { WorkspaceTask } from "@/shared/types";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
-import { markParsingIntentImported } from "../../business.document-parser";
+import {
+  finishParsingImport,
+  markParsingIntentImported,
+  startParsingImport,
+} from "../../business.document-parser";
 import { createIssue } from "../../business.issues";
-import { batchImportTasks } from "../../business.tasks";
+import { createTask } from "../../business.tasks";
 import { handleIssueResolvedForWorkflow } from "../../business.workflow";
 import type { DocumentParserItemsExtractedPayload } from '../../core.event-bus';
 import { useWorkspace } from '../_components/workspace-provider';
@@ -21,6 +25,7 @@ import { useApp } from './use-app';
 // [S4] Named constant — disambiguates from PROJ_STALE_STANDARD (10s).
 // This is a UI toast duration, not a staleness SLA value.
 const TOAST_LONG_DURATION_MS = 10_000;
+const PARSING_IMPORT_TERMINAL_STATUSES = ['applied', 'partial', 'failed'] as const;
 
 /**
  * useWorkspaceEventHandler — side-effect hook (no render output).
@@ -126,8 +131,67 @@ export function useWorkspaceEventHandler() {
             ...(payload.skillRequirements?.length ? { requiredSkills: payload.skillRequirements } : {}),
           }));
 
-        batchImportTasks(workspace.id, items)
-          .then(async () => {
+        startParsingImport(workspace.id, payload.intentId, payload.intentVersion)
+          .then(async (startResult) => {
+            if (startResult.isDuplicate) {
+              const isTerminalStatus = PARSING_IMPORT_TERMINAL_STATUSES.includes(
+                startResult.status
+              );
+              if (isTerminalStatus) {
+                toast({
+                  title: "Import Already Processed",
+                  description: `Idempotency key ${startResult.idempotencyKey} already processed with status ${startResult.status}.`,
+                });
+                return;
+              }
+
+              toast({
+                title: "Import In Progress",
+                description: `Idempotency key ${startResult.idempotencyKey} is already running. Please retry after it completes.`,
+              });
+              return;
+            }
+
+            const taskResults = await Promise.all(
+              items.map((item) => createTask(workspace.id, item))
+            );
+            const successfulTaskIds = taskResults
+              .filter((result) => result.success)
+              .map((result) => result.aggregateId);
+            const failedCount = taskResults.length - successfulTaskIds.length;
+
+            if (failedCount > 0) {
+              await finishParsingImport(workspace.id, startResult.importId, {
+                status: successfulTaskIds.length > 0 ? "partial" : "failed",
+                appliedTaskIds: successfulTaskIds,
+                error: {
+                  code:
+                    successfulTaskIds.length > 0
+                      ? "PARSING_IMPORT_PARTIAL"
+                      : "PARSING_IMPORT_FAILED",
+                  message: `${failedCount} task(s) failed during materialization.`,
+                },
+              });
+
+              toast({
+                variant: "destructive",
+                title:
+                  successfulTaskIds.length > 0
+                    ? "Import Partially Applied"
+                    : "Import Failed",
+                description:
+                  successfulTaskIds.length > 0
+                    ? `${successfulTaskIds.length} tasks imported, ${failedCount} failed.`
+                    : "No tasks were imported.",
+              });
+              return;
+            }
+
+            await finishParsingImport(workspace.id, startResult.importId, {
+              status: "applied",
+              appliedTaskIds: successfulTaskIds,
+            });
+
             let statusWritebackWarning: string | undefined;
             try {
               await markParsingIntentImported(workspace.id, payload.intentId);
@@ -138,17 +202,18 @@ export function useWorkspaceEventHandler() {
                   : "Unknown error updating parsing intent status (check network/permissions)";
               console.error("Failed to mark intent imported:", error);
             }
+
             toast({
               title: statusWritebackWarning
                 ? "Import Successful with Warning"
                 : "Import Successful",
               description: statusWritebackWarning
-                ? `${payload.items.length} tasks added; intent status update failed: ${statusWritebackWarning}`
-                : `${payload.items.length} tasks have been added.`,
+                ? `${successfulTaskIds.length} tasks have been added; intent status update failed: ${statusWritebackWarning}`
+                : `${successfulTaskIds.length} tasks have been added.`,
             });
             logAuditEvent(
               "Imported Tasks",
-              `Imported ${payload.items.length} items from ${payload.sourceDocument}`,
+              `Imported ${successfulTaskIds.length} items from ${payload.sourceDocument}`,
               "create"
             );
           })

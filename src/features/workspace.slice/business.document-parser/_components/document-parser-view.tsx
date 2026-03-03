@@ -8,8 +8,8 @@ import { logDomainError } from '@/features/observability';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/shadcn-ui/card';
-import type { SourcePointer, ParsingIntent } from '@/shared/types';
 import { useToast } from '@/shared/shadcn-ui/hooks/use-toast';
+import type { SourcePointer, ParsingIntent } from '@/shared/types';
 
 import { persistWorkspaceOutboxEvent } from '../../application/_outbox';
 import { useWorkspace } from '../../core';
@@ -17,7 +17,10 @@ import {
   extractDataFromDocument,
   type ActionState,
 } from '../_form-actions';
-import { saveParsingIntent } from '../_intent-actions';
+import {
+  INITIAL_PARSING_INTENT_VERSION,
+  saveParsingIntent,
+} from '../_intent-actions';
 import { subscribeToParsingIntents } from '../_queries';
 
 
@@ -209,6 +212,7 @@ export function WorkspaceDocumentParser() {
     eventBus.publish('workspace:document-parser:itemsExtracted', {
         sourceDocument: state.fileName || 'Unknown Document',
         intentId,
+        intentVersion: INITIAL_PARSING_INTENT_VERSION,
         autoImport: true,
         items: lineItems,
     });
@@ -218,6 +222,7 @@ export function WorkspaceDocumentParser() {
     // Digital Twin delta is available, without exposing document-parser internals [D7].
     const deltaPayload = {
       intentId,
+      intentVersion: INITIAL_PARSING_INTENT_VERSION,
       workspaceId: workspace.id,
       sourceFileName: state.fileName || 'Unknown Document',
       taskDraftCount: lineItems.length,

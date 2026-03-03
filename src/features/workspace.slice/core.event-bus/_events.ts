@@ -43,6 +43,7 @@ export interface WorkspaceAcceptancePassedPayload {
 export interface DocumentParserItemsExtractedPayload {
   sourceDocument: string
   intentId: string
+  intentVersion: number
   /** When true, import should execute immediately without an extra confirmation toast. */
   autoImport?: boolean
   items: Array<{
@@ -68,6 +69,7 @@ export interface DocumentParserItemsExtractedPayload {
 export interface IntentDeltaProposedPayload {
   /** The ParsingIntent Digital Twin that produced this delta. */
   intentId: string
+  intentVersion: number
   workspaceId: string
   sourceFileName: string
   /** Number of line-item task drafts in this delta. */
