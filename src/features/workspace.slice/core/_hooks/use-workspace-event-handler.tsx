@@ -10,6 +10,7 @@ import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 import { markParsingIntentImported } from "../../business.document-parser";
 import { createIssue } from "../../business.issues";
 import { batchImportTasks } from "../../business.tasks";
+import { handleIssueResolvedForWorkflow } from "../../business.workflow";
 import type { DocumentParserItemsExtractedPayload } from '../../core.event-bus';
 import { useWorkspace } from '../_components/workspace-provider';
 
@@ -27,7 +28,7 @@ const TOAST_LONG_DURATION_MS = 10_000;
  * Subscribes to workspace-level events and orchestrates cross-capability reactions.
  */
 export function useWorkspaceEventHandler() {
-  const { eventBus, workspace, logAuditEvent, updateTask, createScheduleItem } = useWorkspace();
+  const { eventBus, workspace, logAuditEvent, createScheduleItem } = useWorkspace();
   const { dispatch } = useApp();
 
   useEffect(() => {
@@ -127,9 +128,18 @@ export function useWorkspaceEventHandler() {
 
         batchImportTasks(workspace.id, items)
           .then(async () => {
-            await markParsingIntentImported(workspace.id, payload.intentId).catch(
-              (err: unknown) => console.error("Failed to mark intent imported:", err)
-            );
+            try {
+              await markParsingIntentImported(workspace.id, payload.intentId);
+            } catch (error: unknown) {
+              const message =
+                error instanceof Error ? error.message : "Failed to update parsing intent status";
+              toast({
+                variant: "destructive",
+                title: "Import Partially Completed",
+                description: `Tasks imported, but intent status update failed: ${message}`,
+              });
+              return;
+            }
             toast({
               title: "Import Successful",
               description: `${payload.items.length} tasks have been added.`,
@@ -271,17 +281,13 @@ export function useWorkspaceEventHandler() {
       }
     );
 
-    // B 軌 IssueResolved → A 軌自行恢復（Discrete Recovery Principle）
-    // B-track announces fact via event bus; A-track subscribes and self-recovers.
+    // B-track announces fact via event bus; workflow aggregate owns blockedBy mutation [#A3].
     const unsubIssueResolved = eventBus.subscribe(
       "workspace:issues:resolved",
       async (payload) => {
-        // Discrete Recovery: if the issue has a sourceTaskId, auto-unblock the A-track task
-        if (payload.sourceTaskId !== undefined) {
-          await updateTask(payload.sourceTaskId, { progressState: 'todo' }).catch(
-            (err: unknown) => console.error('[A-Track Recovery] Failed to unblock task:', err)
-          );
-        }
+        await handleIssueResolvedForWorkflow(workspace.id, payload.issueId).catch(
+          (err: unknown) => console.error('[A/B Handoff] Workflow unblock handling failed:', err)
+        );
         pushNotification(
           "B-Track Issue Resolved",
           `Issue "${payload.issueTitle}" closed by ${payload.resolvedBy}. A-Track may now resume.`,
@@ -358,5 +364,5 @@ export function useWorkspaceEventHandler() {
       unsubTaskBlocked();
       unsubScheduleProposed();
     };
-  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, updateTask, createScheduleItem]);
+  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, createScheduleItem]);
 }
