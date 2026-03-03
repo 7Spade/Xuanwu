@@ -71,11 +71,7 @@ describe('workspace-business.document-parser repository', () => {
 
     await createParsingIntent('workspace-1', payload);
 
-    expect(mockAddDocument).toHaveBeenCalledWith(
-      'workspaces/workspace-1/parsingIntents',
-      expect.not.objectContaining({
-        supersededByIntentId: expect.anything(),
-      })
-    );
+    const [, persistedData] = mockAddDocument.mock.calls[0];
+    expect(persistedData).not.toHaveProperty('supersededByIntentId');
   });
 });
