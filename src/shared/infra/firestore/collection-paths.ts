@@ -55,8 +55,8 @@ export const SUBCOLLECTIONS = {
   workspaceGrants: 'grants',
   /** workspaces/{workspaceId}/locations */
   workspaceLocations: 'locations',
-  /** workspaces/{workspaceId}/parsing_intents */
-  parsingIntents: 'parsing_intents',
+  /** workspaces/{workspaceId}/parsingIntents */
+  parsingIntents: 'parsingIntents',
   /** Generic outbox sub-collection (per aggregate) */
   outbox: 'outbox',
 } as const;

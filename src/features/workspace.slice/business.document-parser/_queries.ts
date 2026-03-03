@@ -8,6 +8,7 @@
  * Path: workspaces/{workspaceId}/parsingIntents/{intentId}
  */
 
+import { SUBCOLLECTIONS } from '@/shared/infra/firestore/collection-paths';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter';
 import type { ParsingIntent } from '@/shared/types';
@@ -23,7 +24,7 @@ export function subscribeToParsingIntents(
   onUpdate: (intents: ParsingIntent[]) => void
 ): Unsubscribe {
   const q = query(
-    collection(db, 'workspaces', workspaceId, 'parsingIntents'),
+    collection(db, 'workspaces', workspaceId, SUBCOLLECTIONS.parsingIntents),
     orderBy('createdAt', 'desc')
   );
   return onSnapshot(q, (snap) => {

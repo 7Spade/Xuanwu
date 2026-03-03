@@ -18,6 +18,7 @@ import {
 
 import type { ParsingIntent } from '@/shared/types';
 
+import { SUBCOLLECTIONS } from '../collection-paths';
 import { db } from '../firestore.client';
 import { createConverter } from '../firestore.converter';
 import { getDocuments } from '../firestore.read.adapter';
@@ -46,7 +47,7 @@ export const createParsingIntent = async (
     ...(intentData.sourceFileId !== undefined ? { sourceFileId: intentData.sourceFileId } : {}),
   };
   const ref = await addDocument(
-    `workspaces/${workspaceId}/parsingIntents`,
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}`,
     data
   );
   return ref.id;
@@ -62,7 +63,7 @@ export const updateParsingIntentStatus = async (
     updates.importedAt = serverTimestamp();
   }
   return updateDocument(
-    `workspaces/${workspaceId}/parsingIntents/${intentId}`,
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${intentId}`,
     updates
   );
 };
@@ -73,7 +74,7 @@ export const getParsingIntents = async (
   const converter = createConverter<ParsingIntent>();
   const colRef = collection(
     db,
-    `workspaces/${workspaceId}/parsingIntents`
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}`
   ).withConverter(converter);
   const q = query(colRef, orderBy('createdAt', 'desc'));
   return getDocuments(q);
