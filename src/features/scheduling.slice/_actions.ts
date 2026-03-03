@@ -32,7 +32,7 @@ import {
 } from '@/shared/infra/firestore/firestore.facade';
 import { Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { updateDocument, arrayUnion } from '@/shared/infra/firestore/firestore.write.adapter';
-import type { ScheduleItem } from '@/shared/types';
+import type { ScheduleItem } from '@/features/shared-kernel';
 
 import {
   approveOrgScheduleProposal,

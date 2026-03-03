@@ -15,7 +15,7 @@ import { tierSatisfies } from "@/features/shared-kernel";
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { canTransitionScheduleStatus } from "@/shared/lib";
-import type { ScheduleItem } from "@/shared/types";
+import type { ScheduleItem } from '@/features/shared-kernel';
 import { toast } from "@/shared/utility-hooks/use-toast";
 
 import {

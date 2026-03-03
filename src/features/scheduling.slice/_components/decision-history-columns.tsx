@@ -7,7 +7,7 @@ import { CheckCircle, XCircle, ArrowUpDown } from "lucide-react"
 
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
-import { type ScheduleItem } from "@/shared/types"
+import type { ScheduleItem } from '@/features/shared-kernel'
 
 export type DecisionHistoryItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'status' | 'updatedAt'>
 

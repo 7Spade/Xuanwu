@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/shadcn-ui/select';
-import type { ScheduleItem } from '@/shared/types';
+import type { ScheduleItem } from '@/features/shared-kernel';
 import { toast } from '@/shared/utility-hooks/use-toast';
 
 import {

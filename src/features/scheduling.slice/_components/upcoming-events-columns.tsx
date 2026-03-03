@@ -14,7 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip"
-import { type MemberReference, type ScheduleItem } from "@/shared/types"
+import type { ScheduleItem } from '@/features/shared-kernel'
+import { type MemberReference } from "@/shared/types"
 
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 

@@ -20,7 +20,7 @@ import { useState, useEffect, useMemo } from "react";
 
 import { useWorkspace } from "@/features/workspace.slice";
 import { useApp } from "@/shared/app-providers/app-context";
-import type { ScheduleItem } from "@/shared/types";
+import type { ScheduleItem } from '@/features/shared-kernel';
 import { toast } from "@/shared/utility-hooks/use-toast";
 
 import { subscribeToWorkspaceScheduleItems } from '../_queries';

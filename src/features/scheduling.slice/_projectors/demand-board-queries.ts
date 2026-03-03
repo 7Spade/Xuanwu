@@ -23,7 +23,7 @@ import {
   type QueryDocumentSnapshot,
   type QuerySnapshot,
 } from '@/shared/infra/firestore/firestore.read.adapter';
-import type { ScheduleItem } from '@/shared/types';
+import type { ScheduleItem } from '@/features/shared-kernel';
 
 /** Demand Board staleness declaration. [S4] */
 export const DEMAND_BOARD_STALENESS: ImplementsStalenessContract = {

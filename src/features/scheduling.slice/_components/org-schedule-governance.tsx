@@ -43,7 +43,7 @@ import {
 } from '@/shared/shadcn-ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import type { ScheduleItem } from '@/shared/types';
+import type { ScheduleItem } from '@/features/shared-kernel';
 import { toast } from '@/shared/utility-hooks/use-toast';
 
 import {

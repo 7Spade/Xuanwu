@@ -8,7 +8,7 @@ import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { type ScheduleItem } from "@/shared/types";
+import type { ScheduleItem } from '@/features/shared-kernel';
 
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];
