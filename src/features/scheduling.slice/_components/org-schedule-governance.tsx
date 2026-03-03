@@ -31,6 +31,7 @@ import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/shared/app-providers/app-context';
 import { findSkill } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared/ports';
+import { Avatar, AvatarFallback } from '@/shared/shadcn-ui/avatar';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
@@ -44,6 +45,12 @@ import {
 } from '@/shared/shadcn-ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/shared/shadcn-ui/tooltip';
 import { toast } from '@/shared/utility-hooks/use-toast';
 
 import {
@@ -198,9 +205,15 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
 
       {hasRequirements && (
         <div className="space-y-1" role="group" aria-label="所需技能">
-          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground" aria-hidden="true">
-            所需技能
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground" aria-hidden="true">
+              所需技能
+            </p>
+            <Badge variant="secondary" className="flex items-center gap-1 text-[9px]">
+              <Users className="size-2.5" />
+              共需 {item.requiredSkills!.reduce((s, r) => s + (r.quantity ?? 1), 0)} 人
+            </Badge>
+          </div>
           <div className="flex flex-wrap gap-1">
             {item.requiredSkills?.map((req: SkillRequirement) => (
               <Badge key={req.tagSlug} variant="secondary" className="text-[10px]">
@@ -342,12 +355,16 @@ interface ConfirmedRowProps {
 function ConfirmedRow({ item, orgId, orgMembers }: ConfirmedRowProps) {
   const [loading, setLoading] = useState(false);
 
-  const assignedNames = useMemo(() => {
-    if (!item.assigneeIds?.length) return null;
-    return item.assigneeIds
-      .map((id) => orgMembers.find((m) => m.id === id)?.name ?? id)
-      .join('、');
+  const assignedMembers = useMemo(() => {
+    if (!item.assigneeIds?.length) return [];
+    return item.assigneeIds.map((id) => ({
+      id,
+      name: orgMembers.find((m) => m.id === id)?.name ?? id,
+    }));
   }, [item.assigneeIds, orgMembers]);
+
+  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+  const totalRequired = item.requiredSkills?.reduce((s, r) => s + (r.quantity ?? 1), 0) ?? 0;
 
   const handleComplete = useCallback(async () => {
     setLoading(true);
@@ -373,14 +390,50 @@ function ConfirmedRow({ item, orgId, orgMembers }: ConfirmedRowProps) {
           <p className="text-xs text-muted-foreground">
             {formatTimestamp(item.startDate as unknown as Timestamp)} – {formatTimestamp(item.endDate as unknown as Timestamp)}
           </p>
-          {assignedNames && (
-            <p className="text-xs text-muted-foreground">指派成員：{assignedNames}</p>
-          )}
         </div>
         <Badge variant="outline" className="shrink-0 border-green-500/40 text-[9px] uppercase tracking-widest text-green-600">
           已確認
         </Badge>
       </div>
+
+      {/* Skill requirement tags + assigned avatar badges in one row */}
+      {(hasRequirements || assignedMembers.length > 0) && (
+        <div className="space-y-1">
+          {hasRequirements && (
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                所需技能
+              </p>
+              <span className="text-[10px] text-muted-foreground">
+                已指派 {assignedMembers.length} / {totalRequired} 人
+              </span>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-1">
+            {item.requiredSkills?.map((req: SkillRequirement) => (
+              <Badge key={req.tagSlug} variant="secondary" className="text-[10px]">
+                {getSkillName(req.tagSlug)} × {req.quantity}
+              </Badge>
+            ))}
+            {assignedMembers.length > 0 && (
+              <div className="ml-1 flex -space-x-1">
+                {assignedMembers.map((m) => (
+                  <TooltipProvider key={m.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar className="size-6 border-2 border-background">
+                          <AvatarFallback className="text-[9px] font-bold">{m.name[0]}</AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent><p>{m.name}</p></TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <div className="flex justify-end">
         <Button
           size="sm"

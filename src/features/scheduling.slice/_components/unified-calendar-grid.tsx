@@ -175,37 +175,53 @@ export function UnifiedCalendarGrid({
                                 </TooltipProvider>
                             </div>
 
-                            {/* Section 2.5: Required Skills */}
-                            {item.requiredSkills && item.requiredSkills.length > 0 && (
-                              <div className="flex flex-wrap gap-0.5 px-2 pb-1">
-                                {item.requiredSkills.map((req) => (
-                                  <Badge key={req.tagSlug} variant="secondary" className="h-4 px-1 text-[8px] font-medium leading-none">
-                                    {findSkill(req.tagSlug)?.name ?? req.tagSlug}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Section 3: Assignees & Actions */}
-                            <div className="mt-1 flex items-center justify-between border-t p-2">
-                                <div className="flex -space-x-1">
-                                  {assignedMembers.map(m => (
-                                    <TooltipProvider key={m.id}>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Avatar className="size-5 border border-background">
-                                            <AvatarFallback className="text-[8px] font-bold">{m.name[0]}</AvatarFallback>
-                                          </Avatar>
-                                        </TooltipTrigger>
-                                        <TooltipContent><p>{m.name}</p></TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  ))}
+                            {/* Section 3: Skills + Assignees & Actions (merged row) */}
+                            <div className="flex items-start justify-between gap-0.5 border-t px-2 py-1.5">
+                                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-0.5">
+                                  {item.requiredSkills && item.requiredSkills.length > 0 ? (
+                                    item.requiredSkills.map((req) => (
+                                      <Badge key={req.tagSlug} variant="secondary" className="h-4 px-1 text-[8px] font-medium leading-none">
+                                        {findSkill(req.tagSlug)?.name ?? req.tagSlug}
+                                        {req.quantity > 1 && ` ×${req.quantity}`}
+                                      </Badge>
+                                    ))
+                                  ) : (
+                                    <div className="flex -space-x-1">
+                                      {assignedMembers.map(m => (
+                                        <TooltipProvider key={m.id}>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Avatar className="size-5 border border-background">
+                                                <AvatarFallback className="text-[8px] font-bold">{m.name[0]}</AvatarFallback>
+                                              </Avatar>
+                                            </TooltipTrigger>
+                                            <TooltipContent><p>{m.name}</p></TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
-                                <div className="flex items-center">
+                                <div className="flex shrink-0 items-center gap-0.5">
+                                  {item.requiredSkills && item.requiredSkills.length > 0 && (
+                                    <div className="flex -space-x-1">
+                                      {assignedMembers.map(m => (
+                                        <TooltipProvider key={m.id}>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Avatar className="size-5 border border-background">
+                                                <AvatarFallback className="text-[8px] font-bold">{m.name[0]}</AvatarFallback>
+                                              </Avatar>
+                                            </TooltipTrigger>
+                                            <TooltipContent><p>{m.name}</p></TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      ))}
+                                    </div>
+                                  )}
                                   {renderItemActions && renderItemActions(item)}
                                   {viewMode === 'organization' && item.status === 'PROPOSAL' && onApproveProposal && onRejectProposal && (
-                                    <div className="flex gap-1">
+                                    <div className="flex gap-0.5">
                                         <Button size="icon" variant="ghost" className="size-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onRejectProposal(item); }}>
                                             <X className="size-3"/>
                                         </Button>
