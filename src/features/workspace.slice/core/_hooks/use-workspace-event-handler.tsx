@@ -133,7 +133,9 @@ export function useWorkspaceEventHandler() {
               await markParsingIntentImported(workspace.id, payload.intentId);
             } catch (error: unknown) {
               statusWritebackWarning =
-                error instanceof Error ? error.message : "Unknown error updating parsing intent status";
+                error instanceof Error
+                  ? error.message
+                  : "Unknown error updating parsing intent status (check network/permissions)";
               console.error("Failed to mark intent imported:", error);
             }
             toast({

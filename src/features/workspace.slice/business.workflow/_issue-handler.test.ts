@@ -56,4 +56,22 @@ describe('handleIssueResolvedForWorkflow', () => {
 
     expect(saveWorkflowStateMock).not.toHaveBeenCalled();
   });
+
+  it('propagates fetch errors from workflow lookup', async () => {
+    findWorkflowsBlockedByIssueMock.mockRejectedValue(new Error('lookup failed'));
+
+    await expect(
+      handleIssueResolvedForWorkflow('ws-1', 'issue-1')
+    ).rejects.toThrow('lookup failed');
+  });
+
+  it('propagates persistence errors from saveWorkflowState', async () => {
+    vi.spyOn(Date, 'now').mockReturnValue(1000);
+    findWorkflowsBlockedByIssueMock.mockResolvedValue([createMockWorkflow()]);
+    saveWorkflowStateMock.mockRejectedValue(new Error('save failed'));
+
+    await expect(
+      handleIssueResolvedForWorkflow('ws-1', 'issue-1')
+    ).rejects.toThrow('save failed');
+  });
 });
