@@ -19,12 +19,8 @@
  *       @/features/shared-kernel/skill-tier; re-exported here as legacy fallback barrel.
  */
 
-import type { Timestamp } from '@/shared/ports'
-
-// ---------------------------------------------------------------------------
-// Skill tier & requirement — re-exported from shared-kernel (D19)
-// (runtime functions live in @/features/shared-kernel/skill-tier)
-// ---------------------------------------------------------------------------
+import type { SkillTier } from '@/features/shared-kernel/skill-tier';
+import type { Timestamp } from '@/shared/ports';
 
 export type { SkillTier, TierDefinition, SkillRequirement } from '@/features/shared-kernel/skill-tier';
 

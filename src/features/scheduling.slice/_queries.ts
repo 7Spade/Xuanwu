@@ -200,3 +200,33 @@ export async function getEligibleMembersForSchedule(
 ): Promise<OrgEligibleMemberView[]> {
   return getOrgEligibleMembersWithTier(orgId);
 }
+
+// =================================================================
+// Workspace-scoped schedule_items subscription
+// =================================================================
+
+/**
+ * Opens a real-time listener on schedule_items filtered to a specific workspace.
+ * Used by workspace-facing hooks that need live schedule state regardless of
+ * which account is currently active (personal vs org).
+ *
+ * Path: accounts/{dimensionId}/schedule_items where workspaceId == workspaceId
+ */
+export function subscribeToWorkspaceScheduleItems(
+  dimensionId: string,
+  workspaceId: string,
+  onUpdate: (items: ScheduleItem[]) => void,
+  onError?: (err: Error) => void,
+): Unsubscribe {
+  const q = query(
+    collection(db, 'accounts', dimensionId, 'schedule_items'),
+    where('workspaceId', '==', workspaceId),
+    orderBy('createdAt', 'desc'),
+  );
+  return onSnapshot(
+    q,
+    (snap) =>
+      onUpdate(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ScheduleItem)),
+    (err) => onError?.(err),
+  );
+}

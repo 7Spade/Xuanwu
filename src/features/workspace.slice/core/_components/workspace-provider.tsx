@@ -70,12 +70,18 @@ interface WorkspaceContextType {
   /** Resolves a B-track issue via the Transaction Runner + Outbox pipeline. */
   resolveIssue: (issueId: string, issueTitle: string, resolvedBy: string, sourceTaskId?: string) => Promise<void>;
   // Schedule Management
-  createScheduleItem: (itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>) => Promise<CommandResult>;
+  createScheduleItem: (itemData: CreateScheduleItemInput) => Promise<CommandResult>;
   // Pending parse file — set by files-view when "Parse with AI" is clicked;
   // read by document-parser on mount to auto-trigger parsing cross-tab.
   pendingParseFile: FileSendToParserPayload | null;
   setPendingParseFile: (payload: FileSendToParserPayload | null) => void;
 }
+
+/** Input type for createScheduleItem — accepts plain Date objects; the action converts to Timestamp internally. */
+export type CreateScheduleItemInput = Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt' | 'startDate' | 'endDate'> & {
+  startDate?: Date | null;
+  endDate?: Date | null;
+};
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
 
@@ -170,7 +176,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
     }
   }, [workspaceId, eventBus]);
 
-  const createScheduleItem = useCallback(async (itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createScheduleItem = useCallback(async (itemData: CreateScheduleItemInput) => {
     const result = await createScheduleItemAction(itemData);
     // Cross-layer Outbox event: WORKSPACE_OUTBOX →|workspace:schedule:proposed| ORGANIZATION_SCHEDULE
     // Per logic-overview.md: W_B_SCHEDULE publishes this event so scheduling.slice
