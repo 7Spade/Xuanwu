@@ -161,3 +161,22 @@ All feature-slice import sites for `SkillTier`, `TierDefinition`, and `SkillRequ
 ---
 
 _Archive last updated: 2026-03-02 — 8 entries_
+
+---
+
+## ARCH-D6-003 — `"use client"` Outside `_components/` or `_hooks/` Leaf Node
+
+**Rule**: D6 — `"use client"` 只在 `_components/` 或 `_hooks/` 葉節點  
+**Severity at filing**: Minor  
+**Fixed**: 2026-03-03  
+**Fix reference**: PR copilot/integrate-docs-and-references
+
+**Original Violation**:  
+`src/features/workspace.slice/core.event-bus/_hooks/_context.ts` contained the `"use client"` directive at the top of a React Context module file (`createContext` + `useContext`). The module used the wrong relative import `from "./_events"` — it should have been `from "../_events"` since `_events.ts` lives one directory up in `core.event-bus/`.
+
+**Post-fix**:  
+- Corrected relative import path in `_hooks/_context.ts` from `from "./_events"` → `from "../_events"`.
+- The `"use client"` directive is now correctly placed inside `core.event-bus/_hooks/`, which satisfies D6's `_hooks/` allowance.
+- Root-level `_context.ts` and `index.ts` continue to re-export from `_hooks/_context.ts` without carrying `"use client"`, preserving all consumers unchanged.
+
+_Archive last updated: 2026-03-03 — 9 entries_
