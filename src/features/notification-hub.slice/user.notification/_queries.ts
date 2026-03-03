@@ -1,10 +1,11 @@
 /**
- * notification.slice/user.notification — _queries.ts
+ * notification-hub.slice/user.notification — _queries.ts
  *
  * Firestore reads for a user's personal notification list.
  * Stored at: accounts/{accountId}/notifications/{notifId}
  */
 
+import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,
   query,
@@ -15,8 +16,6 @@ import {
   type Unsubscribe,
 } from '@/shared/infra/firestore/firestore.read.adapter';
 import { updateDoc } from '@/shared/infra/firestore/firestore.write.adapter';
-
-import { db } from '@/shared/infra/firestore/firestore.client';
 import type { Notification } from '@/shared/types';
 
 /**

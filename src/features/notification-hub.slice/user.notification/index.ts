@@ -1,4 +1,4 @@
-// notification.slice/user.notification — Personal push notification (FCM Layer 3)
+// notification-hub.slice/user.notification — Personal push notification (FCM Layer 3)
 // Receives routed notifications from gov.notification-router,
 // filters content by account tag (internal/external), and pushes via FCM.
 export { deliverNotification, type NotificationDeliveryInput, type DeliveryResult } from './_delivery'

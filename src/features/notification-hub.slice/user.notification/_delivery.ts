@@ -1,5 +1,5 @@
 /**
- * notification.slice/user.notification — _delivery.ts
+ * notification-hub.slice/user.notification — _delivery.ts
  *
  * FCM Layer 3: Notification Delivery
  * Receives routed notifications, stores them in Firestore, and pushes FCM.
@@ -17,6 +17,7 @@
  * (financial amounts, internal workspace IDs are redacted).
  */
 
+import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,
   doc,
@@ -24,7 +25,6 @@ import {
 } from '@/shared/infra/firestore/firestore.read.adapter';
 import { addDoc, serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 
-import { db } from '@/shared/infra/firestore/firestore.client';
 
 export interface NotificationDeliveryInput {
   title: string;
