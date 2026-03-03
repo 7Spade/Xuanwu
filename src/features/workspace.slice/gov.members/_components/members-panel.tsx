@@ -13,7 +13,7 @@ import {
 import { useState, useMemo } from "react";
 
 import { useApp } from '@/shared/app-providers/app-context';
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/shadcn-ui/card";

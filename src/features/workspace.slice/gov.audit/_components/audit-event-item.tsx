@@ -3,7 +3,7 @@
 
 import { format } from "date-fns";
 
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { type AuditLog } from "@/shared/types";
 
