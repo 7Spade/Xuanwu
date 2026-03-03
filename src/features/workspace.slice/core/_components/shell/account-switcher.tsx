@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 
 import { ROUTES } from "@/shared/constants/routes"
-import { cn } from "@/shared/lib"
+import { cn } from "@/shared/shadcn-ui/utils/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import {
   DropdownMenu,
