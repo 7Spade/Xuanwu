@@ -40,6 +40,19 @@ workspaces/{workspaceId}
 
 > `parsingIntents` 負責「語義與版本」，`parsingImports` 負責「落地執行紀錄」。
 
+### 2.2 程式路徑對映（先規劃再落地）
+
+> 以下為「本次先規劃、不強制立即搬遷」的路徑藍圖，用於後續 PR 分批實作，避免一次大改造成耦合擴散。
+
+| 領域責任 | 現有主要路徑 | 建議調整 | 是否需新增資料夾 |
+|---|---|---|---|
+| ParsingIntent 產生與版本鏈 | `src/features/workspace.slice/business.document-parser/` | 保留現位址，補齊 contract/invariants 測試 | 否 |
+| IntentDelta 對帳與 task materialization | `src/features/workspace.slice/business.tasks/` | 保留現位址，增設 `intent-delta` 細分模組（可先用檔案分層） | 否（可選） |
+| Workflow blockedBy / unblockWorkflow | `src/features/workspace.slice/business.workflow/` | 保留現位址，集中 unblock command | 否 |
+| Issue 事件與回流治理 | `src/features/workspace.slice/business.issues/` | 保留現位址，僅發布/消費事件，不直寫 A-track | 否 |
+| 事件介面與 outbox | `src/features/workspace.slice/core.event-bus/` | 保留現位址，明確 A/B ownership | 否 |
+| Import execution ledger (`parsingImports`) | `src/shared/infra/firestore/repositories/` + `workspace.slice` queries | 新增 repository/queries 對應（若未齊） | 否（使用既有 infra 結構） |
+
 ---
 
 ## 3. Data Contracts（建議）
@@ -63,6 +76,25 @@ interface ParsingIntent {
   failureCode?: string
 }
 ```
+
+### 3.1.1 ParsingIntent v2（AI 協作契約）
+
+為支援長期演進與人機協作，建議在 `ParsingIntent` 補齊以下語義欄位分群（維持 #A4：proposal-only）：
+
+1. **Provenance（來源可追溯）**
+   - `parserVersion`：解析器版本
+   - `modelVersion`：AI 模型版本（若為 AI 解析）
+   - `actorType`: `'ai' | 'human' | 'system'`
+2. **Lineage（版本血緣）**
+   - `supersededByIntentId`：舊 → 新指標（既有）
+   - `baseIntentId?`：同一語義鏈根節點（可選）
+3. **Review（人機決議）**
+   - `reviewStatus`: `'not_required' | 'pending_review' | 'approved' | 'rejected'`
+   - `reviewedBy?`, `reviewedAt?`
+4. **Snapshot Integrity（語義快照完整性）**
+   - `semanticHash?`：`extractedTasks` 快照雜湊（防篡改與重放比對）
+
+> 實作原則：`extractedTasks` 與語義快照欄位屬 immutable；僅 lifecycle metadata 與 review metadata 可變。
 
 ### 3.2 ParsingImport（新）
 
@@ -121,23 +153,47 @@ interface WorkspaceTask {
 
 ---
 
-## 6. 狀態機圖解（Mermaid）
+## 6. A/B Track 狀態機圖譜（Mermaid）
 
 ```mermaid
 stateDiagram-v2
-    direction LR
-    [*] --> PendingIntent: 文件上傳/解析
-    PendingIntent --> DeltaProcessing: 發送 deltaProposed
-    DeltaProcessing --> Task_Todo: todo 自動同步
-    DeltaProcessing --> Task_Doing: in_progress/blocked 建立 Issue + blockWorkflow
-    DeltaProcessing --> New_Task: 新行項目建立 Task
-    Task_Todo --> ImportedIntent: 對帳完成
-    Task_Doing --> ImportedIntent: 對帳完成
-    New_Task --> ImportedIntent: 對帳完成
+    direction TB
+    [*] --> PendingIntent : file parsed
+    PendingIntent --> DeltaProposed : emit workspace:parsing-intent:deltaProposed
+    DeltaProposed --> ATrackReconciling : A-track consume proposal
+    DeltaProposed --> BTrackIssueing : conflict detected
+    ATrackReconciling --> ImportedIntent : sync/create/ignore done
+    BTrackIssueing --> WorkflowBlocked : emit workspace:workflow:blocked
+    WorkflowBlocked --> IssueResolved : emit workspace:issues:resolved
+    IssueResolved --> WorkflowUnblocked : unblockWorkflow(issueId) in workflow aggregate
+    WorkflowUnblocked --> ImportedIntent : emit workspace:workflow:unblocked
     ImportedIntent --> [*]
 ```
 
-> B-track 回到 A-track 必須透過 `IssueResolvedEvent`，不能直接修改 A-track 文件（符合「事件回流」原則）。
+```mermaid
+sequenceDiagram
+    participant UI as Next.js Server Action
+    participant CMD as Command Gateway
+    participant PARSER as business.document-parser
+    participant BUS as core.event-bus/outbox
+    participant A as business.tasks (A-track)
+    participant B as business.issues/workflow (B-track)
+
+    UI->>CMD: parseDocument(command)
+    CMD->>PARSER: saveParsingIntent(pending)
+    PARSER-->>BUS: workspace:parsing-intent:deltaProposed
+    BUS-->>A: consume deltaProposed
+    alt todo/new-item
+      A->>A: sync or create task
+    else in_progress/blocked conflict
+      A-->>B: workspace:workflow:blocked
+      B-->>B: issue lifecycle + unblockWorkflow(issueId)
+      B-->>A: workspace:workflow:unblocked
+    end
+    A-->>PARSER: intent imported
+```
+
+> B-track 回到 A-track 必須透過事件（`workspace:issues:resolved` / `workspace:workflow:unblocked`），不能直接修改 A-track 文件（符合 #A3/#A4）。
 
 ---
 
@@ -175,6 +231,15 @@ if (blockedBy.size === 0) {
 - A-track 只消費事件，不直接讀寫 `issues` 狀態機。
 - 實作約束：B-track handler 禁止直接調用 `tasks` repository 寫入 API；B-track 僅發布 issue 事件，不決定 workflow 是否解除，解除判定必須經 `workflow.aggregate.unblockWorkflow(issueId): CommandResult`（#A3）。
 
+### 7.3 Event Ownership Matrix（強一致邊界）
+
+| Event | Producer | Consumer | Allowed Write Target | Forbidden Write Target |
+|---|---|---|---|---|
+| `workspace:parsing-intent:deltaProposed` | document-parser | tasks/workflow handlers | `parsingImports`, `tasks`（A-track） | `issues` lifecycle direct mutation by parser |
+| `workspace:workflow:blocked` | workflow aggregate | issues | `issues`, `workflow.blockedBy` | direct `tasks.status` mutation |
+| `workspace:issues:resolved` | issues aggregate | workflow aggregate | `workflow.blockedBy` | direct task unblock write |
+| `workspace:workflow:unblocked` | workflow aggregate | tasks/view handlers | task 可繼續流轉（經 command） | bypass command-gateway direct DB write |
+
 ---
 
 ## 8. 子集合設計準則（現代化）
@@ -191,12 +256,27 @@ if (blockedBy.size === 0) {
 
 ---
 
-## 9. 推薦落地順序（最小風險）
+## 9. 實作路徑與資料夾規劃（Phase-based, 高內聚）
 
-1. 先補 `parsingImports` 與對應 repository（不改現有 `tasks/issues` API）。
-2. 將 import handler 改為「先寫 import 帳本，再寫 tasks」。
-3. 補齊 `intentVersion` 遞增與 `supersededByIntentId`。
-4. 最後做集合命名收斂（constants、repository、query 皆使用同一個 `parsingIntents` 路徑字串）。
+### Phase 0（本次 PR：文檔先行）
+
+1. 明確 A/B 邊界、FSM、Event ownership（本文件）。  
+2. 明確路徑映射與「是否新增資料夾」決策（本文件 2.2）。  
+
+### Phase 1（最小程式調整）
+
+1. `business.document-parser/`：補齊 ParsingIntent v2 欄位與 invariant 檢查。  
+2. `business.tasks/`：集中 IntentDelta 對帳（sync/create/ignore/conflict）。  
+3. `business.workflow/` + `business.issues/`：僅透過事件回流 unblock。  
+4. `shared/infra/firestore/repositories/`：補齊 `parsingImports` repository。  
+
+### Phase 2（可選結構化，僅在複雜度上升時啟用）
+
+- 可新增：`src/features/workspace.slice/business.parsing-intent/`  
+  - 目的：隔離 ParsingIntent 契約、version chain、reconciliation policy，降低 `business.document-parser` 責任混雜。  
+  - 原則：若新增，僅承載 ParsingIntent domain logic，不放 UI/queries，維持單一職責。  
+
+> 決策基準：先不新增資料夾；當 ParsingIntent 規則檔案 > 3 且跨模組重用增加時，再啟用 `business.parsing-intent/` 分割。
 
 ---
 
