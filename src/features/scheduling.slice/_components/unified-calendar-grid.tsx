@@ -190,10 +190,12 @@ export function UnifiedCalendarGrid({
                                           {findSkill(req.tagSlug)?.name ?? req.tagSlug}
                                           {req.quantity > 1 && ` ×${req.quantity}`}
                                         </Badge>
+                                        {/* One assign button per skill requirement row */}
+                                        {item.status === 'PROPOSAL' && renderItemActions && renderItemActions(item)}
                                       </div>
                                     ))
                                   ) : (
-                                    <div className="flex -space-x-1">
+                                    <div className="flex -space-x-1 items-center">
                                       {assignedMembers.map(m => (
                                         <TooltipProvider key={m.id}>
                                           <Tooltip>
@@ -206,6 +208,8 @@ export function UnifiedCalendarGrid({
                                           </Tooltip>
                                         </TooltipProvider>
                                       ))}
+                                      {/* Assign button when there are no skill requirements */}
+                                      {item.status === 'PROPOSAL' && renderItemActions && renderItemActions(item)}
                                     </div>
                                   )}
                                 </div>
@@ -226,8 +230,6 @@ export function UnifiedCalendarGrid({
                                       ))}
                                     </div>
                                   )}
-                                  {/* Gap button: show assign action when item has unfilled slots */}
-                                  {item.status === 'PROPOSAL' && renderItemActions && renderItemActions(item)}
                                   {viewMode === 'organization' && item.status === 'PROPOSAL' && onApproveProposal && onRejectProposal && (
                                     <div className="flex gap-0.5">
                                         <Button size="icon" variant="ghost" className="size-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onRejectProposal(item); }}>
