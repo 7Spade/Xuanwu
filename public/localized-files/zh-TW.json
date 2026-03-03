@@ -57,7 +57,8 @@
     "quickAccess": "快速存取",
     "userSettings": "使用者設定",
     "owner": "擁有者",
-    "guest": "訪客"
+    "guest": "訪客",
+    "orgSettings": "組織設定"
   },
   "navigation": {
     "dashboard": "儀表板",
@@ -146,7 +147,9 @@
     "dimensionDestroyed": "組織已刪除",
     "failedToDestroyDimension": "刪除組織失敗",
     "personalDimensionDescription": "這是您的個人工作空間。在此建立的專案由您擁有。",
-    "dimensionManagementDescription": "管理組織設定和成員存取權限。"
+    "dimensionManagementDescription": "管理組織設定和成員存取權限。",
+    "userSettingsTitle": "用戶設定",
+    "userSettingsDescription": "管理您的個人資料、偏好設定及帳戶安全。"
   },
   "dashboard": {
     "welcome": "歡迎使用儀表板",
