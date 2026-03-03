@@ -1,7 +1,6 @@
 
 "use client";
 
-import { serverTimestamp, type FieldValue } from "@/shared/infra/firestore/firestore.write.adapter";
 import { 
   FileText, 
   UploadCloud, 
@@ -30,7 +29,7 @@ import {
   createWorkspaceFile,
   addWorkspaceFileVersion,
   restoreWorkspaceFileVersion,
-} from '@/shared/infra/firestore/firestore.facade';
+} from '../_actions';
 import { cn, formatBytes } from "@/shared/lib";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
@@ -142,11 +141,10 @@ export function WorkspaceFiles() {
 
         const downloadURL = await uploadRawFile(workspace.id, fileId, versionId, file);
 
-        const newFileData: Omit<WorkspaceFile, 'id' | 'updatedAt'> & { updatedAt: FieldValue } = {
+        const newFileData: Omit<WorkspaceFile, 'id' | 'updatedAt'> = {
           name: file.name,
           type: file.type,
           currentVersionId: versionId,
-          updatedAt: serverTimestamp(),
           versions: [{
             versionId: versionId,
             versionNumber: 1,
