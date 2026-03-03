@@ -129,7 +129,11 @@ export function WorkspaceFiles() {
           downloadURL: downloadURL
         };
 
-        await addWorkspaceFileVersion(workspace.id, existingFile.id, newVersion, versionId);
+        const result = await addWorkspaceFileVersion(workspace.id, existingFile.id, newVersion, versionId);
+        if (!result.ok) {
+          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error });
+          return;
+        }
         
         logAuditEvent("File Version Iterated", `${file.name} (v${nextVer})`, 'update');
         toast({ title: "Version Iterated", description: `${file.name} has been upgraded to v${nextVer}.` });
@@ -156,7 +160,11 @@ export function WorkspaceFiles() {
           }]
         };
 
-        await createWorkspaceFile(workspace.id, newFileData);
+        const result = await createWorkspaceFile(workspace.id, newFileData);
+        if (!result.ok) {
+          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error });
+          return;
+        }
         logAuditEvent("Mounted New Document", file.name, 'create');
         toast({ title: "Document Uploaded", description: `${file.name} has been mounted to the space.` });
       }
@@ -175,19 +183,19 @@ export function WorkspaceFiles() {
   };
 
   const handleRestore = async (file: WorkspaceFile, versionId: string) => {
-    try {
-      await restoreWorkspaceFileVersion(workspace.id, file.id, versionId);
-      logAuditEvent("Restored File State", `${file.name} to a previous version`, 'update');
-      toast({ title: "Version Restored", description: "File sovereignty has been restored to the specified point in time." });
-      setHistoryFile(null);
-    } catch(error: unknown) {
-        console.error("Error restoring version:", error);
-        toast({
-          variant: "destructive",
-          title: "Failed to Restore Version",
-          description: getErrorMessage(error, "An unknown error occurred."),
-        });
+    const result = await restoreWorkspaceFileVersion(workspace.id, file.id, versionId);
+    if (!result.ok) {
+      console.error("Error restoring version:", result.error);
+      toast({
+        variant: "destructive",
+        title: "Failed to Restore Version",
+        description: result.error,
+      });
+      return;
     }
+    logAuditEvent("Restored File State", `${file.name} to a previous version`, 'update');
+    toast({ title: "Version Restored", description: "File sovereignty has been restored to the specified point in time." });
+    setHistoryFile(null);
   };
 
   return (
