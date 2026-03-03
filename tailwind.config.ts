@@ -1,23 +1,15 @@
 import type {Config} from 'tailwindcss';
 
+const sansFontStack = ['ui-sans-serif', 'system-ui', 'sans-serif'];
+
 export default {
   darkMode: ['class'],
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: ['./src/{app,app-runtime,config,features,shared}/**/*.{ts,tsx,mdx}'],
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: [
-  				'ui-sans-serif',
-  				'system-ui',
-  				'sans-serif'
-  			],
-  			headline: [
-  				'ui-sans-serif',
-  				'system-ui',
-  				'sans-serif'
-  			],
+  			sans: sansFontStack,
+  			headline: sansFontStack,
   			code: [
   				'monospace'
   			]

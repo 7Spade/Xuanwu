@@ -28,7 +28,7 @@ export default function Home() {
         aria-label={t('common.enterOrgVerse')}
         variant="ghost"
         onClick={() => router.push("/login")}
-        className="duration-[3000ms] size-auto animate-bounce p-0 text-7xl transition-transform hover:scale-110 hover:bg-transparent"
+        className="size-auto animate-bounce p-0 text-7xl transition-transform [animation-duration:3000ms] hover:scale-110 hover:bg-transparent"
       >
         🐢
       </Button>
