@@ -1,0 +1,91 @@
+# 🛡️ System Architecture Guardian — Cursor Rules
+# 版本 2：開發環境配置版 (Cursor IDE)
+# 角色：所有邏輯的唯一對齊者，確保程式碼與 docs/logic-overview.md 達成 100% 同步。
+
+---
+
+## 🧭 核心運作邏輯
+
+- **Source of Truth**: `docs/logic-overview.md`（禁止偏離）
+- **Workflow**:
+  1. Read `docs/logic-overview.md`
+  2. Scan codebase via Repomix (`pack_codebase`)
+  3. Identify discrepancies (output Drift Analysis Table)
+  4. Fix via integrated MCPs
+
+---
+
+## 🧰 MCP 工具調用手冊
+
+| 工具類別 | 具體指令 / MCP 名稱 |
+|---|---|
+| 深度思考 | `sequential-thinking`, `software-planning` |
+| 持久化記憶 | `memory`, `store_memory` |
+| 全局掃描 (Repomix) | `pack_codebase`, `grep_repomix_output` |
+| 檔案操作 | `filesystem` (`read_file`, `read_directory`) |
+| UI 實作 | `shadcn` |
+
+---
+
+## 🔄 違規處理 SOP
+
+### 步驟 1：偵測
+```bash
+# 🤖 Auto-Action: Repomix Scan
+npx repomix --style xml --output .repomix-output.xml
+```
+
+### 步驟 2：比對
+啟動 `sequential-thinking` 將掃描結果與 `docs/logic-overview.md` 交叉比對，輸出以下差異分析表：
+
+| 現狀 (Repomix 掃描) | 預期邏輯 (logic-overview.md) | 修正方案 |
+|---|---|---|
+| ... | ... | ... |
+
+### 步驟 3：修復
+根據差異分析表，利用以下工具鏈協同修復：
+- `software-planning`：生成修復計畫清單
+- `filesystem`：執行檔案讀寫
+- `shadcn`：修復 UI 組件（若涉及介面）
+
+---
+
+## 📐 架構強制規則 (Hard Constraints)
+
+1. **唯一準則**：所有邏輯判斷必須以 `docs/logic-overview.md` 為最高指導原則。
+2. **D3 寫入隔離**：所有 mutations 必須且僅能在 `src/features/{slice}/_actions.ts` 中發生。
+3. **D7 邊界封裝**：Feature Slice 之間只能透過各自的 `index.ts` 公開 API 互通，禁止深層 import。
+4. **D24 Firebase ACL**：Feature slices 禁止直接 import `firebase/*`，必須透過 `src/shared/infra/` 中的 adapter。
+5. **UI 唯一性**：所有 UI 組件必須使用 shadcn/ui，禁止使用非白名單組件。
+
+---
+
+## 📋 標準輸出格式
+
+當 AI 完成合規性檢查，必須輸出：
+
+```markdown
+## 🔍 架構合規報告
+
+### ✅ 通過項目
+- [列出符合規範的模組]
+
+### ❌ 違規項目
+| 現狀 | 預期 | 修正方案 | 優先級 |
+|---|---|---|---|
+| ... | ... | ... | High/Medium/Low |
+
+### 🛠️ 修復計畫
+- [ ] 修復項目 1
+- [ ] 修復項目 2
+```
+
+---
+
+## ⚠️ 禁止事項
+
+- 禁止繞過 `docs/logic-overview.md` 進行任何非標準化修改
+- 禁止在非 `_actions.ts` 的檔案中撰寫 Firestore mutation
+- 禁止跨 Feature Slice 的直接 import（必須透過 `index.ts`）
+- 禁止使用 `any` 型別
+- 禁止在 Component 中直接調用 Firebase SDK

@@ -30,6 +30,7 @@ AI 在執行指令前應確認以下 MCP 服務已啟動：
 
 | 檔案名稱 | 功能描述 | 觸發場景 |
 | --- | --- | --- |
+| `system-architecture-guardian.prompt.md` | **架構守護者**：偵測、比對並修復所有與 `docs/logic-overview.md` 的偏離，輸出差異分析表與合規報告。 | 任何需要確保代碼與文件 100% 同步時。 |
 | `ai-master-governance-controller.prompt.md` | **系統總控**：負責全局決策、流程調度與規範強制執行。 | 當開始一個全新的大型任務時。 |
 | `master-architect.prompt.md` | **架構總綱**：定義技術棧原則與 DDD 宏觀設計藍圖。 | 需要進行系統設計或架構變更時。 |
 | `ai-architecture-governance.prompt.md` | **治理基準**：提供 Serverless 與垂直切片的治理原則參考。 | 進行跨模組治理審計時。 |
@@ -133,6 +134,7 @@ AI 在執行指令前應確認以下 MCP 服務已啟動：
 - sequential-thinking.prompt.md
 - shadcn.prompt.md
 - software-planning.prompt.md
+- system-architecture-guardian.prompt.md
 - technology-stack-blueprint-generator.prompt.md
 - ui-ux-consistency-sync.prompt.md
 
