@@ -1,5 +1,5 @@
 /**
- * notification.slice/gov.notification-router — _router.ts
+ * notification-hub.slice/gov.notification-router — _router.ts
  *
  * FCM Layer 2: Notification Router
  * Routes organization events to the correct target account notification slice

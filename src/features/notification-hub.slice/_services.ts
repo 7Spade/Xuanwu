@@ -126,7 +126,7 @@ export function evaluateTagRouting(
  *   1. Check subscription registration
  *   2. Evaluate tag-aware routing
  *   3. Build notification dispatches
- *   4. Return dispatch result (actual delivery delegated to notification.slice)
+ *   4. Return dispatch result (actual delivery delegated to user.notification)
  */
 export async function processNotificationEvent(
   event: NotificationSourceEvent

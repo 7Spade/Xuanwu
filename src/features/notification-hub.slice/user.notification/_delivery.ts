@@ -1,5 +1,5 @@
 /**
- * notification.slice/user.notification — _delivery.ts
+ * notification-hub.slice/user.notification — _delivery.ts
  *
  * FCM Layer 3: Notification Delivery
  * Receives routed notifications, stores them in Firestore, and pushes FCM.

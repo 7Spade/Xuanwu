@@ -211,6 +211,27 @@
         "Event semantics flow: Aggregate → Outbox → IER → ProjectionBus (no side-channel delivery).",
         "Trace semantics: EventEnvelope requires causationId + correlationId for cross-slice tracking and replay determinism."
       ]
+    },
+    {
+      "name": "VS5 Workspace",
+      "entityType": "Vertical_Slice",
+      "observations": [
+        "VS5 = Workspace business vertical slice. Full autonomy achieved [2026-03-02].",
+        "IFileStore port (D25): StorageAdapter in shared/infra/storage implements IFileStore — no direct firebase/storage imports in feature code.",
+        "document-parser ParsingIntent carries SkillRequirement[] (tag::skill) per [T4] for downstream VS6 eligibility gate.",
+        "IntentDeltaProposedPayload emitted to event bus + ws-outbox on every saveParsingIntent [#A4][S1].",
+        "D24/D7 compliance verified: no direct firebase/* imports; no cross-slice coupling to scheduling internals."
+      ]
+    },
+    {
+      "name": "VS6 Scheduling",
+      "entityType": "Vertical_Slice",
+      "observations": [
+        "VS6 = Scheduling business vertical slice. Full autonomy achieved [2026-03-02].",
+        "QGWAY_SCHED [#14 #15 #16]: scheduling.slice/_queries.ts exposes getEligibleMembersForSchedule + getEligibleMemberForSchedule that route through projection.org-eligible-member-view via projection.bus. No direct Firestore reads for member eligibility.",
+        "A5 Saga [WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned] uses getOrgEligibleMembersWithTier from projection.bus, now also accessible via the typed QGWAY_SCHED wrappers in _queries.ts.",
+        "D7 compliance verified: no imports from workspace.slice internals."
+      ]
     }
   ],
   "relations": [
@@ -401,6 +422,38 @@
       "from": "VS8 Semantic Graph",
       "to": "A_Category",
       "relationType": "constrained_by"
+    },
+    {
+      "from": "VS5 Workspace",
+      "to": "VS_Category",
+      "relationType": "member_of"
+    },
+    {
+      "from": "VS5 Workspace",
+      "to": "D_Category",
+      "relationType": "governed_by"
+    },
+    {
+      "from": "VS5 Workspace",
+      "to": "VS6 Scheduling",
+      "relationType": "emits_IntentDeltaProposed_to",
+      "description": "[A5] workspace.slice emits IntentDeltaProposedPayload (with SkillRequirement[]) to event bus. scheduling.slice consumes via WorkspaceScheduleProposed saga — no direct coupling."
+    },
+    {
+      "from": "VS6 Scheduling",
+      "to": "VS_Category",
+      "relationType": "member_of"
+    },
+    {
+      "from": "VS6 Scheduling",
+      "to": "D_Category",
+      "relationType": "governed_by"
+    },
+    {
+      "from": "VS6 Scheduling",
+      "to": "L_Category",
+      "relationType": "reads_via_QGWAY_SCHED",
+      "description": "VS6 eligible-member reads route through QGWAY_SCHED (projection.org-eligible-member-view). Direct Firestore member-eligibility queries are forbidden per D7."
     }
   ]
 }

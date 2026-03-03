@@ -287,4 +287,204 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
       expect(typeof contract.updatedAt).toBe('number');
     });
   });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [D25] IFileStore Adapter — StorageAdapter implements IFileStore
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[D25] StorageAdapter implements IFileStore port', () => {
+    it('storage.adapter.ts file exists in shared/infra/storage', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      expect(fs.existsSync(adapterPath)).toBe(true);
+    });
+
+    it('StorageAdapter class has upload, getDownloadURL, deleteFile methods', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      const content = fs.readFileSync(adapterPath, 'utf8');
+      expect(content).toMatch(/class StorageAdapter/);
+      expect(content).toMatch(/implements IFileStore/);
+      expect(content).toMatch(/async upload\(/);
+      expect(content).toMatch(/async getDownloadURL\(/);
+      expect(content).toMatch(/async deleteFile\(/);
+    });
+
+    it('StorageAdapter does not import firebase/storage directly (delegated to adapters)', () => {
+      const adapterPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'storage.adapter.ts');
+      const content = fs.readFileSync(adapterPath, 'utf8');
+      expect(/from ['"]firebase\/storage['"]/.test(content)).toBe(false);
+    });
+
+    it('storage/index.ts exports StorageAdapter', () => {
+      const indexPath = path.join(SRC_ROOT, 'shared', 'infra', 'storage', 'index.ts');
+      const content = fs.readFileSync(indexPath, 'utf8');
+      expect(content).toMatch(/StorageAdapter/);
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [QGWAY_SCHED] Scheduling queries route through projection.org-eligible-member-view
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[QGWAY_SCHED] Scheduling eligible-member queries use projection.bus', () => {
+    it('scheduling _queries.ts exports getEligibleMembersForSchedule', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/getEligibleMembersForSchedule/);
+    });
+
+    it('scheduling _queries.ts exports getEligibleMemberForSchedule', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/getEligibleMemberForSchedule/);
+    });
+
+    it('scheduling _queries.ts imports eligible members from projection.bus (QGWAY_SCHED channel)', () => {
+      const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
+      const content = fs.readFileSync(queriesPath, 'utf8');
+      expect(content).toMatch(/@\/features\/projection\.bus/);
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [D26] Cross-cutting Authority — global-search.slice is the sole Cmd+K owner
+  // Business slices MUST NOT implement their own cross-domain search or Cmd+K UI
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[D26] Cross-cutting Authority — global-search.slice owns Cmd+K', () => {
+    /** Returns source files that define a CommandDialog component inside a business slice. */
+    function findCommandDialogInSlices(sliceRoot: string): string[] {
+      return collectSourceFiles(sliceRoot).filter((file) => {
+        const content = fs.readFileSync(file, 'utf8');
+        return /CommandDialog/.test(content);
+      });
+    }
+
+    it('GlobalSearchDialog component lives in global-search.slice/_components/ [D26]', () => {
+      const dialogPath = path.join(
+        SRC_ROOT, 'features', 'global-search.slice', '_components', 'global-search-dialog.tsx'
+      );
+      expect(fs.existsSync(dialogPath)).toBe(true);
+    });
+
+    it('global-search.slice/index.ts exports GlobalSearch and GlobalSearchDialog [D26]', () => {
+      const indexPath = path.join(SRC_ROOT, 'features', 'global-search.slice', 'index.ts');
+      const content = fs.readFileSync(indexPath, 'utf8');
+      expect(content).toMatch(/GlobalSearch/);
+    });
+
+    it('workspace.slice shell imports GlobalSearch from global-search.slice, not locally [D26]', () => {
+      const headerPath = path.join(
+        SRC_ROOT, 'features', 'workspace.slice', 'core', '_shell', 'header.tsx'
+      );
+      const content = fs.readFileSync(headerPath, 'utf8');
+      // MUST import from global-search.slice (path alias @/ or relative)
+      expect(content).toMatch(/from ['"](.*global-search\.slice)['"]/);
+    });
+
+    it('workspace.slice shell does NOT own its own global-search.tsx file [D26]', () => {
+      const localSearchPath = path.join(
+        SRC_ROOT, 'features', 'workspace.slice', 'core', '_shell', 'global-search.tsx'
+      );
+      // The file must have been removed from workspace.slice
+      expect(fs.existsSync(localSearchPath)).toBe(false);
+    });
+
+    it('business slices do not implement their own CommandDialog (cross-domain search) [D26]', () => {
+      const businessSliceDirs = [
+        path.join(SRC_ROOT, 'features', 'workspace.slice'),
+        path.join(SRC_ROOT, 'features', 'scheduling.slice'),
+        path.join(SRC_ROOT, 'features', 'organization.slice'),
+        path.join(SRC_ROOT, 'features', 'account.slice'),
+      ].filter(fs.existsSync);
+
+      const violations: string[] = [];
+      for (const dir of businessSliceDirs) {
+        const files = findCommandDialogInSlices(dir);
+        // Allow CommandDialog only in files that import from global-search.slice
+        for (const file of files) {
+          const content = fs.readFileSync(file, 'utf8');
+          const isGlobalSearchImport = /global-search\.slice/.test(content);
+          if (!isGlobalSearchImport) {
+            violations.push(file);
+          }
+        }
+      }
+      if (violations.length > 0) {
+        console.error('[D26 violation] Business slices implement own CommandDialog:\n', violations.join('\n'));
+      }
+      expect(violations).toHaveLength(0);
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // [D8] Shared-kernel purity — no async functions, Firestore calls, or side effects
+  // CTA (centralized-tag) Firestore operations must live in semantic-graph.slice
+  // ──────────────────────────────────────────────────────────────────────────
+  describe('[D8] Shared-kernel purity — no Firestore calls or async functions', () => {
+    /** Returns shared-kernel source files that import from @/shared/infra. */
+    function findInfraImportsInSharedKernel(): string[] {
+      const skRoot = path.join(SRC_ROOT, 'features', 'shared-kernel');
+      return collectSourceFiles(skRoot).filter((file) => {
+        const content = fs.readFileSync(file, 'utf8');
+        return /from ['"]@\/shared\/infra/.test(content) || /from ['"]\.\.\/\.\.\/infra/.test(content);
+      });
+    }
+
+    it('shared-kernel/centralized-tag/_aggregate.ts has no Firestore imports [D8]', () => {
+      const aggPath = path.join(
+        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_aggregate.ts'
+      );
+      const content = fs.readFileSync(aggPath, 'utf8');
+      expect(content).not.toMatch(/from ['"]@\/shared\/infra/);
+      expect(content).not.toMatch(/firestore/);
+    });
+
+    it('shared-kernel/centralized-tag/_aggregate.ts has no async functions [D8]', () => {
+      const aggPath = path.join(
+        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_aggregate.ts'
+      );
+      const content = fs.readFileSync(aggPath, 'utf8');
+      expect(content).not.toMatch(/^export async function/m);
+      expect(content).not.toMatch(/^async function/m);
+    });
+
+    it('shared-kernel/centralized-tag/_bus.ts publishTagEvent is synchronous [D8]', () => {
+      const busPath = path.join(
+        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_bus.ts'
+      );
+      const content = fs.readFileSync(busPath, 'utf8');
+      // Must not be `async function publishTagEvent`
+      expect(content).not.toMatch(/async function publishTagEvent/);
+      // Must still export publishTagEvent
+      expect(content).toMatch(/export function publishTagEvent/);
+    });
+
+    it('no shared-kernel source file imports from @/shared/infra [D8]', () => {
+      const violations = findInfraImportsInSharedKernel();
+      if (violations.length > 0) {
+        console.error('[D8 violation] shared-kernel files import from infra:\n', violations.join('\n'));
+      }
+      expect(violations).toHaveLength(0);
+    });
+
+    it('CTA Firestore operations live in semantic-graph.slice/centralized-tag/_actions.ts [D3+D8]', () => {
+      const actionsPath = path.join(
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_actions.ts'
+      );
+      expect(fs.existsSync(actionsPath)).toBe(true);
+      const content = fs.readFileSync(actionsPath, 'utf8');
+      expect(content).toMatch(/export async function createTag/);
+      expect(content).toMatch(/export async function updateTag/);
+      expect(content).toMatch(/export async function deprecateTag/);
+      expect(content).toMatch(/export async function deleteTag/);
+      expect(content).toMatch(/export async function getTag/);
+    });
+
+    it('semantic-graph.slice/index.ts re-exports CTA operations [D3+D8]', () => {
+      const indexPath = path.join(SRC_ROOT, 'features', 'semantic-graph.slice', 'index.ts');
+      const content = fs.readFileSync(indexPath, 'utf8');
+      expect(content).toMatch(/createTag/);
+      expect(content).toMatch(/updateTag/);
+      expect(content).toMatch(/deprecateTag/);
+      expect(content).toMatch(/deleteTag/);
+      expect(content).toMatch(/getTag/);
+    });
+  });
 });
