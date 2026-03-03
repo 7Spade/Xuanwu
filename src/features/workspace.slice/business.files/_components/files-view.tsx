@@ -25,11 +25,6 @@ import { useState, useRef, useEffect } from "react";
 
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import {
-  createWorkspaceFile,
-  addWorkspaceFileVersion,
-  restoreWorkspaceFileVersion,
-} from '../_actions';
 import { cn, formatBytes } from "@/shared/lib";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
@@ -59,6 +54,11 @@ import type { WorkspaceFile, WorkspaceFileVersion } from "@/shared/types";
 import { toast } from "@/shared/utility-hooks/use-toast";
 
 import { useWorkspace } from '../../core';
+import {
+  createWorkspaceFile,
+  addWorkspaceFileVersion,
+  restoreWorkspaceFileVersion,
+} from '../_actions';
 import { subscribeToWorkspaceFiles } from '../_queries';
 import { uploadRawFile } from '../_storage-actions';
 

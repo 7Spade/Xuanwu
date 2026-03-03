@@ -12,8 +12,8 @@
  *   TE_SK — skill-requirement = tagSlug × minimumTier.
  */
 
-import type { SkillRequirement } from '@/features/shared-kernel';
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
+import type { SkillRequirement } from '@/features/shared-kernel';
 
 // ─── Canonical tier ordering ─────────────────────────────────────────────────
 

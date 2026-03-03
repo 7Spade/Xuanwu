@@ -11,9 +11,11 @@
  * [TE_SK] skill-requirement = tagSlug × minimumTier — cross-BC staffing contract.
  */
 import { describe, it, expect } from 'vitest';
-import { tierSatisfies, TIER_DEFINITIONS } from '@/features/shared-kernel/skill-tier';
-import type { SkillRequirement } from '@/features/shared-kernel';
+
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
+import type { SkillRequirement } from '@/features/shared-kernel';
+import { tierSatisfies, TIER_DEFINITIONS } from '@/features/shared-kernel/skill-tier';
+
 import {
   SAGA_TIER_ORDER,
   sagaTierIndex,
