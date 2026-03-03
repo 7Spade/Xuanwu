@@ -10,7 +10,7 @@
 
 1. **單一真相（SSOT）**：`ParsingIntent` 是「解析意圖與版本鏈」的真相；`tasks` 是「可執行工作項」的真相。
 2. **雙軌治理**：
-   - 🟢 A-track：`files -> parsingIntent -> tasks -> qa -> acceptance -> finance`
+   - 🟢 A-track：`files -> parsingIntents -> tasks -> qa -> acceptance -> finance`
    - 🔴 B-track：`issues` 只透過事件介入，不直接回寫 A-track 狀態。
 3. **可重放與冪等**：任何 Intent 匯入任務動作都可 replay，且不產生重複任務。
 4. **契約一致**：集合命名、狀態列舉、版本語意與 outbox 事件一致。
@@ -34,7 +34,7 @@ workspaces/{workspaceId}
 
 `parsingImports` 是 **intent -> tasks 物化帳本**，用於：
 
-- 冪等鍵（`idempotencyKey`）去重
+- 記錄冪等鍵（`idempotencyKey` 欄位，建議格式：`import:{intentId}:{intentVersion}`，例如 `import:intent_abc123:2`）用於檢測重複匯入請求；命中重複 key 時直接返回既有 `ParsingImport` 結果，不重複落地 task
 - 追蹤一次匯入產生了哪些 `taskIds`
 - 重放時可判斷「已套用 / 部分套用 / 失敗」
 
@@ -158,18 +158,19 @@ stateDiagram-v2
 - 任務阻塞發 `workspace:tasks:blocked` -> 建立 `issues`。
 - issue 解決發 `workspace:issues:resolved` -> 再由 handler 發 `workspace:tasks:unblocked`。
 - A-track 只消費事件，不直接讀寫 `issues` 狀態機。
+- 實作約束：B-track handler 禁止直接調用 `tasks` repository 寫入 API，只能發布 `workspace:tasks:unblocked` 事件，由 A-track task handler 執行狀態更新。
 
 ---
 
 ## 7. 子集合設計準則（現代化）
 
-1. **命名一致**：全域統一 `parsingIntents`（或統一改為 `parsing_intents`，二選一，不可混用）。
+1. **命名一致**：全域統一使用 `parsingIntents`（camelCase），並與 `files`、`tasks`、`issues` 一致。
 2. **聚合責任分離**：
    - `parsingIntents`：語義 + 版本
    - `tasks`：執行狀態
    - `issues`：異常治理
    - `parsingImports`：匯入冪等與審計
-3. **不可逆欄位保護**：`sourceIntentId/sourceIntentVersion/sourceFileId` 一旦寫入不得修改。
+3. **不可逆欄位保護**：`sourceIntentId/sourceIntentVersion/sourceFileId` 一旦寫入不得修改（需在 repository 層與 Firestore rules 同步實施 write-once，核心原則是「更新時 immutable 欄位新舊值必須完全一致」）。
 4. **冪等優先**：任何 handler 都先查 `idempotencyKey` 再執行。
 5. **事件優先，不跨集合直寫狀態**：跨軌道只靠 domain events。
 
@@ -180,11 +181,21 @@ stateDiagram-v2
 1. 先補 `parsingImports` 與對應 repository（不改現有 `tasks/issues` API）。
 2. 將 import handler 改為「先寫 import 帳本，再寫 tasks」。
 3. 補齊 `intentVersion` 遞增與 `supersedesIntentId`。
-4. 最後做集合命名收斂（若要由 `parsingIntents` 改 snake_case，需 migration script + dual-read 過渡期）。
+4. 最後做集合命名收斂（constants、repository、query 皆使用同一個 `parsingIntents` 路徑字串）。
 
 ---
 
 ## 9. 驗收清單（VS5）
+
+> 測試策略建議：沿用目前已存在的 `src/features/workspace.slice/business.document-parser/` 與 `src/features/workspace.slice/business.tasks/` `*.test.ts` 結構新增對應規格（idempotency、supersede、event-only recovery、immutable source pointers、collection naming consistency）。每項驗收條件對應至少一個測試案例。
+
+| 驗收項目 | 測試型別 | 關鍵情境 |
+|---|---|---|
+| 同一 intent 重放不重複新增 task | integration | 連續兩次提交相同 `idempotencyKey`，第二次返回既有 import 結果 |
+| 新 intent 正確 supersede 舊 intent | unit + integration | 建立 v2 intent 後，v1 轉 `superseded` 且不可再次 import |
+| B-track 只透過事件解除 blocked | integration | issue resolved 僅產生 event，由 task handler 更新 task |
+| source pointers 不可覆寫 | unit | update task 時嘗試改 `sourceIntentId/sourceIntentVersion/sourceFileId` 應被拒絕 |
+| 集合命名一致 | unit | constants、repository、query path 比對一致 |
 
 - [ ] 同一 intent 重放不會重複新增 task。
 - [ ] 新 intent 會正確 supersede 舊 intent。
