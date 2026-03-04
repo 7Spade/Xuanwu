@@ -77,6 +77,24 @@ export const updateParsingIntentStatus = async (
   );
 };
 
+/**
+ * Marks an existing ParsingIntent as superseded by a new intent.
+ *
+ * Sets `status = 'superseded'` and records `supersededByIntentId` so the
+ * lineage chain (old → new) is queryable from the old intent document.
+ * Called when a re-parse replaces a prior proposal [#A4].
+ */
+export const supersedeParsingIntent = async (
+  workspaceId: string,
+  oldIntentId: string,
+  newIntentId: string
+): Promise<void> => {
+  return updateDocument(
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${oldIntentId}`,
+    { status: 'superseded', supersededByIntentId: newIntentId }
+  );
+};
+
 export const getParsingIntents = async (
   workspaceId: string
 ): Promise<ParsingIntent[]> => {

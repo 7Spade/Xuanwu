@@ -76,6 +76,11 @@ export interface IntentDeltaProposedPayload {
   sourceFileName: string
   /** Number of line-item task drafts in this delta. */
   taskDraftCount: number
+  /**
+   * When this parse supersedes a prior intent, the old intent ID is included so
+   * consumers can reconcile state (e.g. retract draft tasks linked to the old intent) [#A4].
+   */
+  oldIntentId?: string
   /** Skill requirements forwarded to the tasks system for eligibility checks [TE_SK]. */
   skillRequirements?: SkillRequirement[]
   /** [R8] TraceID for end-to-end audit trail propagation. */

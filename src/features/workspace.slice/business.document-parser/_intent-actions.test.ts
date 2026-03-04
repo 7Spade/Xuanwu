@@ -3,12 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const {
   mockCreateParsingIntent,
   mockUpdateParsingIntentStatus,
+  mockSupersedeParsingIntent,
   mockCreateParsingImport,
   mockGetParsingImportByIdempotencyKey,
   mockUpdateParsingImportStatus,
 } = vi.hoisted(() => ({
   mockCreateParsingIntent: vi.fn(),
   mockUpdateParsingIntentStatus: vi.fn(),
+  mockSupersedeParsingIntent: vi.fn(),
   mockCreateParsingImport: vi.fn(),
   mockGetParsingImportByIdempotencyKey: vi.fn(),
   mockUpdateParsingImportStatus: vi.fn(),
@@ -17,6 +19,7 @@ const {
 vi.mock('@/shared/infra/firestore/firestore.facade', () => ({
   createParsingIntent: mockCreateParsingIntent,
   updateParsingIntentStatus: mockUpdateParsingIntentStatus,
+  supersedeParsingIntent: mockSupersedeParsingIntent,
   createParsingImport: mockCreateParsingImport,
   getParsingImportByIdempotencyKey: mockGetParsingImportByIdempotencyKey,
   updateParsingImportStatus: mockUpdateParsingImportStatus,
@@ -30,11 +33,13 @@ import {
   saveParsingIntent,
   startParsingImport,
 } from './_intent-actions'
+import type { IntentID } from './_types'
 
 describe('workspace document-parser intent actions', () => {
   beforeEach(() => {
     mockCreateParsingIntent.mockReset()
     mockUpdateParsingIntentStatus.mockReset()
+    mockSupersedeParsingIntent.mockReset()
     mockCreateParsingImport.mockReset()
     mockGetParsingImportByIdempotencyKey.mockReset()
     mockUpdateParsingImportStatus.mockReset()
@@ -47,11 +52,11 @@ describe('workspace document-parser intent actions', () => {
   it('saves parsing intent with default intentVersion=1', async () => {
     mockCreateParsingIntent.mockResolvedValue('intent-1')
 
-    const id = await saveParsingIntent('workspace-1', 'invoice.pdf', [
+    const result = await saveParsingIntent('workspace-1', 'invoice.pdf', [
       { name: 'item', quantity: 1, unitPrice: 100, subtotal: 100 },
     ])
 
-    expect(id).toBe('intent-1')
+    expect(result).toEqual({ intentId: 'intent-1' })
     expect(mockCreateParsingIntent).toHaveBeenCalledWith(
       'workspace-1',
       expect.objectContaining({
@@ -64,6 +69,29 @@ describe('workspace document-parser intent actions', () => {
     )
     const [, persistedData] = mockCreateParsingIntent.mock.calls[0]
     expect(persistedData.semanticHash).toMatch(/^[a-f0-9]{64}$/)
+  })
+
+  it('supersedes prior intent and returns oldIntentId when previousIntentId is provided', async () => {
+    mockCreateParsingIntent.mockResolvedValue('intent-2')
+    mockSupersedeParsingIntent.mockResolvedValue(undefined)
+
+    const result = await saveParsingIntent('workspace-1', 'invoice-v2.pdf', [
+      { name: 'item', quantity: 2, unitPrice: 50, subtotal: 100 },
+    ], { previousIntentId: 'intent-1' as IntentID })
+
+    expect(result).toEqual({ intentId: 'intent-2', oldIntentId: 'intent-1' })
+    expect(mockSupersedeParsingIntent).toHaveBeenCalledWith('workspace-1', 'intent-1', 'intent-2')
+  })
+
+  it('does not call supersedeParsingIntent when previousIntentId is absent', async () => {
+    mockCreateParsingIntent.mockResolvedValue('intent-3')
+
+    const result = await saveParsingIntent('workspace-1', 'invoice.pdf', [
+      { name: 'item', quantity: 1, unitPrice: 100, subtotal: 100 },
+    ])
+
+    expect(result.oldIntentId).toBeUndefined()
+    expect(mockSupersedeParsingIntent).not.toHaveBeenCalled()
   })
 
   it('returns duplicate start result when parsing import already exists', async () => {
