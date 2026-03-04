@@ -75,7 +75,7 @@ export function getEligibleTags(
  * via IS_A transitive closure.
  *
  * Example:
- *   skill:expert IS_A skill:senior → satisfiesSematicRequirement('skill:expert', 'skill:senior') = true
+ *   skill:expert IS_A skill:senior → satisfiesSemanticRequirement('skill:expert', 'skill:senior') = true
  */
 export function satisfiesSemanticRequirement(
   candidateTagSlug: string,
