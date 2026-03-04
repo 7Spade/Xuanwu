@@ -14,6 +14,7 @@ export {
   updateWorkflowState,
   findWorkflowsBlockedByIssue,
   findWorkflowsByStage,
+  listWorkflowStates,
 } from './_persistence';
 
 /** [R6] B-track workflow handlers — issue create/resolve mutate blockedBy set. */

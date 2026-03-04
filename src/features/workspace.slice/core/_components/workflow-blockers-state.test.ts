@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyWorkflowBlocked,
   applyWorkflowUnblocked,
+  deriveWorkflowBlockersFromSources,
   summarizeWorkflowBlockers,
 } from './workflow-blockers-state'
 
@@ -22,6 +23,20 @@ describe('workflow blockers state', () => {
     const blocked = applyWorkflowBlocked({}, 'wf-1', 3)
     const next = applyWorkflowUnblocked(blocked, 'wf-1', 2)
     expect(next).toEqual({ 'wf-1': 2 })
+  })
+
+  it('derives blocker state from persisted workflow aggregates', () => {
+    const state = deriveWorkflowBlockersFromSources([
+      { workflowId: 'wf-1', blockedBy: ['issue-1', 'issue-2'] },
+      { workflowId: 'wf-2', blockedBy: [] },
+      { workflowId: 'wf-3' },
+      { workflowId: 'wf-4', blockedBy: ['issue-3'] },
+    ])
+
+    expect(state).toEqual({
+      'wf-1': 2,
+      'wf-4': 1,
+    })
   })
 
   it('summarizes blocked workflows and total blockers', () => {

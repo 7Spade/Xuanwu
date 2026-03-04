@@ -28,7 +28,11 @@ import { useApp } from './use-app';
 // [S4] Named constant — disambiguates from PROJ_STALE_STANDARD (10s).
 // This is a UI toast duration, not a staleness SLA value.
 const TOAST_LONG_DURATION_MS = 10_000;
-const PARSING_IMPORT_TERMINAL_STATUSES = ['applied', 'partial', 'failed'] as const;
+const PARSING_IMPORT_TERMINAL_STATUSES = new Set([
+  'applied',
+  'partial',
+  'failed',
+]);
 
 /**
  * useWorkspaceEventHandler — side-effect hook (no render output).
@@ -171,7 +175,7 @@ export function useWorkspaceEventHandler() {
         startParsingImport(workspace.id, payload.intentId, payload.intentVersion)
           .then(async (startResult) => {
             if (startResult.isDuplicate) {
-              const isTerminalStatus = PARSING_IMPORT_TERMINAL_STATUSES.includes(
+              const isTerminalStatus = PARSING_IMPORT_TERMINAL_STATUSES.has(
                 startResult.status
               );
               if (isTerminalStatus) {

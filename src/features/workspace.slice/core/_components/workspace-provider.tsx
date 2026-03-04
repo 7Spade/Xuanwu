@@ -3,7 +3,7 @@
 
 import { Loader2 } from 'lucide-react';
 import type React from 'react';
-import { createContext, useContext, useMemo, useCallback, useEffect, useState } from 'react';
+import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { initTagChangedSubscriber } from '@/features/notification-hub.slice';
 import {
@@ -25,6 +25,7 @@ import {
   deleteTask as deleteTaskAction,
   getWorkspaceTask as getWorkspaceTaskAction,
 } from '../../business.tasks'
+import { listWorkflowStates } from '../../business.workflow'
 import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '../../core.event-bus';
 import { writeAuditLog } from '../../gov.audit/_actions';
 import {
@@ -43,6 +44,7 @@ import { useApp } from '../_hooks/use-app';
 import {
   applyWorkflowBlocked,
   applyWorkflowUnblocked,
+  deriveWorkflowBlockersFromSources,
   summarizeWorkflowBlockers,
   type WorkflowBlockersState,
 } from './workflow-blockers-state';
@@ -108,6 +110,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   // and document-parser-view (subscriber), which are on separate @businesstab slots.
   const [pendingParseFile, setPendingParseFile] = useState<FileSendToParserPayload | null>(null);
   const [workflowBlockers, setWorkflowBlockers] = useState<WorkflowBlockersState>({});
+  const touchedWorkflowIdsRef = useRef<Set<string>>(new Set());
 
   // Register Event Funnel — routes events from both buses to the Projection Layer
   // Also register Notification Router (FCM Layer 2) and Org Policy Cache
@@ -125,8 +128,37 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   }, [eventBus]);
 
   useEffect(() => {
+    let isCanceled = false
+    const eventTouchedWorkflowIds = touchedWorkflowIdsRef.current
+    eventTouchedWorkflowIds.clear()
+
+    const hydrateWorkflowBlockers = async () => {
+      try {
+        if (isCanceled) return
+        const workflowStates = await listWorkflowStates(workspaceId)
+        if (isCanceled) return
+
+        const hydratedState = deriveWorkflowBlockersFromSources(workflowStates)
+        setWorkflowBlockers((prev) => {
+          const next = { ...prev }
+          for (const [workflowId, blockedByCount] of Object.entries(hydratedState)) {
+            if (eventTouchedWorkflowIds.has(workflowId)) continue
+            if (next[workflowId] === undefined) {
+              next[workflowId] = blockedByCount
+            }
+          }
+          return next
+        })
+      } catch (error) {
+        console.error('[workspace-provider] Failed to hydrate workflow blockers:', error)
+      }
+    }
+
+    void hydrateWorkflowBlockers()
+
     // A/B handoff sync: when workflow aggregate emits blocked, blockedBy gains at least one issueId.
     const unsubBlocked = eventBus.subscribe('workspace:workflow:blocked', (payload) => {
+      eventTouchedWorkflowIds.add(payload.workflowId)
       setWorkflowBlockers((prev) =>
         applyWorkflowBlocked(prev, payload.workflowId, payload.blockedByCount)
       );
@@ -134,16 +166,18 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
 
     // A/B handoff sync: unblocked means blockedBy was reduced; remove the workflow once count reaches zero.
     const unsubUnblocked = eventBus.subscribe('workspace:workflow:unblocked', (payload) => {
+      eventTouchedWorkflowIds.add(payload.workflowId)
       setWorkflowBlockers((prev) =>
         applyWorkflowUnblocked(prev, payload.workflowId, payload.blockedByCount)
       );
     });
 
     return () => {
+      isCanceled = true
       unsubBlocked();
       unsubUnblocked();
     };
-  }, [eventBus]);
+  }, [eventBus, workspaceId]);
 
   const localAuditLogs = useMemo(() => {
     if (!auditLogs || !workspaceId) return [];

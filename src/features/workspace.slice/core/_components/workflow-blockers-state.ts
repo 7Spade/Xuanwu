@@ -1,5 +1,10 @@
 export type WorkflowBlockersState = Record<string, number>
 
+export type WorkflowBlockersSource = {
+  workflowId: string
+  blockedBy?: string[]
+}
+
 export function applyWorkflowBlocked(
   state: WorkflowBlockersState,
   workflowId: string,
@@ -25,6 +30,18 @@ export function applyWorkflowUnblocked(
 
   const { [workflowId]: _removed, ...rest } = state
   return rest
+}
+
+export function deriveWorkflowBlockersFromSources(
+  sources: readonly WorkflowBlockersSource[]
+): WorkflowBlockersState {
+  // Intentional accumulator mutation for O(n) aggregation without spread cloning.
+  return sources.reduce<WorkflowBlockersState>((state, source) => {
+    const blockedByCount = source.blockedBy?.length ?? 0
+    if (blockedByCount === 0) return state
+    state[source.workflowId] = blockedByCount
+    return state
+  }, {})
 }
 
 export function summarizeWorkflowBlockers(state: WorkflowBlockersState) {

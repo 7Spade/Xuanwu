@@ -14,6 +14,7 @@ import {
   updateParsingImportStatus as updateParsingImportStatusFacade,
   updateParsingIntentStatus as updateParsingIntentStatusFacade,
 } from '@/shared/infra/firestore/firestore.facade'
+import type { Timestamp } from '@/shared/ports'
 import type {
   ParsedLineItem,
   IntentID,
@@ -120,7 +121,7 @@ export async function saveParsingIntent(
     sourceType?: ParsingIntentSourceType
     reviewStatus?: ParsingIntentReviewStatus
     reviewedBy?: string
-    reviewedAt?: Date
+    reviewedAt?: Timestamp
     semanticHash?: string
     baseIntentId?: IntentID
   }
