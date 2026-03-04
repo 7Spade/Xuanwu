@@ -184,17 +184,35 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
     }
   }, [orgId, item.id, item.title]);
 
+  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+  const totalRequired = item.requiredSkills?.reduce((s, r) => s + (r.quantity ?? 1), 0) ?? 0;
+
+  const assignedMembers = useMemo(() => {
+    if (!item.assigneeIds?.length) return [];
+    return item.assigneeIds.map((id) => ({
+      id,
+      name: orgMembers.find((m) => m.id === id)?.name ?? id,
+    }));
+  }, [item.assigneeIds, orgMembers]);
+
+  /** True once every required slot is filled — hide the assign button. */
+  const isFull = hasRequirements && assignedMembers.length >= totalRequired;
+
+  /** Set of already-assigned member IDs — exclude from the picker. */
+  const assignedIdSet = useMemo(() => new Set(item.assigneeIds ?? []), [item.assigneeIds]);
+
   /**
-   * Pre-compute skill match for every org member so we can group the dropdown
-   * into "全部符合" → "部分符合" → "其他成員" without re-computing per render.
+   * Pre-compute skill match for every *unassigned* org member so we can group
+   * the dropdown into "全部符合" → "部分符合" → "其他成員" without re-computing per render.
+   * Already-assigned members are filtered out so they don't appear in the picker.
    */
   const { fullMatch, partialMatch, noMatch } = useMemo(() => {
-    const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
     const full: Array<{ id: string; name: string }> = [];
     const partial: Array<{ id: string; name: string; matched: number; total: number }> = [];
     const none: Array<{ id: string; name: string }> = [];
 
     for (const m of orgMembers) {
+      if (assignedIdSet.has(m.id)) continue; // skip already-assigned
       if (!hasRequirements) {
         none.push(m);
         continue;
@@ -211,17 +229,7 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
       else none.push(m);
     }
     return { fullMatch: full, partialMatch: partial, noMatch: none };
-  }, [orgMembers, eligibleMembers, item.requiredSkills]);
-
-  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
-
-  const assignedMembers = useMemo(() => {
-    if (!item.assigneeIds?.length) return [];
-    return item.assigneeIds.map((id) => ({
-      id,
-      name: orgMembers.find((m) => m.id === id)?.name ?? id,
-    }));
-  }, [item.assigneeIds, orgMembers]);
+  }, [orgMembers, eligibleMembers, item.requiredSkills, hasRequirements, assignedIdSet]);
 
   const NO_SKILLS_POPOVER_ID = 'no-skills';
 
@@ -272,7 +280,7 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
                 </>
               ) : (
                 <CommandGroup>
-                  {orgMembers.map((m) => (
+                  {orgMembers.filter((m) => !assignedIdSet.has(m.id)).map((m) => (
                     <CommandItem key={m.id} value={m.name} onSelect={() => handleAssignMember(m.id)} className="text-xs">
                       {m.name}
                     </CommandItem>
@@ -328,8 +336,8 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
                   <Badge variant="secondary" className="text-[10px]">
                     {getSkillName(req.tagSlug)} × {req.quantity}
                   </Badge>
-                  {/* Per-skill assignment button — same small UserPlus as the calendar */}
-                  <MemberPickerPopover popoverId={req.tagSlug} />
+                  {/* Per-skill assignment button — hidden once all slots are filled */}
+                  {!isFull && <MemberPickerPopover popoverId={req.tagSlug} />}
                 </div>
               ))}
             </div>
