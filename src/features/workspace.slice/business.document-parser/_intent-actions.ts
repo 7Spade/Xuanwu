@@ -178,6 +178,8 @@ export async function startParsingImport(
     appliedTaskIds: [],
   })
 
+  await updateParsingIntentStatusFacade(workspaceId, intentId, 'importing')
+
   return {
     importId,
     idempotencyKey,
@@ -203,4 +205,11 @@ export async function markParsingIntentImported(
   intentId: string
 ): Promise<void> {
   return updateParsingIntentStatusFacade(workspaceId, intentId, 'imported')
+}
+
+export async function markParsingIntentFailed(
+  workspaceId: string,
+  intentId: string
+): Promise<void> {
+  return updateParsingIntentStatusFacade(workspaceId, intentId, 'failed')
 }

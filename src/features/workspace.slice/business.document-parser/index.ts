@@ -5,6 +5,7 @@ export {
   startParsingImport,
   finishParsingImport,
   markParsingIntentImported,
+  markParsingIntentFailed,
 } from './_intent-actions'
 export { subscribeToParsingIntents } from './_queries'
 // Types

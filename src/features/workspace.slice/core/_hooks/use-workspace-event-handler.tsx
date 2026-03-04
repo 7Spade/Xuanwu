@@ -9,6 +9,7 @@ import type { WorkspaceTask } from "@/shared/types";
 
 import {
   finishParsingImport,
+  markParsingIntentFailed,
   markParsingIntentImported,
   startParsingImport,
 } from "../../business.document-parser";
@@ -214,6 +215,12 @@ export function useWorkspaceEventHandler() {
                 },
               });
 
+              try {
+                await markParsingIntentFailed(workspace.id, payload.intentId);
+              } catch (error: unknown) {
+                console.error("Error marking intent status as failed:", error);
+              }
+
               toast({
                 variant: "destructive",
                 title:
@@ -258,7 +265,13 @@ export function useWorkspaceEventHandler() {
               "create"
             );
           })
-          .catch((error: unknown) => {
+          .catch(async (error: unknown) => {
+            try {
+              await markParsingIntentFailed(workspace.id, payload.intentId);
+            } catch (statusError: unknown) {
+              console.error("Error marking intent status as failed:", statusError);
+            }
+
             const message =
               error instanceof Error ? error.message : "Import failed";
             toast({

@@ -25,6 +25,7 @@ vi.mock('@/shared/infra/firestore/firestore.facade', () => ({
 import {
   buildParsingImportIdempotencyKey,
   finishParsingImport,
+  markParsingIntentFailed,
   markParsingIntentImported,
   saveParsingIntent,
   startParsingImport,
@@ -66,6 +67,7 @@ describe('workspace document-parser intent actions', () => {
   })
 
   it('returns duplicate start result when parsing import already exists', async () => {
+    // Duplicate execution keeps the previously persisted intent lifecycle untouched.
     mockGetParsingImportByIdempotencyKey.mockResolvedValue({
       id: 'import-existing',
       status: 'applied',
@@ -80,9 +82,10 @@ describe('workspace document-parser intent actions', () => {
       isDuplicate: true,
     })
     expect(mockCreateParsingImport).not.toHaveBeenCalled()
+    expect(mockUpdateParsingIntentStatus).not.toHaveBeenCalled()
   })
 
-  it('creates started parsing import when idempotency key is new', async () => {
+  it('creates started parsing import and marks intent as importing when idempotency key is new', async () => {
     mockGetParsingImportByIdempotencyKey.mockResolvedValue(null)
     mockCreateParsingImport.mockResolvedValue('import-1')
 
@@ -98,6 +101,11 @@ describe('workspace document-parser intent actions', () => {
         status: 'started',
         appliedTaskIds: [],
       })
+    )
+    expect(mockUpdateParsingIntentStatus).toHaveBeenCalledWith(
+      'workspace-1',
+      'intent-1',
+      'importing'
     )
     expect(result).toEqual({
       importId: 'import-1',
@@ -138,6 +146,16 @@ describe('workspace document-parser intent actions', () => {
       'workspace-1',
       'intent-1',
       'imported'
+    )
+  })
+
+  it('marks parsing intent failed', async () => {
+    await markParsingIntentFailed('workspace-1', 'intent-1')
+
+    expect(mockUpdateParsingIntentStatus).toHaveBeenCalledWith(
+      'workspace-1',
+      'intent-1',
+      'failed'
     )
   })
 })
