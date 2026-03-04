@@ -205,6 +205,29 @@ describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', (
     expect(payload.traceId).toBe('trace-001');
   });
 
+  it('accepts optional oldIntentId when a prior intent was superseded [#A4]', () => {
+    const payload: IntentDeltaProposedPayload = {
+      intentId: 'intent-003',
+      intentVersion: 2,
+      workspaceId: 'ws-xyz',
+      sourceFileName: 'Schedule-v2.pdf',
+      taskDraftCount: 4,
+      oldIntentId: 'intent-002',
+    };
+    expect(payload.oldIntentId).toBe('intent-002');
+  });
+
+  it('oldIntentId is absent when no prior intent was superseded', () => {
+    const payload: IntentDeltaProposedPayload = {
+      intentId: 'intent-001',
+      intentVersion: 1,
+      workspaceId: 'ws-abc',
+      sourceFileName: 'doc.xlsx',
+      taskDraftCount: 5,
+    };
+    expect(payload.oldIntentId).toBeUndefined();
+  });
+
   it('payload fields match what document-parser-view dispatches [#A4×document-parser]', () => {
     // Mirrors the shape built in handleImport() — prevents shape drift
     const simulatedDispatch = (

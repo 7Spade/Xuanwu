@@ -96,6 +96,7 @@ export const getWorkspaceFilesFromSubcollection = repositories.getWorkspaceFiles
 // ParsingIntent (document-parser Digital Twin)
 export const createParsingIntent = repositories.createParsingIntent
 export const updateParsingIntentStatus = repositories.updateParsingIntentStatus
+export const supersedeParsingIntent = repositories.supersedeParsingIntent
 export const getParsingIntents = repositories.getParsingIntents
 
 // ParsingImport (intent materialization ledger)

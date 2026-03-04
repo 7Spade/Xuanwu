@@ -10,7 +10,7 @@ import {
   getWorkspaceTasks as getWorkspaceTasksFacade,
   getWorkspaceTask as getWorkspaceTaskFacade,
 } from "@/shared/infra/firestore/firestore.facade";
-import type { WorkspaceTask } from "@/shared/types";
+import type { WorkspaceTask } from "./_types";
 
 /**
  * Fetches all tasks for a workspace (one-time read, not real-time).

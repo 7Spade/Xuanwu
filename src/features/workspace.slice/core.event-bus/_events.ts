@@ -1,6 +1,8 @@
 // [職責] 事件名稱與 Payload 的 TypeScript 類型定義 (Contract)
 import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/features/shared-kernel"
-import type { WorkspaceTask, DailyLog } from "@/shared/types"
+
+import type { DailyLog } from "../business.daily/_types"
+import type { WorkspaceTask } from "../business.tasks/_types"
 
 // WorkspaceScheduleProposedPayload is a cross-BC contract — defined in shared-kernel.
 // Re-exported for consumers that import from workspace-core.event-bus.
@@ -76,6 +78,11 @@ export interface IntentDeltaProposedPayload {
   sourceFileName: string
   /** Number of line-item task drafts in this delta. */
   taskDraftCount: number
+  /**
+   * When this parse supersedes a prior intent, the old intent ID is included so
+   * consumers can reconcile state (e.g. retract draft tasks linked to the old intent) [#A4].
+   */
+  oldIntentId?: string
   /** Skill requirements forwarded to the tasks system for eligibility checks [TE_SK]. */
   skillRequirements?: SkillRequirement[]
   /** [R8] TraceID for end-to-end audit trail propagation. */

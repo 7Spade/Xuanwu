@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu";
-import { type DailyLog } from "@/shared/types";
+import { type DailyLog } from "../../_types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useWorkspace } from "../../../core";

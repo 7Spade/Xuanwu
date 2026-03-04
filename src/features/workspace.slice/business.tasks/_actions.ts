@@ -15,7 +15,7 @@ import {
   updateTask as updateTaskFacade,
   deleteTask as deleteTaskFacade,
 } from "@/shared/infra/firestore/firestore.facade"
-import type { WorkspaceTask } from "@/shared/types"
+import type { WorkspaceTask } from "./_types"
 
 export async function createTask(
   workspaceId: string,

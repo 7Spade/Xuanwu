@@ -19,7 +19,7 @@ import {
 } from "@/shared/shadcn-ui/dialog"
 import { Input } from "@/shared/shadcn-ui/input"
 import { Label } from "@/shared/shadcn-ui/label"
-import type { Team } from "@/shared/types"
+import type { Team } from "@/features/shared-kernel"
 import { PageHeader } from "@/shared/ui/page-header"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 

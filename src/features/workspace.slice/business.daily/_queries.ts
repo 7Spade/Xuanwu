@@ -15,7 +15,7 @@ import {
   query,
   type Unsubscribe,
 } from "@/shared/infra/firestore/firestore.read.adapter";
-import type { DailyLog, DailyLogComment } from "@/shared/types";
+import type { DailyLog, DailyLogComment } from "./_types";
 
 /**
  * Fetches daily log entries for an account.

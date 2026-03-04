@@ -11,10 +11,12 @@ import {
   createParsingImport as createParsingImportFacade,
   createParsingIntent as createParsingIntentFacade,
   getParsingImportByIdempotencyKey as getParsingImportByIdempotencyKeyFacade,
+  supersedeParsingIntent as supersedeParsingIntentFacade,
   updateParsingImportStatus as updateParsingImportStatusFacade,
   updateParsingIntentStatus as updateParsingIntentStatusFacade,
 } from '@/shared/infra/firestore/firestore.facade'
 import type { Timestamp } from '@/shared/ports'
+
 import type {
   ParsedLineItem,
   IntentID,
@@ -23,7 +25,7 @@ import type {
   ParsingImportStatus,
   ParsingIntentReviewStatus,
   ParsingIntentSourceType,
-} from '@/shared/types'
+} from './_types'
 
 export const INITIAL_PARSING_INTENT_VERSION = 1
 
@@ -107,6 +109,12 @@ export function buildParsingImportIdempotencyKey(
   return `import:${intentId}:${intentVersion}`
 }
 
+export type SaveParsingIntentResult = {
+  intentId: IntentID
+  /** Present when a previous intent was superseded by this save. */
+  oldIntentId?: IntentID
+}
+
 export async function saveParsingIntent(
   workspaceId: string,
   sourceFileName: string,
@@ -124,8 +132,10 @@ export async function saveParsingIntent(
     reviewedAt?: Timestamp
     semanticHash?: string
     baseIntentId?: IntentID
+    /** When provided, the old intent is marked as superseded by the new intent [#A4]. */
+    previousIntentId?: IntentID
   }
-): Promise<IntentID> {
+): Promise<SaveParsingIntentResult> {
   const semanticHash =
     options?.semanticHash ?? (await createSemanticHash(lineItems))
   const id = await createParsingIntentFacade(workspaceId, {
@@ -146,7 +156,14 @@ export async function saveParsingIntent(
     baseIntentId: options?.baseIntentId,
     status: 'pending',
   })
-  return id as IntentID
+  const intentId = id as IntentID
+
+  if (options?.previousIntentId) {
+    await supersedeParsingIntentFacade(workspaceId, options.previousIntentId, intentId)
+    return { intentId, oldIntentId: options.previousIntentId }
+  }
+
+  return { intentId }
 }
 
 export async function startParsingImport(

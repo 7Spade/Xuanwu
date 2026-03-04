@@ -1,7 +1,7 @@
 // [職責] 網格佈局容器
 "use client";
 
-import type { Workspace } from "@/shared/types";
+import type { Workspace } from "../_types";
 
 import { WorkspaceCard } from "./workspace-card";
 

@@ -35,7 +35,7 @@ import {
 } from "@/shared/shadcn-ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import type { MemberReference } from "@/shared/types";
+import type { MemberReference } from "@/features/shared-kernel";
 
 import { useGlobalSchedule } from "../_hooks/use-global-schedule";
 import { useScheduleActions } from "../_hooks/use-schedule-commands";

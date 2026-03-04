@@ -9,7 +9,7 @@ import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/shadcn-ui/card';
 import { useToast } from '@/shared/shadcn-ui/hooks/use-toast';
-import type { SourcePointer, ParsingIntent } from '@/shared/types';
+
 
 import { persistWorkspaceOutboxEvent } from '../../application/_outbox';
 import { useWorkspace } from '../../core';
@@ -22,6 +22,7 @@ import {
   saveParsingIntent,
 } from '../_intent-actions';
 import { subscribeToParsingIntents } from '../_queries';
+import type { IntentID, SourcePointer, ParsingIntent } from '../_types';
 
 
 const initialState: ActionState = {
@@ -93,6 +94,8 @@ export function WorkspaceDocumentParser() {
   const sourceFileIdRef = useRef<string | undefined>(undefined);
   // Tracks the original download URL (SourcePointer) for the Digital Twin ParsingIntent
   const sourceFileDownloadURLRef = useRef<string | undefined>(undefined);
+  // Tracks the last saved intentId so that re-parses supersede the prior intent [#A4]
+  const previousIntentIdRef = useRef<IntentID | undefined>(undefined);
 
   // Real-time ParsingIntent history (Digital Twin 解析合約 list)
   const [parsingIntents, setParsingIntents] = useState<ParsingIntent[]>([]);
@@ -184,9 +187,10 @@ export function WorkspaceDocumentParser() {
       subtotal: item.price,
     }));
 
-    let intentId: string;
+    let intentId: IntentID;
+    let oldIntentId: IntentID | undefined;
     try {
-      intentId = await saveParsingIntent(
+      const result = await saveParsingIntent(
         workspace.id,
         state.fileName || 'Unknown Document',
         lineItems,
@@ -194,8 +198,12 @@ export function WorkspaceDocumentParser() {
           sourceFileId: sourceFileIdRef.current,
           // SourcePointer: immutable link to the original file in Firebase Storage
           sourceFileDownloadURL: sourceFileDownloadURLRef.current as SourcePointer | undefined,
+          // Supersede the prior intent when re-parsing the same session [#A4]
+          previousIntentId: previousIntentIdRef.current,
         }
       );
+      intentId = result.intentId;
+      oldIntentId = result.oldIntentId;
     } catch (error: unknown) {
       console.error('Failed to save parsing intent:', error);
       toast({
@@ -220,12 +228,15 @@ export function WorkspaceDocumentParser() {
     // Dispatch IntentDeltaProposed [#A4] — at-least-once delivery via wsOutbox [S1][E5].
     // This cross-BC event notifies external consumers (e.g. scheduling.slice) that a new
     // Digital Twin delta is available, without exposing document-parser internals [D7].
+    // oldIntentId is included when a prior intent was superseded so consumers can retract
+    // draft tasks linked to the previous intent.
     const deltaPayload = {
       intentId,
       intentVersion: INITIAL_PARSING_INTENT_VERSION,
       workspaceId: workspace.id,
       sourceFileName: state.fileName || 'Unknown Document',
       taskDraftCount: lineItems.length,
+      ...(oldIntentId && { oldIntentId }),
     };
     eventBus.publish('workspace:parsing-intent:deltaProposed', deltaPayload);
     persistWorkspaceOutboxEvent(workspace.id, 'workspace:parsing-intent:deltaProposed', deltaPayload)
@@ -239,6 +250,8 @@ export function WorkspaceDocumentParser() {
         });
       });
 
+    // Record the new intentId so any subsequent re-parse in this session supersedes it [#A4]
+    previousIntentIdRef.current = intentId;
     // Reset source file references after successful import
     sourceFileIdRef.current = undefined;
     sourceFileDownloadURLRef.current = undefined;

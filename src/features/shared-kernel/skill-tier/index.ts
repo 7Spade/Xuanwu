@@ -18,7 +18,7 @@
  *   — workspace.slice/business.parsing-intent  (skill requirements from documents)
  *
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
- * [D19] Canonical type definitions live here; @/shared/types/skill.types re-exports for legacy consumers.
+ * [D19] Canonical type definitions live here. Import from `@/features/shared-kernel`.
  */
 
 import type { Timestamp } from '@/shared/ports'
@@ -133,7 +133,7 @@ export function tierSatisfies(grantedTier: SkillTier, minimumTier: SkillTier): b
  * in shared/constants/skills.ts.
  *
  * Pure value type — no Firestore fields.
- * [D19] Canonical definition lives here; @/shared/types/skill.types re-exports for legacy consumers.
+ * [D19] Canonical definition lives here. Import from `@/features/shared-kernel`.
  */
 export interface SkillTag {
   /** Stable hyphen-separated identifier — never change an existing slug. */
@@ -155,7 +155,7 @@ export interface SkillTag {
  * `tagSlug` is the portable cross-org identifier (e.g. "electrical-work").
  * `tagId`   is the org-local UUID and is optional for display/linking purposes.
  *
- * [D19] Canonical definition lives here; @/shared/types/skill.types re-exports for legacy consumers.
+ * [D19] Canonical definition lives here. Import from `@/features/shared-kernel`.
  */
 export interface SkillGrant {
   /**
@@ -186,11 +186,8 @@ export interface SkillGrant {
 // ─── Cross-BC staffing contract (SK_SKILL_REQ) ───────────────────────────────
 
 /**
- * Cross-BC staffing requirement: a skill (identified by tagSlug) with a
+ * Staffing requirement: a skill (identified by tagSlug) with a
  * minimum XP threshold.
- *
- * Re-exported from @/shared/types/skill.types to keep the dependency direction clean.
- * See top-of-file import for the consolidated re-export.
  */
 
 // ─── Cross-BC event payload (Workspace BC → Organization BC) [A5] ────────────

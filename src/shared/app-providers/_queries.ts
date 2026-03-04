@@ -18,7 +18,7 @@ import {
   where,
 } from '@/shared/infra/firestore/firestore.read.adapter';
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils';
-import type { Account } from '@/shared/types';
+import type { Account } from '@/features/shared-kernel';
 
 /**
  * Opens a real-time listener on accounts where `memberIds` contains `userId`.

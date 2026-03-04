@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useSelectedLayoutSegment } from "next/navigation"
 import { useMemo } from "react"
 
-import type { Capability } from "@/shared/types"
+import type { Capability } from "../_types"
 
 import { useApp } from "../_hooks/use-app"
 

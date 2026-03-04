@@ -11,7 +11,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Button } from "@/shared/shadcn-ui/button";
-import { type DailyLog, type Account } from "@/shared/types";
+import { type DailyLog } from "../../_types";
+import type { Account } from "@/features/shared-kernel";
 
 import { useDailyActions } from '../../_hooks/use-daily-commands';
 

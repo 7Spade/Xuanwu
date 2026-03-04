@@ -16,7 +16,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 
-import type { ParsingIntent } from '@/shared/types';
+import type { ParsingIntent } from '@/features/workspace.slice';
 
 import { SUBCOLLECTIONS } from '../collection-paths';
 import { db } from '../firestore.client';
@@ -74,6 +74,24 @@ export const updateParsingIntentStatus = async (
   return updateDocument(
     `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${intentId}`,
     updates
+  );
+};
+
+/**
+ * Marks an existing ParsingIntent as superseded by a new intent.
+ *
+ * Sets `status = 'superseded'` and records `supersededByIntentId` so the
+ * lineage chain (old → new) is queryable from the old intent document.
+ * Called when a re-parse replaces a prior proposal [#A4].
+ */
+export const supersedeParsingIntent = async (
+  workspaceId: string,
+  oldIntentId: string,
+  newIntentId: string
+): Promise<void> => {
+  return updateDocument(
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${oldIntentId}`,
+    { status: 'superseded', supersededByIntentId: newIntentId }
   );
 };
 

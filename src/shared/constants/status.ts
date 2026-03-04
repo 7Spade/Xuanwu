@@ -2,26 +2,21 @@
  * @fileoverview shared/constants/status.ts — Domain status / lifecycle state metadata.
  *
  * Centralises the labelled, coloured descriptors for every status / state string union
- * used across the domain model.  Note: ScheduleStatus is now canonical in
- * `@/features/shared-kernel`; other types remain in `@/shared/types/` as legacy.
+ * used across the domain model.  Note: all types are now canonical in their feature slices:
+ * `@/features/shared-kernel` and `@/features/workspace.slice`.
  *
  * Covered union types:
- *   - ScheduleStatus          (→ @/features/shared-kernel/schedule-contract [D19])
- *   - WorkspaceLifecycleState (workspace.types.ts)
- *   - AuditLogType            (audit.types.ts)
- *   - InviteState             (account.types.ts → PartnerInvite.inviteState)
- *   - Presence                (account.types.ts → MemberReference.presence)
- *   - NotificationType        (account.types.ts → Notification.type)
+ *   - ScheduleStatus          (→ @/features/shared-kernel/schedule-contract)
+ *   - WorkspaceLifecycleState (→ @/features/workspace.slice)
+ *   - AuditLogType            (→ @/features/workspace.slice)
+ *   - InviteState             (→ @/features/shared-kernel → PartnerInvite.inviteState)
+ *   - Presence                (→ @/features/shared-kernel → MemberReference.presence)
+ *   - NotificationType        (→ @/features/shared-kernel → Notification.type)
  */
 
-import type { ScheduleStatus } from '@/features/shared-kernel';
-import type {
-  InviteState,
-  NotificationType,
-  Presence,
-} from '@/shared/types/account.types';
-import type { AuditLogType } from '@/shared/types/audit.types';
-import type { WorkspaceLifecycleState } from '@/shared/types/workspace.types';
+import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/features/shared-kernel';
+import type { AuditLogType } from '@/features/workspace.slice';
+import type { WorkspaceLifecycleState } from '@/features/workspace.slice';
 
 // ---------------------------------------------------------------------------
 // ScheduleStatus
