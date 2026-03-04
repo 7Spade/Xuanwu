@@ -78,8 +78,7 @@
     "daily": "每日",
     "audit": "稽核",
     "orgSchedule": "HR 排程治理",
-    "demandBoard": "需求看板",
-    "skills": "個人技能"
+    "demandBoard": "需求看板"
   },
   "dimension": {
     "createTitle": "建立組織",
@@ -150,7 +149,9 @@
     "personalDimensionDescription": "這是您的個人工作空間。在此建立的專案由您擁有。",
     "dimensionManagementDescription": "管理組織設定和成員存取權限。",
     "userSettingsTitle": "用戶設定",
-    "userSettingsDescription": "管理您的個人資料、偏好設定及帳戶安全。"
+    "userSettingsDescription": "管理您的個人資料、偏好設定及帳戶安全。",
+    "skillProgressTitle": "技能進度",
+    "skillProgressDescription": "追蹤您的技能經驗值與等級進展。"
   },
   "dashboard": {
     "welcome": "歡迎使用儀表板",
