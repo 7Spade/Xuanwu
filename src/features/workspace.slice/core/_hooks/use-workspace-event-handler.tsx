@@ -1,6 +1,6 @@
 // [職責] 監聽事件並執行副作用 (The Orchestrator)
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { handleScheduleProposed } from "@/features/scheduling.slice";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
@@ -43,6 +43,10 @@ const PARSING_IMPORT_TERMINAL_STATUSES = new Set([
 export function useWorkspaceEventHandler() {
   const { eventBus, workspace, logAuditEvent, createScheduleItem } = useWorkspace();
   const { dispatch } = useApp();
+  // [D14] In-memory idempotency lock — prevents concurrent importItems() calls
+  // from both passing the async Firestore read-check-write boundary (TOCTOU race).
+  // useRef gives a stable object that persists across renders without triggering re-renders.
+  const inProgressImports = useRef(new Set<string>());
 
   useEffect(() => {
     const pushNotification = (
@@ -150,6 +154,18 @@ export function useWorkspaceEventHandler() {
 
     const handleImport = (payload: DocumentParserItemsExtractedPayload) => {
       const importItems = () => {
+        // [D14] Synchronous in-memory guard — must fire before any async Firestore
+        // call so that two concurrent executions of importItems() cannot both pass
+        // the read-check-write boundary simultaneously (TOCTOU race fix).
+        if (inProgressImports.current.has(payload.intentId)) {
+          toast({
+            title: "Import In Progress",
+            description: "An import for this document is already running. Please wait.",
+          });
+          return;
+        }
+        inProgressImports.current.add(payload.intentId);
+
         toast({
           title: "Importing items...",
           description: "Please wait a moment.",
@@ -297,6 +313,11 @@ export function useWorkspaceEventHandler() {
               description: message,
             });
           });
+      })
+      .finally(() => {
+        // [D14] Release the in-memory lock unconditionally so that a future
+        // import attempt is not permanently blocked after an error.
+        inProgressImports.current.delete(payload.intentId);
       });
   };
 
