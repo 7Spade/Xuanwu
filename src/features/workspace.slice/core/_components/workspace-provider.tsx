@@ -10,7 +10,7 @@ import {
   createScheduleItem as createScheduleItemAction,
 } from '@/features/scheduling.slice'
 import type { CommandResult, ScheduleItem } from '@/features/shared-kernel';
-import { firestoreTimestampToISO } from '@/shared/lib';
+import { firestoreTimestampToISO } from '@/shared/shadcn-ui/utils/utils';
 import { type Workspace, type AuditLog, type WorkspaceTask, type WorkspaceRole, type Capability, type WorkspaceLifecycleState, type Address, type WorkspacePersonnel } from '@/shared/types';
 
 import { registerOrgPolicyCache, runTransaction } from '../../application';

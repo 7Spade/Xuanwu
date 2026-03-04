@@ -8,7 +8,7 @@ import { type DateRange } from "react-day-picker";
 import type { SkillRequirement } from "@/features/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared/constants/skills";
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Calendar } from "@/shared/shadcn-ui/calendar";

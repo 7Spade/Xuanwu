@@ -23,7 +23,7 @@ import { useState, useCallback } from "react";
 
 import type { ScheduleItem } from '@/features/shared-kernel';
 import { useApp } from "@/shared/app-providers/app-context";
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Button } from "@/shared/shadcn-ui/button";
 import {
   Command,
