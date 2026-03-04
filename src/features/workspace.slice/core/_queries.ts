@@ -127,7 +127,11 @@ export function subscribeToWorkspaceTasks(
     collection(db, 'workspaces', workspaceId, 'tasks'),
     orderBy('createdAt', 'desc'),
   );
-  return onSnapshot(q, (snap) => onUpdate(snapshotToRecord<WorkspaceTask>(snap)));
+  return onSnapshot(
+    q,
+    (snap) => onUpdate(snapshotToRecord<WorkspaceTask>(snap)),
+    (error) => console.error('[workspace] subscribeToWorkspaceTasks error:', error),
+  );
 }
 
 /**
@@ -142,5 +146,9 @@ export function subscribeToWorkspaceIssues(
     collection(db, 'workspaces', workspaceId, 'issues'),
     orderBy('createdAt', 'desc'),
   );
-  return onSnapshot(q, (snap) => onUpdate(snapshotToRecord<WorkspaceIssue>(snap)));
+  return onSnapshot(
+    q,
+    (snap) => onUpdate(snapshotToRecord<WorkspaceIssue>(snap)),
+    (error) => console.error('[workspace] subscribeToWorkspaceIssues error:', error),
+  );
 }
