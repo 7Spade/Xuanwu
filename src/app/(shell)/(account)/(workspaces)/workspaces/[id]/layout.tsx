@@ -2,20 +2,12 @@
 // [職責] 為特定工作區的所有頁面提供共享的 Context 和 UI 佈局。
 "use client";
 
-import { ArrowLeft, Settings, Trash2, ChevronRight, MapPin } from "lucide-react";
+import { ArrowLeft, ChevronRight, MapPin } from "lucide-react";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, use } from "react";
+import { useEffect, useMemo, useRef, use } from "react";
 
-import { WorkspaceProvider, useWorkspace , useWorkspaceEventHandler , WorkspaceStatusBar , WorkspaceNavTabs , useWorkspaceCommands, useApp } from "@/features/workspace.slice"
-import { ROUTES } from "@/shared/constants/routes";
+import { WorkspaceProvider, useWorkspace , useWorkspaceEventHandler , WorkspaceStatusBar , WorkspaceNavTabs , useApp } from "@/features/workspace.slice"
 import { Button } from "@/shared/shadcn-ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
 import { PageHeader } from "@/shared/ui/page-header";
 
 const PERMANENT_CAPABILITY_IDS = ["capabilities", "audit"];
@@ -35,10 +27,7 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
   const { state } = useApp();
   const router = useRouter();
   const activeCapability = useSelectedLayoutSegment("businesstab");
-  const { handleDeleteWorkspace } = useWorkspaceCommands();
 
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const redirectingCapabilityRef = useRef<string | null>(null);
 
   const allowedCapabilityIds = useMemo(() => {
@@ -72,43 +61,24 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
     router.replace(`/workspaces/${workspaceId}/capabilities`);
   }, [activeCapability, allowedCapabilityIds, router, workspaceId]);
 
-  const onDeleteWorkspace = async () => {
-    setLoading(true);
-    await handleDeleteWorkspace(workspace.id, () => {
-      setIsDeleteOpen(false);
-      router.push(ROUTES.WORKSPACES);
-    });
-    setLoading(false);
-  };
-  
   const formattedAddress = workspace.address ? [workspace.address.street, workspace.address.city, workspace.address.state, workspace.address.country, workspace.address.postalCode].filter(Boolean).join(', ') : 'No address defined.';
 
   return (
      <div className="gpu-accelerated mx-auto max-w-7xl space-y-6 pb-20 duration-500 animate-in fade-in slide-in-from-bottom-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.back()}
-            className="size-8 hover:bg-primary/5"
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em]">
-            <span>Dimension Space</span>
-            <ChevronRight className="size-3 opacity-30" />
-            <span className="text-foreground">{workspace.name}</span>
-          </div>
-        </div>
+      <div className="flex items-center gap-2 text-muted-foreground">
         <Button
-          variant="outline"
-          size="sm"
-          className="border-destructive/20 text-[10px] font-bold uppercase tracking-widest text-destructive hover:bg-destructive/5"
-          onClick={() => setIsDeleteOpen(true)}
+          variant="ghost"
+          size="icon"
+          onClick={() => router.back()}
+          className="size-8 hover:bg-primary/5"
         >
-          <Trash2 className="mr-2 size-3.5" /> Destroy Space
+          <ArrowLeft className="size-4" />
         </Button>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em]">
+          <span>Dimension Space</span>
+          <ChevronRight className="size-3 opacity-30" />
+          <span className="text-foreground">{workspace.name}</span>
+        </div>
       </div>
 
       <PageHeader
@@ -117,24 +87,6 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
       >
         <div className="mb-2">
             <WorkspaceStatusBar />
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 gap-2 text-[10px] font-bold uppercase tracking-widest"
-            onClick={() => router.push(`/workspaces/${workspaceId}/settings`)}
-          >
-            <Settings className="size-3.5" /> Space Settings
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 gap-2 text-[10px] font-bold uppercase tracking-widest"
-            onClick={() => router.push(ROUTES.WORKSPACE_LOCATIONS(workspaceId))}
-          >
-            <MapPin className="size-3.5" /> 子地點
-          </Button>
         </div>
       </PageHeader>
       
@@ -149,29 +101,6 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
       {businesstab}
       {panel}
       {modal}
-
-      <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent className="rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="font-headline text-xl text-destructive">
-              Initiate Workspace Destruction Protocol
-            </DialogTitle>
-          </DialogHeader>
-          <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-[11px] italic text-destructive">
-            This action will permanently erase the workspace node &quot;
-            {workspace.name}&quot; and all its subordinate atomic data and technical
-            specifications.
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)} disabled={loading}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={onDeleteWorkspace} disabled={loading}>
-              {loading ? 'Destroying...' : 'Confirm Destruction'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
