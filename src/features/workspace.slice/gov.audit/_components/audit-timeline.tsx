@@ -3,7 +3,7 @@
 
 import type * as React from "react";
 
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 
 interface AuditTimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;

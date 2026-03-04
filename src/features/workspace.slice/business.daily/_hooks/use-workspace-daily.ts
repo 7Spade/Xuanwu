@@ -14,7 +14,7 @@
 import { useState, useMemo } from "react";
 
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { type DailyLog } from "@/shared/types";
+import { type DailyLog } from "../_types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useWorkspace } from "../../core";

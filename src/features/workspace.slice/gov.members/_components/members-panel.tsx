@@ -13,7 +13,7 @@ import {
 import { useState, useMemo } from "react";
 
 import { useApp } from '@/shared/app-providers/app-context';
-import { cn } from "@/shared/lib";
+import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/shadcn-ui/card";
@@ -22,7 +22,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Label } from "@/shared/shadcn-ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import { type Team, type WorkspaceRole, type MemberReference } from "@/shared/types";
+import { type Team, type MemberReference } from "@/features/shared-kernel";
+import { type WorkspaceRole } from "../../gov.role/_types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useWorkspace } from '../../core';

@@ -96,7 +96,13 @@ export const getWorkspaceFilesFromSubcollection = repositories.getWorkspaceFiles
 // ParsingIntent (document-parser Digital Twin)
 export const createParsingIntent = repositories.createParsingIntent
 export const updateParsingIntentStatus = repositories.updateParsingIntentStatus
+export const supersedeParsingIntent = repositories.supersedeParsingIntent
 export const getParsingIntents = repositories.getParsingIntents
+
+// ParsingImport (intent materialization ledger)
+export const createParsingImport = repositories.createParsingImport
+export const getParsingImportByIdempotencyKey = repositories.getParsingImportByIdempotencyKey
+export const updateParsingImportStatus = repositories.updateParsingImportStatus
 
 // ==================================================================
 // == workspace-core.event-store — Append-only domain event log

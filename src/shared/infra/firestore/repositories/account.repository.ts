@@ -19,7 +19,7 @@ import type {
   MemberReference,
   Team,
   ThemeConfig,
-} from '@/shared/types'
+} from '@/features/shared-kernel'
 
 import { db } from '../firestore.client'
 import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'

@@ -14,7 +14,7 @@ import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shared/shadcn-ui/sheet";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { type WorkspaceIssue } from "@/shared/types";
+import { type WorkspaceIssue } from "../_types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useWorkspace } from '../../core';

@@ -3,7 +3,7 @@
 
 import { Zap, Shield, Activity, Terminal } from "lucide-react";
 
-import { type AuditLog } from "@/shared/types";
+import { type AuditLog } from "../_types";
 
 interface AuditTypeIconProps {
     type: AuditLog['type'];

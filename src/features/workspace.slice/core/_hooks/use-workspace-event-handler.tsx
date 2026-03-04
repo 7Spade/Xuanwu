@@ -3,13 +3,22 @@
 import { useEffect } from "react";
 
 import { handleScheduleProposed } from "@/features/scheduling.slice";
-import { ToastAction } from "@/shared/shadcn-ui/toast";
-import type { WorkspaceTask } from "@/shared/types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { ToastAction } from "@/shared/shadcn-ui/toast";
+import type { WorkspaceTask } from "../../business.tasks/_types";
 
-import { markParsingIntentImported } from "../../business.document-parser";
+import {
+  finishParsingImport,
+  markParsingIntentFailed,
+  markParsingIntentImported,
+  startParsingImport,
+} from "../../business.document-parser";
 import { createIssue } from "../../business.issues";
-import { batchImportTasks } from "../../business.tasks";
+import { createTask } from "../../business.tasks";
+import {
+  handleIssueCreatedForWorkflow,
+  handleIssueResolvedForWorkflow,
+} from "../../business.workflow";
 import type { DocumentParserItemsExtractedPayload } from '../../core.event-bus';
 import { useWorkspace } from '../_components/workspace-provider';
 
@@ -20,6 +29,11 @@ import { useApp } from './use-app';
 // [S4] Named constant — disambiguates from PROJ_STALE_STANDARD (10s).
 // This is a UI toast duration, not a staleness SLA value.
 const TOAST_LONG_DURATION_MS = 10_000;
+const PARSING_IMPORT_TERMINAL_STATUSES = new Set([
+  'applied',
+  'partial',
+  'failed',
+]);
 
 /**
  * useWorkspaceEventHandler — side-effect hook (no render output).
@@ -27,7 +41,7 @@ const TOAST_LONG_DURATION_MS = 10_000;
  * Subscribes to workspace-level events and orchestrates cross-capability reactions.
  */
 export function useWorkspaceEventHandler() {
-  const { eventBus, workspace, logAuditEvent, updateTask, createScheduleItem } = useWorkspace();
+  const { eventBus, workspace, logAuditEvent, createScheduleItem } = useWorkspace();
   const { dispatch } = useApp();
 
   useEffect(() => {
@@ -40,6 +54,42 @@ export function useWorkspaceEventHandler() {
         type: "ADD_NOTIFICATION",
         payload: { title, message, type },
       });
+    };
+
+    const createIssueAndBlockWorkflow = async (
+      title: string,
+      type: "technical" | "financial",
+      sourceTaskId?: string,
+      traceId?: string
+    ) => {
+      const issueResult = await createIssue(
+        workspace.id,
+        title,
+        type,
+        "high",
+        sourceTaskId
+      );
+      if (!issueResult.success) {
+        throw new Error(
+          `Failed to create issue in workspace ${workspace.id} (${type}${sourceTaskId ? `, sourceTaskId=${sourceTaskId}` : ''}): ${issueResult.error.message}`
+        );
+      }
+
+      const blockedResult = await handleIssueCreatedForWorkflow(
+        workspace.id,
+        issueResult.aggregateId
+      );
+
+      if (blockedResult.wasChanged) {
+        eventBus.publish("workspace:workflow:blocked", {
+          workflowId: blockedResult.workflowId,
+          issueId: issueResult.aggregateId,
+          blockedByCount: blockedResult.blockedByCount,
+          ...(traceId ? { traceId } : {}),
+        });
+      }
+
+      return issueResult.aggregateId;
     };
 
     const unsubQAApproved = eventBus.subscribe(
@@ -67,12 +117,11 @@ export function useWorkspaceEventHandler() {
     const unsubQualityAssuranceRejected = eventBus.subscribe(
       "workspace:quality-assurance:rejected",
       async (payload) => {
-        await createIssue(
-          workspace.id,
+        await createIssueAndBlockWorkflow(
           `QA Rejected: ${payload.task.name}`,
           "technical",
-          "high",
-          payload.task.id
+          payload.task.id,
+          payload.traceId
         );
         pushNotification(
           "QA Rejected & Issue Logged",
@@ -85,12 +134,11 @@ export function useWorkspaceEventHandler() {
     const unsubAcceptanceFailed = eventBus.subscribe(
       "workspace:acceptance:failed",
       async (payload) => {
-        await createIssue(
-          workspace.id,
+        await createIssueAndBlockWorkflow(
           `Acceptance Failed: ${payload.task.name}`,
           "technical",
-          "high",
-          payload.task.id
+          payload.task.id,
+          payload.traceId
         );
         pushNotification(
           "Acceptance Failed & Issue Logged",
@@ -125,22 +173,105 @@ export function useWorkspaceEventHandler() {
             ...(payload.skillRequirements?.length ? { requiredSkills: payload.skillRequirements } : {}),
           }));
 
-        batchImportTasks(workspace.id, items)
-          .then(async () => {
-            await markParsingIntentImported(workspace.id, payload.intentId).catch(
-              (err: unknown) => console.error("Failed to mark intent imported:", err)
+        startParsingImport(workspace.id, payload.intentId, payload.intentVersion)
+          .then(async (startResult) => {
+            if (startResult.isDuplicate) {
+              const isTerminalStatus = PARSING_IMPORT_TERMINAL_STATUSES.has(
+                startResult.status
+              );
+              if (isTerminalStatus) {
+                toast({
+                  title: "Import Already Processed",
+                  description: `Idempotency key ${startResult.idempotencyKey} already processed with status ${startResult.status}.`,
+                });
+                return;
+              }
+
+              toast({
+                title: "Import In Progress",
+                description: `Idempotency key ${startResult.idempotencyKey} is already running. Please retry after it completes.`,
+              });
+              return;
+            }
+
+            const taskResults = await Promise.all(
+              items.map((item) => createTask(workspace.id, item))
             );
+            const successfulTaskIds = taskResults
+              .filter((result) => result.success)
+              .map((result) => result.aggregateId);
+            const failedCount = taskResults.length - successfulTaskIds.length;
+
+            if (failedCount > 0) {
+              await finishParsingImport(workspace.id, startResult.importId, {
+                status: successfulTaskIds.length > 0 ? "partial" : "failed",
+                appliedTaskIds: successfulTaskIds,
+                error: {
+                  code:
+                    successfulTaskIds.length > 0
+                      ? "PARSING_IMPORT_PARTIAL"
+                      : "PARSING_IMPORT_FAILED",
+                  message: `${failedCount} task(s) failed during materialization.`,
+                },
+              });
+
+              try {
+                await markParsingIntentFailed(workspace.id, payload.intentId);
+              } catch (error: unknown) {
+                console.error("Error marking intent status as failed:", error);
+              }
+
+              toast({
+                variant: "destructive",
+                title:
+                  successfulTaskIds.length > 0
+                    ? "Import Partially Applied"
+                    : "Import Failed",
+                description:
+                  successfulTaskIds.length > 0
+                    ? `${successfulTaskIds.length} tasks imported, ${failedCount} failed.`
+                    : "No tasks were imported.",
+              });
+              return;
+            }
+
+            await finishParsingImport(workspace.id, startResult.importId, {
+              status: "applied",
+              appliedTaskIds: successfulTaskIds,
+            });
+
+            let statusWritebackWarning: string | undefined;
+            try {
+              await markParsingIntentImported(workspace.id, payload.intentId);
+            } catch (error: unknown) {
+              statusWritebackWarning =
+                error instanceof Error
+                  ? error.message
+                  : "Unknown error updating parsing intent status (check network/permissions)";
+              console.error("Failed to mark intent imported:", error);
+            }
+
             toast({
-              title: "Import Successful",
-              description: `${payload.items.length} tasks have been added.`,
+              title: statusWritebackWarning
+                ? "Import Successful with Warning"
+                : "Import Successful",
+              description: statusWritebackWarning
+                ? `${successfulTaskIds.length} tasks have been added; intent status update failed: ${statusWritebackWarning}`
+                : `${successfulTaskIds.length} tasks have been added.`,
             });
             logAuditEvent(
               "Imported Tasks",
-              `Imported ${payload.items.length} items from ${payload.sourceDocument}`,
+              `Imported ${successfulTaskIds.length} items from ${payload.sourceDocument}`,
               "create"
             );
           })
-          .catch((error: unknown) => {
+          .catch(async (error: unknown) => {
+            try {
+              await markParsingIntentFailed(workspace.id, payload.intentId);
+            } catch (statusError: unknown) {
+              console.error("Error marking intent status as failed:", statusError);
+            }
+
             const message =
               error instanceof Error ? error.message : "Import failed";
             toast({
@@ -271,20 +402,74 @@ export function useWorkspaceEventHandler() {
       }
     );
 
-    // B 軌 IssueResolved → A 軌自行恢復（Discrete Recovery Principle）
-    // B-track announces fact via event bus; A-track subscribes and self-recovers.
+    const buildWorkflowBlockedMessage = (
+      workflowId: string,
+      issueId: string,
+      blockedByCount: number
+    ) =>
+      `Workflow ${workflowId} blocked by issue ${issueId}. Active blockers: ${blockedByCount}.`;
+
+    const unsubWorkflowBlocked = eventBus.subscribe(
+      "workspace:workflow:blocked",
+      (payload) => {
+        pushNotification(
+          "Workflow Blocked",
+          buildWorkflowBlockedMessage(
+            payload.workflowId,
+            payload.issueId,
+            payload.blockedByCount
+          ),
+          "alert"
+        );
+      }
+    );
+
+    const unsubWorkflowUnblocked = eventBus.subscribe(
+      "workspace:workflow:unblocked",
+      (payload) => {
+        pushNotification(
+          "Workflow Unblocked",
+          `Workflow ${payload.workflowId} unblocked by issue ${payload.issueId}.`,
+          "success"
+        );
+      }
+    );
+
+    // B-track announces fact via event bus; workflow aggregate owns blockedBy mutation [#A3].
+    const buildIssueResolvedMessage = (
+      issueTitle: string,
+      resolvedBy: string,
+      unblockedCount: number
+    ) =>
+      `Issue "${issueTitle}" closed by ${resolvedBy}. ${unblockedCount > 0 ? 'Workflow resumed.' : 'Workflow still blocked by other issues.'}`;
+
     const unsubIssueResolved = eventBus.subscribe(
       "workspace:issues:resolved",
       async (payload) => {
-        // Discrete Recovery: if the issue has a sourceTaskId, auto-unblock the A-track task
-        if (payload.sourceTaskId !== undefined) {
-          await updateTask(payload.sourceTaskId, { progressState: 'todo' }).catch(
-            (err: unknown) => console.error('[A-Track Recovery] Failed to unblock task:', err)
-          );
+        const resolution = await handleIssueResolvedForWorkflow(
+          workspace.id,
+          payload.issueId
+        ).catch((err: unknown) => {
+          console.error('[A/B Handoff] Workflow unblock handling failed:', err);
+          return { touchedWorkflowIds: [], unblockedWorkflowIds: [] };
+        });
+
+        for (const workflowId of resolution.unblockedWorkflowIds) {
+          eventBus.publish("workspace:workflow:unblocked", {
+            workflowId,
+            issueId: payload.issueId,
+            blockedByCount: 0,
+            ...(payload.traceId ? { traceId: payload.traceId } : {}),
+          });
         }
+
         pushNotification(
           "B-Track Issue Resolved",
-          `Issue "${payload.issueTitle}" closed by ${payload.resolvedBy}. A-Track may now resume.`,
+          buildIssueResolvedMessage(
+            payload.issueTitle,
+            payload.resolvedBy,
+            resolution.unblockedWorkflowIds.length
+          ),
           "success"
         );
       }
@@ -294,12 +479,11 @@ export function useWorkspaceEventHandler() {
     const unsubFinanceFailed = eventBus.subscribe(
       "workspace:finance:disburseFailed",
       async (payload) => {
-        await createIssue(
-          workspace.id,
+        await createIssueAndBlockWorkflow(
           `Disbursement Failed: ${payload.taskTitle}`,
           "financial",
-          "high",
-          payload.taskId
+          payload.taskId,
+          payload.traceId
         );
         pushNotification(
           "Finance Failure & Issue Logged",
@@ -313,12 +497,11 @@ export function useWorkspaceEventHandler() {
     const unsubTaskBlocked = eventBus.subscribe(
       "workspace:tasks:blocked",
       async (payload) => {
-        await createIssue(
-          workspace.id,
+        await createIssueAndBlockWorkflow(
           `Task Blocked: ${payload.task.name}`,
           "technical",
-          "high",
-          payload.task.id
+          payload.task.id,
+          payload.traceId
         );
         pushNotification(
           "Task Blocked & Issue Logged",
@@ -353,10 +536,12 @@ export function useWorkspaceEventHandler() {
       unsubTaskCompleted();
       unsubTaskAssigned();
       unsubForwardRequested();
+      unsubWorkflowBlocked();
+      unsubWorkflowUnblocked();
       unsubIssueResolved();
       unsubFinanceFailed();
       unsubTaskBlocked();
       unsubScheduleProposed();
     };
-  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, updateTask, createScheduleItem]);
+  }, [eventBus, dispatch, workspace.id, workspace.dimensionId, workspace.name, logAuditEvent, createScheduleItem]);
 }

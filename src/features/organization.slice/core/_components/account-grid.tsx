@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/shadcn-ui/card"
-import { type Account } from "@/shared/types"
+import { type Account } from "@/features/shared-kernel"
 
 interface AccountGridProps {
     accounts: Account[]

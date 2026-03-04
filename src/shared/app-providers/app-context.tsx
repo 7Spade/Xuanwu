@@ -22,7 +22,8 @@ import type React from 'react'
 import { type ReactNode, createContext, useReducer, useEffect } from 'react'
 import { useContext } from 'react'
 
-import { type Account, type CapabilitySpec, type Notification } from '@/shared/types'
+import { type Account, type Notification } from '@/features/shared-kernel';
+import type { CapabilitySpec } from '@/features/workspace.slice';
 
 import { subscribeToAccountsForUser } from './_queries'
 import { useAuth } from './auth-provider'

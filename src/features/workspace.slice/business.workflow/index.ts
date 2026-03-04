@@ -14,7 +14,8 @@ export {
   updateWorkflowState,
   findWorkflowsBlockedByIssue,
   findWorkflowsByStage,
+  listWorkflowStates,
 } from './_persistence';
 
-/** [R6] IssueResolved event handler — ONLY trigger for blockedBy.delete(issueId) */
-export { handleIssueResolvedForWorkflow } from './_issue-handler';
+/** [R6] B-track workflow handlers — issue create/resolve mutate blockedBy set. */
+export { handleIssueCreatedForWorkflow, handleIssueResolvedForWorkflow } from './_issue-handler';

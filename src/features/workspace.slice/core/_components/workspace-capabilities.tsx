@@ -39,7 +39,7 @@ import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shar
 import { Checkbox } from "@/shared/shadcn-ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/shadcn-ui/dialog";
 import { Label } from "@/shared/shadcn-ui/label";
-import { type Capability } from "@/shared/types";
+import { type Capability } from "../_types";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useApp } from '../_hooks/use-app';

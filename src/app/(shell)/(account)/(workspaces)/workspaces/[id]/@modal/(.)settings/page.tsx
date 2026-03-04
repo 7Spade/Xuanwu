@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { WorkspaceSettingsDialog , useWorkspace } from "@/features/workspace.slice"
-import type { WorkspaceLifecycleState, Address, WorkspacePersonnel } from "@/shared/types"
+import type { WorkspaceLifecycleState, Address, WorkspacePersonnel } from "@/features/workspace.slice"
 
 export default function WorkspaceSettingsModalPage() {
   const router = useRouter()

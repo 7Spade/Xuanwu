@@ -16,8 +16,9 @@ import {
   orderBy,
 } from 'firebase/firestore';
 
-import type { ParsingIntent } from '@/shared/types';
+import type { ParsingIntent } from '@/features/workspace.slice';
 
+import { SUBCOLLECTIONS } from '../collection-paths';
 import { db } from '../firestore.client';
 import { createConverter } from '../firestore.converter';
 import { getDocuments } from '../firestore.read.adapter';
@@ -41,12 +42,21 @@ export const createParsingIntent = async (
     skillRequirements: intentData.skillRequirements ?? [],
     status: intentData.status,
     createdAt: serverTimestamp(),
+    sourceType: intentData.sourceType,
+    reviewStatus: intentData.reviewStatus,
     // Optional fields — omitted when undefined so Firestore never sees undefined.
     ...(intentData.sourceFileDownloadURL !== undefined ? { sourceFileDownloadURL: intentData.sourceFileDownloadURL } : {}),
     ...(intentData.sourceFileId !== undefined ? { sourceFileId: intentData.sourceFileId } : {}),
+    ...(intentData.supersededByIntentId !== undefined ? { supersededByIntentId: intentData.supersededByIntentId } : {}),
+    ...(intentData.baseIntentId !== undefined ? { baseIntentId: intentData.baseIntentId } : {}),
+    ...(intentData.parserVersion !== undefined ? { parserVersion: intentData.parserVersion } : {}),
+    ...(intentData.modelVersion !== undefined ? { modelVersion: intentData.modelVersion } : {}),
+    ...(intentData.reviewedBy !== undefined ? { reviewedBy: intentData.reviewedBy } : {}),
+    ...(intentData.reviewedAt !== undefined ? { reviewedAt: intentData.reviewedAt } : {}),
+    ...(intentData.semanticHash !== undefined ? { semanticHash: intentData.semanticHash } : {}),
   };
   const ref = await addDocument(
-    `workspaces/${workspaceId}/parsingIntents`,
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}`,
     data
   );
   return ref.id;
@@ -55,15 +65,33 @@ export const createParsingIntent = async (
 export const updateParsingIntentStatus = async (
   workspaceId: string,
   intentId: string,
-  status: 'imported' | 'failed' | 'superseded'
+  status: 'importing' | 'imported' | 'failed' | 'superseded'
 ): Promise<void> => {
   const updates: Record<string, unknown> = { status };
   if (status === 'imported') {
     updates.importedAt = serverTimestamp();
   }
   return updateDocument(
-    `workspaces/${workspaceId}/parsingIntents/${intentId}`,
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${intentId}`,
     updates
+  );
+};
+
+/**
+ * Marks an existing ParsingIntent as superseded by a new intent.
+ *
+ * Sets `status = 'superseded'` and records `supersededByIntentId` so the
+ * lineage chain (old → new) is queryable from the old intent document.
+ * Called when a re-parse replaces a prior proposal [#A4].
+ */
+export const supersedeParsingIntent = async (
+  workspaceId: string,
+  oldIntentId: string,
+  newIntentId: string
+): Promise<void> => {
+  return updateDocument(
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${oldIntentId}`,
+    { status: 'superseded', supersededByIntentId: newIntentId }
   );
 };
 
@@ -73,7 +101,7 @@ export const getParsingIntents = async (
   const converter = createConverter<ParsingIntent>();
   const colRef = collection(
     db,
-    `workspaces/${workspaceId}/parsingIntents`
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}`
   ).withConverter(converter);
   const q = query(colRef, orderBy('createdAt', 'desc'));
   return getDocuments(q);

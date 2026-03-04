@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { useApp } from '@/shared/app-providers/app-context';
-import type { MemberReference } from '@/shared/types';
+import type { MemberReference } from '@/features/shared-kernel';
 
 import {
   recruitMember as recruitMemberAction,

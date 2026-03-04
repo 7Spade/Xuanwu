@@ -27,7 +27,7 @@ import {
 import { Input } from "@/shared/shadcn-ui/input"
 import { Label } from "@/shared/shadcn-ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs"
-import type { PartnerInvite, MemberReference , Team } from "@/shared/types"
+import type { PartnerInvite, MemberReference , Team } from "@/features/shared-kernel"
 import { PageHeader } from "@/shared/ui/page-header"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 

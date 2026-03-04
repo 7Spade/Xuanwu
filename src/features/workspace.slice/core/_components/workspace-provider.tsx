@@ -3,15 +3,18 @@
 
 import { Loader2 } from 'lucide-react';
 import type React from 'react';
-import { createContext, useContext, useMemo, useCallback, useEffect, useState } from 'react';
+import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { initTagChangedSubscriber } from '@/features/notification-hub.slice';
 import {
   createScheduleItem as createScheduleItemAction,
 } from '@/features/scheduling.slice'
 import type { CommandResult, ScheduleItem } from '@/features/shared-kernel';
-import { firestoreTimestampToISO } from '@/shared/lib';
-import { type Workspace, type AuditLog, type WorkspaceTask, type WorkspaceRole, type Capability, type WorkspaceLifecycleState, type Address, type WorkspacePersonnel } from '@/shared/types';
+import { firestoreTimestampToISO } from '@/shared/shadcn-ui/utils/utils';
+import type { Workspace, WorkspaceLifecycleState, Capability, Address, WorkspacePersonnel } from '../_types';
+import type { AuditLog } from '../../gov.audit/_types';
+import type { WorkspaceTask } from '../../business.tasks/_types';
+import type { WorkspaceRole } from '../../gov.role/_types';
 
 import { registerOrgPolicyCache, runTransaction } from '../../application';
 import {
@@ -25,6 +28,7 @@ import {
   deleteTask as deleteTaskAction,
   getWorkspaceTask as getWorkspaceTaskAction,
 } from '../../business.tasks'
+import { listWorkflowStates } from '../../business.workflow'
 import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '../../core.event-bus';
 import { writeAuditLog } from '../../gov.audit/_actions';
 import {
@@ -40,7 +44,13 @@ import {
 import { useAccount } from '../_hooks/use-account';
 import { useApp } from '../_hooks/use-app';
 
-
+import {
+  applyWorkflowBlocked,
+  applyWorkflowUnblocked,
+  deriveWorkflowBlockersFromSources,
+  summarizeWorkflowBlockers,
+  type WorkflowBlockersState,
+} from './workflow-blockers-state';
 
 interface WorkspaceContextType {
   workspace: Workspace;
@@ -75,6 +85,10 @@ interface WorkspaceContextType {
   // read by document-parser on mount to auto-trigger parsing cross-tab.
   pendingParseFile: FileSendToParserPayload | null;
   setPendingParseFile: (payload: FileSendToParserPayload | null) => void;
+  workflowBlockers: WorkflowBlockersState;
+  blockedWorkflowCount: number;
+  totalBlockedByCount: number;
+  hasBlockedWorkflows: boolean;
 }
 
 /** Input type for createScheduleItem — accepts plain Date objects; the action converts to Timestamp internally. */
@@ -98,6 +112,8 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   // Pending parse file — bridges the cross-tab gap between files-view (publisher)
   // and document-parser-view (subscriber), which are on separate @businesstab slots.
   const [pendingParseFile, setPendingParseFile] = useState<FileSendToParserPayload | null>(null);
+  const [workflowBlockers, setWorkflowBlockers] = useState<WorkflowBlockersState>({});
+  const touchedWorkflowIdsRef = useRef<Set<string>>(new Set());
 
   // Register Event Funnel — routes events from both buses to the Projection Layer
   // Also register Notification Router (FCM Layer 2) and Org Policy Cache
@@ -113,6 +129,58 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
       unsubPolicy();
     };
   }, [eventBus]);
+
+  useEffect(() => {
+    let isCanceled = false
+    const eventTouchedWorkflowIds = touchedWorkflowIdsRef.current
+    eventTouchedWorkflowIds.clear()
+
+    const hydrateWorkflowBlockers = async () => {
+      try {
+        if (isCanceled) return
+        const workflowStates = await listWorkflowStates(workspaceId)
+        if (isCanceled) return
+
+        const hydratedState = deriveWorkflowBlockersFromSources(workflowStates)
+        setWorkflowBlockers((prev) => {
+          const next = { ...prev }
+          for (const [workflowId, blockedByCount] of Object.entries(hydratedState)) {
+            if (eventTouchedWorkflowIds.has(workflowId)) continue
+            if (next[workflowId] === undefined) {
+              next[workflowId] = blockedByCount
+            }
+          }
+          return next
+        })
+      } catch (error) {
+        console.error('[workspace-provider] Failed to hydrate workflow blockers:', error)
+      }
+    }
+
+    void hydrateWorkflowBlockers()
+
+    // A/B handoff sync: when workflow aggregate emits blocked, blockedBy gains at least one issueId.
+    const unsubBlocked = eventBus.subscribe('workspace:workflow:blocked', (payload) => {
+      eventTouchedWorkflowIds.add(payload.workflowId)
+      setWorkflowBlockers((prev) =>
+        applyWorkflowBlocked(prev, payload.workflowId, payload.blockedByCount)
+      );
+    });
+
+    // A/B handoff sync: unblocked means blockedBy was reduced; remove the workflow once count reaches zero.
+    const unsubUnblocked = eventBus.subscribe('workspace:workflow:unblocked', (payload) => {
+      eventTouchedWorkflowIds.add(payload.workflowId)
+      setWorkflowBlockers((prev) =>
+        applyWorkflowUnblocked(prev, payload.workflowId, payload.blockedByCount)
+      );
+    });
+
+    return () => {
+      isCanceled = true
+      unsubBlocked();
+      unsubUnblocked();
+    };
+  }, [eventBus, workspaceId]);
 
   const localAuditLogs = useMemo(() => {
     if (!auditLogs || !workspaceId) return [];
@@ -207,6 +275,8 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   }, [workspaceId, workspace?.dimensionId, activeAccount?.id, eventBus]);
 
 
+  const workflowBlockersSummary = summarizeWorkflowBlockers(workflowBlockers);
+
   if (!workspace) {
     return (
       <div className="flex size-full flex-col items-center justify-center space-y-4 bg-background p-20">
@@ -242,6 +312,10 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
     createScheduleItem,
     pendingParseFile,
     setPendingParseFile,
+    workflowBlockers,
+    blockedWorkflowCount: workflowBlockersSummary.blockedWorkflowCount,
+    totalBlockedByCount: workflowBlockersSummary.totalBlockedByCount,
+    hasBlockedWorkflows: workflowBlockersSummary.hasBlockedWorkflows,
   };
 
     return (

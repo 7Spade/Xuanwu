@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/shadcn-ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shared/shadcn-ui/sidebar"
-import type { Account } from "@/shared/types"
+import type { Account } from "@/features/shared-kernel"
 
 
 

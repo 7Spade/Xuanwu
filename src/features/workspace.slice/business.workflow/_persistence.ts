@@ -10,7 +10,7 @@
  */
 
 import { db } from '@/shared/infra/firestore/firestore.client';
-import { collection, getDocs, query, type QueryDocumentSnapshot, type DocumentData, where } from '@/shared/infra/firestore/firestore.read.adapter';
+import { collection, getDocs, limit, query, type QueryDocumentSnapshot, type DocumentData, where } from '@/shared/infra/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
@@ -69,5 +69,20 @@ export async function findWorkflowsByStage(
   const colRef = collection(db, workflowCollectionPath(workspaceId));
   const q = query(colRef, where('stage', '==', stage));
   const snapshot = await getDocs(q);
+  return snapshot.docs.map((d: QueryDocumentSnapshot<DocumentData>) => d.data() as WorkflowAggregateState);
+}
+
+/**
+ * Load all workflow states in a workspace.
+ * Used by UI hydration to derive initial blockedBy summary before any runtime events fire.
+ */
+export async function listWorkflowStates(
+  workspaceId: string,
+  // Safety cap for first-load hydration; callers can override for larger workspaces.
+  maxResults = 200
+): Promise<WorkflowAggregateState[]> {
+  const colRef = collection(db, workflowCollectionPath(workspaceId));
+  const bounded = query(colRef, limit(maxResults));
+  const snapshot = await getDocs(bounded);
   return snapshot.docs.map((d: QueryDocumentSnapshot<DocumentData>) => d.data() as WorkflowAggregateState);
 }

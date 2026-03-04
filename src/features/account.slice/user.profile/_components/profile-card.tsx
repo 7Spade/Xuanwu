@@ -12,7 +12,7 @@ import { Checkbox } from "@/shared/shadcn-ui/checkbox";
 import { Input } from "@/shared/shadcn-ui/input";
 import { Label } from "@/shared/shadcn-ui/label";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { type SkillGrant, type Account } from "@/shared/types"
+import { type SkillGrant, type Account } from "@/features/shared-kernel"
 
 
 interface ProfileCardProps {

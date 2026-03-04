@@ -15,7 +15,7 @@ import {
   getDoc,
 } from 'firebase/firestore';
 
-import type { WorkspaceTask } from '@/shared/types';
+import type { WorkspaceTask } from '@/features/workspace.slice';
 
 import { db } from '../firestore.client';
 import { createConverter } from '../firestore.converter';
@@ -59,8 +59,15 @@ export const updateTask = async (
   taskId: string,
   updates: Partial<WorkspaceTask>
 ): Promise<void> => {
+  const {
+    sourceIntentId: _sourceIntentId,
+    sourceIntentVersion: _sourceIntentVersion,
+    sourceFileId: _sourceFileId,
+    ...safeUpdates
+  } = updates;
+
   const dataWithTimestamp = {
-    ...updates,
+    ...safeUpdates,
     updatedAt: serverTimestamp(),
   };
   return updateDocument(

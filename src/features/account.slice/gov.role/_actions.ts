@@ -29,7 +29,7 @@ import {
 } from '@/features/shared-kernel';
 import { Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
-import type { OrganizationRole } from '@/shared/types';
+import type { OrganizationRole } from '@/features/shared-kernel';
 
 export interface AccountRoleRecord {
   accountId: string;

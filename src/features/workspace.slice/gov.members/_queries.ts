@@ -7,7 +7,7 @@
 import {
   getWorkspaceGrants as getWorkspaceGrantsFacade,
 } from "@/shared/infra/firestore/firestore.facade"
-import type { WorkspaceGrant } from "@/shared/types"
+import type { WorkspaceGrant } from "../gov.role/_types"
 
 /**
  * Retrieves all access grants for a workspace.

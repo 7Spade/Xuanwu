@@ -16,7 +16,7 @@ import {
   type Unsubscribe,
 } from '@/shared/infra/firestore/firestore.read.adapter';
 import { updateDoc } from '@/shared/infra/firestore/firestore.write.adapter';
-import type { Notification } from '@/shared/types';
+import type { Notification } from '@/features/shared-kernel';
 
 /**
  * Subscribes to the latest notifications for a user.

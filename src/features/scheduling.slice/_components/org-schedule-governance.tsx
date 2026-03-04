@@ -67,6 +67,27 @@ function getSkillName(slug: string): string {
   return findSkill(slug)?.name ?? slug;
 }
 
+/** Renders an overlapping row of avatar badges with name tooltips. */
+function AssignedMemberAvatars({ members }: { members: Array<{ id: string; name: string }> }) {
+  if (members.length === 0) return null;
+  return (
+    <TooltipProvider>
+      <div className="flex -space-x-1">
+        {members.map((m) => (
+          <Tooltip key={m.id}>
+            <TooltipTrigger asChild>
+              <Avatar className="size-6 border-2 border-background">
+                <AvatarFallback className="text-[9px] font-bold">{m.name?.[0] ?? '?'}</AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent><p>{m.name}</p></TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
+  );
+}
+
 function formatTimestamp(ts: Timestamp | string | undefined): string {
   if (!ts) return '';
   if (typeof ts === 'string') return ts;
@@ -163,17 +184,35 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
     }
   }, [orgId, item.id, item.title]);
 
+  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+  const totalRequired = item.requiredSkills?.reduce((s, r) => s + (r.quantity ?? 1), 0) ?? 0;
+
+  const assignedMembers = useMemo(() => {
+    if (!item.assigneeIds?.length) return [];
+    return item.assigneeIds.map((id) => ({
+      id,
+      name: orgMembers.find((m) => m.id === id)?.name ?? id,
+    }));
+  }, [item.assigneeIds, orgMembers]);
+
+  /** True once every required slot is filled — hide the assign button. */
+  const isFull = hasRequirements && assignedMembers.length >= totalRequired;
+
+  /** Set of already-assigned member IDs — exclude from the picker. */
+  const assignedIdSet = useMemo(() => new Set(item.assigneeIds ?? []), [item.assigneeIds]);
+
   /**
-   * Pre-compute skill match for every org member so we can group the dropdown
-   * into "全部符合" → "部分符合" → "其他成員" without re-computing per render.
+   * Pre-compute skill match for every *unassigned* org member so we can group
+   * the dropdown into "全部符合" → "部分符合" → "其他成員" without re-computing per render.
+   * Already-assigned members are filtered out so they don't appear in the picker.
    */
   const { fullMatch, partialMatch, noMatch } = useMemo(() => {
-    const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
     const full: Array<{ id: string; name: string }> = [];
     const partial: Array<{ id: string; name: string; matched: number; total: number }> = [];
     const none: Array<{ id: string; name: string }> = [];
 
     for (const m of orgMembers) {
+      if (assignedIdSet.has(m.id)) continue; // skip already-assigned
       if (!hasRequirements) {
         none.push(m);
         continue;
@@ -190,9 +229,7 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
       else none.push(m);
     }
     return { fullMatch: full, partialMatch: partial, noMatch: none };
-  }, [orgMembers, eligibleMembers, item.requiredSkills]);
-
-  const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
+  }, [orgMembers, eligibleMembers, item.requiredSkills, hasRequirements, assignedIdSet]);
 
   const NO_SKILLS_POPOVER_ID = 'no-skills';
 
@@ -243,7 +280,7 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
                 </>
               ) : (
                 <CommandGroup>
-                  {orgMembers.map((m) => (
+                  {orgMembers.filter((m) => !assignedIdSet.has(m.id)).map((m) => (
                     <CommandItem key={m.id} value={m.name} onSelect={() => handleAssignMember(m.id)} className="text-xs">
                       {m.name}
                     </CommandItem>
@@ -291,16 +328,21 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
               共需 {item.requiredSkills!.reduce((s, r) => s + (r.quantity ?? 1), 0)} 人
             </Badge>
           </div>
-          <div className="flex flex-col gap-1.5">
-            {item.requiredSkills?.map((req: SkillRequirement) => (
-              <div key={req.tagSlug} className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  {getSkillName(req.tagSlug)} × {req.quantity}
-                </Badge>
-                {/* Per-skill assignment button — same small UserPlus as the calendar */}
-                <MemberPickerPopover popoverId={req.tagSlug} />
-              </div>
-            ))}
+          {/* Skills on the left, assigned avatars on the right — same layout as the calendar */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              {item.requiredSkills?.map((req: SkillRequirement) => (
+                <div key={req.tagSlug} className="flex items-center gap-1">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {getSkillName(req.tagSlug)} × {req.quantity}
+                  </Badge>
+                  {/* Per-skill assignment button — hidden once all slots are filled */}
+                  {!isFull && <MemberPickerPopover popoverId={req.tagSlug} />}
+                </div>
+              ))}
+            </div>
+            {/* Assigned member avatar badges aligned to the right of the skill column */}
+            <AssignedMemberAvatars members={assignedMembers} />
           </div>
         </div>
       )}
@@ -308,6 +350,8 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
       <div className="flex items-center gap-2">
         {/* For items without skill requirements, show one UserPlus button */}
         {!hasRequirements && <MemberPickerPopover popoverId={NO_SKILLS_POPOVER_ID} />}
+        {/* Assigned member avatars when there are no skill requirements */}
+        {!hasRequirements && <AssignedMemberAvatars members={assignedMembers} />}
 
         <Button
           size="icon"
@@ -407,30 +451,18 @@ function ConfirmedRow({ item, orgId, orgMembers }: ConfirmedRowProps) {
               </span>
             </div>
           )}
-          <div className="flex flex-col gap-1.5">
-            {item.requiredSkills?.map((req: SkillRequirement) => (
-              <div key={req.tagSlug} className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  {getSkillName(req.tagSlug)} × {req.quantity}
-                </Badge>
-              </div>
-            ))}
-            {assignedMembers.length > 0 && (
-              <div className="flex -space-x-1">
-                {assignedMembers.map((m) => (
-                  <TooltipProvider key={m.id}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Avatar className="size-6 border-2 border-background">
-                          <AvatarFallback className="text-[9px] font-bold">{m.name[0]}</AvatarFallback>
-                        </Avatar>
-                      </TooltipTrigger>
-                      <TooltipContent><p>{m.name}</p></TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ))}
-              </div>
-            )}
+          {/* Skills on the left, assigned avatars on the right — same layout as the calendar */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              {item.requiredSkills?.map((req: SkillRequirement) => (
+                <div key={req.tagSlug} className="flex items-center gap-1">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {getSkillName(req.tagSlug)} × {req.quantity}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+            <AssignedMemberAvatars members={assignedMembers} />
           </div>
         </div>
       )}

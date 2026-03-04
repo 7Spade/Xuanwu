@@ -16,7 +16,7 @@ import { useState } from "react";
 
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import type { DailyLog } from "@/shared/types";
+import type { DailyLog } from "../_types";
 
 import { WorkspaceProvider } from "../../core";
 import { useAggregatedLogs } from "../_hooks/use-aggregated-logs";

@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import type { DailyLog } from "@/shared/types";
+import type { DailyLog } from "../_types";
 
 import { useAccount } from "../../core";
 

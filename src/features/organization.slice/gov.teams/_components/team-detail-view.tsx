@@ -8,7 +8,7 @@ import { useTeamManagement } from "@/features/organization.slice"
 import { useApp } from "@/shared/app-providers/app-context"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent } from "@/shared/shadcn-ui/card"
-import type { MemberReference, Team } from "@/shared/types"
+import type { MemberReference, Team } from "@/features/shared-kernel"
 import { PageHeader } from "@/shared/ui/page-header"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 

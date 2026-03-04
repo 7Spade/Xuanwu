@@ -1,15 +1,25 @@
 // [職責] 顯示 Mounted/Isolated 狀態
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 import { Badge } from "@/shared/shadcn-ui/badge";
 
 import { useWorkspace } from "./workspace-provider";
 
 export function WorkspaceStatusBar() {
-  const { workspace } = useWorkspace();
+  const {
+    workspace,
+    hasBlockedWorkflows,
+    blockedWorkflowCount,
+    totalBlockedByCount,
+  } = useWorkspace();
   const isVisible = workspace.visibility === "visible";
+  const workflowStateBaseClass =
+    "flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest";
+  const workflowStateToneClass = hasBlockedWorkflows
+    ? "border-destructive/30 bg-destructive/10 text-destructive"
+    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600";
 
   return (
     <div className="flex items-center gap-2">
@@ -28,6 +38,19 @@ export function WorkspaceStatusBar() {
           <EyeOff className="size-3.5" />
         )}
         {isVisible ? "Mounted" : "Isolated"}
+      </Badge>
+      <Badge
+        variant="outline"
+        className={`${workflowStateBaseClass} ${workflowStateToneClass}`}
+      >
+        {hasBlockedWorkflows ? (
+          <AlertTriangle className="size-3.5" />
+        ) : (
+          <CheckCircle2 className="size-3.5" />
+        )}
+        {hasBlockedWorkflows
+          ? `Blocked (${blockedWorkflowCount} workflows / ${totalBlockedByCount} blockers)`
+          : "Flowing"}
       </Badge>
     </div>
   );
