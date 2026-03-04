@@ -46,6 +46,67 @@ if (options?.sourceFileId) {
 
 ---
 
+## BUG-冪等性失效：Document Parser 重複導入導致 Task 翻倍
+
+**ID**: #BUG-20260304-001  
+**Rules violated**: [D14] Source-based De-duplication, [D15] Version Guard / Write-once Semantics  
+**Severity**: Critical  
+**Status**: ✅ Fixed (this PR)
+
+### Problem
+
+`/document-parser` — "Import as Root Tasks" button causes tasks to double (or multiply) every time the same `ParsingIntent` is imported more than once.
+
+### Root Cause (TOCTOU Race)
+
+`importItems()` in `use-workspace-event-handler.tsx` contained only an **async** deduplication guard:
+
+1. `hasTasksForSourceIntent(workspace.id, payload.intentId)` — async Firestore read
+2. `startParsingImport(...)` — async Firestore read-then-write
+
+Because both guards are **asynchronous**, two concurrent calls to `importItems()` (e.g. double-click, React StrictMode double-invoke, or the same `DocumentParserItemsExtracted` event delivered twice) both pass the read check before either has committed any writes, and each proceeds to write a full set of tasks — a classic **Time-of-Check / Time-of-Use (TOCTOU)** race condition.
+
+### Violated Rules
+
+| Rule | Description | How it was violated |
+|------|-------------|---------------------|
+| [D14] | Source-based De-duplication must prevent re-writing tasks for the same `sourceIntentId` | No synchronous gate existed; the async `hasTasksForSourceIntent` check could be bypassed under concurrency |
+| [D15] | Write operations must be idempotent; duplicate writes must be detected before reaching Firestore | `startParsingImport` idempotency key check is also async — non-atomic under parallel calls |
+
+### Fix Applied
+
+Added a **synchronous in-memory idempotency lock** (`inProgressImports: useRef<Set<string>>`) in `use-workspace-event-handler.tsx`:
+
+```ts
+// [D14] Synchronous in-memory guard — fires before any async Firestore I/O.
+if (inProgressImports.current.has(payload.intentId)) {
+  toast({ title: "Import In Progress", ... });
+  return;
+}
+inProgressImports.current.add(payload.intentId);
+
+// (full async chain: hasTasksForSourceIntent → startParsingImport → createTask × N, omitted for brevity)
+hasTasksForSourceIntent(...)
+  .then((alreadyImported) => {
+    // ... existing async Firestore guards + task writes ...
+  })
+  .finally(() => {
+    inProgressImports.current.delete(payload.intentId);
+  });
+```
+
+The lock is:
+- **Acquired synchronously** at the very start of `importItems()` — before any `await` / `.then()` — so two concurrent calls cannot both pass it.
+- **Released unconditionally** in `.finally()` so a future legitimate import is never permanently blocked by a prior error.
+
+The pre-existing async guards (`hasTasksForSourceIntent` and `startParsingImport` idempotency key) remain as a **defence-in-depth** second layer for cross-session or cross-device duplicate prevention.
+
+### Files Changed
+
+- `src/features/workspace.slice/core/_hooks/use-workspace-event-handler.tsx` — added `useRef` import, `inProgressImports` ref, synchronous guard, and `.finally()` cleanup.
+
+---
+
 ## Audit Summary — 2026-03-04 (Updated)
 
 | Issue ID | File(s) | Rule | Severity | Status |
