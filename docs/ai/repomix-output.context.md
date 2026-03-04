@@ -32,7 +32,7 @@ The content is organized as follows:
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
 - Only files matching these patterns are included: **/*
-- Files matching these patterns are excluded: **/*.md, **/*.test.ts, **/*.svg, **/types/generated.ts, **/*.md, .codacy/**, .firebase/**, .github/**, .idx/**, .next/**, docs/**, public/**, skills/**, .aiexclude, .firebaserc, .gitattributes, .gitignore, .modified, .prettierrc, apphosting.yaml, components.json, eslint.config.mts, next.config.ts, postcss.config.mjs, README.md, repomix.config.ts, **/node_modules/**, src/shared-infra/firebase/functions/lib/**, src/shared/shadcn-ui/**, tailwind.config.ts, vitest.config.ts, **/dist/**, **/build/**, **/.git/**, package-lock.json, repomix-output.md
+- Files matching these patterns are excluded: src/app/favicon.ico, src/app/globals.css, **/*.md, **/*.test.ts, **/*.svg, **/types/generated.ts, **/*.md, .codacy/**, .firebase/**, .github/**, .idx/**, .next/**, docs/**, public/**, skills/**, .aiexclude, .firebaserc, .gitattributes, .gitignore, .modified, .prettierrc, apphosting.yaml, components.json, eslint.config.mts, next.config.ts, postcss.config.mjs, README.md, repomix.config.ts, **/node_modules/**, src/shared-infra/firebase/functions/lib/**, src/shared/shadcn-ui/**, tailwind.config.ts, vitest.config.ts, **/dist/**, **/build/**, **/.git/**, package-lock.json, repomix-output.md
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Code comments have been removed from supported file types
@@ -116,8 +116,6 @@ src/app/(shell)/@modal/default.tsx
 src/app/(shell)/@sidebar/default.tsx
 src/app/(shell)/layout.tsx
 src/app/(shell)/page.tsx
-src/app/favicon.ico
-src/app/globals.css
 src/app/layout.tsx
 src/config/i18n/i18n-provider.tsx
 src/config/i18n/i18n-types.ts
@@ -1241,28 +1239,6 @@ import { useEffect } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { Button } from "@/shared/shadcn-ui/button";
-```
-
-## File: src/app/globals.css
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer base {
-⋮----
-:root {
-.dark {
-⋮----
-* {
-⋮----
-@apply border-border;
-⋮----
-body {
-⋮----
-.content-visibility-auto {
-.gpu-accelerated {
-.glass-card {
-.dimension-glow {
 ```
 
 ## File: src/config/i18n/i18n-provider.tsx

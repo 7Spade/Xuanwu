@@ -23,6 +23,8 @@ export default defineConfig({
   ignore: {
     // 排除不必要的路徑
     customPatterns: [
+      "src/app/favicon.ico",
+      "src/app/globals.css",
       "**/*.md",          // 排除所有文件檔
       "**/*.test.ts",     // 排除測試檔
       "**/*.svg",         // 排除向量圖代碼
