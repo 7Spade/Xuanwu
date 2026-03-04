@@ -320,17 +320,20 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
               共需 {item.requiredSkills!.reduce((s, r) => s + (r.quantity ?? 1), 0)} 人
             </Badge>
           </div>
-          <div className="flex flex-col gap-1.5">
-            {item.requiredSkills?.map((req: SkillRequirement) => (
-              <div key={req.tagSlug} className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  {getSkillName(req.tagSlug)} × {req.quantity}
-                </Badge>
-                {/* Per-skill assignment button — same small UserPlus as the calendar */}
-                <MemberPickerPopover popoverId={req.tagSlug} />
-              </div>
-            ))}
-            {/* Already-assigned member avatar badges */}
+          {/* Skills on the left, assigned avatars on the right — same layout as the calendar */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              {item.requiredSkills?.map((req: SkillRequirement) => (
+                <div key={req.tagSlug} className="flex items-center gap-1">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {getSkillName(req.tagSlug)} × {req.quantity}
+                  </Badge>
+                  {/* Per-skill assignment button — same small UserPlus as the calendar */}
+                  <MemberPickerPopover popoverId={req.tagSlug} />
+                </div>
+              ))}
+            </div>
+            {/* Assigned member avatar badges aligned to the right of the skill column */}
             <AssignedMemberAvatars members={assignedMembers} />
           </div>
         </div>
@@ -440,14 +443,17 @@ function ConfirmedRow({ item, orgId, orgMembers }: ConfirmedRowProps) {
               </span>
             </div>
           )}
-          <div className="flex flex-col gap-1.5">
-            {item.requiredSkills?.map((req: SkillRequirement) => (
-              <div key={req.tagSlug} className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  {getSkillName(req.tagSlug)} × {req.quantity}
-                </Badge>
-              </div>
-            ))}
+          {/* Skills on the left, assigned avatars on the right — same layout as the calendar */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1.5">
+              {item.requiredSkills?.map((req: SkillRequirement) => (
+                <div key={req.tagSlug} className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {getSkillName(req.tagSlug)} × {req.quantity}
+                  </Badge>
+                </div>
+              ))}
+            </div>
             <AssignedMemberAvatars members={assignedMembers} />
           </div>
         </div>
