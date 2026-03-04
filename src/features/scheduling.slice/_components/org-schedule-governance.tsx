@@ -194,6 +194,14 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
 
   const hasRequirements = (item.requiredSkills?.length ?? 0) > 0;
 
+  const assignedMembers = useMemo(() => {
+    if (!item.assigneeIds?.length) return [];
+    return item.assigneeIds.map((id) => ({
+      id,
+      name: orgMembers.find((m) => m.id === id)?.name ?? id,
+    }));
+  }, [item.assigneeIds, orgMembers]);
+
   const NO_SKILLS_POPOVER_ID = 'no-skills';
 
   /** Renders a skill-aware member picker popover (same style as the calendar). */
@@ -301,6 +309,23 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
                 <MemberPickerPopover popoverId={req.tagSlug} />
               </div>
             ))}
+            {/* Already-assigned member avatar badges */}
+            {assignedMembers.length > 0 && (
+              <div className="flex -space-x-1">
+                {assignedMembers.map((m) => (
+                  <TooltipProvider key={m.id}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar className="size-6 border-2 border-background">
+                          <AvatarFallback className="text-[9px] font-bold">{m.name[0]}</AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent><p>{m.name}</p></TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -308,6 +333,23 @@ function ProposalRow({ item, orgMembers, eligibleMembers, orgId, approvedBy: _ }
       <div className="flex items-center gap-2">
         {/* For items without skill requirements, show one UserPlus button */}
         {!hasRequirements && <MemberPickerPopover popoverId={NO_SKILLS_POPOVER_ID} />}
+        {/* Assigned member avatars when there are no skill requirements */}
+        {!hasRequirements && assignedMembers.length > 0 && (
+          <div className="flex -space-x-1">
+            {assignedMembers.map((m) => (
+              <TooltipProvider key={m.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Avatar className="size-6 border-2 border-background">
+                      <AvatarFallback className="text-[9px] font-bold">{m.name[0]}</AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+                  <TooltipContent><p>{m.name}</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+          </div>
+        )}
 
         <Button
           size="icon"
