@@ -40,7 +40,12 @@ import {
 import { useAccount } from '../_hooks/use-account';
 import { useApp } from '../_hooks/use-app';
 
-
+import {
+  applyWorkflowBlocked,
+  applyWorkflowUnblocked,
+  summarizeWorkflowBlockers,
+  type WorkflowBlockersState,
+} from './workflow-blockers-state';
 
 interface WorkspaceContextType {
   workspace: Workspace;
@@ -75,6 +80,10 @@ interface WorkspaceContextType {
   // read by document-parser on mount to auto-trigger parsing cross-tab.
   pendingParseFile: FileSendToParserPayload | null;
   setPendingParseFile: (payload: FileSendToParserPayload | null) => void;
+  workflowBlockers: WorkflowBlockersState;
+  blockedWorkflowCount: number;
+  totalBlockedByCount: number;
+  hasBlockedWorkflows: boolean;
 }
 
 /** Input type for createScheduleItem — accepts plain Date objects; the action converts to Timestamp internally. */
@@ -98,6 +107,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   // Pending parse file — bridges the cross-tab gap between files-view (publisher)
   // and document-parser-view (subscriber), which are on separate @businesstab slots.
   const [pendingParseFile, setPendingParseFile] = useState<FileSendToParserPayload | null>(null);
+  const [workflowBlockers, setWorkflowBlockers] = useState<WorkflowBlockersState>({});
 
   // Register Event Funnel — routes events from both buses to the Projection Layer
   // Also register Notification Router (FCM Layer 2) and Org Policy Cache
@@ -111,6 +121,27 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
       unsubOrg();
       unsubNotif();
       unsubPolicy();
+    };
+  }, [eventBus]);
+
+  useEffect(() => {
+    // A/B handoff sync: when workflow aggregate emits blocked, blockedBy gains at least one issueId.
+    const unsubBlocked = eventBus.subscribe('workspace:workflow:blocked', (payload) => {
+      setWorkflowBlockers((prev) =>
+        applyWorkflowBlocked(prev, payload.workflowId, payload.blockedByCount)
+      );
+    });
+
+    // A/B handoff sync: unblocked means blockedBy was reduced; remove the workflow once count reaches zero.
+    const unsubUnblocked = eventBus.subscribe('workspace:workflow:unblocked', (payload) => {
+      setWorkflowBlockers((prev) =>
+        applyWorkflowUnblocked(prev, payload.workflowId, payload.blockedByCount)
+      );
+    });
+
+    return () => {
+      unsubBlocked();
+      unsubUnblocked();
     };
   }, [eventBus]);
 
@@ -207,6 +238,8 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   }, [workspaceId, workspace?.dimensionId, activeAccount?.id, eventBus]);
 
 
+  const workflowBlockersSummary = summarizeWorkflowBlockers(workflowBlockers);
+
   if (!workspace) {
     return (
       <div className="flex size-full flex-col items-center justify-center space-y-4 bg-background p-20">
@@ -242,6 +275,10 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
     createScheduleItem,
     pendingParseFile,
     setPendingParseFile,
+    workflowBlockers,
+    blockedWorkflowCount: workflowBlockersSummary.blockedWorkflowCount,
+    totalBlockedByCount: workflowBlockersSummary.totalBlockedByCount,
+    hasBlockedWorkflows: workflowBlockersSummary.hasBlockedWorkflows,
   };
 
     return (
