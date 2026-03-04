@@ -18,6 +18,7 @@ import {
   querySemanticIndex,
 } from '@/features/semantic-graph.slice';
 import type { SemanticIndexEntry } from '@/features/semantic-graph.slice';
+import { tagSlugRef } from '@/features/shared-kernel';
 
 import { executeGlobalSearch, executeSearch } from './_actions';
 import { executeSearch as executeSearchService } from './_services';
@@ -87,7 +88,7 @@ describe('Global Search — L6 Query Gateway', () => {
   it('filters by tag slugs', () => {
     const response = executeSearchService({
       query: '',
-      filters: { tagSlugs: ['loc-tp'] },
+      filters: { tagSlugs: [tagSlugRef('loc-tp')] },
     });
     const allHits = response.groups.flatMap((g) => g.hits);
     expect(allHits.every((h) => h.tags.includes('loc-tp'))).toBe(true);

@@ -16,7 +16,7 @@
 import { describe, it, expect } from 'vitest';
 
 import type { SkillTier, SkillRequirement, WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
-import { tierSatisfies } from '@/features/shared-kernel';
+import { tierSatisfies, tagSlugRef } from '@/features/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Helpers — mirrors the eligibility logic inside _saga.ts
@@ -92,7 +92,7 @@ const GRANDMASTER_MEMBER: MockMember = {
 describe('Saga eligibility candidate selection [A5]', () => {
   it('selects a member whose tier exactly meets the minimum', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
     ];
     const candidate = selectCandidate([EXPERT_MEMBER], reqs);
     expect(candidate?.accountId).toBe('member-001');
@@ -100,7 +100,7 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('selects a member with higher tier than minimum (grandmaster >= expert)', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
     ];
     const candidate = selectCandidate([GRANDMASTER_MEMBER], reqs);
     expect(candidate?.accountId).toBe('member-004');
@@ -108,7 +108,7 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('returns undefined when no member meets skill requirements', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
     ];
     const candidate = selectCandidate([APPRENTICE_MEMBER], reqs);
     expect(candidate).toBeUndefined();
@@ -116,7 +116,7 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('skips ineligible members even if their skills qualify', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'apprentice', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'apprentice', quantity: 1 },
     ];
     const candidate = selectCandidate([INELIGIBLE_MEMBER], reqs);
     expect(candidate).toBeUndefined();
@@ -124,7 +124,7 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('returns first eligible candidate from a list', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
     ];
     const candidate = selectCandidate(
       [APPRENTICE_MEMBER, EXPERT_MEMBER, GRANDMASTER_MEMBER],
@@ -144,7 +144,7 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('returns undefined when member pool is empty', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
     ];
     const candidate = selectCandidate([], reqs);
     expect(candidate).toBeUndefined();
@@ -152,8 +152,8 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('AND logic — all requirements must be satisfied simultaneously', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
-      { tagSlug: 'bim', minimumTier: 'artisan', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('bim'), minimumTier: 'artisan', quantity: 1 },
     ];
     // EXPERT_MEMBER: civil-structural=expert ✓, but has no bim skill ✗
     expect(selectCandidate([EXPERT_MEMBER], reqs)).toBeUndefined();
@@ -164,8 +164,8 @@ describe('Saga eligibility candidate selection [A5]', () => {
 
   it('member without a required skill is rejected even if other skills qualify', () => {
     const reqs: SkillRequirement[] = [
-      { tagSlug: 'civil-structural', minimumTier: 'expert', quantity: 1 },
-      { tagSlug: 'landscape', minimumTier: 'journeyman', quantity: 1 },
+      { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
+      { tagSlug: tagSlugRef('landscape'), minimumTier: 'journeyman', quantity: 1 },
     ];
     // EXPERT_MEMBER has civil-structural but not landscape
     expect(selectCandidate([EXPERT_MEMBER], reqs)).toBeUndefined();
@@ -188,7 +188,7 @@ describe('WorkspaceScheduleProposedPayload contract [A4×A5]', () => {
       proposedBy: 'account-001',
       intentId: 'intent-001',
       skillRequirements: [
-        { tagSlug: 'civil-structural', minimumTier: 'journeyman', quantity: 2 },
+        { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'journeyman', quantity: 2 },
       ],
       traceId: 'trace-abc-123',
     };

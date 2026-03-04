@@ -14,7 +14,7 @@ import { describe, it, expect } from 'vitest';
 
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
 import type { SkillRequirement } from '@/features/shared-kernel';
-import { tierSatisfies, TIER_DEFINITIONS } from '@/features/shared-kernel';
+import { tierSatisfies, TIER_DEFINITIONS, tagSlugRef } from '@/features/shared-kernel';
 
 import {
   SAGA_TIER_ORDER,
@@ -92,29 +92,29 @@ describe('[A5] Scheduling Saga — eligibility matching [P4][TE_SK]', () => {
     });
 
     it('matches member with exact tier requirement', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 }];
       expect(findEligibleCandidate([expertMember], reqs)?.accountId).toBe('member-1');
     });
 
     it('matches member with higher tier than required', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'journeyman', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 1 }];
       expect(findEligibleCandidate([expertMember], reqs)?.accountId).toBe('member-1');
     });
 
     it('rejects member whose tier is below minimum [P4]', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 }];
       expect(findEligibleCandidate([apprenticeMember], reqs)).toBeUndefined();
     });
 
     it('rejects member missing a required skill entirely', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'bim:revit', minimumTier: 'journeyman', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('bim:revit'), minimumTier: 'journeyman', quantity: 1 }];
       expect(findEligibleCandidate([expertMember, apprenticeMember], reqs)).toBeUndefined();
     });
 
     it('evaluates ALL requirements (conjunction) [TE_SK]', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'site-management:safety', minimumTier: 'expert', quantity: 1 }, // expertMember only has journeyman here
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('site-management:safety'), minimumTier: 'expert', quantity: 1 }, // expertMember only has journeyman here
       ];
       expect(findEligibleCandidate([expertMember], reqs)).toBeUndefined();
     });
@@ -123,13 +123,13 @@ describe('[A5] Scheduling Saga — eligibility matching [P4][TE_SK]', () => {
       const titanMember = makeMember('member-titan', true, [
         { skillId: 'civil-structural:concrete', tier: 'titan' },
       ]);
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'journeyman', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 1 }];
       expect(findEligibleCandidate([titanMember, expertMember], reqs)?.accountId).toBe('member-titan');
     });
 
     it('[A5] returns undefined when no member satisfies requirements → triggers compensation', () => {
       const result = findEligibleCandidate([ineligibleMember], [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
       ]);
       expect(result).toBeUndefined();
     });
@@ -198,7 +198,7 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
 
   describe('quantity > 1 — multiple members for same skill', () => {
     it('assigns 2 distinct members for quantity: 2', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'journeyman', quantity: 2 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 2 }];
       const result = findEligibleCandidatesForRequirements([memberA, memberB], reqs);
       expect(result).toHaveLength(2);
       const ids = result!.map((a) => a.candidate.accountId);
@@ -207,7 +207,7 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
     });
 
     it('compensates when pool has fewer members than quantity requires', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 2 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 2 }];
       // Only memberA and memberD qualify (expert+); memberB is journeyman → below expert
       const result = findEligibleCandidatesForRequirements([memberA, memberB], reqs);
       expect(result).toBeUndefined();
@@ -215,7 +215,7 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
 
     it('no member is assigned twice even if they satisfy quantity', () => {
       // Only one eligible member — cannot satisfy quantity: 2
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'journeyman', quantity: 2 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 2 }];
       expect(findEligibleCandidatesForRequirements([memberA], reqs)).toBeUndefined();
     });
   });
@@ -223,8 +223,8 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
   describe('multiple skill requirements — one member per skill type', () => {
     it('assigns one member per distinct skill requirement', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'bim:revit', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
       // memberA covers civil; memberC covers bim
       const result = findEligibleCandidatesForRequirements([memberA, memberC], reqs);
@@ -236,8 +236,8 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
 
     it('member with both skills fills first matching requirement; second is filled by another member', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'bim:revit', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
       // memberD has both skills — but is only assigned once (first requirement)
       // memberC covers the second requirement
@@ -250,8 +250,8 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
 
     it('compensates when one skill requirement cannot be satisfied', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'landscape:design', minimumTier: 'journeyman', quantity: 1 }, // no member has this
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('landscape:design'), minimumTier: 'journeyman', quantity: 1 }, // no member has this
       ];
       expect(findEligibleCandidatesForRequirements([memberA, memberC], reqs)).toBeUndefined();
     });
@@ -259,8 +259,8 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
     it('compensates when second requirement exhausts the eligible pool after first is filled', () => {
       // memberD could cover both civil and bim individually, but once assigned for civil it is gone
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'bim:revit', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
       // Only memberD available (no separate memberC)
       expect(findEligibleCandidatesForRequirements([memberD], reqs)).toBeUndefined();
@@ -270,8 +270,8 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
   describe('mixed quantity and multiple skill requirements', () => {
     it('assigns 2 civil engineers AND 1 BIM specialist from a pool of 3', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'journeyman', quantity: 2 },
-        { tagSlug: 'bim:revit', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 2 },
+        { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
       // memberA: civil expert, memberB: civil journeyman, memberC: bim artisan
       const result = findEligibleCandidatesForRequirements([memberA, memberB, memberC], reqs);
@@ -284,16 +284,16 @@ describe('[A5] findEligibleCandidatesForRequirements — multi-member [quantity]
 
     it('each assignment carries its specific requirement for downstream validation', () => {
       const reqs: SkillRequirement[] = [
-        { tagSlug: 'civil-structural:concrete', minimumTier: 'expert', quantity: 1 },
-        { tagSlug: 'bim:revit', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
       const result = findEligibleCandidatesForRequirements([memberA, memberC], reqs);
-      expect(result![0].requirement?.tagSlug).toBe('civil-structural:concrete');
-      expect(result![1].requirement?.tagSlug).toBe('bim:revit');
+      expect(result![0].requirement?.tagSlug).toBe(tagSlugRef('civil-structural:concrete'));
+      expect(result![1].requirement?.tagSlug).toBe(tagSlugRef('bim:revit'));
     });
 
     it('ineligible members are always skipped regardless of skill tier', () => {
-      const reqs: SkillRequirement[] = [{ tagSlug: 'civil-structural:concrete', minimumTier: 'apprentice', quantity: 1 }];
+      const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'apprentice', quantity: 1 }];
       expect(findEligibleCandidatesForRequirements([ineligibleMember], reqs)).toBeUndefined();
     });
   });

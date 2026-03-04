@@ -21,6 +21,7 @@
 import type {
   NotificationChannel,
   NotificationPriority,
+  TagSlugRef,
 } from '@/features/shared-kernel';
 
 // ─── Tag-Aware Routing ────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ export interface TagRoutingRule {
   readonly ruleId: string;
   readonly name: string;
   /** Tag slugs that trigger this rule (AND semantics — all must match). */
-  readonly tagSlugs: readonly string[];
+  readonly tagSlugs: readonly TagSlugRef[];
   readonly channel: NotificationChannel;
   readonly priority: NotificationPriority;
   /** Optional template ID for message formatting. */
@@ -63,7 +64,7 @@ export interface TagRoutingDecision {
 export interface NotificationSourceEvent {
   readonly eventKey: string;
   readonly payload: Record<string, unknown>;
-  readonly tags: readonly string[];
+  readonly tags: readonly TagSlugRef[];
   readonly orgId: string;
   readonly workspaceId?: string;
   /** Target account IDs for delivery (resolved by routing rules). */
@@ -84,7 +85,7 @@ export interface NotificationDispatch {
   readonly title: string;
   readonly body: string;
   readonly data?: Record<string, unknown>;
-  readonly tags: readonly string[];
+  readonly tags: readonly TagSlugRef[];
   readonly traceId?: string;
   readonly dispatchedAt: string;
 }

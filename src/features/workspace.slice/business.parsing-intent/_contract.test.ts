@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 
 import type { SkillRequirement } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/features/shared-kernel';
 import {
   createParsingIntentContract,
   markParsingIntentImported,
@@ -35,8 +36,8 @@ const BASE_INPUT = {
 };
 
 const SKILL_REQUIREMENTS: SkillRequirement[] = [
-  { tagSlug: 'civil-structural', minimumTier: 'journeyman', quantity: 2 },
-  { tagSlug: 'bim', minimumTier: 'expert', quantity: 1 },
+  { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'journeyman', quantity: 2 },
+  { tagSlug: tagSlugRef('bim'), minimumTier: 'expert', quantity: 1 },
 ];
 
 // ---------------------------------------------------------------------------

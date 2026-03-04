@@ -21,6 +21,7 @@ import type {
   SemanticSearchQuery,
   SemanticSearchHit,
   SemanticSearchResult,
+  TagSlugRef,
 } from '@/features/shared-kernel';
 
 // ─── Search Filter Types ──────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ export interface DateRangeFilter {
  */
 export interface SearchFilters {
   readonly domains?: readonly SearchDomain[];
-  readonly tagSlugs?: readonly string[];
+  readonly tagSlugs?: readonly TagSlugRef[];
   readonly dateRange?: DateRangeFilter;
   readonly orgId?: string;
   readonly workspaceId?: string;
