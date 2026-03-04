@@ -14,6 +14,7 @@
 import { describe, it, expect } from 'vitest';
 
 import type { TaxonomyNode } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/features/shared-kernel';
 
 import {
   detectTemporalConflicts,
@@ -32,7 +33,7 @@ function makeAssignment(
   overrides: Partial<TemporalTagAssignment> = {}
 ): TemporalTagAssignment {
   return {
-    tagSlug: 'skill-welding',
+    tagSlug: tagSlugRef('skill-welding'),
     entityId: 'member-1',
     entityType: 'member',
     startDate: '2025-01-01',
@@ -120,12 +121,12 @@ describe('detectTemporalConflicts', () => {
 
   it('returns no conflict for same entity with different tags', () => {
     const existing = makeAssignment({
-      tagSlug: 'skill-painting',
+      tagSlug: tagSlugRef('skill-painting'),
       startDate: '2025-01-01',
       endDate: '2025-01-31',
     });
     const candidate = makeAssignment({
-      tagSlug: 'skill-welding',
+      tagSlug: tagSlugRef('skill-welding'),
       startDate: '2025-01-01',
       endDate: '2025-01-31',
     });

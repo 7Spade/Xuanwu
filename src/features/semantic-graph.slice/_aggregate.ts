@@ -17,8 +17,8 @@
  * Dependency rule: ZERO infrastructure imports. Pure functions only.
  */
 
-import { TAXONOMY_DIMENSIONS } from '@/features/shared-kernel';
-import type { TaxonomyDimension, TaxonomyNode } from '@/features/shared-kernel';
+import { TAXONOMY_DIMENSIONS, tagSlugRef } from '@/features/shared-kernel';
+import type { TaxonomyDimension, TaxonomyNode, TagSlugRef } from '@/features/shared-kernel';
 
 import type {
   TemporalTagAssignment,
@@ -110,29 +110,29 @@ export function validateTaxonomyAssignment(
   const errors: TaxonomyValidationError[] = [];
 
   if (!validDimensions.includes(node.dimension)) {
-    errors.push(makeError('UNKNOWN_DIMENSION', node.slug, `Unknown taxonomy dimension: "${node.dimension}".`, node.dimension));
+    errors.push(makeError('UNKNOWN_DIMENSION', tagSlugRef(node.slug), `Unknown taxonomy dimension: "${node.dimension}".`, node.dimension));
   }
 
   if (existingNodes.some((n) => n.slug === node.slug)) {
-    errors.push(makeError('DUPLICATE_SLUG', node.slug, `Tag slug "${node.slug}" already exists in the taxonomy.`));
+    errors.push(makeError('DUPLICATE_SLUG', tagSlugRef(node.slug), `Tag slug "${node.slug}" already exists in the taxonomy.`));
   }
 
   if (node.parentSlug) {
     const parent = existingNodes.find((n) => n.slug === node.parentSlug);
     if (!parent) {
-      errors.push(makeError('INVALID_PARENT', node.slug, `Parent slug "${node.parentSlug}" not found in the taxonomy.`));
+      errors.push(makeError('INVALID_PARENT', tagSlugRef(node.slug), `Parent slug "${node.parentSlug}" not found in the taxonomy.`));
     } else if (parent.dimension !== node.dimension) {
-      errors.push(makeError('INVALID_PARENT', node.slug, `Parent "${node.parentSlug}" belongs to dimension "${parent.dimension}", but node is in "${node.dimension}".`, node.dimension));
+      errors.push(makeError('INVALID_PARENT', tagSlugRef(node.slug), `Parent "${node.parentSlug}" belongs to dimension "${parent.dimension}", but node is in "${node.dimension}".`, node.dimension));
     }
   }
 
   if (node.depth > MAX_TAXONOMY_DEPTH) {
-    errors.push(makeError('DEPTH_EXCEEDED', node.slug, `Taxonomy depth ${node.depth} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`));
+    errors.push(makeError('DEPTH_EXCEEDED', tagSlugRef(node.slug), `Taxonomy depth ${node.depth} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`));
   }
 
   if (node.parentSlug) {
     if (hasCircularReference(node.slug, node.parentSlug, existingNodes)) {
-      errors.push(makeError('CIRCULAR_REFERENCE', node.slug, `Circular reference detected: "${node.slug}" → "${node.parentSlug}" creates a cycle.`));
+      errors.push(makeError('CIRCULAR_REFERENCE', tagSlugRef(node.slug), `Circular reference detected: "${node.slug}" → "${node.parentSlug}" creates a cycle.`));
     }
   }
 
@@ -194,7 +194,7 @@ export function validateTaxonomyPath(
   const errors: TaxonomyValidationError[] = [];
 
   if (path.length === 0) {
-    errors.push(makeError('INVALID_PARENT', '', 'Taxonomy path is empty.', tree.dimension));
+    errors.push(makeError('INVALID_PARENT', tagSlugRef(''), 'Taxonomy path is empty.', tree.dimension));
     return { valid: false, errors };
   }
 
@@ -205,28 +205,28 @@ export function validateTaxonomyPath(
     const node = nodeMap.get(slug);
 
     if (!node) {
-      errors.push(makeError('INVALID_PARENT', slug, `Slug "${slug}" not found in taxonomy "${tree.dimension}".`, tree.dimension));
+      errors.push(makeError('INVALID_PARENT', tagSlugRef(slug), `Slug "${slug}" not found in taxonomy "${tree.dimension}".`, tree.dimension));
       continue;
     }
 
     if (node.dimension !== tree.dimension) {
-      errors.push(makeError('UNKNOWN_DIMENSION', slug, `Slug "${slug}" belongs to dimension "${node.dimension}", expected "${tree.dimension}".`, tree.dimension));
+      errors.push(makeError('UNKNOWN_DIMENSION', tagSlugRef(slug), `Slug "${slug}" belongs to dimension "${node.dimension}", expected "${tree.dimension}".`, tree.dimension));
     }
 
     if (i === 0) {
       if (node.parentSlug) {
-        errors.push(makeError('INVALID_PARENT', slug, `Root slug "${slug}" should not have a parent, but has "${node.parentSlug}".`, tree.dimension));
+        errors.push(makeError('INVALID_PARENT', tagSlugRef(slug), `Root slug "${slug}" should not have a parent, but has "${node.parentSlug}".`, tree.dimension));
       }
     } else {
       const expectedParent = path[i - 1];
       if (node.parentSlug !== expectedParent) {
-        errors.push(makeError('INVALID_PARENT', slug, `Expected parent "${expectedParent}" for slug "${slug}", but found "${node.parentSlug ?? 'none'}".`, tree.dimension));
+        errors.push(makeError('INVALID_PARENT', tagSlugRef(slug), `Expected parent "${expectedParent}" for slug "${slug}", but found "${node.parentSlug ?? 'none'}".`, tree.dimension));
       }
     }
   }
 
   if (path.length > MAX_TAXONOMY_DEPTH) {
-    errors.push(makeError('DEPTH_EXCEEDED', path[path.length - 1]!, `Path depth ${path.length} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`, tree.dimension));
+    errors.push(makeError('DEPTH_EXCEEDED', tagSlugRef(path[path.length - 1]!), `Path depth ${path.length} exceeds maximum of ${MAX_TAXONOMY_DEPTH}.`, tree.dimension));
   }
 
   return { valid: errors.length === 0, errors };
@@ -245,7 +245,7 @@ function buildNodeMap(tree: TaxonomyTree): Map<string, TaxonomyNode> {
 
 function makeError(
   code: TaxonomyErrorCode,
-  tagSlug: string,
+  tagSlug: TagSlugRef,
   message: string,
   dimension?: TaxonomyDimension
 ): TaxonomyValidationError {
