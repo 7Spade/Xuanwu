@@ -4,7 +4,8 @@
  */
 
 import { isOwner, getUserTeamIds } from "@/features/account.slice"
-import type { Workspace, Account } from "@/shared/types"
+import type { Workspace } from "./core/_types"
+import type { Account } from "@/features/shared-kernel"
 
 // ---------------------------------------------------------------------------
 // Access predicates

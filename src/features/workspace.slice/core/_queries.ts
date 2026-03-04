@@ -21,7 +21,7 @@ import {
   where,
 } from '@/shared/infra/firestore/firestore.read.adapter';
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils';
-import type { PartnerInvite } from '@/shared/types';
+import type { PartnerInvite } from '@/features/shared-kernel';
 
 import type { DailyLog } from '../business.daily/_types';
 import type { AuditLog } from '../gov.audit/_types';

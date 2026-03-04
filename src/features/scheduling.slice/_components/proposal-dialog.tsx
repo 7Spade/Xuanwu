@@ -32,7 +32,7 @@ import { Input } from "@/shared/shadcn-ui/input";
 import { Label } from "@/shared/shadcn-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { type Location } from "@/shared/types";
+import { type Location } from "@/features/workspace.slice";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;

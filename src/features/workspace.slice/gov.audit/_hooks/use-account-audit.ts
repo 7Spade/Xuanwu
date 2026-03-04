@@ -15,7 +15,7 @@
 import { useMemo, useState } from "react";
 
 import { useApp } from "@/shared/app-providers/app-context";
-import { type AuditLog } from "@/shared/types";
+import { type AuditLog } from "../_types";
 
 import { useAccount } from "../../core";
 

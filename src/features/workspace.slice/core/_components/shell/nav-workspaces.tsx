@@ -13,7 +13,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/shared/shadcn-ui/sidebar";
-import type { Workspace } from "@/shared/types";
+import type { Workspace } from "../../_types";
 
 interface NavWorkspacesProps {
   workspaces: Workspace[];

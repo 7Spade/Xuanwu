@@ -10,7 +10,7 @@
  *   – projection.bus/demand-board  (projector read model)
  *   – workspace.slice/scheduling  (create/view)
  *   – projection.bus/account-schedule  (account projector)
- *   – shared/types/schedule.types.ts  (backward-compat re-export)
+ *   – shared/types/ stubs have been removed; import directly from @/features/shared-kernel.
  *
  * [D8] This module is pure — no async functions, no Firestore calls, no side effects.
  * [D19] Move rule: once a type is used by more than one BC, it must live here.

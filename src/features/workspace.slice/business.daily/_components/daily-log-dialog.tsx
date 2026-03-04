@@ -22,7 +22,8 @@ import { Button } from "@/shared/shadcn-ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
 import { Textarea } from "@/shared/shadcn-ui/textarea";
-import { type DailyLog, type DailyLogComment, type Account } from "@/shared/types";
+import { type DailyLog, type DailyLogComment } from "../_types";
+import type { Account } from "@/features/shared-kernel";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { addDailyLogComment } from "../_actions";

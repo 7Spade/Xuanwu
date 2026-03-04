@@ -27,7 +27,8 @@ import {
   CommandItem,
   CommandList,
 } from "@/shared/shadcn-ui/command";
-import { type Account, type Workspace, type MemberReference } from "@/shared/types";
+import { type Account, type MemberReference } from "@/features/shared-kernel";
+import { type Workspace } from "@/features/workspace.slice";
 
 export interface GlobalSearchDialogProps {
   isOpen: boolean;

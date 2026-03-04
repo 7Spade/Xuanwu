@@ -12,7 +12,7 @@
 
 import { useState } from "react";
 
-import { type AuditLog } from "@/shared/types";
+import { type AuditLog } from "../_types";
 
 import { useWorkspace } from "../../core";
 

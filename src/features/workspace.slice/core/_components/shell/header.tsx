@@ -18,7 +18,7 @@ import {
 import { Button } from "@/shared/shadcn-ui/button";
 import { Separator } from "@/shared/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shared/shadcn-ui/sidebar";
-import type { Account } from '@/shared/types'
+import type { Account } from '@/features/shared-kernel'
 
 import { useApp } from "../../_hooks/use-app";
 import { useVisibleWorkspaces } from '../../_hooks/use-visible-workspaces';

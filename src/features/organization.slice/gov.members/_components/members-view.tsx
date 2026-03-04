@@ -10,7 +10,7 @@ import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"
-import { type MemberReference } from "@/shared/types"
+import { type MemberReference } from "@/features/shared-kernel"
 import { PageHeader } from "@/shared/ui/page-header"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 

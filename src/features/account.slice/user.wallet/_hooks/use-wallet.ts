@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react';
 
-import type { Wallet } from '@/shared/types';
+import type { Wallet } from '@/features/shared-kernel';
 
 import { subscribeToWalletBalance, subscribeToWalletTransactions } from '../_queries';
 import type { WalletTransactionRecord } from '../_queries';

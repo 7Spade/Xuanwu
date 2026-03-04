@@ -8,7 +8,7 @@ import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.sl
 import { useWorkspace } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shared/shadcn-ui/sheet"
-import type { ScheduleItem } from "@/shared/types"
+import type { ScheduleItem } from "@/features/shared-kernel"
 
 export default function GovernancePanelPage() {
   const router = useRouter()

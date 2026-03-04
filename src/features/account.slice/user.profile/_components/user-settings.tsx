@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { findSkill } from "@/shared/constants/skills";
-import { type SkillGrant } from "@/shared/types";
+import { type SkillGrant } from "@/features/shared-kernel";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useUser } from "../_hooks/use-user";

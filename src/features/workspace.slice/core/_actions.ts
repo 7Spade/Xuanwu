@@ -34,7 +34,9 @@ import {
   updateWorkspaceLocation as updateWorkspaceLocationFacade,
   deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
 } from "@/shared/infra/firestore/firestore.facade"
-import type { Account, Capability, WorkspaceRole, WorkspaceLifecycleState, WorkspaceLocation, Address, WorkspacePersonnel } from "@/shared/types"
+import type { Capability, WorkspaceLifecycleState, WorkspaceLocation, Address, WorkspacePersonnel } from "./_types"
+import type { WorkspaceRole } from "../gov.role/_types"
+import type { Account } from "@/features/shared-kernel"
 
 export async function createWorkspace(
   name: string,

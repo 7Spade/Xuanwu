@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip";
-import { type MemberReference } from "@/shared/types";
+import { type MemberReference } from "@/features/shared-kernel";
 
 
 const DAYS_OF_WEEK = ["日", "一", "二", "三", "四", "五", "六"];

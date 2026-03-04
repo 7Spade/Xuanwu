@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 import { useApp } from '@/shared/app-providers/app-context';
 import { useAuth } from '@/shared/app-providers/auth-provider';
-import type { ThemeConfig } from '@/shared/types';
+import type { ThemeConfig } from '@/features/shared-kernel';
 
 import {
   createOrganization as createOrganizationAction,

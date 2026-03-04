@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react';
 
-import type { Notification } from '@/shared/types';
+import type { Notification } from '@/features/shared-kernel';
 
 import { subscribeToNotifications, markNotificationRead } from '../_queries';
 

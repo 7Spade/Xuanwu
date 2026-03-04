@@ -3,7 +3,7 @@
  *
  * Cross-BC canonical types for the Account/Identity domain.
  * Per D19 (docs/logic-overview.md): cross-BC contracts belong in shared.kernel.*;
- * shared/types/account.types.ts is a legacy fallback re-export only.
+ * shared/types/ stubs have been removed; import directly from @/features/shared-kernel.
  *
  * Types defined here are referenced by:
  *   – account.slice            (user profile, wallet, role)
@@ -14,7 +14,7 @@
  *
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
  * [D8] This module is pure — no async functions, no Firestore calls, no side effects.
- * [D19] Canonical definition lives here; @/shared/types/account.types re-exports for legacy consumers.
+ * [D19] Canonical definition lives here. Import from `@/features/shared-kernel`.
  */
 
 import type { Timestamp } from '@/shared/ports'

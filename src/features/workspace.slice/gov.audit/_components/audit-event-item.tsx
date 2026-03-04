@@ -5,7 +5,7 @@ import { format } from "date-fns";
 
 import { cn } from "@/shared/shadcn-ui/utils/utils";
 import { Badge } from "@/shared/shadcn-ui/badge";
-import { type AuditLog } from "@/shared/types";
+import { type AuditLog } from "../_types";
 
 import { AuditEventItemContainer } from "./audit-timeline";
 import { AuditTypeIcon } from "./audit-type-icon";

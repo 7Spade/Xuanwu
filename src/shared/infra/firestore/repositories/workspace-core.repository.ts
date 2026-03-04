@@ -23,11 +23,11 @@ import type {
   WorkspaceFile,
   Capability,
   WorkspaceLifecycleState,
-  Account,
   WorkspaceLocation,
   Address,
   WorkspacePersonnel,
-} from '@/shared/types';
+} from '@/features/workspace.slice';
+import type { Account } from '@/features/shared-kernel';
 
 import { db } from '../firestore.client';
 import {

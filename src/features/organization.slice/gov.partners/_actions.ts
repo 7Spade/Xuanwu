@@ -21,7 +21,7 @@ import {
   sendPartnerInvite as sendPartnerInviteFacade,
   dismissPartnerMember as dismissPartnerMemberFacade,
 } from "@/shared/infra/firestore/firestore.facade";
-import type { MemberReference } from "@/shared/types";
+import type { MemberReference } from "@/features/shared-kernel";
 
 export async function createPartnerGroup(
   organizationId: string,

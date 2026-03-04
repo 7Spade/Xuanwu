@@ -3,15 +3,9 @@
  * No React. No UI. Callable from hooks, context, or Server Actions.
  */
 
-import type { CommandResult } from '@/features/shared-kernel';
+import type { CommandResult, Account } from '@/features/shared-kernel';
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import type {
-  Account,
-  Capability,
-  WorkspaceLifecycleState,
-  Address,
-  WorkspacePersonnel,
-} from "@/shared/types";
+import type { Capability, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "./_types";
 
 import { createWorkspace, mountCapabilities, updateWorkspaceSettings, deleteWorkspace } from "./_actions";
 

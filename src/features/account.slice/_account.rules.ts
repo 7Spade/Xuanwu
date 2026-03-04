@@ -3,7 +3,7 @@
  * No async, no I/O, no React, no Firebase.
  */
 
-import type { Account, Team } from "@/shared/types"
+import type { Account, Team } from "@/features/shared-kernel"
 
 // ---------------------------------------------------------------------------
 // Ownership & role queries

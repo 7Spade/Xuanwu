@@ -9,7 +9,7 @@
 
 import { cn } from '@/shared/shadcn-ui/utils/utils';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import type { Notification } from '@/shared/types';
+import type { Notification } from '@/features/shared-kernel';
 
 interface NotificationListProps {
   notifications: Notification[];

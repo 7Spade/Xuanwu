@@ -15,7 +15,7 @@ import {
 } from "@/shared/shadcn-ui/dialog"
 import { Input } from "@/shared/shadcn-ui/input"
 import { Label } from "@/shared/shadcn-ui/label"
-import { type Account } from "@/shared/types"
+import { type Account } from "@/features/shared-kernel"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 
 import type { AppAction } from '../app-provider'

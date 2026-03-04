@@ -3,14 +3,14 @@
  *
  * Provides ordered arrays and labelled metadata for dropdown rendering, badge colouring,
  * and permission-level comparisons.  The canonical string-union types themselves live in
- * `@/shared/types/account.types` (the source of truth for type-checking).
+ * `@/features/shared-kernel` and `@/features/workspace.slice`.
  *
  * Usage:
  *   import { ORG_ROLE_META, ORGANIZATION_ROLES } from '@/shared/constants/roles';
  */
 
-import type { OrganizationRole } from '@/shared/types/account.types';
-import type { WorkspaceRole } from '@/shared/types/workspace.types';
+import type { OrganizationRole } from '@/features/shared-kernel';
+import type { WorkspaceRole } from '@/features/workspace.slice';
 
 // ---------------------------------------------------------------------------
 // Organization roles

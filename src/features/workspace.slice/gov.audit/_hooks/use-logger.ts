@@ -4,7 +4,8 @@
 import { useCallback } from "react";
 
 import { useApp } from "@/shared/app-providers/app-context";
-import type { AuditLog, Account } from "@/shared/types";
+import type { AuditLog } from "../_types";
+import type { Account } from "@/features/shared-kernel";
 
 import { writeDailyLog, writeAuditLog } from '../_actions';
 

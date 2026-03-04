@@ -22,7 +22,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/shared/shadcn-ui/sidebar"
-import type { Account } from "@/shared/types"
+import type { Account } from "@/features/shared-kernel"
 
 import type { AppAction } from '../app-provider'
 

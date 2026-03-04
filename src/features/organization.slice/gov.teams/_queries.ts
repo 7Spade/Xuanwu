@@ -18,7 +18,7 @@
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { doc, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
-import type { Account, Team } from '@/shared/types';
+import type { Account, Team } from '@/features/shared-kernel';
 
 /**
  * Fetches all internal teams for an organization.

@@ -22,7 +22,7 @@ import {
   deleteOrganization as deleteOrganizationFacade,
   createTeam as createTeamFacade,
 } from "@/shared/infra/firestore/firestore.facade";
-import type { Account, ThemeConfig } from "@/shared/types";
+import type { Account, ThemeConfig } from "@/features/shared-kernel";
 
 export async function createOrganization(
   organizationName: string,
