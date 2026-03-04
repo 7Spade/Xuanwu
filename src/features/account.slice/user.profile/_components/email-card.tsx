@@ -20,10 +20,25 @@ export function EmailCard({ currentEmail }: EmailCardProps) {
 
   const handleChangeEmail = async () => {
     const trimmed = newEmail.trim();
-    if (!trimmed || trimmed === currentEmail) return;
+
+    if (!trimmed) return;
+
+    if (trimmed === currentEmail) {
+      toast({ variant: "destructive", title: "Same email address", description: "The new email must be different from the current one." });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      toast({ variant: "destructive", title: "Invalid email address", description: "Please enter a valid email address." });
+      return;
+    }
 
     const firebaseUser = authAdapter.getCurrentUser();
-    if (!firebaseUser) return;
+    if (!firebaseUser) {
+      toast({ variant: "destructive", title: "Not authenticated", description: "You must be signed in to change your email address." });
+      return;
+    }
 
     setIsSending(true);
     try {
