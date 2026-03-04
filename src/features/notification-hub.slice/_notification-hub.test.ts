@@ -16,6 +16,8 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import { tagSlugRef } from '@/features/shared-kernel';
+
 import {
   dispatchNotification,
   registerRoutingRule,
@@ -44,7 +46,7 @@ function makeRule(overrides: Partial<TagRoutingRule> = {}): TagRoutingRule {
   return {
     ruleId: 'rule-1',
     name: 'Urgent Slack Alert',
-    tagSlugs: ['compliance-urgent'],
+    tagSlugs: [tagSlugRef('compliance-urgent')],
     channel: 'push',
     priority: 'critical',
     enabled: true,
@@ -56,7 +58,7 @@ function makeEvent(overrides: Partial<NotificationSourceEvent> = {}): Notificati
   return {
     eventKey: 'test:event',
     payload: { title: 'Test Notification', body: 'Something happened' },
-    tags: ['compliance-urgent'],
+    tags: [tagSlugRef('compliance-urgent')],
     orgId: 'org-1',
     occurredAt: new Date().toISOString(),
     ...overrides,
@@ -106,14 +108,14 @@ describe('evaluateTagRouting — Stateless (#A10)', () => {
   });
 
   it('matches rule when all tag slugs are present', () => {
-    registerRuleService(makeRule({ tagSlugs: ['tag-a', 'tag-b'] }));
+    registerRuleService(makeRule({ tagSlugs: [tagSlugRef('tag-a'), tagSlugRef('tag-b')] }));
     const decision = evaluateTagRouting(['tag-a', 'tag-b', 'tag-c']);
     expect(decision.matchedRules).toHaveLength(1);
     expect(decision.channels).toContain('push');
   });
 
   it('does not match when tags are only partially present', () => {
-    registerRuleService(makeRule({ tagSlugs: ['tag-a', 'tag-b'] }));
+    registerRuleService(makeRule({ tagSlugs: [tagSlugRef('tag-a'), tagSlugRef('tag-b')] }));
     const decision = evaluateTagRouting(['tag-a']);
     expect(decision.matchedRules).toHaveLength(0);
   });
@@ -125,15 +127,15 @@ describe('evaluateTagRouting — Stateless (#A10)', () => {
   });
 
   it('returns highest priority from matched rules', () => {
-    registerRuleService(makeRule({ ruleId: 'r1', priority: 'low', tagSlugs: ['tag-x'] }));
-    registerRuleService(makeRule({ ruleId: 'r2', priority: 'critical', tagSlugs: ['tag-x'] }));
+    registerRuleService(makeRule({ ruleId: 'r1', priority: 'low', tagSlugs: [tagSlugRef('tag-x')] }));
+    registerRuleService(makeRule({ ruleId: 'r2', priority: 'critical', tagSlugs: [tagSlugRef('tag-x')] }));
     const decision = evaluateTagRouting(['tag-x']);
     expect(decision.highestPriority).toBe('critical');
   });
 
   it('deduplicates channels from multiple rules', () => {
-    registerRuleService(makeRule({ ruleId: 'r1', channel: 'email', tagSlugs: ['tag-x'] }));
-    registerRuleService(makeRule({ ruleId: 'r2', channel: 'email', tagSlugs: ['tag-x'] }));
+    registerRuleService(makeRule({ ruleId: 'r1', channel: 'email', tagSlugs: [tagSlugRef('tag-x')] }));
+    registerRuleService(makeRule({ ruleId: 'r2', channel: 'email', tagSlugs: [tagSlugRef('tag-x')] }));
     const decision = evaluateTagRouting(['tag-x']);
     expect(decision.channels).toHaveLength(1);
     expect(decision.channels[0]).toBe('email');
@@ -164,7 +166,7 @@ describe('dispatchNotification — Action (D3)', () => {
   });
 
   it('returns success even when no routing rules match (no-op dispatch)', async () => {
-    const event = makeEvent({ tags: ['no-matching-tag'] });
+    const event = makeEvent({ tags: [tagSlugRef('no-matching-tag')] });
     const result = await dispatchNotification(event);
     expect(result.commandResult.success).toBe(true);
     expect(result.dispatch!.targetCount).toBe(0);
@@ -247,12 +249,12 @@ describe('ProjectionBusSubscriber', () => {
 
   it('initTagChangedSubscriber auto-processes TAG_CHANGED events', async () => {
     for (const rule of getRoutingRules()) unregisterRuleService(rule.ruleId);
-    registerRuleService(makeRule({ tagSlugs: ['tag-change'] }));
+    registerRuleService(makeRule({ tagSlugs: [tagSlugRef('tag-change')] }));
 
     const unsub = initTagChangedSubscriber();
     const event = makeEvent({
       eventKey: TAG_CHANGED_EVENT_KEY,
-      tags: ['tag-change'],
+      tags: [tagSlugRef('tag-change')],
       targetAccountIds: ['acc-1'],
     });
     emitProjectionBusEvent(event);

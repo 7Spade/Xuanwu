@@ -21,6 +21,7 @@ import { describe, it, expect } from 'vitest';
 // ─── [#A4] ParsingIntentContract structural shape ─────────────────────────────
 import type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
 import type { SkillRequirement } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/features/shared-kernel';
 import type { ParsingIntentContract } from '@/features/workspace.slice/business.parsing-intent/_contract';
 import { createParsingIntentContract } from '@/features/workspace.slice/business.parsing-intent/_contract';
 import type {
@@ -128,7 +129,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
     });
 
     it('payload type carries optional skillRequirements [TE_SK]', () => {
-      const skills: SkillRequirement[] = [{ tagSlug: 'mep:hvac', minimumTier: 'journeyman', quantity: 1 }];
+      const skills: SkillRequirement[] = [{ tagSlug: tagSlugRef('mep:hvac'), minimumTier: 'journeyman', quantity: 1 }];
       const payload: IntentDeltaProposedPayload = {
         intentId: 'i1',
         intentVersion: 1,
@@ -159,7 +160,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
   describe('[TE_SK] WorkspaceTaskAssignedPayload carries skill requirements', () => {
     it('payload has optional requiredSkills field for VS6 eligibility', () => {
       const skills: SkillRequirement[] = [
-        { tagSlug: 'finishing-works:tile', minimumTier: 'artisan', quantity: 1 },
+        { tagSlug: tagSlugRef('finishing-works:tile'), minimumTier: 'artisan', quantity: 1 },
       ];
       const payload: WorkspaceTaskAssignedPayload = {
         taskId: 't1',
@@ -190,7 +191,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
   describe('[A5] WorkspaceScheduleProposedPayload — cross-BC contract', () => {
     it('has skillRequirements field for VS6 eligibility gate [TE_SK]', () => {
       const skills: SkillRequirement[] = [
-        { tagSlug: 'mep:plumbing', minimumTier: 'expert', quantity: 1 },
+        { tagSlug: tagSlugRef('mep:plumbing'), minimumTier: 'expert', quantity: 1 },
       ];
       const payload: WorkspaceScheduleProposedPayload = {
         scheduleItemId: 's1',
@@ -273,7 +274,7 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
         sourceFileId: 'f1',
         sourceVersionId: 'v1',
         taskDraftCount: 2,
-        skillRequirements: [{ tagSlug: 'bim:revit', minimumTier: 'expert', quantity: 1 }],
+        skillRequirements: [{ tagSlug: tagSlugRef('bim:revit'), minimumTier: 'expert', quantity: 1 }],
       });
 
       // All fields required by the contract

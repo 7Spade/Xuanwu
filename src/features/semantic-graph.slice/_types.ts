@@ -22,6 +22,7 @@ import type {
   TaxonomyDimension,
   TaxonomyNode,
   SemanticSearchHit,
+  TagSlugRef,
 } from '@/features/shared-kernel';
 
 // ─── Temporal Conflict (Scheduling-aware) ─────────────────────────────────────
@@ -32,7 +33,7 @@ import type {
  * overlapping time windows.
  */
 export interface TemporalTagAssignment {
-  readonly tagSlug: string;
+  readonly tagSlug: TagSlugRef;
   readonly entityId: string;
   readonly entityType: 'member' | 'workspace' | 'schedule';
   readonly startDate: string;
@@ -47,7 +48,7 @@ export interface TemporalTagAssignment {
  * within the same time window.
  */
 export interface TemporalConflict {
-  readonly tagSlug: string;
+  readonly tagSlug: TagSlugRef;
   readonly entityId: string;
   readonly existingAssignment: TemporalTagAssignment;
   readonly conflictingAssignment: TemporalTagAssignment;
@@ -98,7 +99,7 @@ export interface TaxonomyValidationResult {
 export interface TaxonomyValidationError {
   readonly code: TaxonomyErrorCode;
   readonly message: string;
-  readonly tagSlug: string;
+  readonly tagSlug: TagSlugRef;
   readonly dimension?: TaxonomyDimension;
 }
 

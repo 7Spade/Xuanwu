@@ -22,6 +22,7 @@
  */
 
 import type { Timestamp } from '@/shared/ports'
+import type { TagSlugRef } from '../tag-authority'
 
 // ─── Canonical type definitions (D19 — owned by shared-kernel) ───────────────
 
@@ -60,7 +61,7 @@ export interface TierDefinition {
  * Flows from Workspace BC → Organization BC via WORKSPACE_OUTBOX events.
  */
 export interface SkillRequirement {
-  tagSlug: string;
+  tagSlug: TagSlugRef;
   tagId?: string;
   minimumTier: SkillTier;
   quantity: number;
@@ -162,7 +163,7 @@ export interface SkillGrant {
    * Portable, hyphen-separated skill identifier — the primary lookup key.
    * Example: "electrical-work", "project-management"
    */
-  tagSlug: string;
+  tagSlug: TagSlugRef;
   /** Snapshot of the human-readable tag name at grant time (for display). */
   tagName?: string;
   /** Org-local UUID — optional, only present when the org still exists. */
