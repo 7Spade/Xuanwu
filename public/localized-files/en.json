@@ -78,8 +78,7 @@
     "daily": "Daily",
     "audit": "Audit",
     "orgSchedule": "HR Schedule",
-    "demandBoard": "Demand Board",
-    "skills": "Skills"
+    "demandBoard": "Demand Board"
   },
   "dimension": {
     "createTitle": "Create Organization",
@@ -150,7 +149,9 @@
     "personalDimensionDescription": "This is your personal workspace. Projects created here are owned by you.",
     "dimensionManagementDescription": "Manage organization settings and member access.",
     "userSettingsTitle": "User Settings",
-    "userSettingsDescription": "Manage your personal profile, preferences, and account security."
+    "userSettingsDescription": "Manage your personal profile, preferences, and account security.",
+    "skillProgressTitle": "Skill Progress",
+    "skillProgressDescription": "Track your skill experience and tier progression."
   },
   "dashboard": {
     "welcome": "Welcome to Dashboard",
