@@ -41,7 +41,7 @@
 %%  ── Governance Rules（可演化治理）: D · P · T · E ──
 %%    D7=cross-slice-index-only   D24=no-firebase-import D26=cross-cutting-authority
 %%    D27=cost-semantic-routing   D27-A=semantic-aware-routing-policy   D22=strong-typed-tag-ref
-%%    D21=VS8-semantic-graph-complete-body（8層完全體 D21-1~D21-10 + D21-A~D21-X）
+%%    D21=VS8-semantic-graph-complete-body（10層完全體 D21-1~D21-10 + D21-A~D21-X）
 %%    D21-1=semantic-uniqueness(→D21-A)   D21-2=strong-typed-tags(→D22)  D21-3=node-connectivity(→D21-C)
 %%    D21-4=aggregate-constraint          D21-5=semantic-aware-routing(→D27-A)
 %%    D21-6=causal-auto-trigger           D21-7=read-write-separation    D21-8=freshness-defense(→S4)
@@ -60,8 +60,8 @@
 %%    [S2]  所有 Projection 寫入前必須呼叫 applyVersionGuard()
 %%    [S4]  SLA 數值只能引用 SK_STALENESS_CONTRACT，禁止硬寫
 %%    [D7]  跨切片引用只能透過 {slice}/index.ts 公開 API
-%%    [D21] VS8 語義神經網絡完全體（8層）：core(DNA) → graph(突觸) → routing(反射弧) → guards(BBB)
-%%           → plasticity(學習) → projections(讀側) → ui(維基治理) → io(訂閱廣播)
+%%    [D21] VS8 語義神經網絡完全體（10層）：core(DNA) → graph(突觸) → routing(反射弧) → guards(BBB)
+%%           → plasticity(學習) → projections(讀側) → ui(維基治理) → cost-output(決策) → io(訂閱廣播)
 %%    [D21-A] 唯一註冊律：跨領域概念必須在 core/tag-definitions.ts 註冊，禁止業務切片私自創建隱性分類
 %%    [D21-B] Schema 鎖定：標籤元數據必須符合 core/schemas，禁止附加未校驗的非結構化屬性
 %%    [D21-C] 無孤立節點：每個新標籤必須透過 hierarchy-manager.ts 掛載至少一個父級節點
@@ -173,19 +173,20 @@ subgraph SK["🔷 L1 · Shared Kernel — 全域契約中心（VS0）"]
 end
 
 %% ─── VS8 Semantic Graph（語義神經網絡完全體 · The Brain）
-%% ─── 8層完全體架構（from semantic-graph.slice-guide.md）：
-%% ───   L1 VS8_CORE  — 神經元 DNA 定義層   · core/tag-definitions · schemas · hierarchy-manager · vector-store    [D21-A D21-B D21-C D21-D]
-%% ───   L2 VS8_GRAPH — 語義突觸層          · semantic-edge-store · weight-calculator · context-attention · adjacency-list [D21-E D21-F D21-9 D21-10]
-%% ───   L3 VS8_NG    — 語義計算層          · Dijkstra 前向傳播 + BFS 因果注意力                                     [D21-4 D21-6 D21-X]
-%% ───   L4 VS8_ROUT  — 語義反射弧層        · workflows · policy-mapper · dispatch-bridge                          [D21-5 D27-A]
-%% ───   L5 VS8_GUARD — 血腦屏障(BBB)層    · invariant-guard · staleness-monitor                                  [D21-H D21-K S4]
-%% ───   L6 VS8_PLAST — 語義可塑性層        · learning-engine · decay-service                                      [D21-G]
-%% ───   L7 VS8_PROJ  — 語義投影讀取層      · projections/tag-snapshot · graph-selectors · context-selectors      [D21-7 T5]
-%% ───   L8 VS8_WIKI  — 語義維基治理層 🏛️   · wiki-editor · proposal-stream · relationship-visualizer · consensus-engine [D21-I~W]
-%% ───   L9 VS8_IO    — 語義訂閱廣播層      · subscribers/lifecycle-subscriber · outbox/tag-outbox                [D21-6 S1]
-%% ─── 向下相容：VS8_CL ≡ L1 core, VS8_SL ≡ L2 graph, VS8_NG ≡ L3 neural-computation, VS8_RL ≡ L4 routing
+%% ─── 10層完全體架構（from semantic-graph.slice-guide.md）：
+%% ───   L1  VS8_CORE  — 神經元 DNA 定義層   · core/tag-definitions · schemas · hierarchy-manager · vector-store    [D21-A D21-B D21-C D21-D]
+%% ───   L2  VS8_GRAPH — 語義突觸層          · semantic-edge-store · weight-calculator · context-attention · adjacency-list [D21-E D21-F D21-9 D21-10]
+%% ───   L3  VS8_NG    — 語義計算層          · Dijkstra 前向傳播 + BFS 因果注意力                                     [D21-4 D21-6 D21-X]
+%% ───   L4  VS8_ROUT  — 語義反射弧層        · workflows · policy-mapper · dispatch-bridge                          [D21-5 D27-A]
+%% ───   L5  VS8_GUARD — 血腦屏障(BBB)層    · invariant-guard · staleness-monitor                                  [D21-H D21-K S4]
+%% ───   L6  VS8_PLAST — 語義可塑性層        · learning-engine · decay-service                                      [D21-G]
+%% ───   L7  VS8_PROJ  — 語義投影讀取層      · projections/tag-snapshot · graph-selectors · context-selectors      [D21-7 T5]
+%% ───   L8  VS8_WIKI  — 語義維基治理層 🏛️   · wiki-editor · proposal-stream · relationship-visualizer · consensus-engine [D21-I~W]
+%% ───   L9  VS8_RL    — 語義決策輸出層 💰   · _cost-classifier · policy-execution-agent                            [D21-5 D8]
+%% ───   L10 VS8_IO    — 語義訂閱廣播層      · subscribers/lifecycle-subscriber · outbox/tag-outbox                [D21-6 S1]
+%% ─── 向下相容：VS8_CL ≡ L1 core, VS8_SL ≡ L2 graph, VS8_NG ≡ L3 neural-computation, VS8_ROUT ≡ L4 routing（原 VS8_RL 已重構為 L9 語義決策輸出層）
 %% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority [#A6 #17]
-subgraph VS8["🧠 VS8 · Semantic Graph — The Brain [#A6 #17]（8層語義神經網路完全體）"]
+subgraph VS8["🧠 VS8 · Semantic Graph — The Brain [#A6 #17]（10層語義神經網路完全體）"]
     direction TB
 
     subgraph VS8_CL["① 🧬 神經元 DNA 定義層 VS8_CORE — 語義字典・定義權威 [D21-A D21-B D21-C D21-D]"]
@@ -974,7 +975,7 @@ class NOTIF_HUB_SVC crossCutAuth
 %%       VS5 Layer-3 Semantic Router = use-workspace-event-handler，
 %%       僅 EXECUTABLE 項目物化為 tasks；其餘六類靜默跳過並 toast [D27]
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  TAG SEMANTICS 擴展規則（VS8 · 8層語義神經網絡完全體 [D21-1~D21-10 + D21-A~D21-X]）
+%%  TAG SEMANTICS 擴展規則（VS8 · 10層語義神經網絡完全體 [D21-1~D21-10 + D21-A~D21-X]）
 %%  T1  新切片訂閱 TagLifecycleEvent（BACKGROUND_LANE）即可擴展 [D21-6]
 %%  T2  SKILL_TAG_POOL = Tag Authority 組織作用域唯讀投影
 %%  T3  ORG_ELIGIBLE_MEMBER_VIEW.skills{tagSlug→xp} 交叉快照
@@ -1026,9 +1027,9 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D18 Claims 刷新邏輯變更：以 SK_TOKEN_REFRESH_CONTRACT 為唯一規範
 %%  D19 型別歸屬規則：跨 BC 契約優先放 shared.kernel.*；shared/types 僅為 legacy fallback
 %%  D20 匯入優先序：shared.kernel.* > feature slice index.ts > shared/types
-%%  ── 語義 Tag 守則（D21~D23）── VS8 語義神經網絡完全體（8層）正式規範 ──
+%%  ── 語義 Tag 守則（D21~D23）── VS8 語義神經網絡完全體（10層）正式規範 ──
 %%  ── 層級結構：core(DNA) → graph(突觸) → routing(反射弧) → guards(BBB)
-%%              → plasticity(學習) → projections(讀側) → ui(維基治理) → I/O(訂閱廣播) ──
+%%              → plasticity(學習) → projections(讀側) → ui(維基治理) → cost-output(決策) → I/O(訂閱廣播) ──
 %%  ── 一、神經元定義層 (VS8_CL · Neuron Definition Authority) ──
 %%  D21-1 語義唯一性：全域所有語義類別與標籤實體（Tag Entities）僅能在 VS8 CTA 定義，禁止業務切片（VS1~VS6）私自宣告
 %%  D21-2 標籤強型別化：系統中禁止使用隱性字串傳遞語義，所有引用必須指向 TE1~TE6 有效 tagSlug
@@ -1050,8 +1051,8 @@ class NOTIF_HUB_SVC crossCutAuth
 %%        禁止任何消費方持有 weight > 1.0 或 weight < 0.0 的邊
 %%  D21-10 拓撲可觀測性：findIsolatedNodes(slugs[]) 為 VS8_NG 唯一拓撲健康探針；
 %%         每次 addEdge/removeEdge 後必須以非同步方式觸發孤立節點檢查；
-%%         結果寫入 L9 Observability；D21-3 違規率 > 0 需觸發警告事件
-%%  ── 六、完全體擴展不變量 (D21-A~D21-X · 8層架構治理律) ──
+%%         結果寫入 L10 Observability；D21-3 違規率 > 0 需觸發警告事件
+%%  ── 六、完全體擴展不變量 (D21-A~D21-X · 10層架構治理律) ──
 %%  D21-A 唯一註冊律：跨領域概念必須在 core/tag-definitions.ts 集中註冊，禁止業務切片私自創建隱性語義分類
 %%  D21-B Schema 鎖定：標籤元數據必須符合 core/schemas 定義，禁止附加任何未經校驗的非結構化屬性
 %%  D21-C 無孤立節點：每個新標籤建立時必須透過 hierarchy-manager.ts 掛載至少一個有效父級節點（→ D21-3 強化版）

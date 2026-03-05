@@ -12,28 +12,32 @@ It owns:
 
 No other slice may re-implement any of these capabilities [D26, D27].
 
-## Architecture: 8-Layer Semantic Neural Network (D21-1 → D21-K)
+## Architecture: 10-Layer Semantic Neural Network (D21-1 → D21-X)
 
-The semantic brain is organized as 8 discrete processing layers.
+The semantic brain is organized as 10 discrete processing layers.
 Each layer has a single well-defined responsibility, and cross-layer
 coupling is forbidden except via the public `index.ts` barrel [D7].
 
 | Layer | ID | Name | Directory / File | Responsibility | Rule |
 |-------|----|------|-----------------|---------------|------|
-| L1 | VS8_DNA | DNA Layer | `centralized-tag/` | Tag entity definition + `Draft→Active→Stale→Deprecated` FSM | [D21-1, D21-2] |
-| L2 | VS8_SL | Synapse Layer | `centralized-edges/` | `SemanticEdgeStore`: typed edges; weight ∈ (0,1]; cost = 1/weight | [D21-9] |
-| L3 | VS8_NG | Neural Computation | `centralized-neural-net/` | Dijkstra / distance matrix; isolated-node detection | [D21-NG] |
-| L4 | VS8_CL | Causality Layer | `centralized-causality/` | `CausalityTracer`: semantic activation; downstream impact chains | [D22] |
-| L5 | VS8_RC | Route/Classify | `_cost-classifier.ts` | Pure keyword classifier → `CostItemType`; **no side effects** | [D27] |
-| L6 | VS8_WF | Reflection Arc | `centralized-workflows/` | `PolicyMapper`: maps L3/L4 output to business dispatch strategies | [T5] |
-| L7 | VS8_BBB | Blood-Brain Barrier | `centralized-guards/` | `SemanticGuard`: **supreme veto** over edge proposals; rejects semantic violations | [D21-H, D21-K] |
-| L8 | VS8_GOV | Governance Layer | `index.ts` | Projects `TagSnapshot` as the **sole read exit**; external slices are barred from internal stores | [D7] |
+| L1  | VS8_CL (VS8_CORE)  | DNA 定義層 (Neuron DNA)        | `centralized-tag/`                                      | Tag entity definition + `Draft→Active→Stale→Deprecated` FSM; centralised schemas, hierarchy-manager, vector-store | [D21-A, D21-B, D21-C, D21-D] |
+| L2  | VS8_SL (VS8_GRAPH) | 突觸層 (Synapse Layer)         | `centralized-edges/`                                    | `SemanticEdgeStore`: typed IS_A/REQUIRES edges; weight ∈ (0,1]; cost = 1/weight; context-attention; adjacency-list | [D21-E, D21-F, D21-9, D21-10] |
+| L3  | VS8_NG             | 計算層 (Neural Computation)    | `centralized-neural-net/` + `centralized-causality/`    | Dijkstra weighted shortest path; BFS causality tracing (`CausalityTracer`); isolated-node detection | [D21-4, D21-6, D21-X] |
+| L4  | VS8_ROUT           | 反射弧層 (Reflection Arc)      | `centralized-workflows/`                                | `PolicyMapper` + `DispatchBridge`: maps L3 output to business dispatch strategies | [D21-5, D27-A] |
+| L5  | VS8_GUARD          | 血腦屏障 (BBB)                | `centralized-guards/`                                   | `SemanticGuard`: **supreme veto** over edge proposals; rejects self-loops, IS_A cycles, invalid weights, duplicates | [D21-H, D21-K, S4] |
+| L6  | VS8_PLAST          | 可塑性層 (Plasticity)          | `centralized-learning/`                                 | `learning-engine.ts` weight feedback loop (driven by VS2/VS3 facts only); `decay-service.ts` natural decay | [D21-G] |
+| L7  | VS8_PROJ           | 投影讀取層 (Projection)        | `projections/`                                          | `tag-snapshot.slice.ts` (sole legal read exit); `graph-selectors.ts`; `context-selectors.ts` — **read-only** | [D21-7, T5] |
+| L8  | VS8_WIKI           | 維基治理層 (Governance) 🏛️    | `wiki-editor/` `proposal-stream/`                       | Knowledge governance: proposal review, consensus validation, `relationship-visualizer` | [D21-I~W] |
+| L9  | VS8_RL             | 決策輸出層 (Cost-Output) 💰   | `_cost-classifier.ts`                                   | Pure-function cost keyword classifier → `CostItemType`; **no side effects, no async** | [D21-5, D8] |
+| L10 | VS8_IO             | 訂閱廣播層 (I/O)              | `subscribers/` `outbox/`                                | `lifecycle-subscriber.ts` (inbound); `tag-outbox.ts` (outbound broadcast, SK_OUTBOX SAFE_AUTO) | [D21-6, S1] |
 
 Additional invariants:
 - **D21-9** Synaptic weight invariant — weight ∈ (0.0, 1.0]; cost = 1/weight; zero-weight edges are physically impossible.
-- **D21-10** Topology observability — graph structure changes emit `SemanticTopologyChanged`.
+- **D21-10** Topology observability — graph structure changes emit `SemanticTopologyChanged`; results written to L10 (VS8_IO).
 - **D21-H** Blood-Brain Barrier — `validateEdgeProposal()` must be called before every `addEdge()`.
-- **D21-K** Semantic-conflict arbitration — self-loops, IS_A cycles, and invalid weights are rejected at the BBB layer.
+- **D21-K** Semantic-conflict arbitration — self-loops, IS_A cycles, and invalid weights are rejected at the L5 BBB layer.
+
+> **Backward compatibility note:** `VS8_CL` is the subgraph ID for L1 (alias VS8_CORE); `VS8_SL` for L2 (alias VS8_GRAPH); `VS8_NG` for L3; `VS8_ROUT` for L4 (formerly VS8_RL in the 4-layer model); `VS8_RL` is now L9 (語義決策輸出層).
 
 ## Tag Entity Types (TE)
 
