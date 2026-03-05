@@ -154,7 +154,12 @@ export function UnifiedCalendarGrid({
         {daysInMonth.map((day) => {
           const dateKey = format(day, 'yyyy-MM-dd');
           const dayItems = cardsByDate.get(dateKey) || [];
-          const daySegments = spanSegmentsByDate.get(dateKey) || [];
+          const daySegments = (spanSegmentsByDate.get(dateKey) || []).slice().sort((left, right) => {
+            const leftStart = toDate(left.item.startDate)?.getTime() ?? 0;
+            const rightStart = toDate(right.item.startDate)?.getTime() ?? 0;
+            if (leftStart !== rightStart) return leftStart - rightStart;
+            return left.item.title.localeCompare(right.item.title, 'zh-Hant');
+          });
           
           return (
             <div key={dateKey} className={cn('group relative flex min-h-[140px] flex-col gap-1.5 border-r border-b p-1.5', { 'bg-muted/30': isWeekend(day) })}>
@@ -168,35 +173,41 @@ export function UnifiedCalendarGrid({
                   {format(day, 'd')}
                 </div>
               </div>
-              {daySegments.length > 0 && (
-                <div className="space-y-1">
-                  {daySegments.slice(0, 3).map(({ item, isStart, isEnd }) => (
-                    <div
-                      key={`${item.id}-${dateKey}`}
-                      className={cn(
-                        'h-1.5 w-full bg-primary/60',
-                        isStart && 'rounded-l-full',
-                        isEnd && 'rounded-r-full',
-                        isStart && isEnd && 'rounded-full'
-                      )}
-                      title={`${item.title} (${format(toDate(item.startDate) || day, 'MM/dd')} - ${format(toDate(item.endDate) || toDate(item.startDate) || day, 'MM/dd')})`}
-                    />
-                  ))}
-                </div>
-              )}
               <ScrollArea className="grow pr-2">
                 <div className="space-y-2">
+                  {daySegments.length > 0 && (
+                    <div className="space-y-1">
+                      {daySegments.map((segment) => {
+                        const segmentStart = toDate(segment.item.startDate) || day;
+                        const segmentEnd = toDate(segment.item.endDate) || segmentStart;
+
+                        return (
+                          <div
+                            key={`${segment.item.id}-${dateKey}`}
+                            className={cn(
+                              'h-1.5 w-full bg-primary/60',
+                              segment.isStart && 'rounded-l-full',
+                              segment.isEnd && 'rounded-r-full',
+                              segment.isStart && segment.isEnd && 'rounded-full'
+                            )}
+                            title={`${segment.item.title} (${format(segmentStart, 'MM/dd')} - ${format(segmentEnd, 'MM/dd')})`}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+
                   {dayItems.map(item => {
                     const assignedMembers = item.assigneeIds.map(id => membersMap.get(id)).filter(Boolean) as MemberReference[];
 
                     return (
-                        <div 
-                            key={item.id} 
-                            className={cn(
-                                "rounded-lg border text-xs", 
-                                item.status === 'PROPOSAL' ? 'border-dashed border-primary/50 bg-primary/5' : 'bg-background shadow-sm'
-                            )}
-                        >
+                        <div key={item.id} className="space-y-1">
+                            <div 
+                                className={cn(
+                                    "rounded-lg border text-xs", 
+                                    item.status === 'PROPOSAL' ? 'border-dashed border-primary/50 bg-primary/5' : 'bg-background shadow-sm'
+                                )}
+                            >
                             {/* Section 1: Title — workspace name prepended in org view */}
                             <div className="rounded-t-md p-2">
                                 <TooltipProvider>
@@ -295,6 +306,7 @@ export function UnifiedCalendarGrid({
                                     </div>
                                   )}
                                 </div>
+                            </div>
                             </div>
                         </div>
                     );
