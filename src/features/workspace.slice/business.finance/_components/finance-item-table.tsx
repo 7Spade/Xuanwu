@@ -9,6 +9,7 @@
 
 import { BriefcaseBusiness, Coins, Hammer, type LucideIcon, ShieldCheck } from 'lucide-react';
 
+import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice/projections/tag-snapshot.slice';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Checkbox } from '@/shared/shadcn-ui/checkbox';
 import { Input } from '@/shared/shadcn-ui/input';
@@ -16,7 +17,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 import { NON_TASK_COST_ITEM_TYPES } from '../_constants';
 import type { FinanceClaimDraftEntry, FinanceDirectiveItem } from '../_types';
-import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice/projections/tag-snapshot.slice';
 
 interface FinanceItemTableProps {
   readonly items: readonly FinanceDirectiveItem[];

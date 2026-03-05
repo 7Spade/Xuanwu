@@ -16,7 +16,6 @@ interface FinanceStrongReadInput {
 
 function computeOutstandingClaimableAmount(
   directiveItems: readonly FinanceDirectiveItem[],
-  receivedAmount: number,
 ): Pick<FinanceStrongReadSnapshot, 'totalClaimableAmount' | 'outstandingClaimableAmount'> {
   const totalClaimableAmount = directiveItems.reduce(
     (total, item) => total + item.unitPrice * item.remainingQuantity,
@@ -44,7 +43,6 @@ export async function fetchFinanceStrongReadSnapshot(
 
   const { totalClaimableAmount, outstandingClaimableAmount } = computeOutstandingClaimableAmount(
     input.directiveItems,
-    input.receivedAmount,
   );
 
   return {

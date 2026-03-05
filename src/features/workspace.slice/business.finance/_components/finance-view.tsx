@@ -12,16 +12,17 @@ import { AlertCircle, CheckCircle2, FileSearch, Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { getTagSnapshotPresentationMap } from '@/features/semantic-graph.slice/projections/tag-snapshot.slice';
+import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice/projections/tag-snapshot.slice';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Button } from '@/shared/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
 
 import { useWorkspace } from '../../core';
+import { useFinanceLifecycle } from '../_hooks/use-finance-lifecycle';
+
 import { FinanceItemTable } from './finance-item-table';
 import { FinanceLifecycleTracker } from './finance-lifecycle-tracker';
-import { useFinanceLifecycle } from '../_hooks/use-finance-lifecycle';
-import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice/projections/tag-snapshot.slice';
 
 export function WorkspaceFinance() {
   const { workspace, eventBus } = useWorkspace();

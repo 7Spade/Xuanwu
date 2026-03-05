@@ -9,8 +9,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { classifyCostItem } from '@/features/semantic-graph.slice';
 import { listWorkflowStates } from '@/features/workspace.slice/business.workflow';
-import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus/_events';
 import type { WorkspaceEventBus } from '@/features/workspace.slice/core.event-bus';
+import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus/_events';
 
 import { fetchFinanceStrongReadSnapshot } from '../_services/finance-strong-read';
 import type {

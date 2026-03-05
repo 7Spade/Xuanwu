@@ -6,9 +6,9 @@
  */
 
 import { CostItemType } from '@/features/semantic-graph.slice';
+import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
 
 import type { FinanceLifecycleStage } from './_types';
-import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
 
 export const FINANCE_LIFECYCLE_STAGES: readonly FinanceLifecycleStage[] = [
   'claim-preparation',
