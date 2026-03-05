@@ -78,16 +78,22 @@ export function UnifiedCalendarGrid({
     }
     return null;
   };
-  
+
   const cardsByDate = useMemo(() => {
     const map = new Map<string, ScheduleItem[]>();
     items.forEach(item => {
-      const end = toDate(item.endDate);
-      const start = toDate(item.startDate);
-      const effectiveEnd = end || start;
-      const effectiveStart = start || effectiveEnd;
-      if (effectiveStart) {
-        const dateKey = format(effectiveStart, 'yyyy-MM-dd');
+      const rawStart = toDate(item.startDate);
+      const rawEnd = toDate(item.endDate);
+      if (!rawStart && !rawEnd) return;
+
+      const start = rawStart || rawEnd!;
+      const end = rawEnd || rawStart!;
+      const normalizedRange = isBefore(end, start)
+        ? { start: end, end: start }
+        : { start, end };
+
+      if (normalizedRange) {
+        const dateKey = format(normalizedRange.start, 'yyyy-MM-dd');
         const dayItems = map.get(dateKey) || [];
         map.set(dateKey, [...dayItems, item]);
       }
@@ -101,13 +107,16 @@ export function UnifiedCalendarGrid({
     items.forEach((item) => {
       const rawStart = toDate(item.startDate);
       const rawEnd = toDate(item.endDate);
-
       if (!rawStart && !rawEnd) return;
 
       const start = rawStart || rawEnd!;
       const end = rawEnd || rawStart!;
-      const normalizedStart = isBefore(end, start) ? end : start;
-      const normalizedEnd = isBefore(end, start) ? start : end;
+      const normalizedRange = isBefore(end, start)
+        ? { start: end, end: start }
+        : { start, end };
+
+      const normalizedStart = normalizedRange.start;
+      const normalizedEnd = normalizedRange.end;
 
       const days = eachDayOfInterval({ start: normalizedStart, end: normalizedEnd });
       days.forEach((day, index) => {
