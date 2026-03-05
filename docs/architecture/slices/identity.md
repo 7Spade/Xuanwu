@@ -1,64 +1,31 @@
-# VS1 · Identity Slice
+# VS1 · Identity（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Identity slice manages **authentication and active session context**.
-It is the bridge between Firebase Auth external identity and the internal `accountId`-based domain model.
-It owns the claims refresh lifecycle and is the sole producer of `AuthoritySnapshot`.
+管理身份、`account-identity-link`、`active-account-context`、claims refresh 生命週期。
 
-## Main Entities
+## 主要元件
 
-| Entity | Description |
-|--------|-------------|
-| `authenticated-identity` | The currently signed-in Firebase user. |
-| `account-identity-link` | Maps `firebaseUserId ↔ accountId`. |
-| `active-account-context` | In-memory session context; TTL = token validity. Built by `context-lifecycle-manager`. |
-| `custom-claims` | Fast-path authorisation snapshot [#5]; TTL = token validity. |
+- `authenticated-identity`
+- `account-identity-link`（`firebaseUserId ↔ accountId`）
+- `context-lifecycle-manager`
+- `claims-refresh-handler`（唯一刷新入口）
+- `token-refresh-signal`
 
-## Context Lifecycle
+## 事件與流向
 
-| Event | Effect on Context |
-|-------|------------------|
-| Login | Create `active-account-context` |
-| `OrgSwitched` / `WorkspaceSwitched` | Refresh context |
-| `TokenExpired` / Logout | Invalidate context |
+- Login → 建立 context
+- `RoleChanged | PolicyChanged`（IER `CRITICAL_LANE`）→ claims refresh（`S6`）
+- 成功後發 `TOKEN_REFRESH_SIGNAL`
 
-## Claims Management [S6]
+## Mandatory Rules
 
-- `claims-refresh-handler` is the **only** trigger point for token refresh [E6].
-- Trigger conditions: `RoleChanged` or `PolicyChanged` arrive via IER `CRITICAL_LANE`.
-- On success → emit `TOKEN_REFRESH_SIGNAL`.
-- On failure → DLQ `SECURITY_BLOCK` + alert.
+- `R8`：traceId 只讀
+- `S6`：只可透過 contract 流程刷新 claims
+- `D24`：不直連 Firebase SDK
+- `D7`：對外僅公開 `index.ts`
 
-## Incoming Dependencies
+## 依賴
 
-| Source | What is consumed |
-|--------|-----------------|
-| Firebase Auth (L0) | Login / register / token events |
-| IER `CRITICAL_LANE` | `RoleChanged`, `PolicyChanged` events to trigger claims refresh |
-| Shared Kernel [VS0] | `SK_TOKEN_REFRESH_CONTRACT` [S6], `authority-snapshot` shape |
-
-## Outgoing Dependencies
-
-| Target | What is produced |
-|--------|-----------------|
-| VS2 Account | Provides `accountId` lookup via `account-identity-link` |
-| Command Gateway [L2] | Feeds `AuthoritySnapshot` into `authority-interceptor` |
-| All domain slices | `active-account-context` consumed by client-side context hooks |
-
-## Events Emitted
-
-| Event | Lane | Description |
-|-------|------|-------------|
-| `OrgContextProvisioned` | NORMAL | Fired when org context is established after login |
-| `TOKEN_REFRESH_SIGNAL` | CRITICAL | Claims refresh completed; client must re-fetch token |
-
-## Key Invariants
-
-- **[S6]** `claims-refresh-handler` is the unique claims refresh trigger.
-- **[R8]** `traceId` passes through unchanged from `CBG_ENTRY`.
-- **[E6]** Claims refresh initiated only via IER `CRITICAL_LANE`.
-
-## Architecture Sync Note
-
-Identity context consumers that enrich parsing records should propagate `semanticTagSlug` unchanged as part of traceable semantic context.
+- 入：L0 Auth、L4 IER、VS0 contracts
+- 出：L2 authority-interceptor、VS2 account mapping

@@ -1,51 +1,39 @@
-# VS0 · Shared Kernel
+# VS0 · Shared Kernel（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Shared Kernel (VS0) is the **single source of truth for all cross-slice contracts**.
-It defines data shapes, infrastructure behaviour contracts, and dependency-inversion ports
-that every other vertical slice depends on. No business logic lives here — only contracts.
+Shared Kernel 是跨切片唯一契約中心；只定義契約、不承載業務規則。
 
-## Main Entities / Contracts
+## Contracts（S1~S6）
 
-| Contract | Key Fields | Purpose |
-|----------|-----------|---------|
-| `event-envelope` | `version · traceId · causationId · correlationId · timestamp · idempotency-key` | Wraps every domain event. `traceId` is injected once at CBG_ENTRY and is read-only for the whole chain [R8]. |
-| `authority-snapshot` | `claims / roles / scopes / TTL` | Carries authentication state; TTL = token validity period. |
-| `skill-tier` | `getTier(xp) → Tier` | Pure function; never persisted to DB [#12]. |
-| `skill-requirement` | `tagSlug × minXp` | Cross-slice human resource contract. |
-| `cost-item-type` | `EXECUTABLE \| MANAGEMENT \| RESOURCE \| FINANCIAL \| PROFIT \| ALLOWANCE` | Global semantic cost classification enum (owned by VS8, consumed cross-slice). |
-| `semantic-tag-slug` | canonical `tagSlug` string | Global semantic identity contract for projection lookup and routing. |
-| `command-result-contract` | `Success { aggregateId, version } \| Failure { DomainError }` | Basis for frontend optimistic updates. |
-| `SK_OUTBOX_CONTRACT` [S1] | at-least-once · idempotency-key · DLQ classification | Every outbox entry must declare a DLQ level: `SAFE_AUTO`, `REVIEW_REQUIRED`, or `SECURITY_BLOCK`. |
-| `SK_VERSION_GUARD` [S2] | `event.aggregateVersion > view.lastProcessedVersion` | Applied by every projection before writing; stale events are discarded. |
-| `SK_READ_CONSISTENCY` [S3] | `STRONG_READ` vs `EVENTUAL_READ` | Balances / auth / scheduling conflicts → `STRONG_READ`. |
-| `SK_STALENESS_CONTRACT` [S4] | `TAG_MAX_STALENESS ≤ 30s`, `PROJ_STALE_CRITICAL ≤ 500ms`, `PROJ_STALE_STANDARD ≤ 10s` | All nodes must reference these constants; hard-coding values is forbidden. |
-| `SK_RESILIENCE_CONTRACT` [S5] | rate-limit · circuit-break · bulkhead | Applied to `_actions.ts`, webhooks, and edge functions. |
-| `SK_TOKEN_REFRESH_CONTRACT` [S6] | Triggered by `RoleChanged \| PolicyChanged` → `CLAIMS_HANDLER` → `TOKEN_REFRESH_SIGNAL` | Failure → DLQ `SECURITY_BLOCK` + alert. |
+- `S1 SK_OUTBOX_CONTRACT`：at-least-once / idempotency-key / DLQ 分級
+- `S2 SK_VERSION_GUARD`：`event.aggregateVersion > view.lastProcessedVersion`
+- `S3 SK_READ_CONSISTENCY`：金融/授權/衝突用 `STRONG_READ`
+- `S4 SK_STALENESS_CONTRACT`：`TAG<=30s`、`PROJ_CRITICAL<=500ms`、`PROJ_STANDARD<=10s`
+- `S5 SK_RESILIENCE_CONTRACT`：rate-limit / circuit-break / bulkhead
+- `S6 SK_TOKEN_REFRESH_CONTRACT`：Role/Policy 變更觸發 token refresh
 
-## Infrastructure Ports (`SK_PORTS`) [D24]
+## Core Data Contracts
 
-| Port | Purpose |
-|------|---------|
-| `IAuthService` | Authentication adapter (only `src/shared/infra/auth/auth.adapter.ts` may call `firebase/auth`) |
-| `IFirestoreRepo` | Firestore access port [S2] |
-| `IMessaging` | Push messaging port [R8] |
-| `IFileStore` | File storage port |
+- `event-envelope`（含 `traceId`，由 CBG_ENTRY 注入一次，後續唯讀 [R8]）
+- `authority-snapshot`
+- `skill-tier`（`getTier(xp)`，純函式，不落庫 [#12]）
+- `skill-requirement`
+- `command-result-contract`
 
-## Incoming Dependencies
+## Ports（D24）
 
-None — the Shared Kernel has no upstream domain dependencies.
+- `IAuthService`
+- `IFirestoreRepo`
+- `IMessaging`
+- `IFileStore`
 
-## Outgoing Dependencies
+## Mandatory Rules
 
-All other slices (VS1–VS8) import from this module.
-Infrastructure adapters implement the ports defined here.
+- `D24`：feature slice 禁止直接 import `firebase/*`
+- `D8`：shared kernel 禁止 async/side effects/Firestore calls
+- `D7`：跨切片只走 `index.ts`
 
-## Key Invariants
+## 審查點
 
-- **[R8]** `traceId` is injected exactly once at `CBG_ENTRY`; every node downstream reads it, never overwrites it.
-- **[S1]** Idempotency key format: `eventId + aggId + version`.
-- **[D24]** No feature slice may import `firebase/*` directly; all Firebase access goes through `SK_PORTS`.
-- **[D7]** Cross-slice imports must go through `{slice}/index.ts` public barrel.
-- `CostItemType` and `SemanticTagSlug` are SK-level contracts and must not be duplicated in feature-local type declarations.
+- L/R/A：Layer 放置正確、Rule 無破口、Atomicity 不外漏

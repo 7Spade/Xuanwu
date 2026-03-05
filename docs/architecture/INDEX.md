@@ -1,53 +1,54 @@
-# Architecture Slice Index
+# Architecture Index（Aligned to SSOT）
 
-> Quick-reference directory for all domain slices.
-> AI agents: use this to locate the file for any given domain without reading the full logic overview.
+本目錄為 `docs/architecture/logic-overview.md` 的切片導覽索引。
+本頁僅提供定位與審查入口；規則定義以 `logic-overview.md` 為唯一真相。
 
-## Domain Slices (VS0–VS8)
+## Review Gate Baseline
 
-| ID | Domain | File | One-line Summary |
-|----|--------|------|-----------------|
-| VS0 | Shared Kernel | [`slices/shared-kernel.md`](./slices/shared-kernel.md) | Global contracts, ports, and invariants shared by all slices. |
-| VS1 | Identity | [`slices/identity.md`](./slices/identity.md) | Firebase Auth, authenticated-identity, claims refresh. |
-| VS2 | Account | [`slices/account.md`](./slices/account.md) | User account profiles, wallet, governance policy/role. |
-| VS3 | Skill | [`slices/skill.md`](./slices/skill.md) | Skill XP, tiers, tag lifecycle; drives VS8 learning engine. |
-| VS4 | Organization | [`slices/organization.md`](./slices/organization.md) | Org core, members, partners, teams, policy governance. |
-| VS5 | Workspace | [`slices/workspace.md`](./slices/workspace.md) | Projects, tasks, document parsing, billing, workflows. |
-| VS6 | Scheduling | [`slices/scheduling.md`](./slices/scheduling.md) | Schedule aggregates, assignments, saga orchestration. |
-| VS7 | Notification | [`slices/notification.md`](./slices/notification.md) | User notification delivery and queries. |
-| VS8 | Semantic Graph | [`slices/semantic-graph.md`](./slices/semantic-graph.md) | The Brain — semantic tag authority, neural routing, knowledge graph. |
+- Mandatory Gate：`VS0~VS8` + `D1~D26` + `TE1~TE6` + `S1~S6` + `L/R/A`
+- Extension Gate：`D27`（僅 document-parser / finance-routing 變更必審）
 
-## Infrastructure Layers (non-VS)
+## Vertical Slices（VS0~VS8）
 
-| Layer | Name | File | One-line Summary |
-|-------|------|------|-----------------|
-| L4 | IER (Internal Event Router) | [`slices/ier.md`](./slices/ier.md) | Outbox → relay → domain event fan-out; DLQ classification. |
-| L5 | Projection Bus | [`slices/projection-bus.md`](./slices/projection-bus.md) | Read-model projectors; account-view, org-view, workspace-view, etc. |
+| Slice | Scope | Doc |
+|---|---|---|
+| VS0 | Shared Kernel（契約中心） | [slices/shared-kernel.md](./slices/shared-kernel.md) |
+| VS1 | Identity | [slices/identity.md](./slices/identity.md) |
+| VS2 | Account | [slices/account.md](./slices/account.md) |
+| VS3 | Skill | [slices/skill.md](./slices/skill.md) |
+| VS4 | Organization | [slices/organization.md](./slices/organization.md) |
+| VS5 | Workspace | [slices/workspace.md](./slices/workspace.md) |
+| VS6 | Scheduling | [slices/scheduling.md](./slices/scheduling.md) |
+| VS7 | Notification | [slices/notification.md](./slices/notification.md) |
+| VS8 | Semantic Graph（The Brain） | [slices/semantic-graph.md](./slices/semantic-graph.md) |
 
-## Cross-cutting Authorities
+## Infrastructure / Cross-cutting
 
-| Name | File | Role |
-|------|------|------|
-| global-search.slice | [`slices/global-search.md`](./slices/global-search.md) | Only cross-domain search authority [#A12] |
-| notification-hub | [`slices/notification-hub.md`](./slices/notification-hub.md) | Only side-effect outlet — push/email/SMS [#A13] |
+| Layer / Authority | Scope | Doc |
+|---|---|---|
+| L4 | IER（事件路由） | [slices/ier.md](./slices/ier.md) |
+| L5 | Projection Bus（唯讀投影） | [slices/projection-bus.md](./slices/projection-bus.md) |
+| D26 Authority | Global Search（唯一跨域搜尋） | [slices/global-search.md](./slices/global-search.md) |
+| D26 Authority | Notification Hub（唯一副作用出口） | [slices/notification-hub.md](./slices/notification-hub.md) |
 
-## Governance Rules Quick Reference
+## Semantic Tag Entities（TE1~TE6）
 
-| Rule | Meaning |
-|------|---------|
-| D7 | Cross-slice import must go through `{slice}/index.ts` only |
-| D24 | Feature slices must not import `firebase/*` directly |
-| D26 | No private search or notification logic in business slices |
-| D27 | Cost semantic classification belongs exclusively to VS8 |
-| S1 | All events carry idempotency key (`eventId+aggId+version`) |
-| S2 | All projections call `applyVersionGuard()` before writing |
-| A8 | One command touches one aggregate |
+- TE1 `tag::user-level`
+- TE2 `tag::skill`
+- TE3 `tag::skill-tier`
+- TE4 `tag::team`
+- TE5 `tag::role`
+- TE6 `tag::partner`
 
-## 2026-03 Semantic Sync
+## Rule Anchors（Quick)
 
-- Layer-2 cost classification now outputs `(costItemType, semanticTagSlug)`.
-- Parsing-derived records must preserve `sourceIntentIndex` for deterministic materialization order.
-- DocumentParser UI semantic visual attributes must read from `tag-snapshot` projection (T5).
-- Cross-domain search includes `semanticTagSlug` as a first-class query/index key.
+- `D1~D12` 路徑與依賴邊界
+- `D13~D20` 契約治理
+- `D21~D23` VS8 語義治理
+- `D24~D25` Firebase ACL 邊界
+- `D26` Cross-cutting Authorities
+- `S1~S6` Outbox / Version / Read / Staleness / Resilience / Token
 
-See [`../logic-overview.md`](../logic-overview.md) for the full invariant and rule definitions.
+## SSOT Link
+
+- Full spec: [logic-overview.md](./logic-overview.md)

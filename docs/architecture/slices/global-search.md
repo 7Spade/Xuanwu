@@ -1,31 +1,21 @@
-# global-search.slice · Cross-Domain Search Authority
+# global-search.slice（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-`global-search.slice` is the **only cross-domain search authority** [#A12].
-Business slices must NOT build their own search logic; they delegate to this slice.
-It maintains search indexes built on top of VS8 tag entities and projection views.
+唯一跨域搜尋權威（`D26` / `#A12`）。任何業務切片不得自建搜尋邏輯。
 
-Document-parser outputs are indexed with semantic metadata so future queries can search by `semanticTagSlug` directly.
+## 依賴
 
-## Incoming Dependencies
+- 讀 L6 Query Gateway
+- 語義索引對接 VS8
+- 讀 `tag-snapshot` 進行語義擴展
 
-| Source | What is consumed |
-|--------|-----------------|
-| VS8 Semantic Graph | Tag entities (TE1–TE6) for semantic search routing |
-| Projection Bus [L5] | Workspace-view, org-view, schedule-view for content indexing |
-| All business slices | Search queries from VS4, VS5, VS6 |
+## Mandatory Rules
 
-## Outgoing Dependencies
+- `D26`：唯一跨域搜尋出口
+- `D7`：跨切片引用只走公開 API
+- `T5`：語義視覺/分類資訊來自投影，不讀圖內部結構
 
-| Target | What is produced |
-|--------|-----------------|
-| Client consumers | Ranked search results |
-| VS8 | Tag-index updates |
+## 查詢鍵
 
-## Key Invariants
-
-- **[#A12]** Only `global-search.slice` may build cross-domain search indexes.
-- **[D26]** Business slices are forbidden from duplicating search logic.
-- Delegates semantic ranking to VS8 `rankAffectedNodes` API.
-- Parsing line items must be searchable by `semanticTagSlug` and must preserve `sourceIntentIndex` for stable result ordering.
+- 必須支援 `semanticTagSlug` 作為一級索引鍵

@@ -1,56 +1,33 @@
-# VS4 · Organization Slice
+# VS4 · Organization（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Organization slice owns **organisation core data, member governance, partner management,
-team structures, and org-level policies**. It is the authoritative context for multi-tenant
-access control and is referenced heavily by VS5 (Workspace) and VS6 (Scheduling).
+管理組織核心、成員/夥伴/團隊治理與組織政策。
 
-## Main Entities
+## 語義對齊（TE）
 
-| Entity | Description |
-|--------|-------------|
-| `organization` aggregate | Org name, settings, billing plan. |
-| `gov.members` | Member roster; records join/leave/role assignments. |
-| `gov.partners` | External partner organisations linked to this org. |
-| `gov.teams` | Team groups within an org; used for assignment routing. |
-| `gov.policy` | Org-level policy (access rules, feature flags per org). |
+- 成員等級：`TE1 tag::user-level`
+- 成員角色：`TE5 tag::role`
+- 團隊：`TE4 tag::team`
+- 夥伴：`TE6 tag::partner`
 
-## Incoming Dependencies
+## 核心模型
 
-| Source | What is consumed |
-|--------|-----------------|
-| VS1 Identity | `active-account-context` to verify requester org membership |
-| VS2 Account | Account profiles for member resolution |
-| VS8 Semantic Graph | `tag::team` (TE5), `tag::role` (TE4), `tag::partner` (TE6) entities |
-| Shared Kernel [VS0] | `authority-snapshot`, `skill-requirement` contract |
+- `organization-core.aggregate`
+- `org.member` / `org.partner` / `org.team`
+- `org.policy`
+- `org-skill-recognition.aggregate`
 
-## Outgoing Dependencies
+## 事件
 
-| Target | What is produced |
-|--------|-----------------|
-| IER | `OrgContextProvisioned`, `OrgPolicyChanged`, `MemberJoined/Left` events |
-| Projection Bus [L5] | `organization-view`, `org-eligible-member-view` read models |
-| VS6 Scheduling | Eligibility data for assignment routing |
-| VS8 Semantic Graph | Team and role tag registrations |
+- `OrgContextProvisioned`（`E2`）
+- `MemberJoined | MemberLeft`
+- `SkillRecognitionGranted | SkillRecognitionRevoked`
+- `PolicyChanged`
 
-## Events Emitted
+## Mandatory Rules
 
-| Event | DLQ Level | Description |
-|-------|-----------|-------------|
-| `OrgContextProvisioned` | SAFE_AUTO | Org context ready after login/switch. |
-| `OrgPolicyChanged` | REVIEW_REQUIRED | Policy update; may trigger claims refresh. |
-| `MemberJoined` / `MemberLeft` | REVIEW_REQUIRED | Membership roster change. |
-| `TeamCreated` / `TeamUpdated` | SAFE_AUTO | Team structure change. |
-| `PartnerLinked` / `PartnerUnlinked` | REVIEW_REQUIRED | Partner relationship change. |
-
-## Key Invariants
-
-- **[A9]** `scope-guard`: workspace-level operations must validate org membership before execution.
-- **[D24]** No direct `firebase/*` imports.
-- **[D7]** VS5/VS6 reference org data through `organization.slice/index.ts` public API only.
-- **[E2]** `OrgContextProvisioned` fires after org membership is confirmed; downstream slices wait for this before acting.
-
-## Architecture Sync Note
-
-Org-level reporting/search integrations should consume `semanticTagSlug` from parsing projections as the canonical semantic join key.
+- `#16`：Talent Repository = member + partner + team
+- `D24`：不直連 Firebase
+- `D7`：跨切片只走公開 API
+- `A9`：高風險授權判斷可回源 aggregate

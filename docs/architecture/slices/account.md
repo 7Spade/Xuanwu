@@ -1,54 +1,37 @@
-# VS2 · Account Slice
+# VS2 · Account（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Account slice manages **user profiles, wallet, and account-level governance**.
-It is the canonical record of who a user is within the platform after the Firebase identity
-is resolved by VS1. It also drives VS8's learning engine via real skill-fact events.
+管理帳號主體、錢包強一致、帳號治理（role/policy）。
 
-## Main Entities
+## 聚合與子域
 
-| Entity | Description |
-|--------|-------------|
-| `account` aggregate | Core account record; owns `accountId`, profile metadata, wallet balance. |
-| `user-profile` | Display name, avatar, preferences. |
-| `user-wallet` | Financial account; balance changes require `STRONG_READ` [S3]. |
-| `gov.policy` | Account-level governance policy. |
-| `gov.role` | Role assignments on the account. |
+- `user-account.aggregate`
+- `wallet.aggregate`（金融強一致，`S3 STRONG_READ`）
+- `organization-account.aggregate`
+- `account-governance.role`（對齊 `TE5 tag::role`）
+- `account-governance.policy`
 
-## Incoming Dependencies
+## 事件
 
-| Source | What is consumed |
-|--------|-----------------|
-| VS1 Identity | `accountId` from `account-identity-link` |
-| IER | `OrgContextProvisioned`, `OrgPolicyChanged` events |
-| Shared Kernel [VS0] | `authority-snapshot`, `command-result-contract`, `SK_READ_CONSISTENCY` |
+- `AccountCreated`
+- `WalletDeducted | WalletCredited`
+- `RoleChanged | PolicyChanged`
 
-## Outgoing Dependencies
+## Outbox / DLQ（S1）
 
-| Target | What is produced |
-|--------|-----------------|
-| VS8 Semantic Graph | Real skill-fact events that drive the learning engine [D21-G] |
-| IER | `AccountCreated`, `ProfileUpdated`, wallet events |
-| Projection Bus [L5] | `account-view` read model |
+- Wallet / Role / Policy：`CRITICAL_LANE`
+- `RoleChanged | PolicyChanged` 失敗：`SECURITY_BLOCK`
+- Wallet 失敗：`REVIEW_REQUIRED`
 
-## Events Emitted
+## Mandatory Rules
 
-| Event | DLQ Level | Description |
-|-------|-----------|-------------|
-| `AccountCreated` | SAFE_AUTO | New account registered. |
-| `ProfileUpdated` | SAFE_AUTO | User profile fields changed. |
-| `WalletCredited` / `WalletDebited` | REVIEW_REQUIRED | Financial; requires human review on failure. |
-| `RoleAssigned` / `RoleRevoked` | REVIEW_REQUIRED | Role change; triggers claims refresh via VS1. |
-| `PolicyChanged` | REVIEW_REQUIRED | Account policy update; triggers claims refresh via VS1. |
+- `A8`：1 command 只改 1 aggregate
+- `S3`：金融查詢必須 `STRONG_READ`
+- `D24`：不直連 Firebase
+- `D21-G`：只能用 VS2/VS3 事實事件驅動 VS8 學習
 
-## Key Invariants
+## 依賴
 
-- **[S3]** Wallet balance reads must use `STRONG_READ` (financial data).
-- **[A8]** One command touches the `account` aggregate only.
-- **[D21-G]** Only real fact events from VS2 (and VS3) may drive VS8 `learning-engine.ts`; no manual updates.
-- **[D24]** No direct `firebase/*` imports; uses `SK_PORTS`.
-
-## Architecture Sync Note
-
-Account-related search/index consumers should treat `semanticTagSlug` as canonical semantic identity when joining parsing-derived records.
+- 入：VS1 identity link
+- 出：L4 IER、L5 account projection、VS8 learning facts

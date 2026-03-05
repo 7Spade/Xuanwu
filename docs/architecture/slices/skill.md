@@ -1,50 +1,23 @@
-# VS3 · Skill Slice
+# VS3 · Skill（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Skill slice manages **skill experience points (XP), skill tier computation, and tag lifecycle**.
-Skill tiers are computed as pure functions (never persisted). VS3 is one of the two primary
-drivers of VS8's learning engine — real skill events update semantic weights.
+管理技能 XP 與能力等級推導，並以事實事件驅動 VS8 可塑性學習。
 
-## Main Entities
+## 核心模型
 
-| Entity | Description |
-|--------|-------------|
-| `skill` aggregate | Tracks XP earned by a user for a tagged skill. |
-| `skill-tier` (SK contract) | Pure function `getTier(xp) → Tier`; defined in VS0, owned semantically by VS3. |
-| `tag-lifecycle` | Records when a skill tag transitions through states (Draft → Active → Stale → Deprecated). |
+- `account-skill.aggregate`（`tag::skill` = `TE2`）
+- `account-skill-xp-ledger`（XP 異動必寫 [#13]）
+- `getTier(xp)`（`TE3 tag::skill-tier`，純函式，不落庫 [#12]）
 
-## Incoming Dependencies
+## 事件
 
-| Source | What is consumed |
-|--------|-----------------|
-| Shared Kernel [VS0] | `skill-tier` contract, `skill-requirement` contract |
-| VS8 Semantic Graph | `tag::skill` and `tag::skill-tier` tag entities (TE1, TE2) |
-| IER | `SkillRequirementChanged` events from VS4/VS6 |
+- `SkillXpAdded | SkillXpDeducted`
+- 事件需帶 `tagSlug` 與 `aggregateVersion`
 
-## Outgoing Dependencies
+## Mandatory Rules
 
-| Target | What is produced |
-|--------|-----------------|
-| VS8 Semantic Graph | `SkillXpChanged` events → `learning-engine.ts` [D21-G] |
-| IER | `TagLifecycleEvent` (in-process) for affected skill tags |
-| Projection Bus [L5] | `skill-xp` read model; `tag-snapshot` updates |
-
-## Events Emitted
-
-| Event | DLQ Level | Description |
-|-------|-----------|-------------|
-| `SkillXpChanged` | SAFE_AUTO | XP earned or adjusted for a skill. |
-| `SkillTierAdvanced` | SAFE_AUTO | User crossed a tier boundary. |
-| `TagLifecycleEvent` | SAFE_AUTO | Skill tag state transition (T1 — new slices subscribe to extend). |
-
-## Key Invariants
-
-- **[#12]** `skill-tier` is a pure function; it is never stored in the database.
-- **[D21-G]** `learning-engine.ts` in VS8 must be driven by real `SkillXpChanged` / `AccountCreated` facts only — no manual or random weight modifications.
-- **[T1]** New slices that need skill-tier data subscribe to `TagLifecycleEvent` rather than coupling to VS3 internals.
-- **[D24]** No direct `firebase/*` imports; uses `SK_PORTS`.
-
-## Architecture Sync Note
-
-Skill-related projections that consume parsing context should prefer `semanticTagSlug` for cross-slice semantic joins.
+- `#12`：tier 永遠推導值
+- `#13`：XP 異動必寫 ledger
+- `D24`：不直連 Firebase
+- `D21-G`：VS8 learning 只接收真實事實事件

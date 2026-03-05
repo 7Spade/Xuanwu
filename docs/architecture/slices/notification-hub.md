@@ -1,34 +1,22 @@
-# notification-hub.slice · Side-Effect Outlet
+# notification-hub（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-`notification-hub.slice` is the **only side-effect outlet for notifications** [#A13].
-It handles push, email, and in-app notification dispatch. Business slices (VS5, VS6) must
-NOT call `sendEmail`, `sendPush`, or `sendSMS` directly — they route requests through this hub.
+唯一副作用出口（`D26` / `#A13`）：通知策略決策與外部通道發送（push/email/SMS）。
 
-## Incoming Dependencies
+## 輸入
 
-| Source | What is consumed |
-|--------|-----------------|
-| IER | Side-effect trigger events from any domain slice |
-| VS6 Scheduling | Assignment notifications |
-| VS5 Workspace | Workflow state-change notifications |
+- IER `STANDARD_LANE` / `CRITICAL_LANE` 事件
+- 排班、流程、安全相關通知需求
 
-## Outgoing Dependencies
+## 輸出
 
-| Target | What is produced |
-|--------|-----------------|
-| VS7 Notification | `NotificationDispatched` → creates notification records |
-| Firebase Messaging (via `IMessaging` port) | Actual push delivery |
-| Email provider (via port) | Actual email delivery |
+- 通道分發（透過 ports）
+- 交付結果投影到 VS7 notification records
 
-## Key Invariants
+## Mandatory Rules
 
-- **[#A13]** Only `notification-hub.slice` may call push/email/SMS dispatch.
-- **[D26]** Business slices must not contain notification dispatch logic.
-- **[D3]** Notification-hub uses the service layer for all Firestore access; components must not import Firestore SDK directly.
-- **[D24]** No direct `firebase/*` imports; uses `IMessaging` and `IFirestoreRepo` ports.
-
-## Architecture Sync Note
-
-When notification strategies are semantic-aware, routing should consume `semanticTagSlug` from parsing events instead of hardcoded cost categories.
+- `#A13`：業務切片只產生事件，不決定通知策略
+- `D26`：禁止業務切片直接呼叫 sendEmail/push/SMS
+- `D24`：不直連 Firebase，必須走 `IMessaging` 等 ports
+- `R8`：沿用 envelope.traceId，不可重建

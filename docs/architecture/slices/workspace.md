@@ -1,91 +1,31 @@
-# VS5 · Workspace Slice
+# VS5 · Workspace（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Workspace slice is the **core product domain** — it manages projects (workspaces),
-tasks, document parsing, billing documents, and business workflows.
-It relies on VS8 for cost semantic classification and delegates search to global-search.slice.
+管理工作區核心業務：文件解析、任務、流程狀態機、財務請款循環。
 
-## Main Entities
+## 三層文件語義閉環（D27 / A14）
 
-| Entity | Description |
-|--------|-------------|
-| `workspace` aggregate | Project container; owned by an org. |
-| `business.tasks` | Task list within a workspace; driven by parsed documents. |
-| `business.document-parser` | Parses uploaded construction/billing documents into `ParsedLineItem[]`. |
-| `business.parsing-intent` | Records intent to parse; carries idempotency key (`sourceFileId` or hash). |
-| `business.files` | File storage metadata linked to a workspace. |
-| `business.workflow` | Multi-step approval/review workflows. |
-| `gov.audit` | Audit log of workspace mutations. |
+1. Layer-1：`document-parser` 產生 raw line items
+2. Layer-2：呼叫 VS8 `classifyCostItem(name)` → `(costItemType, semanticTagSlug)`
+3. Layer-3：僅 `shouldMaterializeAsTask(type)=true`（EXECUTABLE）可物化為 task
 
-## Document Parsing + Cost Classification Flow
+## ParsingIntent 必備欄位
 
-```
-Upload file
-  → saveParsingIntent (D14/D15 idempotency guards)
-    → document-parser produces ParsedLineItem[]
-      → classifyCostItem(name) → (CostItemType, SemanticTagSlug)  [VS8 D27 #A14]
-        → Layer-3 Semantic Router
-          EXECUTABLE  → materialize as task
-          others      → silent skip + toast
-```
+- `costItemType`
+- `semanticTagSlug`
+- `sourceIntentIndex`（維持排序不變量）
 
-**[#A14]** `ParsedLineItem.(costItemType, semanticTagSlug)` is set by VS8 `_cost-classifier.ts`.
-The Layer-3 router must only materialize `EXECUTABLE` items as tasks.
+## Workflow / Finance（A15/A16）
 
-## ParsingIntent Digital Twin (Semantic)
+- 主流程：Draft → InProgress → QA → Acceptance(OK) → Finance → Completed
+- Finance 每輪固定：Claim Preparation → Claim Submitted → Claim Approved → Invoice Requested → Payment Term → Payment Received
+- `outstandingClaimableAmount > 0` 不可 Completed
 
-`business.parsing-intent` persists per-line semantic attributes:
-- `lineItems[].costItemType`
-- `lineItems[].semanticTagSlug`
-- `lineItems[].sourceIntentIndex`
+## Mandatory Rules
 
-Materialization gate is mandatory:
-- Only `shouldMaterializeAsTask(costItemType)` may decide task creation.
-- Task projection must preserve `sourceIntentIndex` for deterministic ordering.
-- DocumentParser UI visual attributes must come from VS8 `tag-snapshot` projection (T5), not local hardcoded maps.
-
-## Idempotency Guards [D14/D15]
-
-`saveParsingIntent` has two guards:
-1. `sourceFileId`-based: query `getParsingIntentBySourceFileId` before creating.
-2. Hash-based: when `sourceFileId` is absent, check `previousIntentId` → hash match → no-op.
-
-`importItems()` uses a synchronous `useRef<Set<string>>` in-memory lock (`inProgressImports`)
-to prevent TOCTOU duplicate task creation.
-
-## Incoming Dependencies
-
-| Source | What is consumed |
-|--------|-----------------|
-| VS4 Organization | Org membership / scope guard [A9] |
-| VS8 Semantic Graph | `classifyCostItem()` for cost classification [D27]; tag-snapshot for routing |
-| Shared Kernel [VS0] | All infra contracts; `command-result-contract` |
-| IER | Workspace events from other slices (e.g., `ScheduleAssigned`) |
-
-## Outgoing Dependencies
-
-| Target | What is produced |
-|--------|-----------------|
-| IER | All workspace domain events |
-| global-search.slice | Workspace content indexed for search [D26 #A12] |
-| notification-hub | Workflow state changes trigger notifications [D26 #A13] |
-| Projection Bus [L5] | `workspace-view`, `workspace-scope-guard` read models |
-
-## Events Emitted
-
-| Event | DLQ Level | Description |
-|-------|-----------|-------------|
-| `WorkspaceCreated` | SAFE_AUTO | New workspace provisioned. |
-| `TaskCreated` / `TaskUpdated` | SAFE_AUTO | Task lifecycle. |
-| `DocumentParsed` | SAFE_AUTO | Parsing result available. |
-| `WorkflowStateChanged` | REVIEW_REQUIRED | Multi-step workflow transitions. |
-| `BillingDocumentProcessed` | REVIEW_REQUIRED | Financial document finalized. |
-
-## Key Invariants
-
-- **[D27]** VS5 must call `VS8 classifyCostItem()` and must NOT re-implement cost logic.
-- **[D26]** Must use `global-search.slice` for all search; must not build private search logic.
-- **[D26 #A13]** Must use `notification-hub` for all notifications.
-- **[D14]** Idempotency is the responsibility of `saveParsingIntent` and `importItems()`.
-- **[A9]** `workspace-scope-guard` blocks access if requester is not an org member.
+- `A8`：TX Runner = 1cmd/1agg
+- `A15`：Acceptance=OK 才能進 Finance
+- `A16`：不得跳過 Claim/Invoice/PaymentTerm
+- `D26`：搜尋必走 Global Search；通知必走 Notification Hub
+- `T5`：UI 視覺屬性必須讀 `tag-snapshot`，不可讀 adjacency internals

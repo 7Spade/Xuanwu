@@ -1,53 +1,24 @@
-# IER · Internal Event Router
+# L4 · IER（SSOT Aligned）
 
-## Domain Responsibility
+## 責任
 
-The Internal Event Router (IER) is the **only fan-out point between domain slices**.
-It implements the outbox pattern, ensuring that events are delivered at-least-once and
-routed to the correct downstream consumers. It also classifies failed events into DLQ levels.
+IER 是唯一跨切片事件路由出口；所有跨切片溝通只可透過 outbox → relay → IER。
 
-## Lanes
+## Lanes（P1）
 
-| Lane | Priority | Use Cases |
-|------|----------|-----------|
-| `CRITICAL_LANE` | Highest | Token refresh, security events (`RoleChanged`, `PolicyChanged`) |
-| `STANDARD_LANE` | Normal | All normal domain events |
-| `DLQ` | Failure only | Failed events; classified as `SAFE_AUTO`, `REVIEW_REQUIRED`, or `SECURITY_BLOCK` |
+- `CRITICAL_LANE`：Role/Policy/Wallet/OrgContext 等高優先
+- `STANDARD_LANE`：一般領域事件
+- `BACKGROUND_LANE`：TagLifecycle/Audit 等背景任務
 
-## Outbox Contract [S1]
+## DLQ（R5/S1）
 
-Every outbox entry must carry:
-- `idempotency-key` = `eventId + aggId + version`
-- `DLQ_CLASSIFICATION` ∈ `{ SAFE_AUTO, REVIEW_REQUIRED, SECURITY_BLOCK }`
+- `SAFE_AUTO`：可自動 replay
+- `REVIEW_REQUIRED`：人工審核後 replay
+- `SECURITY_BLOCK`：禁止自動 replay
 
-Retry policy:
-- `SAFE_AUTO` → automatic retry + auto-resolve
-- `REVIEW_REQUIRED` → retry + human review queue
-- `SECURITY_BLOCK` → immediate halt + alert
+## Mandatory Rules
 
-## Incoming Dependencies
-
-All domain slices (VS1–VS8) emit events into IER via the outbox.
-
-## Outgoing Dependencies
-
-| Target | What is produced |
-|--------|-----------------|
-| VS1 Identity | `RoleChanged`, `PolicyChanged` via `CRITICAL_LANE` |
-| Projection Bus [L5] | All domain events for read-model updates |
-| notification-hub | Side-effect triggers |
-
-## Key Invariants
-
-- **[S1]** Idempotency key is mandatory on every outbox entry.
-- **[E6]** Claims-refresh events must travel on `CRITICAL_LANE`.
-- No domain slice may call another slice's write path directly; IER is the only conduit.
-
-## Document Parsing Event Contract (Architecture Sync)
-
-`DocumentParserItemsExtracted` (or equivalent parsing-complete event) must include per-line semantic payload:
-- `costItemType`
-- `semanticTagSlug`
-- `sourceIntentIndex`
-
-This contract is required so downstream projectors (`inventory/overview/workspace-view`) can build semantic-aware read models consistently.
+- `S1`：每筆事件必帶 idempotency-key（`eventId+aggId+version`）
+- `R8`：traceId 只讀傳遞
+- `D1`：Domain slice 不可直接 import event-router
+- `E6`：claims refresh 事件必走 `CRITICAL_LANE`
