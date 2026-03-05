@@ -56,9 +56,17 @@ export type {
   SemanticEdge,
   SemanticRelationType,
   TagLifecycleState,
+  TagLifecycleEvent,
+  TagLifecycleEventType,
   TagLifecycleRecord,
   StaleTagWarning,
   TagEntity,
+  // Neural Network types [D21-3 D21-4 D21-6]
+  SemanticDistanceEntry,
+  AffectedNode,
+  CausalityReason,
+  DownstreamEvent,
+  CausalityChain,
 } from './centralized-types';
 
 // =================================================================
@@ -108,6 +116,15 @@ export {
   getIsAEdges,
   getRequiresEdges,
   queryStaleTagWarnings,
+  // Neural Network queries [D21-3 D21-4]
+  computeSemanticDistance,
+  computeSemanticDistanceMatrix,
+  findIsolatedNodes,
+  // Causality Tracer queries [D21-6]
+  traceAffectedNodes,
+  rankAffectedNodes,
+  buildDownstreamEvents,
+  buildCausalityChain,
 } from './_queries';
 
 // =================================================================
@@ -131,6 +148,13 @@ export {
 } from './centralized-embeddings/embedding-port';
 
 // =================================================================
+// Cost Item Classification — Layer-2 Semantic Classification [D8][D21]
+// Pure keyword-based classifier; no SDK imports (classifies during parse phase).
+// =================================================================
+export { classifyCostItem, CostItemType, shouldMaterializeAsTask } from './_cost-classifier';
+export type { CostItemType as CostItemTypeValue } from './_cost-classifier';
+
+// =================================================================
 // CTA Operations — Centralized Tag Aggregate [D3][D8]
 // Firestore-backed CRUD for tagDictionary; D8-compliant (not in shared-kernel).
 // =================================================================
@@ -142,3 +166,17 @@ export {
   getTag,
 } from './centralized-tag/_actions';
 export type { CentralizedTagEntry, TagDeleteRule } from '@/features/shared-kernel';
+
+// =================================================================
+// L5 Blood-Brain Barrier — SemanticGuard [D21-H D21-K]
+// Supreme arbiter of semantic-graph validity.  Call validateEdgeProposal()
+// BEFORE addEdge() to enforce all graph invariants at the BBB layer.
+// External slices must never bypass this guard to write edges directly.
+// =================================================================
+export { validateEdgeProposal } from './centralized-guards/semantic-guard';
+export type {
+  EdgeProposal,
+  SemanticGuardDecision,
+  SemanticGuardRejectionCode,
+  SemanticGuardResult,
+} from './centralized-guards/semantic-guard';
