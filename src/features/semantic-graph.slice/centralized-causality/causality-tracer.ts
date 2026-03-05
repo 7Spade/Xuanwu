@@ -131,7 +131,7 @@ function _suggestDownstreamEvent(
     return {
       targetTagSlug: tagSlugRef(targetSlug),
       suggestedTransition: 'Deprecated' as TagLifecycleState,
-      reason: `Parent/dependency '${sourceEventType}' propagated via ${reason}`,
+      reason: `Parent/dependency deprecated — propagated via ${reason}`,
       priority,
     };
   }

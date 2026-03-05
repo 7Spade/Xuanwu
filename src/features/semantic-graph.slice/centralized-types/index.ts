@@ -138,9 +138,16 @@ export interface TagEmbedding {
 export type TagLifecycleState = 'Draft' | 'Active' | 'Stale' | 'Deprecated';
 
 /**
- * Tag lifecycle transition event payload.
+ * Discriminator for TagLifecycleEvent — used by the Causality Tracer [D21-6].
+ *
+ * | Value              | Emitted when …                                         |
+ * |--------------------|--------------------------------------------------------|
+ * | `TAG_CREATED`      | A new tag enters Draft state                           |
+ * | `TAG_ACTIVATED`    | Draft → Active transition                              |
+ * | `TAG_DEPRECATED`   | Active → Deprecated; triggers downstream propagation  |
+ * | `TAG_STALE_FLAGGED`| Active/Deprecated → Stale (staleness guard S4/D21-8)  |
+ * | `TAG_DELETED`      | Tag permanently removed; no downstream events emitted  |
  */
-/** Discriminator for TagLifecycleEvent — used by the Causality Tracer [D21-6]. */
 export type TagLifecycleEventType =
   | 'TAG_CREATED'
   | 'TAG_ACTIVATED'

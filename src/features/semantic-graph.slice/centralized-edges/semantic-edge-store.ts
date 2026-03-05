@@ -26,6 +26,11 @@ function _makeEdgeId(fromSlug: string, toSlug: string, relationType: SemanticRel
 
 // ─── Edge mutation API ────────────────────────────────────────────────────────
 
+/** Clamps a raw weight value to the valid [0.0, 1.0] range. */
+function _clampWeight(weight: number): number {
+  return Math.min(1.0, Math.max(0.0, weight));
+}
+
 /**
  * Register or overwrite a semantic edge.
  * Called exclusively from _actions.ts (Command path).
@@ -44,7 +49,7 @@ export function addEdge(
     fromTagSlug: tagSlugRef(fromTagSlug),
     toTagSlug: tagSlugRef(toTagSlug),
     relationType,
-    weight: Math.min(1.0, Math.max(0.0, weight)),
+    weight: _clampWeight(weight),
     createdAt: new Date().toISOString(),
   };
   _edges.set(edgeId, edge);

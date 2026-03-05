@@ -18,6 +18,10 @@ import {
 } from '../centralized-edges/semantic-edge-store';
 import type { SemanticDistanceEntry } from '../centralized-types';
 
+/** Minimum edge weight used as the divisor in the Dijkstra cost formula,
+ *  preventing division by zero for zero-weight edges. */
+const MIN_EDGE_WEIGHT = 0.001;
+
 // ─── Internal Dijkstra queue helpers ─────────────────────────────────────────
 
 interface _QueueEntry {
@@ -67,7 +71,7 @@ function _dijkstra(
       if (visited.has(neighborSlug)) continue;
 
       // cost is inverse of weight so stronger edges have shorter distance
-      const edgeCost = 1.0 / Math.max(edge.weight, 0.001);
+      const edgeCost = 1.0 / Math.max(edge.weight, MIN_EDGE_WEIGHT);
       const newDist = current.distance + edgeCost;
       const existing = dist.get(neighborSlug);
 
