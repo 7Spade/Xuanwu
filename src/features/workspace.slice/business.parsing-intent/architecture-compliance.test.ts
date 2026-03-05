@@ -29,43 +29,11 @@ import type {
   WorkspaceTaskAssignedPayload,
 } from '@/features/workspace.slice/core.event-bus/_events';
 
+import { collectSourceFiles, findDirectFirebaseImports } from './_architecture-test-helpers';
+
 // ─── Cross-BC contracts ────────────────────────────────────────────────────────
 
 const SRC_ROOT = path.resolve(process.cwd(), 'src');
-
-// ─── D24 helpers ──────────────────────────────────────────────────────────────
-
-/** Recursively collect all .ts/.tsx source files under a directory, excluding tests and node_modules. */
-function collectSourceFiles(dir: string): string[] {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  const files: string[] = [];
-  for (const entry of entries) {
-    if (entry.name === 'node_modules') continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...collectSourceFiles(full));
-    } else if (
-      (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx')) &&
-      !entry.name.endsWith('.test.ts') &&
-      !entry.name.endsWith('.test.tsx') &&
-      !entry.name.endsWith('.d.ts')
-    ) {
-      files.push(full);
-    }
-  }
-  return files;
-}
-
-/** Returns files that import directly from 'firebase/firestore' or 'firebase/app'. */
-function findDirectFirebaseImports(dir: string): string[] {
-  return collectSourceFiles(dir).filter((file) => {
-    const content = fs.readFileSync(file, 'utf8');
-    return (
-      /from ['"]firebase\/firestore['"]/.test(content) ||
-      /from ['"]firebase\/app['"]/.test(content)
-    );
-  });
-}
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 

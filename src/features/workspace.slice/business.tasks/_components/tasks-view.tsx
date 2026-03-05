@@ -3,20 +3,13 @@
 
 import {
   BarChart3,
-  CalendarPlus,
-  ChevronDown,
-  ChevronRight,
-  ClipboardPlus,
   Clock,
   Coins,
   Loader2,
   MapPin,
-  OctagonX,
   Paperclip,
   Plus,
-  Send,
   Settings2,
-  Trash2,
   UploadCloud,
   View,
   X,
@@ -45,7 +38,6 @@ import {
 import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
 import { Input } from '@/shared/shadcn-ui/input';
 import { Label } from '@/shared/shadcn-ui/label';
-import { Progress } from '@/shared/shadcn-ui/progress';
 import {
   Select,
   SelectContent,
@@ -62,6 +54,7 @@ import { useWorkspace } from '../../core';
 import { type Location, type TaskWithChildren, type WorkspaceTask } from '../_types';
 
 import { ProgressReportDialog } from './progress-report-dialog';
+import { TaskTreeNode } from './task-tree-node';
 
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
@@ -321,254 +314,6 @@ export function WorkspaceTasks() {
     setPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-
-  const RenderTask = ({
-    node,
-    level = 0,
-  }: {
-    node: TaskWithChildren;
-    level?: number;
-  }) => {
-    const isExpanded = expandedIds.has(node.id);
-    const hasChildren = node.children.length > 0;
-    const isViolating = node.descendantSum > node.subtotal;
-
-    return (
-      <div className="duration-300 animate-in slide-in-from-left-2">
-        <div
-          className={cn(
-            'group flex items-center gap-3 p-3 rounded-2xl border transition-all mb-1',
-            isViolating
-              ? 'bg-destructive/5 border-destructive/30'
-              : 'bg-card/40 border-border/60 hover:border-primary/40',
-            level > 0 &&
-              'ml-8 relative before:absolute before:left-[-20px] before:top-[-10px] before:bottom-[50%] before:w-[1.5px] before:bg-primary/20 after:absolute after:left-[-20px] after:top-[50%] after:w-[15px] after:h-[1.5px] after:bg-primary/20'
-          )}
-        >
-          <button
-            onClick={() => {
-              const next = new Set(expandedIds);
-              if (next.has(node.id)) next.delete(node.id);
-              else next.add(node.id);
-              setExpandedIds(next);
-            }}
-            className={cn(
-              'p-1 hover:bg-primary/10 rounded-lg transition-colors',
-              !hasChildren && 'opacity-0 pointer-events-none'
-            )}
-          >
-            {isExpanded ? (
-              <ChevronDown className="size-3.5 text-primary" />
-            ) : (
-              <ChevronRight className="size-3.5 text-primary" />
-            )}
-          </button>
-
-          <div className="grid flex-1 grid-cols-12 items-center gap-3">
-            <div className="col-span-4 flex items-center gap-2">
-              <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[9px] font-black text-primary">
-                {node.wbsNo}
-              </span>
-              <div className="flex flex-1 flex-col truncate">
-                <p className="truncate text-xs font-black tracking-tight">
-                  {node.name}
-                </p>
-                {node.location?.description && (
-                  <div className="mt-1 flex items-center gap-1.5 text-muted-foreground">
-                      <MapPin className="size-3" />
-                      <p className="truncate text-[10px] font-medium">{[node.location.building, node.location.floor, node.location.room, node.location.description].filter(Boolean).join(' - ')}</p>
-                  </div>
-                )}
-                 {node.photoURLs && node.photoURLs.length > 0 && (
-                  <div className="mt-1.5 flex items-center gap-2">
-                    {node.photoURLs.map((url, i) => (
-                       <button key={i} onClick={() => setPreviewingImage(url)} className="relative size-8 overflow-hidden rounded border transition-opacity hover:opacity-80">
-                         <Image src={url} alt={`Task attachment ${i + 1}`} fill sizes="32px" className="object-cover" />
-                       </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="col-span-8 grid grid-cols-6 items-center gap-2">
-              {visibleColumns.has('type') && (
-                <div className="truncate text-[9px] font-bold uppercase text-muted-foreground">
-                  {node.type}
-                </div>
-              )}
-              {visibleColumns.has('priority') && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'text-[7px] h-4 px-1 uppercase w-fit',
-                    node.priority === 'high'
-                      ? 'border-red-500/50 text-red-500'
-                      : ''
-                  )}
-                >
-                  {node.priority}
-                </Badge>
-              )}
-              {visibleColumns.has('discount') && (
-                <div className="text-right">
-                    <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">
-                        Discount
-                    </p>
-                    <p className="text-[10px] font-bold text-destructive">
-                        -${(node.discount || 0).toLocaleString()}
-                    </p>
-                </div>
-              )}
-              {visibleColumns.has('subtotal') && (
-                <div className="text-right">
-                  <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">
-                    Budget
-                  </p>
-                  <p
-                    className={cn(
-                      'text-[10px] font-bold',
-                      isViolating ? 'text-destructive' : 'text-primary'
-                    )}
-                  >
-                    ${node.subtotal?.toLocaleString()}
-                  </p>
-                </div>
-              )}
-              {visibleColumns.has('progress') && (
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <Progress value={node.progress || 0} className="h-1 flex-1" />
-                    <span className="text-[8px] font-black">
-                      {node.progress || 0}%
-                    </span>
-                  </div>
-                  {(node.quantity ?? 1) > 1 && (
-                    <span className="text-right font-mono text-[9px] font-bold text-muted-foreground">
-                      {node.completedQuantity || 0} / {node.quantity}
-                    </span>
-                  )}
-                </div>
-              )}
-              {visibleColumns.has('status') && (
-                <div className="flex items-center justify-end">
-                  {node.progress === 100 && ['todo', 'doing'].includes(node.progressState) ? (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 rounded-lg text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
-                      onClick={() => handleSubmitForQA(node)}
-                      title="Submit for QA"
-                    >
-                      <Send className="size-4" />
-                    </Button>
-                  ) : (
-                    <div
-                      className={cn(
-                        'w-2 h-2 rounded-full self-center',
-                        node.progressState === 'completed'
-                          ? 'bg-blue-500'
-                          : node.progressState === 'verified'
-                          ? 'bg-purple-500'
-                          : node.progressState === 'accepted'
-                          ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
-                          : node.progressState === 'blocked'
-                          ? 'bg-red-500'
-                          : 'bg-amber-500'
-                      )}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="ml-2 flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
-             {(node.quantity ?? 1) > 1 && !hasChildren && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 rounded-lg text-primary"
-                onClick={() => setReportingTask(node)}
-              >
-                <ClipboardPlus className="size-3.5" />
-              </Button>
-            )}
-             <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 rounded-lg text-primary"
-                onClick={() => handleScheduleRequest(node)}
-            >
-                <CalendarPlus className="size-3.5" />
-            </Button>
-            {['todo', 'doing'].includes(node.progressState) && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-7 rounded-lg text-destructive"
-                onClick={() => handleMarkBlocked(node)}
-                title="Mark as Blocked (B-Track)"
-              >
-                <OctagonX className="size-3.5" />
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 rounded-lg text-primary"
-              onClick={() => {
-                setEditingTask({
-                  parentId: node.id,
-                  quantity: 1,
-                  completedQuantity: 0,
-                  unitPrice: 0,
-                  discount: 0,
-                  type: 'Sub-task',
-                  priority: 'medium',
-                  progressState: 'todo',
-                });
-                setIsAddOpen(true);
-              }}
-            >
-              <Plus className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 rounded-lg text-primary"
-              onClick={() => {
-                setEditingTask({
-                    ...node,
-                    location: node.location || { description: '' }
-                });
-                setIsAddOpen(true);
-              }}
-            >
-              <Settings2 className="size-3.5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 rounded-lg text-destructive"
-              onClick={() => handleDeleteTask(node)}
-            >
-              <Trash2 className="size-3.5" />
-            </Button>
-          </div>
-        </div>
-
-        {isExpanded && hasChildren && (
-          <div className="space-y-0.5">
-            {node.children.map((child: TaskWithChildren) => (
-              <RenderTask key={child.id} node={child} level={level + 1} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6 pb-20 duration-500 animate-in fade-in">
       <div className="flex items-center justify-between rounded-3xl border border-primary/20 bg-card/40 p-4 shadow-sm backdrop-blur-md">
@@ -687,7 +432,41 @@ export function WorkspaceTasks() {
 
       <div className="space-y-1">
         {tree.length > 0 ? (
-          tree.map((root) => <RenderTask key={root.id} node={root} />)
+          tree.map((root) => (
+            <TaskTreeNode
+              key={root.id}
+              node={root}
+              expandedIds={expandedIds}
+              setExpandedIds={setExpandedIds}
+              visibleColumns={visibleColumns}
+              onPreviewImage={setPreviewingImage}
+              onReportProgress={setReportingTask}
+              onScheduleRequest={handleScheduleRequest}
+              onMarkBlocked={handleMarkBlocked}
+              onCreateChild={(node) => {
+                setEditingTask({
+                  parentId: node.id,
+                  quantity: 1,
+                  completedQuantity: 0,
+                  unitPrice: 0,
+                  discount: 0,
+                  type: 'Sub-task',
+                  priority: 'medium',
+                  progressState: 'todo',
+                });
+                setIsAddOpen(true);
+              }}
+              onEditNode={(node) => {
+                setEditingTask({
+                  ...node,
+                  location: node.location || { description: '' },
+                });
+                setIsAddOpen(true);
+              }}
+              onDeleteNode={handleDeleteTask}
+              onSubmitForQA={handleSubmitForQA}
+            />
+          ))
         ) : (
           <div className="flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed bg-muted/5 p-20 text-center opacity-20">
             <Coins className="size-12" />
