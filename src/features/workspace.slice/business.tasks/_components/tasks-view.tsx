@@ -9,7 +9,7 @@ import {
   View,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@/shared/shadcn-ui/button';
 import {
@@ -34,7 +34,8 @@ import { PageHeader } from '@/shared/ui/page-header';
 import { buildTaskTree } from '../../_task.rules';
 import { useStorage } from '../../business.files';
 import { useWorkspace } from '../../core';
-import { type Location, type TaskWithChildren, type WorkspaceTask } from '../_types';
+import { useAttachmentsDialogController, useLocationDialogController } from '../_hooks';
+import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 
 import { AttachmentsDialog } from './attachments-dialog';
 import { LocationDialog } from './location-dialog';
@@ -60,13 +61,7 @@ export function WorkspaceTasks() {
   const [reportingTask, setReportingTask] = useState<TaskWithChildren | null>(null);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [previewingImage, setPreviewingImage] = useState<string | null>(null);
-  const [locationTask, setLocationTask] = useState<TaskWithChildren | null>(null);
-  const [locationDraft, setLocationDraft] = useState<Location>({ description: '' });
-  const [attachmentsTask, setAttachmentsTask] = useState<TaskWithChildren | null>(null);
-  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   
-  const [isLocationSaving, setIsLocationSaving] = useState(false);
-  const [isAttachmentsSaving, setIsAttachmentsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(
@@ -87,6 +82,34 @@ export function WorkspaceTasks() {
   );
 
   const tree = useMemo(() => buildTaskTree(tasks), [tasks]);
+
+  const {
+    locationTask,
+    locationDraft,
+    isLocationSaving,
+    openLocation,
+    closeLocation,
+    updateDraft: updateLocationDraft,
+    saveLocation,
+  } = useLocationDialogController({
+    updateTask,
+    logAuditEvent,
+  });
+
+  const {
+    attachmentsTask,
+    attachmentFiles,
+    isAttachmentsSaving,
+    openAttachments,
+    closeAttachments,
+    selectFiles: selectAttachmentFiles,
+    removeFile: removeAttachmentFile,
+    saveAttachments,
+  } = useAttachmentsDialogController({
+    updateTask,
+    uploadTaskAttachment,
+    logAuditEvent,
+  });
 
   const handleSaveTask = async () => {
     if (!editingTask?.name) return;
@@ -262,87 +285,6 @@ export function WorkspaceTasks() {
     }
   };
 
-  const handleLocationDraftChange = (field: keyof Location, value: string) => {
-    setLocationDraft((prev) => ({
-      ...prev,
-      description: prev.description || '',
-      [field]: value,
-    }));
-  };
-
-  const handleOpenLocation = (task: TaskWithChildren) => {
-    setLocationTask(task);
-    setLocationDraft({
-      building: task.location?.building,
-      floor: task.location?.floor,
-      room: task.location?.room,
-      description: task.location?.description || '',
-    });
-  };
-
-  const handleSaveLocation = async () => {
-    if (!locationTask) return;
-    setIsLocationSaving(true);
-
-    try {
-      await updateTask(locationTask.id, { location: locationDraft });
-      logAuditEvent('Updated Task Location', locationTask.name, 'update');
-      setLocationTask(null);
-      toast({ title: 'Location Updated' });
-    } catch (error: unknown) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to Update Location',
-        description: getErrorMessage(error, 'An unknown error occurred.'),
-      });
-    } finally {
-      setIsLocationSaving(false);
-    }
-  };
-
-  const handleOpenAttachments = (task: TaskWithChildren) => {
-    setAttachmentsTask(task);
-    setAttachmentFiles([]);
-  };
-
-  const handleSelectAttachmentFiles = (files: FileList | null) => {
-    if (!files) return;
-    setAttachmentFiles((prev) => [...prev, ...Array.from(files)]);
-  };
-
-  const handleRemoveAttachmentFile = (index: number) => {
-    setAttachmentFiles((prev) => prev.filter((_, fileIndex) => fileIndex !== index));
-  };
-
-  const handleSaveAttachments = async () => {
-    if (!attachmentsTask || attachmentFiles.length === 0) {
-      if (!attachmentsTask) return;
-      setAttachmentsTask(null);
-      return;
-    }
-
-    setIsAttachmentsSaving(true);
-
-    try {
-      const uploaded = await Promise.all(attachmentFiles.map((file) => uploadTaskAttachment(file)));
-      const merged = [...(attachmentsTask.photoURLs ?? []), ...uploaded];
-
-      await updateTask(attachmentsTask.id, { photoURLs: merged });
-      logAuditEvent('Updated Task Attachments', attachmentsTask.name, 'update');
-      setAttachmentsTask(null);
-      setAttachmentFiles([]);
-      toast({ title: 'Attachments Updated' });
-    } catch (error: unknown) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to Update Attachments',
-        description: getErrorMessage(error, 'An unknown error occurred.'),
-      });
-    } finally {
-      setIsAttachmentsSaving(false);
-    }
-  };
-
   const toggleColumn = (key: string) => {
     const next = new Set(visibleColumns);
     if (next.has(key)) next.delete(key);
@@ -476,11 +418,11 @@ export function WorkspaceTasks() {
       <LocationDialog
         isOpen={!!locationTask}
         draft={locationDraft}
-        onDraftChange={handleLocationDraftChange}
-        onSave={handleSaveLocation}
+        onDraftChange={updateLocationDraft}
+        onSave={saveLocation}
         isSaving={isLocationSaving}
         onOpenChange={(open) => {
-          if (!open) setLocationTask(null);
+          if (!open) closeLocation();
         }}
       />
 
@@ -488,16 +430,13 @@ export function WorkspaceTasks() {
         isOpen={!!attachmentsTask}
         attachments={attachmentsTask?.photoURLs ?? []}
         files={attachmentFiles}
-        onFilesSelected={handleSelectAttachmentFiles}
-        onRemoveFile={handleRemoveAttachmentFile}
-        onSave={handleSaveAttachments}
+        onFilesSelected={selectAttachmentFiles}
+        onRemoveFile={removeAttachmentFile}
+        onSave={saveAttachments}
         isSaving={isAttachmentsSaving}
         onPreviewImage={setPreviewingImage}
         onOpenChange={(open) => {
-          if (!open) {
-            setAttachmentsTask(null);
-            setAttachmentFiles([]);
-          }
+          if (!open) closeAttachments();
         }}
       />
 
@@ -511,8 +450,8 @@ export function WorkspaceTasks() {
               setExpandedIds={setExpandedIds}
               visibleColumns={visibleColumns}
               onPreviewImage={setPreviewingImage}
-              onOpenLocation={handleOpenLocation}
-              onOpenAttachments={handleOpenAttachments}
+              onOpenLocation={openLocation}
+              onOpenAttachments={openAttachments}
               onReportProgress={setReportingTask}
               onScheduleRequest={handleScheduleRequest}
               onMarkBlocked={handleMarkBlocked}

@@ -91,12 +91,6 @@ export function AttachmentsDialog({
           ))}
         </div>
 
-        <Button asChild variant="outline" className="h-10 w-full cursor-pointer rounded-lg border-dashed">
-          <label htmlFor="attachments-upload">
-            <UploadCloud className="mr-2 size-4" /> Upload Images
-          </label>
-        </Button>
-
         <div className="flex justify-end">
           <Button onClick={onSave} disabled={isSaving} className="rounded-lg">
             {isSaving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
