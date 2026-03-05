@@ -274,6 +274,7 @@ src/features/projection.bus/workspace-view/_queries.ts
 src/features/projection.bus/workspace-view/index.ts
 src/features/scheduling.slice/_actions.ts
 src/features/scheduling.slice/_aggregate.ts
+src/features/scheduling.slice/_aggregate.types.ts
 src/features/scheduling.slice/_components/decision-history-columns.tsx
 src/features/scheduling.slice/_components/demand-board.tsx
 src/features/scheduling.slice/_components/governance-sidebar.tsx
@@ -2635,91 +2636,6 @@ export function useTeamManagement()
 
 ```
 
-## File: src/features/projection.bus/_funnel.shared.ts
-```typescript
-import { arrayUnion, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
-export async function executeAggregateWriteOp(op: {
-  path: string;
-  data: Record<string, unknown>;
-  arrayUnionFields?: Record<string, string[]>;
-}): Promise<void>
-export function createVersionStamp():
-```
-
-## File: src/features/projection.bus/_funnel.ts
-```typescript
-import { onOrgEvent } from '@/features/organization.slice';
-import { handleScheduleProposed } from '@/features/scheduling.slice';
-import { onTagEvent } from '@/features/shared-kernel';
-import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
-import {
-  handleTagUpdatedForPool,
-  handleTagDeprecatedForPool,
-  handleTagDeletedForPool,
-} from '@/features/skill-xp.slice';
-import type { WorkspaceEventBus } from '@/features/workspace.slice';
-import { updateDocument, arrayUnion } from '@/shared/infra/firestore/firestore.write.adapter';
-import { upsertProjectionVersion } from './_registry';
-import { appendAuditEntry } from './account-audit';
-import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
-import {
-  applyDemandProposed,
-  applyDemandAssigned,
-  applyDemandCompleted,
-  applyDemandAssignmentCancelled,
-  applyDemandProposalCancelled,
-  applyDemandAssignRejected,
-} from './demand-board';
-import {
-  applyOrgMemberSkillXp,
-  initOrgMemberEntry,
-  removeOrgMemberEntry,
-  updateOrgMemberEligibility,
-} from './org-eligible-member-view';
-import { applyMemberJoined, applyMemberLeft } from './organization-view';
-import {
-  applyTagCreated,
-  applyTagUpdated,
-  applyTagDeprecated,
-  applyTagDeleted,
-} from './tag-snapshot';
-async function executeAggregateWriteOp(op: {
-  path: string;
-  data: Record<string, unknown>;
-  arrayUnionFields?: Record<string, string[]>;
-}): Promise<void>
-export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
-export function registerOrganizationFunnel(): () => void
-export function registerTagFunnel(): () => void
-export async function replayWorkspaceProjections(
-  workspaceId: string
-): Promise<
-```
-
-## File: src/features/projection.bus/_organization-funnel.ts
-```typescript
-import { onOrgEvent } from '@/features/organization.slice';
-import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
-import { createVersionStamp } from './_funnel.shared';
-import { upsertProjectionVersion } from './_registry';
-import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
-import {
-  applyDemandAssigned,
-  applyDemandAssignmentCancelled,
-  applyDemandAssignRejected,
-  applyDemandCompleted,
-  applyDemandProposalCancelled,
-} from './demand-board';
-import {
-  applyOrgMemberSkillXp,
-  initOrgMemberEntry,
-  removeOrgMemberEntry,
-  updateOrgMemberEligibility,
-} from './org-eligible-member-view';
-import { applyMemberJoined, applyMemberLeft } from './organization-view';
-export function registerOrganizationFunnel(): () => void
-```
-
 ## File: src/features/projection.bus/_query-registration.ts
 ```typescript
 import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
@@ -2746,33 +2662,6 @@ export async function upsertProjectionVersion(
   lastEventOffset: number,
   readModelVersion: string
 ): Promise<void>
-```
-
-## File: src/features/projection.bus/_tag-funnel.ts
-```typescript
-import { onTagEvent } from '@/features/shared-kernel';
-import {
-  handleTagDeletedForPool,
-  handleTagDeprecatedForPool,
-  handleTagUpdatedForPool,
-} from '@/features/skill-xp.slice';
-import { createVersionStamp } from './_funnel.shared';
-import { upsertProjectionVersion } from './_registry';
-import { applyTagCreated, applyTagDeleted, applyTagDeprecated, applyTagUpdated } from './tag-snapshot';
-export function registerTagFunnel(): () => void
-```
-
-## File: src/features/projection.bus/_workspace-funnel.ts
-```typescript
-import { handleScheduleProposed } from '@/features/scheduling.slice';
-import type { WorkspaceEventBus } from '@/features/workspace.slice';
-import { appendAuditEntry } from './account-audit';
-import {
-  applyDemandProposed,
-} from './demand-board';
-import { executeAggregateWriteOp, createVersionStamp } from './_funnel.shared';
-import { upsertProjectionVersion } from './_registry';
-export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
 ```
 
 ## File: src/features/projection.bus/account-audit/_projector.ts
@@ -3345,29 +3234,21 @@ export async function completeOrgScheduleAction(
 
 ## File: src/features/scheduling.slice/_aggregate.ts
 ```typescript
-import { z } from 'zod';
 import { publishOrgEvent } from '@/features/organization.slice';
 import { getOrgMemberEligibility } from '@/features/projection.bus';
 import { resolveSkillTier, tierSatisfies } from '@/features/shared-kernel';
 import type { WorkspaceScheduleProposedPayload, SkillRequirement } from '@/features/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/features/shared-kernel';
 import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
+import {
+  type ScheduleApprovalResult,
+  type WriteOp,
+} from './_aggregate.types';
 ⋮----
-export type OrgScheduleStatus = (typeof ORG_SCHEDULE_STATUSES)[number];
-⋮----
-export type OrgScheduleProposal = z.infer<typeof orgScheduleProposalSchema>;
 function scheduleItemPath(orgId: string, scheduleItemId: string): string
-export interface WriteOp {
-  path: string;
-  data: Record<string, unknown>;
-  arrayUnionFields?: Record<string, string[]>;
-}
 export function handleScheduleProposed(
   payload: WorkspaceScheduleProposedPayload
 ): WriteOp
-export type ScheduleApprovalResult =
-  | { outcome: 'confirmed'; scheduleItemId: string; writeOp: WriteOp }
-  | { outcome: 'rejected'; scheduleItemId: string; reason: string; writeOp: WriteOp };
 export async function approveOrgScheduleProposal(
   scheduleItemId: string,
   targetAccountId: string,
@@ -3413,6 +3294,23 @@ export async function cancelOrgScheduleAssignment(
   reason?: string,
   traceId?: string
 ): Promise<WriteOp>
+```
+
+## File: src/features/scheduling.slice/_aggregate.types.ts
+```typescript
+import { z } from 'zod';
+⋮----
+export type OrgScheduleStatus = (typeof ORG_SCHEDULE_STATUSES)[number];
+⋮----
+export type OrgScheduleProposal = z.infer<typeof orgScheduleProposalSchema>;
+export interface WriteOp {
+  path: string;
+  data: Record<string, unknown>;
+  arrayUnionFields?: Record<string, string[]>;
+}
+export type ScheduleApprovalResult =
+  | { outcome: 'confirmed'; scheduleItemId: string; writeOp: WriteOp }
+  | { outcome: 'rejected'; scheduleItemId: string; reason: string; writeOp: WriteOp };
 ```
 
 ## File: src/features/scheduling.slice/_components/decision-history-columns.tsx
@@ -6451,6 +6349,22 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { firebaseConfig } from "./firebase.config";
 ```
 
+## File: src/shared/infra/auth/auth.adapter.ts
+```typescript
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInAnonymously,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+  signOut,
+  onAuthStateChanged,
+  type User as FirebaseUser,
+} from 'firebase/auth';
+import { auth } from './auth.client';
+```
+
 ## File: src/shared/infra/auth/auth.client.ts
 ```typescript
 import { getAuth, type Auth } from 'firebase/auth';
@@ -8102,6 +8016,83 @@ export type PortalState = {
 
 ```
 
+## File: src/features/projection.bus/_funnel.shared.ts
+```typescript
+import { arrayUnion, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+export async function executeAggregateWriteOp(op: {
+  path: string;
+  data: Record<string, unknown>;
+  arrayUnionFields?: Record<string, string[]>;
+}): Promise<void>
+export function createVersionStamp():
+```
+
+## File: src/features/projection.bus/_funnel.ts
+```typescript
+import type { WorkspaceEventBus } from '@/features/workspace.slice';
+import { registerOrganizationFunnel as registerOrganizationFunnelImpl } from './_organization-funnel';
+import { registerTagFunnel as registerTagFunnelImpl } from './_tag-funnel';
+import { upsertProjectionVersion } from './_registry';
+import { registerWorkspaceFunnel as registerWorkspaceFunnelImpl } from './_workspace-funnel';
+export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
+export function registerOrganizationFunnel(): () => void
+export function registerTagFunnel(): () => void
+export async function replayWorkspaceProjections(
+  workspaceId: string
+): Promise<
+```
+
+## File: src/features/projection.bus/_organization-funnel.ts
+```typescript
+import { onOrgEvent } from '@/features/organization.slice';
+import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
+import { createVersionStamp } from './_funnel.shared';
+import { upsertProjectionVersion } from './_registry';
+import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
+import {
+  applyDemandAssigned,
+  applyDemandAssignmentCancelled,
+  applyDemandAssignRejected,
+  applyDemandCompleted,
+  applyDemandProposalCancelled,
+} from './demand-board';
+import {
+  applyOrgMemberSkillXp,
+  initOrgMemberEntry,
+  removeOrgMemberEntry,
+  updateOrgMemberEligibility,
+} from './org-eligible-member-view';
+import { applyMemberJoined, applyMemberLeft } from './organization-view';
+export function registerOrganizationFunnel(): () => void
+```
+
+## File: src/features/projection.bus/_tag-funnel.ts
+```typescript
+import { onTagEvent } from '@/features/shared-kernel';
+import {
+  handleTagDeletedForPool,
+  handleTagDeprecatedForPool,
+  handleTagUpdatedForPool,
+} from '@/features/skill-xp.slice';
+import { createVersionStamp } from './_funnel.shared';
+import { upsertProjectionVersion } from './_registry';
+import { applyTagCreated, applyTagDeleted, applyTagDeprecated, applyTagUpdated } from './tag-snapshot';
+export function registerTagFunnel(): () => void
+```
+
+## File: src/features/projection.bus/_workspace-funnel.ts
+```typescript
+import { handleScheduleProposed } from '@/features/scheduling.slice';
+import type { WorkspaceEventBus } from '@/features/workspace.slice';
+import { createVersionStamp, executeAggregateWriteOp } from './_funnel.shared';
+import { upsertProjectionVersion } from './_registry';
+import { appendAuditEntry } from './account-audit';
+import {
+  applyDemandProposed,
+} from './demand-board';
+export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
+```
+
 ## File: src/features/projection.bus/account-view/_projector.ts
 ```typescript
 import { versionGuardAllows } from '@/features/shared-kernel';
@@ -9654,6 +9645,45 @@ const handleCreate = async () =>
 ⋮----
 ```
 
+## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
+```typescript
+import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import type { Account } from "@/features/shared-kernel"
+import { ROUTES } from "@/shared/constants/routes"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/shadcn-ui/dropdown-menu"
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+} from "@/shared/shadcn-ui/sidebar"
+import { cn } from "@/shared/shadcn-ui/utils/utils"
+import type { AppAction } from '../app-provider'
+interface AccountSwitcherProps {
+  user: Account | null
+  accounts: Record<string, Account>
+  activeAccount: Account | null
+  dispatch: React.Dispatch<AppAction>
+  createOrganization: (name: string) => Promise<string>
+  t: (key: string) => string
+}
+const getAccountInitial = (name?: string)
+⋮----
+<AvatarFallback className=
+⋮----
+```
+
 ## File: src/features/workspace.slice/core/_components/shell/header.tsx
 ```typescript
 import { Search, Command } from "lucide-react";
@@ -10750,22 +10780,6 @@ export const useAuth = () =>
 
 ```
 
-## File: src/shared/infra/auth/auth.adapter.ts
-```typescript
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInAnonymously,
-  updateProfile,
-  verifyBeforeUpdateEmail,
-  signOut,
-  onAuthStateChanged,
-  type User as FirebaseUser,
-} from 'firebase/auth';
-import { auth } from './auth.client';
-```
-
 ## File: src/shared/infra/firestore/collection-paths.ts
 ```typescript
 
@@ -11052,6 +11066,83 @@ import { PageHeader } from "@/shared/ui/page-header"
 export function AccountSkillsSection()
 ⋮----
 title=
+```
+
+## File: src/features/account.slice/user.profile/_components/email-card.tsx
+```typescript
+import { Mail, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { authAdapter } from "@/shared/infra/auth/auth.adapter";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
+import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shared/shadcn-ui/input";
+import { Label } from "@/shared/shadcn-ui/label";
+interface EmailCardProps {
+  currentEmail: string;
+}
+⋮----
+const handleChangeEmail = async () =>
+```
+
+## File: src/features/account.slice/user.profile/_components/profile-card.tsx
+```typescript
+import { User, Loader2, Upload } from "lucide-react";
+import type React from "react"
+import { type Account } from "@/features/shared-kernel"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
+import { Button } from "@/shared/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
+import { Input } from "@/shared/shadcn-ui/input";
+import { Label } from "@/shared/shadcn-ui/label";
+import { Textarea } from "@/shared/shadcn-ui/textarea";
+interface ProfileCardProps {
+  account: Account | null
+  name: string
+  setName: (name: string) => void
+  bio: string
+  setBio: (bio: string) => void
+  handleSaveProfile: () => void
+  handleAvatarUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
+  isSaving: boolean
+  isUploading: boolean
+  avatarInputRef: React.RefObject<HTMLInputElement | null>
+}
+export function ProfileCard({
+  account,
+  name,
+  setName,
+  bio,
+  setBio,
+  handleSaveProfile,
+  handleAvatarUpload,
+  isSaving,
+  isUploading,
+  avatarInputRef,
+}: ProfileCardProps)
+⋮----
+<Button onClick=
+⋮----
+<Input id="user-name" value=
+```
+
+## File: src/features/account.slice/user.profile/_components/user-settings.tsx
+```typescript
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useI18n } from "@/config/i18n/i18n-provider";
+import { useAuth } from "@/shared/app-providers/auth-provider";
+import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { useUser } from "../_hooks/use-user";
+import { EmailCard } from "./email-card";
+import { PreferencesCard } from "./preferences-card";
+import { ProfileCard } from "./profile-card";
+import { SecurityCard } from "./security-card";
+export function UserSettings()
+⋮----
+const handleSaveProfile = async () =>
+const handleWithdraw = () =>
+const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) =>
 ```
 
 ## File: src/features/notification-hub.slice/_types.ts
@@ -11687,45 +11778,6 @@ export async function getTasksBySourceIntentId(
 
 ```
 
-## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
-```typescript
-import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
-import type { Account } from "@/features/shared-kernel"
-import { ROUTES } from "@/shared/constants/routes"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  useSidebar,
-} from "@/shared/shadcn-ui/sidebar"
-import { cn } from "@/shared/shadcn-ui/utils/utils"
-import type { AppAction } from '../app-provider'
-interface AccountSwitcherProps {
-  user: Account | null
-  accounts: Record<string, Account>
-  activeAccount: Account | null
-  dispatch: React.Dispatch<AppAction>
-  createOrganization: (name: string) => Promise<string>
-  t: (key: string) => string
-}
-const getAccountInitial = (name?: string)
-⋮----
-<AvatarFallback className=
-⋮----
-```
-
 ## File: src/features/workspace.slice/core/_components/shell/nav-main.tsx
 ```typescript
 import {
@@ -11862,83 +11914,6 @@ export const reconcileTask = async (
     sourceIntentVersion: number
   }
 ): Promise<void> =>
-```
-
-## File: src/features/account.slice/user.profile/_components/email-card.tsx
-```typescript
-import { Mail, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { authAdapter } from "@/shared/infra/auth/auth.adapter";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-interface EmailCardProps {
-  currentEmail: string;
-}
-⋮----
-const handleChangeEmail = async () =>
-```
-
-## File: src/features/account.slice/user.profile/_components/profile-card.tsx
-```typescript
-import { User, Loader2, Upload } from "lucide-react";
-import type React from "react"
-import { type Account } from "@/features/shared-kernel"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
-interface ProfileCardProps {
-  account: Account | null
-  name: string
-  setName: (name: string) => void
-  bio: string
-  setBio: (bio: string) => void
-  handleSaveProfile: () => void
-  handleAvatarUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
-  isSaving: boolean
-  isUploading: boolean
-  avatarInputRef: React.RefObject<HTMLInputElement | null>
-}
-export function ProfileCard({
-  account,
-  name,
-  setName,
-  bio,
-  setBio,
-  handleSaveProfile,
-  handleAvatarUpload,
-  isSaving,
-  isUploading,
-  avatarInputRef,
-}: ProfileCardProps)
-⋮----
-<Button onClick=
-⋮----
-<Input id="user-name" value=
-```
-
-## File: src/features/account.slice/user.profile/_components/user-settings.tsx
-```typescript
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import { useI18n } from "@/config/i18n/i18n-provider";
-import { useAuth } from "@/shared/app-providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { useUser } from "../_hooks/use-user";
-import { EmailCard } from "./email-card";
-import { PreferencesCard } from "./preferences-card";
-import { ProfileCard } from "./profile-card";
-import { SecurityCard } from "./security-card";
-export function UserSettings()
-⋮----
-const handleSaveProfile = async () =>
-const handleWithdraw = () =>
-const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) =>
 ```
 
 ## File: src/features/semantic-graph.slice/_cost-classifier.ts

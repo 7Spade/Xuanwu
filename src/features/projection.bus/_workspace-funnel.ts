@@ -8,12 +8,12 @@
 import { handleScheduleProposed } from '@/features/scheduling.slice';
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
 
+import { createVersionStamp, executeAggregateWriteOp } from './_funnel.shared';
+import { upsertProjectionVersion } from './_registry';
 import { appendAuditEntry } from './account-audit';
 import {
   applyDemandProposed,
 } from './demand-board';
-import { executeAggregateWriteOp, createVersionStamp } from './_funnel.shared';
-import { upsertProjectionVersion } from './_registry';
 
 export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void {
   const unsubscribers: Array<() => void> = [];

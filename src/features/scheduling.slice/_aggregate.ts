@@ -26,14 +26,20 @@
  *   A5  — ScheduleAssignRejected is the compensating event when skill validation fails.
  */
 
-import { z } from 'zod';
-
 import { publishOrgEvent } from '@/features/organization.slice';
 import { getOrgMemberEligibility } from '@/features/projection.bus';
 import { resolveSkillTier, tierSatisfies } from '@/features/shared-kernel';
 import type { WorkspaceScheduleProposedPayload, SkillRequirement } from '@/features/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/features/shared-kernel';
 import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
+
+import {
+  type ScheduleApprovalResult,
+  type WriteOp,
+} from './_aggregate.types';
+
+export { ORG_SCHEDULE_STATUSES, orgScheduleProposalSchema } from './_aggregate.types';
+export type { OrgScheduleStatus } from './_aggregate.types';
 
 // =================================================================
 // Aggregate State (DDD state machine)
@@ -56,66 +62,9 @@ import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.
  *   completed           → COMPLETED
  *   assignmentCancelled → REJECTED
  */
-export const ORG_SCHEDULE_STATUSES = ['draft', 'proposed', 'confirmed', 'cancelled', 'completed', 'assignmentCancelled'] as const;
-export type OrgScheduleStatus = (typeof ORG_SCHEDULE_STATUSES)[number];
-
-// =================================================================
-// Zod Schemas — strict validation on input data
-// =================================================================
-
-const skillRequirementSchema = z.object({
-  tagSlug: z.string().min(1),
-  tagId: z.string().optional(),
-  minimumTier: z.enum(['apprentice', 'journeyman', 'expert', 'artisan', 'grandmaster', 'legendary', 'titan']),
-  quantity: z.number().int().min(1),
-});
-
-export const orgScheduleProposalSchema = z.object({
-  scheduleItemId: z.string().min(1),
-  workspaceId: z.string().min(1),
-  orgId: z.string().min(1),
-  title: z.string().min(1),
-  startDate: z.string().min(1),
-  endDate: z.string().min(1),
-  proposedBy: z.string().min(1),
-  status: z.enum(ORG_SCHEDULE_STATUSES),
-  receivedAt: z.string(),
-  /** SourcePointer: IntentID of the ParsingIntent that triggered this proposal (optional). */
-  intentId: z.string().optional(),
-  /** Skill requirements carried over from the workspace proposal — used during org approval. */
-  skillRequirements: z.array(skillRequirementSchema).optional(),
-  /** Sub-location within the workspace. FR-L2. */
-  locationId: z.string().optional(),
-  /**
-   * Aggregate version of this org-schedule proposal. [R7]
-   * Incremented on each state transition (proposed → confirmed/cancelled).
-   * Included in published events so ELIGIBLE_UPDATE_GUARD can enforce monotonic updates.
-   */
-  version: z.number().int().min(1).default(1),
-  /** [R8] TraceID injected at CBG_ENTRY — persisted for end-to-end audit trail. */
-  traceId: z.string().optional(),
-  /** The member assigned to this proposal. Populated when status transitions to 'confirmed'.
-   * Optional for backward compatibility — legacy confirmed proposals may not have this field. */
-  targetAccountId: z.string().optional(),
-});
-
-export type OrgScheduleProposal = z.infer<typeof orgScheduleProposalSchema>;
-
 /** Firestore path for a schedule item (single source of truth). */
 function scheduleItemPath(orgId: string, scheduleItemId: string): string {
   return `accounts/${orgId}/schedule_items/${scheduleItemId}`;
-}
-
-// =================================================================
-// Shared write descriptor
-// =================================================================
-
-/** A pending Firestore write that the calling layer must execute. [D3] */
-export interface WriteOp {
-  path: string;
-  data: Record<string, unknown>;
-  /** Fields that should use arrayUnion semantics when executed. */
-  arrayUnionFields?: Record<string, string[]>;
 }
 
 // =================================================================
@@ -159,10 +108,6 @@ export function handleScheduleProposed(
  *
  * [D3] Each outcome carries a `writeOp` the caller must execute via `updateDocument`.
  */
-export type ScheduleApprovalResult =
-  | { outcome: 'confirmed'; scheduleItemId: string; writeOp: WriteOp }
-  | { outcome: 'rejected'; scheduleItemId: string; reason: string; writeOp: WriteOp };
-
 /**
  * Called by org-layer governance when a pending proposal should be assigned.
  *

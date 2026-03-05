@@ -28,8 +28,8 @@
 
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
 
-import { upsertProjectionVersion } from './_registry';
 import { registerOrganizationFunnel as registerOrganizationFunnelImpl } from './_organization-funnel';
+import { upsertProjectionVersion } from './_registry';
 import { registerTagFunnel as registerTagFunnelImpl } from './_tag-funnel';
 import { registerWorkspaceFunnel as registerWorkspaceFunnelImpl } from './_workspace-funnel';
 
