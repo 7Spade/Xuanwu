@@ -45,11 +45,11 @@ This skill contains the following reference files:
 
 ## Statistics
 
-557 files | 9,560 lines
+557 files | 9,571 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 364 | 6,424 |
+| TypeScript | 364 | 6,435 |
 | TypeScript (TSX) | 179 | 2,780 |
 | JSON | 7 | 309 |
 | Markdown | 2 | 10 |
@@ -61,8 +61,8 @@ This skill contains the following reference files:
 - `src/features/workspace.slice/core/_components/workspace-settings.tsx` (340 lines)
 - `src/config/i18n/i18n.schema.ts` (236 lines)
 - `src/features/workspace.slice/core.event-bus/_events.ts` (157 lines)
+- `src/features/workspace.slice/business.document-parser/_intent-actions.ts` (145 lines)
 - `src/features/semantic-graph.slice/centralized-types/index.ts` (138 lines)
-- `src/features/workspace.slice/business.document-parser/_intent-actions.ts` (136 lines)
 - `package.json` (131 lines)
 - `src/features/organization.slice/core.event-bus/_events.ts` (126 lines)
 - `src/shared/infra/firestore/repositories/workspace-core.repository.ts` (87 lines)
