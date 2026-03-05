@@ -905,6 +905,6 @@ class NOTIF_HUB_SVC crossCutAuth
 %%      Layer-3（語義路由）：use-workspace-event-handler.tsx Semantic Router
 %%                           filter costItemType === EXECUTABLE → 呼叫 importItems() 物化為 tasks
 %%                           其餘類型：靜默跳過 + toast 通知（禁止物化為 tasks [#A14]）
-%%      禁止 VS5 document-parser 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D21]
+%%      禁止 VS5 document-parser 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
 %%      禁止 Layer-3 Semantic Router 繞過 costItemType 直接物化非 EXECUTABLE 項目
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
