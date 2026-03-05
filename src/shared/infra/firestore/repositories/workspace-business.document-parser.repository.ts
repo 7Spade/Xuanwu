@@ -12,6 +12,8 @@
 import {
   serverTimestamp,
   collection,
+  doc,
+  getDoc,
   query,
   orderBy,
   where,
@@ -146,6 +148,12 @@ export const getParsingIntentBySourceFileId = async (
  * when no sourceFileId is available (e.g. direct-upload path), compare the
  * previous intent's semanticHash with the current one to avoid creating a
  * duplicate intent for unchanged content.
+ * Fetches a single ParsingIntent document by its Firestore document ID.
+ *
+ * Used by the secondary hash-based idempotency guard [D14/D15] in
+ * saveParsingIntent: when a direct upload has no sourceFileId, the guard
+ * looks up the previousIntentId by ID and compares semanticHash values to
+ * avoid creating a duplicate ParsingIntent for identical content.
  */
 export const getParsingIntentById = async (
   workspaceId: string,
@@ -156,4 +164,10 @@ export const getParsingIntentById = async (
     `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${intentId}`,
     converter
   );
+  const docRef = doc(
+    db,
+    `workspaces/${workspaceId}/${SUBCOLLECTIONS.parsingIntents}/${intentId}`
+  ).withConverter(converter);
+  const snap = await getDoc(docRef);
+  return snap.exists() ? snap.data() : null;
 };
