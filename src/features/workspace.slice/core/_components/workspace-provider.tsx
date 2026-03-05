@@ -9,7 +9,6 @@ import { initTagChangedSubscriber } from '@/features/notification-hub.slice';
 import {
   createScheduleItem as createScheduleItemAction,
 } from '@/features/scheduling.slice'
-import type { CommandResult, ScheduleItem } from '@/features/shared-kernel';
 import { firestoreTimestampToISO } from '@/shared/shadcn-ui/utils/utils';
 
 
@@ -53,51 +52,7 @@ import {
   summarizeWorkflowBlockers,
   type WorkflowBlockersState,
 } from './workflow-blockers-state';
-
-interface WorkspaceContextType {
-  workspace: Workspace;
-  localAuditLogs: AuditLog[];
-  logAuditEvent: (action: string, detail: string, type: 'create' | 'update' | 'delete') => Promise<void>;
-  eventBus: WorkspaceEventBus;
-  protocol: string;
-  scope: string[];
-  // Task specific actions
-  createTask: (task: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>) => Promise<CommandResult>;
-  updateTask: (taskId: string, updates: Partial<WorkspaceTask>) => Promise<void>;
-  deleteTask: (taskId: string) => Promise<CommandResult>;
-  // Member management actions
-  authorizeWorkspaceTeam: (teamId: string) => Promise<CommandResult>;
-  revokeWorkspaceTeam: (teamId: string) => Promise<CommandResult>;
-  grantIndividualWorkspaceAccess: (userId: string, role: WorkspaceRole, protocol?: string) => Promise<CommandResult>;
-  revokeIndividualWorkspaceAccess: (grantId: string) => Promise<CommandResult>;
-  // Capability management
-  mountCapabilities: (capabilities: Capability[]) => Promise<CommandResult>;
-  unmountCapability: (capability: Capability) => Promise<CommandResult>;
-  // Workspace settings
-  updateWorkspaceSettings: (settings: { name: string; visibility: 'visible' | 'hidden'; lifecycleState: WorkspaceLifecycleState; address?: Address; personnel?: WorkspacePersonnel }) => Promise<CommandResult>;
-  deleteWorkspace: () => Promise<CommandResult>;
-  // Issue Management
-  createIssue: (title: string, type: 'technical' | 'financial', priority: 'high' | 'medium', sourceTaskId?: string) => Promise<CommandResult>;
-  addCommentToIssue: (issueId: string, author: string, content: string) => Promise<CommandResult>;
-  /** Resolves a B-track issue via the Transaction Runner + Outbox pipeline. */
-  resolveIssue: (issueId: string, issueTitle: string, resolvedBy: string, sourceTaskId?: string) => Promise<void>;
-  // Schedule Management
-  createScheduleItem: (itemData: CreateScheduleItemInput) => Promise<CommandResult>;
-  // Pending parse file — set by files-view when "Parse with AI" is clicked;
-  // read by document-parser on mount to auto-trigger parsing cross-tab.
-  pendingParseFile: FileSendToParserPayload | null;
-  setPendingParseFile: (payload: FileSendToParserPayload | null) => void;
-  workflowBlockers: WorkflowBlockersState;
-  blockedWorkflowCount: number;
-  totalBlockedByCount: number;
-  hasBlockedWorkflows: boolean;
-}
-
-/** Input type for createScheduleItem — accepts plain Date objects; the action converts to Timestamp internally. */
-export type CreateScheduleItemInput = Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt' | 'startDate' | 'endDate'> & {
-  startDate?: Date | null;
-  endDate?: Date | null;
-};
+import type { CreateScheduleItemInput, WorkspaceContextType } from './workspace-context.types';
 
 const WorkspaceContext = createContext<WorkspaceContextType | null>(null);
 
