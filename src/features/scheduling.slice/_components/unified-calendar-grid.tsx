@@ -1,11 +1,18 @@
+/**
+ * Module: unified-calendar-grid.tsx
+ * Purpose: Render calendar UI for schedule items.
+ * Responsibilities: presentation of month grid, day cells, and item cards
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 "use client";
 
-import { format, isWeekend, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday, isBefore } from "date-fns";
+import { format, isWeekend, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday } from "date-fns";
 import { Plus, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-import type { ScheduleItem, Timestamp } from "@/features/shared-kernel";
+import type { ScheduleItem } from "@/features/shared-kernel";
 import { type MemberReference } from "@/features/shared-kernel";
 import { findSkill } from "@/shared/constants/skills";
 import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
@@ -19,6 +26,13 @@ import {
   TooltipTrigger,
 } from "@/shared/shadcn-ui/tooltip";
 import { cn } from "@/shared/shadcn-ui/utils/utils";
+
+import {
+  buildCardsByDate,
+  buildSpanSegmentsByDate,
+  sortSegments,
+  toCalendarDate,
+} from "./unified-calendar-grid.utils";
 
 
 const DAYS_OF_WEEK = ["日", "一", "二", "三", "四", "五", "六"];
@@ -62,76 +76,12 @@ export function UnifiedCalendarGrid({
     [members]
   );
 
-  type SpanSegment = {
-    item: ScheduleItem;
-    isStart: boolean;
-    isEnd: boolean;
-  };
-  
-  const toDate = (timestamp: Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined): Date | null => {
-    if (!timestamp) return null;
-    if (timestamp instanceof Date) return timestamp;
-    if (typeof (timestamp as Timestamp).toDate === 'function') return (timestamp as Timestamp).toDate();
-    // Handle plain-object serialized Timestamps (e.g. passed through React state)
-    if (typeof (timestamp as { seconds: number }).seconds === 'number') {
-      return new Date((timestamp as { seconds: number }).seconds * 1000);
-    }
-    return null;
-  };
-
   const cardsByDate = useMemo(() => {
-    const map = new Map<string, ScheduleItem[]>();
-    items.forEach(item => {
-      const rawStart = toDate(item.startDate);
-      const rawEnd = toDate(item.endDate);
-      if (!rawStart && !rawEnd) return;
-
-      const start = rawStart || rawEnd!;
-      const end = rawEnd || rawStart!;
-      const normalizedRange = isBefore(end, start)
-        ? { start: end, end: start }
-        : { start, end };
-
-      if (normalizedRange) {
-        const dateKey = format(normalizedRange.start, 'yyyy-MM-dd');
-        const dayItems = map.get(dateKey) || [];
-        map.set(dateKey, [...dayItems, item]);
-      }
-    });
-    return map;
+    return buildCardsByDate(items);
   }, [items]);
 
   const spanSegmentsByDate = useMemo(() => {
-    const map = new Map<string, SpanSegment[]>();
-
-    items.forEach((item) => {
-      const rawStart = toDate(item.startDate);
-      const rawEnd = toDate(item.endDate);
-      if (!rawStart && !rawEnd) return;
-
-      const start = rawStart || rawEnd!;
-      const end = rawEnd || rawStart!;
-      const normalizedRange = isBefore(end, start)
-        ? { start: end, end: start }
-        : { start, end };
-
-      const normalizedStart = normalizedRange.start;
-      const normalizedEnd = normalizedRange.end;
-
-      const days = eachDayOfInterval({ start: normalizedStart, end: normalizedEnd });
-      days.forEach((day, index) => {
-        const key = format(day, 'yyyy-MM-dd');
-        const existing = map.get(key) || [];
-        existing.push({
-          item,
-          isStart: index === 0,
-          isEnd: index === days.length - 1,
-        });
-        map.set(key, existing);
-      });
-    });
-
-    return map;
+    return buildSpanSegmentsByDate(items);
   }, [items]);
 
   const firstDay = startOfMonth(currentDate);
@@ -163,12 +113,7 @@ export function UnifiedCalendarGrid({
         {daysInMonth.map((day) => {
           const dateKey = format(day, 'yyyy-MM-dd');
           const dayItems = cardsByDate.get(dateKey) || [];
-          const daySegments = (spanSegmentsByDate.get(dateKey) || []).slice().sort((left, right) => {
-            const leftStart = toDate(left.item.startDate)?.getTime() ?? 0;
-            const rightStart = toDate(right.item.startDate)?.getTime() ?? 0;
-            if (leftStart !== rightStart) return leftStart - rightStart;
-            return left.item.title.localeCompare(right.item.title, 'zh-Hant');
-          });
+          const daySegments = sortSegments(spanSegmentsByDate.get(dateKey) || []);
           
           return (
             <div key={dateKey} className={cn('group relative flex min-h-[140px] flex-col gap-1.5 border-r border-b p-1.5', { 'bg-muted/30': isWeekend(day) })}>
@@ -187,8 +132,8 @@ export function UnifiedCalendarGrid({
                   {daySegments.length > 0 && (
                     <div className="space-y-1">
                       {daySegments.map((segment) => {
-                        const segmentStart = toDate(segment.item.startDate) || day;
-                        const segmentEnd = toDate(segment.item.endDate) || segmentStart;
+                        const segmentStart = toCalendarDate(segment.item.startDate) || day;
+                        const segmentEnd = toCalendarDate(segment.item.endDate) || segmentStart;
 
                         return (
                           <div
