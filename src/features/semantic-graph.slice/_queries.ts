@@ -17,21 +17,21 @@
  */
 
 import { querySemanticIndex, getIndexStats } from './_services';
-import { getEdgesByType } from './centralized-edges/semantic-edge-store';
-import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './projections/graph-selectors';
-import type { SemanticEdge, StaleTagWarning } from './centralized-types';
-import { detectStaleTagWarnings } from './centralized-workflows/tag-lifecycle.workflow';
-import {
-  computeSemanticDistance,
-  computeSemanticDistanceMatrix,
-  findIsolatedNodes,
-} from './centralized-neural-net/neural-network';
 import {
   traceAffectedNodes,
   rankAffectedNodes,
   buildDownstreamEvents,
   buildCausalityChain,
 } from './centralized-causality/causality-tracer';
+import { getEdgesByType } from './centralized-edges/semantic-edge-store';
+import {
+  computeSemanticDistance,
+  computeSemanticDistanceMatrix,
+  findIsolatedNodes,
+} from './centralized-neural-net/neural-network';
+import type { SemanticEdge, StaleTagWarning } from './centralized-types';
+import { detectStaleTagWarnings } from './centralized-workflows/tag-lifecycle.workflow';
+import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './projections/graph-selectors';
 
 
 // ─── Tag eligibility reads (VS6 / VS4) ───────────────────────────────────────

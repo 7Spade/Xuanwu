@@ -16,6 +16,8 @@
  * Dependency rule: reads only from centralized-edges and centralized-neural-net.
  */
 
+import { tagSlugRef } from '@/features/shared-kernel';
+
 import { getEdgesFrom, getEdgesTo } from '../centralized-edges/semantic-edge-store';
 import { computeRelationWeight } from '../centralized-neural-net/neural-network';
 import type {
@@ -26,7 +28,6 @@ import type {
   TagLifecycleEvent,
   TagLifecycleState,
 } from '../centralized-types';
-import { tagSlugRef } from '@/features/shared-kernel';
 
 // ─── BFS traversal ───────────────────────────────────────────────────────────
 

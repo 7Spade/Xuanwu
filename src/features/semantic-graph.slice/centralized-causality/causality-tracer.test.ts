@@ -16,9 +16,11 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 
+import { tagSlugRef } from '@/features/shared-kernel';
+
 import { addEdge, _clearEdgesForTest } from '../centralized-edges/semantic-edge-store';
 import type { TagLifecycleEvent } from '../centralized-types';
-import { tagSlugRef } from '@/features/shared-kernel';
+
 import {
   traceAffectedNodes,
   rankAffectedNodes,

@@ -16,6 +16,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import { addEdge, _clearEdgesForTest } from '../centralized-edges/semantic-edge-store';
+
 import {
   computeSemanticDistance,
   computeSemanticDistanceMatrix,
