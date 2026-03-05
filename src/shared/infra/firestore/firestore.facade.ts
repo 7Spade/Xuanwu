@@ -109,6 +109,10 @@ export const createParsingImport = repositories.createParsingImport
 export const getParsingImportByIdempotencyKey = repositories.getParsingImportByIdempotencyKey
 export const updateParsingImportStatus = repositories.updateParsingImportStatus
 
+// Finance aggregate state
+export const getFinanceAggregateState = repositories.getFinanceAggregateState
+export const saveFinanceAggregateState = repositories.saveFinanceAggregateState
+
 // ==================================================================
 // == workspace-core.event-store — Append-only domain event log
 // ==================================================================

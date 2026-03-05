@@ -49,3 +49,15 @@ export interface FinanceStrongReadSnapshot {
   readonly receivedAmount: number;
   readonly outstandingClaimableAmount: number;
 }
+
+export interface FinanceAggregateState {
+  readonly workspaceId: string;
+  readonly stage: FinanceLifecycleStage;
+  readonly cycleIndex: number;
+  readonly receivedAmount: number;
+  readonly directiveItems: FinanceDirectiveItem[];
+  readonly currentClaimLineItems: FinanceClaimLineItem[];
+  readonly paymentTermStartAtISO: string | null;
+  readonly paymentReceivedAtISO: string | null;
+  readonly updatedAt: number;
+}

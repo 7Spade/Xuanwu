@@ -417,6 +417,23 @@ export function useWorkspaceEventHandler() {
       handleImport
     );
 
+    const unsubDocParseFailed = eventBus.subscribe(
+      'workspace:document-parser:failed',
+      async (payload) => {
+        await createIssueAndBlockWorkflow(
+          `Parser Error: ${payload.sourceDocument}`,
+          'technical',
+          undefined,
+          payload.traceId,
+        );
+        pushNotification(
+          'Parser Failed & Issue Logged',
+          `Document "${payload.sourceDocument}" parse failed: ${payload.reason}`,
+          'alert',
+        );
+      },
+    );
+
     const unsubScheduleRequest = eventBus.subscribe(
       "workspace:tasks:scheduleRequested",
       (payload) => {
@@ -658,6 +675,7 @@ export function useWorkspaceEventHandler() {
       unsubQualityAssuranceRejected();
       unsubAcceptanceFailed();
       unsubDocParse();
+      unsubDocParseFailed();
       unsubScheduleRequest();
       unsubTaskCompleted();
       unsubTaskAssigned();

@@ -207,7 +207,7 @@ export function WorkspaceDocumentParser() {
     extractDataFromDocument,
     initialState
   );
-  const { eventBus, logAuditEvent, workspace, createIssue, pendingParseFile, setPendingParseFile } = useWorkspace();
+  const { eventBus, logAuditEvent, workspace, pendingParseFile, setPendingParseFile } = useWorkspace();
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -299,15 +299,13 @@ export function WorkspaceDocumentParser() {
         title: 'Extraction Failed',
         description: state.error,
       });
-      // PARSING_INTENT -->|解析異常| TRACK_B_ISSUES
-      createIssue(
-        `Parser Error: ${state.fileName || 'Document'}`,
-        'technical',
-        'high'
-      ).catch((err: unknown) => console.error('Failed to create parser issue:', err));
+      eventBus.publish('workspace:document-parser:failed', {
+        sourceDocument: state.fileName || 'Document',
+        reason: state.error,
+      });
       logAuditEvent('Parsing Failed', `Document: ${state.fileName || 'Unknown'}`, 'create');
     }
-  }, [state.error, state.fileName, toast, createIssue, logAuditEvent]);
+  }, [state.error, state.fileName, eventBus, toast, logAuditEvent]);
 
   // Subscribe to files:sendToParser — handles same-tab publishes (edge case fallback).
   // The primary cross-tab path uses WorkspaceProvider pendingParseFile state.
@@ -380,18 +378,16 @@ export function WorkspaceDocumentParser() {
       oldIntentId = result.oldIntentId;
     } catch (error: unknown) {
       console.error('Failed to save parsing intent:', error);
+      const reason = error instanceof Error ? error.message : 'Could not persist the parsing intent. Import aborted.';
       toast({
         variant: 'destructive',
         title: 'Failed to Save Parsing Record',
-        description: 'Could not persist the parsing intent. Import aborted.',
+        description: reason,
       });
 
-      await createIssue(
-        `Parser Persistence Failed: ${state.fileName || 'Document'}`,
-        'technical',
-        'high'
-      ).catch((issueError: unknown) => {
-        console.error('Failed to create parser persistence issue:', issueError);
+      eventBus.publish('workspace:document-parser:failed', {
+        sourceDocument: state.fileName || 'Document',
+        reason,
       });
 
       logAuditEvent('Parsing Intent Persist Failed', `Document: ${state.fileName || 'Unknown'}`, 'create');

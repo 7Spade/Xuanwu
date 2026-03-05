@@ -15,6 +15,7 @@ export type {
   WorkspaceQualityAssuranceApprovedPayload,
   WorkspaceAcceptancePassedPayload,
   DocumentParserItemsExtractedPayload,
+  WorkspaceDocumentParserFailedPayload,
   DailyLogForwardRequestedPayload,
   FileSendToParserPayload,
   WorkspaceIssueResolvedPayload,

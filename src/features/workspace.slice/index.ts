@@ -102,6 +102,7 @@ export type {
   WorkspaceQualityAssuranceApprovedPayload,
   WorkspaceAcceptancePassedPayload,
   DocumentParserItemsExtractedPayload,
+  WorkspaceDocumentParserFailedPayload,
   DailyLogForwardRequestedPayload,
   FileSendToParserPayload,
   WorkspaceIssueResolvedPayload,
@@ -282,7 +283,12 @@ export { WorkspaceQualityAssurance } from './business.quality-assurance'
 export { WorkspaceAcceptance } from './business.acceptance'
 
 // ─── business.finance ────────────────────────────────────────────────────────
-export { WorkspaceFinance } from './business.finance'
+export {
+  WorkspaceFinance,
+  getFinanceAggregateState,
+  saveFinanceAggregateState,
+} from './business.finance'
+export type { FinanceAggregateState } from './business.finance'
 
 // ─── business.issues ─────────────────────────────────────────────────────────
 export {

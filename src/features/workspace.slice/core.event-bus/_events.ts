@@ -136,6 +136,13 @@ export interface WorkspaceIssueResolvedPayload {
   traceId?: string
 }
 
+export interface WorkspaceDocumentParserFailedPayload {
+  sourceDocument: string
+  reason: string
+  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  traceId?: string
+}
+
 export interface WorkspaceWorkflowBlockedPayload {
   workflowId: string
   issueId: string
@@ -201,6 +208,7 @@ export type WorkspaceEventName =
   | "workspace:quality-assurance:approved"
   | "workspace:acceptance:passed"
   | "workspace:document-parser:itemsExtracted"
+  | "workspace:document-parser:failed"
   | "workspace:files:sendToParser"
   | "workspace:issues:resolved"
   | "workspace:workflow:blocked"
@@ -225,6 +233,7 @@ export interface WorkspaceEventPayloadMap {
   "workspace:quality-assurance:approved": WorkspaceQualityAssuranceApprovedPayload
   "workspace:acceptance:passed": WorkspaceAcceptancePassedPayload
   "workspace:document-parser:itemsExtracted": DocumentParserItemsExtractedPayload
+  "workspace:document-parser:failed": WorkspaceDocumentParserFailedPayload
   "workspace:files:sendToParser": FileSendToParserPayload
   "workspace:issues:resolved": WorkspaceIssueResolvedPayload
   "workspace:workflow:blocked": WorkspaceWorkflowBlockedPayload

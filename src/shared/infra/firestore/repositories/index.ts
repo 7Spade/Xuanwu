@@ -11,6 +11,7 @@ export * from './workspace-business.files.repository'          // createWorkspac
 export * from './workspace-business.issues.repository'         // createIssue, addCommentToIssue, resolveIssue, getWorkspaceIssues
 export * from './workspace-business.document-parser.repository'// createParsingIntent, updateParsingIntentStatus, supersedeParsingIntent, getParsingIntents, getParsingIntentBySourceFileId, getParsingIntentById
 export * from './workspace-business.parsing-imports.repository'// createParsingImport, getParsingImportByIdempotencyKey, updateParsingImportStatus
+export * from './workspace-business.finance.repository'        // getFinanceAggregateState, saveFinanceAggregateState
 export * from './workspace-core.event-store.repository'        // appendDomainEvent, getDomainEvents, StoredWorkspaceEvent
 export * from './projection.registry.repository'               // getProjectionVersion, upsertProjectionVersion, ProjectionVersionRecord
 export * from './schedule.repository'                          // createScheduleItem, updateScheduleItemStatus, assignMemberToScheduleItem, assignMemberAndApprove, unassignMemberFromScheduleItem, getScheduleItems

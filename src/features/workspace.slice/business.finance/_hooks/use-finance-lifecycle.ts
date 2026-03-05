@@ -11,9 +11,13 @@ import { classifyCostItem } from '@/features/semantic-graph.slice';
 import { listWorkflowStates } from '@/features/workspace.slice/business.workflow';
 import type { WorkspaceEventBus } from '@/features/workspace.slice/core.event-bus';
 import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus/_events';
+import { getParsingIntents } from '@/shared/infra/firestore/firestore.facade';
 
+import { saveFinanceAggregateState } from '../_actions';
+import { getFinanceAggregateState } from '../_queries';
 import { fetchFinanceStrongReadSnapshot } from '../_services/finance-strong-read';
 import type {
+  FinanceAggregateState,
   FinanceClaimDraftEntry,
   FinanceClaimLineItem,
   FinanceDirectiveItem,
@@ -45,6 +49,72 @@ function buildDirectiveItem(
     totalQuantity: item.quantity,
     remainingQuantity: item.quantity,
   };
+}
+
+function buildDirectiveItemFromParsingIntentLineItem(
+  intent: {
+    id: string;
+    sourceFileName: string;
+  },
+  lineItem: {
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    sourceIntentIndex?: number;
+    semanticTagSlug?: string;
+    costItemType?: FinanceDirectiveItem['costItemType'];
+  },
+  fallbackIndex: number,
+): FinanceDirectiveItem | null {
+  if (lineItem.quantity <= 0 || lineItem.unitPrice < 0) {
+    return null;
+  }
+
+  const classification = classifyCostItem(lineItem.name, { includeSemanticTagSlug: true });
+  const sourceIntentIndex = typeof lineItem.sourceIntentIndex === 'number'
+    ? lineItem.sourceIntentIndex
+    : fallbackIndex;
+
+  return {
+    id: `${intent.id}:${sourceIntentIndex}`,
+    name: lineItem.name,
+    sourceDocument: intent.sourceFileName,
+    intentId: intent.id,
+    semanticTagSlug: lineItem.semanticTagSlug ?? classification.semanticTagSlug,
+    costItemType: lineItem.costItemType ?? classification.costItemType,
+    unitPrice: lineItem.unitPrice,
+    totalQuantity: lineItem.quantity,
+    remainingQuantity: lineItem.quantity,
+  };
+}
+
+function isActiveParsingIntentStatus(status: string | undefined): boolean {
+  return status === 'pending'
+    || status === 'importing'
+    || status === 'imported'
+    || status === 'failed';
+}
+
+function normalizeLifecycleStage(stage: string | undefined): FinanceLifecycleStage {
+  if (
+    stage === 'claim-preparation'
+    || stage === 'claim-submitted'
+    || stage === 'claim-approved'
+    || stage === 'invoice-requested'
+    || stage === 'payment-term'
+    || stage === 'payment-received'
+    || stage === 'completed'
+  ) {
+    return stage;
+  }
+  return 'claim-preparation';
+}
+
+function clampRemainingQuantity(item: FinanceDirectiveItem, persistedRemaining: number | undefined): number {
+  if (typeof persistedRemaining !== 'number' || Number.isNaN(persistedRemaining)) {
+    return item.remainingQuantity;
+  }
+  return Math.max(0, Math.min(item.totalQuantity, persistedRemaining));
 }
 
 function hasValidClaimSelection(
@@ -101,6 +171,65 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
   const [receivedAmount, setReceivedAmount] = useState(0);
   const [financeSnapshot, setFinanceSnapshot] = useState<FinanceStrongReadSnapshot>(EMPTY_SNAPSHOT);
   const [acceptanceReady, setAcceptanceReady] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function hydrateFinanceAggregate() {
+      try {
+        const [persistedState, parsingIntents] = await Promise.all([
+          getFinanceAggregateState(input.workspaceId),
+          getParsingIntents(input.workspaceId),
+        ]);
+
+        if (cancelled) return;
+
+        const hydratedItems = parsingIntents
+          .filter((intent) => isActiveParsingIntentStatus(intent.status))
+          .flatMap((intent) =>
+            intent.lineItems.flatMap((lineItem, index) => {
+              const mapped = buildDirectiveItemFromParsingIntentLineItem(intent, lineItem, index);
+              return mapped ? [mapped] : [];
+            }),
+          );
+
+        const persistedRemainingById = new Map(
+          (persistedState?.directiveItems ?? []).map((item) => [item.id, item.remainingQuantity]),
+        );
+
+        const mergedDirectiveItems = hydratedItems.map((item) => ({
+          ...item,
+          remainingQuantity: clampRemainingQuantity(item, persistedRemainingById.get(item.id)),
+        }));
+
+        setDirectiveItems(mergedDirectiveItems);
+
+        if (persistedState) {
+          setStage(normalizeLifecycleStage(persistedState.stage));
+          setCycleIndex(persistedState.cycleIndex);
+          setReceivedAmount(persistedState.receivedAmount);
+          setCurrentClaimLineItems(persistedState.currentClaimLineItems);
+          setPaymentTermStartAt(
+            persistedState.paymentTermStartAtISO ? new Date(persistedState.paymentTermStartAtISO) : null,
+          );
+          setPaymentReceivedAt(
+            persistedState.paymentReceivedAtISO ? new Date(persistedState.paymentReceivedAtISO) : null,
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsHydrated(true);
+        }
+      }
+    }
+
+    void hydrateFinanceAggregate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [input.workspaceId]);
 
   useEffect(() => {
     const unsubscribeParser = input.eventBus.subscribe('workspace:document-parser:itemsExtracted', (payload) => {
@@ -146,6 +275,38 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
       cancelled = true;
     };
   }, [input.workspaceId]);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return;
+    }
+
+    const aggregateState: FinanceAggregateState = {
+      workspaceId: input.workspaceId,
+      stage,
+      cycleIndex,
+      receivedAmount,
+      directiveItems,
+      currentClaimLineItems,
+      paymentTermStartAtISO: paymentTermStartAt ? paymentTermStartAt.toISOString() : null,
+      paymentReceivedAtISO: paymentReceivedAt ? paymentReceivedAt.toISOString() : null,
+      updatedAt: Date.now(),
+    };
+
+    void saveFinanceAggregateState(aggregateState).catch((error: unknown) => {
+      console.error('[finance-aggregate] failed to persist state:', error);
+    });
+  }, [
+    currentClaimLineItems,
+    cycleIndex,
+    directiveItems,
+    input.workspaceId,
+    isHydrated,
+    paymentReceivedAt,
+    paymentTermStartAt,
+    receivedAmount,
+    stage,
+  ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -236,6 +397,14 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
   }, []);
 
   const completePayment = useCallback(() => {
+    if (stage !== 'payment-term') {
+      throw new Error('[#A16] 禁止跳過生命週期步驟直接確認收款。');
+    }
+
+    if (currentClaimLineItems.length === 0) {
+      throw new Error('[#A16] 需先完成 Claim/Invoice/PaymentTerm 並具備有效請款項目。');
+    }
+
     const paidAmount = currentClaimLineItems.reduce((sum, line) => sum + line.lineAmount, 0);
 
     setDirectiveItems((previous) => {
@@ -255,9 +424,13 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
     setReceivedAmount((previous) => previous + paidAmount);
     setPaymentReceivedAt(new Date());
     setStage('payment-received');
-  }, [currentClaimLineItems]);
+  }, [currentClaimLineItems, stage]);
 
   const closeCycle = useCallback(() => {
+    if (stage !== 'payment-received') {
+      throw new Error('[#A16] 需於 Payment Received 階段才能關閉本輪請款。');
+    }
+
     const hasOutstanding = financeSnapshot.outstandingClaimableAmount > 0;
 
     if (hasOutstanding) {
@@ -271,7 +444,7 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
     }
 
     setStage('completed');
-  }, [financeSnapshot.outstandingClaimableAmount]);
+  }, [financeSnapshot.outstandingClaimableAmount, stage]);
 
   return {
     directiveItems,
