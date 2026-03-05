@@ -39,7 +39,12 @@ import {
 } from './_aggregate.types';
 
 export { ORG_SCHEDULE_STATUSES, orgScheduleProposalSchema } from './_aggregate.types';
-export type { OrgScheduleStatus } from './_aggregate.types';
+export type {
+  OrgScheduleProposal,
+  OrgScheduleStatus,
+  ScheduleApprovalResult,
+  WriteOp,
+} from './_aggregate.types';
 
 // =================================================================
 // Aggregate State (DDD state machine)
