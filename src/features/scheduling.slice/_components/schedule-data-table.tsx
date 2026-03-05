@@ -1,6 +1,13 @@
 
 "use client"
 
+/**
+ * Module: schedule-data-table.tsx
+ * Purpose: Generic table renderer for scheduling views.
+ * Responsibilities: table state and interactive filtering/sorting/visibility.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 import {
   type ColumnDef,
   flexRender,
@@ -14,7 +21,7 @@ import {
   type VisibilityState,
 } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
-import * as React from "react"
+import { useState } from "react"
 
 import { Button } from "@/shared/shadcn-ui/button"
 import {
@@ -43,9 +50,9 @@ export function ScheduleDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const table = useReactTable({
     data,
@@ -64,12 +71,15 @@ export function ScheduleDataTable<TData, TValue>({
     },
   })
 
+  const titleFilterValue = table.getColumn("title")?.getFilterValue()
+  const titleFilterText = typeof titleFilterValue === "string" ? titleFilterValue : ""
+
   return (
     <div className="space-y-4">
       <div className="flex items-center">
         <Input
           placeholder="Filter by event title..."
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          value={titleFilterText}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }

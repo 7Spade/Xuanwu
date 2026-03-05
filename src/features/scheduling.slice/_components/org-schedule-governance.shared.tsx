@@ -15,6 +15,12 @@ import type { Timestamp } from '@/shared/ports';
 import { Avatar, AvatarFallback } from '@/shared/shadcn-ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/shadcn-ui/tooltip';
 
+type TimestampLike = { toDate: () => Date };
+
+function isTimestampLike(value: unknown): value is TimestampLike {
+  return typeof value === 'object' && value !== null && 'toDate' in value && typeof value.toDate === 'function';
+}
+
 export interface GovernanceMember {
   id: string;
   name: string;
@@ -62,8 +68,8 @@ export function AssignedMemberAvatars({ members }: { members: GovernanceMember[]
 export function formatTimestamp(ts: Timestamp | string | undefined): string {
   if (!ts) return '';
   if (typeof ts === 'string') return ts;
-  if (typeof (ts as Timestamp).toDate === 'function') {
-    return (ts as Timestamp).toDate().toLocaleDateString('zh-TW');
+  if (isTimestampLike(ts)) {
+    return ts.toDate().toLocaleDateString('zh-TW');
   }
   return String(ts);
 }

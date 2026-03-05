@@ -62,7 +62,7 @@ export function ConfirmedRow({ item, orgId, orgMembers }: GovernanceConfirmedRow
               <><span className="text-muted-foreground">{item.workspaceName}</span><span className="mx-0.5 text-muted-foreground">-</span>{item.title}</>
             ) : item.title}
           </p>
-          <p className="text-xs text-muted-foreground">{formatTimestamp(item.startDate as never)} – {formatTimestamp(item.endDate as never)}</p>
+          <p className="text-xs text-muted-foreground">{formatTimestamp(item.startDate)} – {formatTimestamp(item.endDate)}</p>
         </div>
         <Badge variant="outline" className="shrink-0 border-green-500/40 text-[9px] uppercase tracking-widest text-green-600">已確認</Badge>
       </div>

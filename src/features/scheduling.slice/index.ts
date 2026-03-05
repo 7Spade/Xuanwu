@@ -99,6 +99,7 @@ export { GovernanceSidebar } from './_components/governance-sidebar';
 export { ProposalDialog } from './_components/proposal-dialog';
 export { ScheduleProposalContent } from './_components/schedule-proposal-content';
 export { ScheduleDataTable } from './_components/schedule-data-table';
+export { AccountCapabilityTabs, WorkspaceCapabilityTabs } from './_components/schedule-capability-tabs';
 export { UnifiedCalendarGrid } from './_components/unified-calendar-grid';
 export { DemandBoard } from './_components/demand-board';
 

@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * Module: _actions.workspace.ts
+ * Module: workspace.ts
  * Purpose: Workspace-level schedule mutations.
  * Responsibilities: create item, assign member, unassign member
  * Constraints: deterministic logic, respect module boundaries

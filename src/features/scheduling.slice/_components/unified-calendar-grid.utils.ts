@@ -11,6 +11,17 @@ import type { ScheduleItem, Timestamp } from "@/features/shared-kernel";
 
 export type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
 
+type TimestampLike = { toDate: () => Date };
+type SecondsLike = { seconds: number };
+
+function isTimestampLike(value: unknown): value is TimestampLike {
+  return typeof value === 'object' && value !== null && 'toDate' in value && typeof value.toDate === 'function';
+}
+
+function isSecondsLike(value: unknown): value is SecondsLike {
+  return typeof value === 'object' && value !== null && 'seconds' in value && typeof value.seconds === 'number';
+}
+
 export type SpanSegment = {
   item: ScheduleItem;
   isStart: boolean;
@@ -20,9 +31,9 @@ export type SpanSegment = {
 export function toCalendarDate(timestamp: CalendarTimestamp): Date | null {
   if (!timestamp) return null;
   if (timestamp instanceof Date) return timestamp;
-  if (typeof (timestamp as Timestamp).toDate === "function") return (timestamp as Timestamp).toDate();
-  if (typeof (timestamp as { seconds: number }).seconds === "number") {
-    return new Date((timestamp as { seconds: number }).seconds * 1000);
+  if (isTimestampLike(timestamp)) return timestamp.toDate();
+  if (isSecondsLike(timestamp)) {
+    return new Date(timestamp.seconds * 1000);
   }
   return null;
 }

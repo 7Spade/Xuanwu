@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * Module: _actions.lifecycle.ts
+ * Module: lifecycle.ts
  * Purpose: Schedule lifecycle/status mutations.
  * Responsibilities: approve, status update, date-range update
  * Constraints: deterministic logic, respect module boundaries

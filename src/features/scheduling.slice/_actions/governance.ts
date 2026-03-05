@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * Module: _actions.governance.ts
+ * Module: governance.ts
  * Purpose: Governance and HR domain actions.
  * Responsibilities: manual assign validation flow, cancel proposal, complete schedule
  * Constraints: deterministic logic, respect module boundaries
@@ -18,8 +18,8 @@ import {
   approveOrgScheduleProposal,
   cancelOrgScheduleProposal,
   completeOrgSchedule,
-} from './_aggregate';
-import { executeWriteOp } from './_write-op';
+} from '../_aggregate';
+import { executeWriteOp } from '../_write-op';
 
 export async function manualAssignScheduleMember(
   scheduleItemId: string,

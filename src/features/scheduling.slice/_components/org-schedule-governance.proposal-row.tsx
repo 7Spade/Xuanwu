@@ -192,7 +192,7 @@ export function ProposalRow({ item, orgMembers, eligibleMembers, orgId }: Govern
               <><span className="text-muted-foreground">{item.workspaceName}</span><span className="mx-0.5 text-muted-foreground">-</span>{item.title}</>
             ) : item.title}
           </p>
-          <p className="text-xs text-muted-foreground">{formatTimestamp(item.startDate as never)} – {formatTimestamp(item.endDate as never)}</p>
+          <p className="text-xs text-muted-foreground">{formatTimestamp(item.startDate)} – {formatTimestamp(item.endDate)}</p>
           {item.proposedBy && <p className="text-xs text-muted-foreground">提案人：{item.proposedBy}</p>}
         </div>
         <Badge variant="outline" className="shrink-0 text-[9px] uppercase tracking-widest">待指派</Badge>

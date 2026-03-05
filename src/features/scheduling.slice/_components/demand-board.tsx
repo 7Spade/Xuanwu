@@ -63,11 +63,17 @@ import {
 // Helpers
 // ---------------------------------------------------------------------------
 
+type TimestampLike = { toDate: () => Date };
+
+function isTimestampLike(value: unknown): value is TimestampLike {
+  return typeof value === 'object' && value !== null && 'toDate' in value && typeof value.toDate === 'function';
+}
+
 function formatTimestamp(ts: Timestamp | string | undefined): string {
   if (!ts) return '';
   if (typeof ts === 'string') return ts;
-  if (typeof (ts as Timestamp).toDate === 'function') {
-    return (ts as Timestamp).toDate().toLocaleDateString('zh-TW');
+  if (isTimestampLike(ts)) {
+    return ts.toDate().toLocaleDateString('zh-TW');
   }
   return String(ts);
 }
@@ -160,7 +166,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             )}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatTimestamp(item.startDate as unknown as Timestamp)} – {formatTimestamp(item.endDate as unknown as Timestamp)}
+            {formatTimestamp(item.startDate)} – {formatTimestamp(item.endDate)}
           </p>
           {assignedMemberNames && (
             <p className="text-xs text-emerald-600">指派給：{assignedMemberNames}</p>
@@ -304,7 +310,10 @@ export function DemandBoard() {
   const orgMembers = useMemo<OrgMember[]>(() => {
     if (!orgId) return [];
     const org = accounts[orgId];
-    return (org?.members ?? []).map((m) => ({ id: m.id as string, name: m.name as string }));
+    return (org?.members ?? []).map((member) => ({
+      id: String(member.id),
+      name: member.name ? String(member.name) : String(member.id),
+    }));
   }, [orgId, accounts]);
 
   // ---------------------------------------------------------------------------
@@ -339,8 +348,8 @@ export function DemandBoard() {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
       const ids = openItems.map((i) => i.id);
-      const oldIndex = ids.indexOf(active.id as string);
-      const newIndex = ids.indexOf(over.id as string);
+      const oldIndex = ids.indexOf(String(active.id));
+      const newIndex = ids.indexOf(String(over.id));
       if (oldIndex === -1 || newIndex === -1) return;
       setOpenOrder(arrayMove(ids, oldIndex, newIndex));
     },
