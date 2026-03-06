@@ -8,6 +8,7 @@
 "use client";
 
 import { Clock3 } from "lucide-react";
+import { useCallback, useMemo } from "react";
 
 import type { ScheduleItem } from "@/features/shared-kernel";
 
@@ -19,7 +20,16 @@ export function WorkspaceTimeline() {
   const { workspace, items, organizationMembers } = useWorkspaceTimeline();
   const { rescheduleItem } = useTimelineCommands();
 
-  const itemsById = new Map<string, ScheduleItem>(items.map((item) => [item.id, item]));
+  const itemsById = useMemo(
+    () => new Map<string, ScheduleItem>(items.map((item) => [item.id, item])),
+    [items]
+  );
+
+  const handleMoveItem = useCallback(async ({ itemId, start, end }: { itemId: string; start: Date; end: Date }) => {
+    const item = itemsById.get(itemId);
+    if (!item) return false;
+    return rescheduleItem(item, start, end);
+  }, [itemsById, rescheduleItem]);
 
   return (
     <div className="space-y-4">
@@ -35,11 +45,7 @@ export function WorkspaceTimeline() {
         items={items}
         members={organizationMembers}
         enableDrag
-        onMoveItem={async ({ itemId, start, end }) => {
-          const item = itemsById.get(itemId);
-          if (!item) return false;
-          return rescheduleItem(item, start, end);
-        }}
+        onMoveItem={handleMoveItem}
         className="min-h-[560px]"
       />
     </div>

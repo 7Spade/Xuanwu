@@ -8,6 +8,7 @@
 "use client";
 
 import { AlertCircle, Clock3 } from "lucide-react";
+import { useCallback, useMemo } from "react";
 
 import type { ScheduleItem } from "@/features/shared-kernel";
 import { useApp } from "@/shared/app-providers/app-context";
@@ -22,7 +23,16 @@ export function AccountTimelineSection() {
   const { items, organizationMembers } = useAccountTimeline();
   const { rescheduleItem } = useTimelineCommands();
 
-  const itemsById = new Map<string, ScheduleItem>(items.map((item) => [item.id, item]));
+  const itemsById = useMemo(
+    () => new Map<string, ScheduleItem>(items.map((item) => [item.id, item])),
+    [items]
+  );
+
+  const handleMoveItem = useCallback(async ({ itemId, start, end }: { itemId: string; start: Date; end: Date }) => {
+    const item = itemsById.get(itemId);
+    if (!item) return false;
+    return rescheduleItem(item, start, end);
+  }, [itemsById, rescheduleItem]);
 
   if (activeAccount?.accountType !== "organization") {
     return (
@@ -51,11 +61,7 @@ export function AccountTimelineSection() {
         members={organizationMembers}
         groupMode="workspace"
         enableDrag
-        onMoveItem={async ({ itemId, start, end }) => {
-          const item = itemsById.get(itemId);
-          if (!item) return false;
-          return rescheduleItem(item, start, end);
-        }}
+        onMoveItem={handleMoveItem}
       />
     </div>
   );

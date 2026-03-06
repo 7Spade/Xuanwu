@@ -7,6 +7,7 @@
 
 "use client";
 
+import { addDays } from "date-fns";
 import { useEffect, useMemo, useRef } from "react";
 import { DataSet } from "vis-data";
 import {
@@ -73,6 +74,34 @@ function toTimelineClassName(item: ScheduleItem): string {
   }
 }
 
+function resolveInitialWindow(items: DataItem[]): { start: Date; end: Date } {
+  const now = new Date();
+  if (items.length === 0) {
+    return {
+      start: addDays(now, -3),
+      end: addDays(now, 10),
+    };
+  }
+
+  const itemStarts = items
+    .map((item) => {
+      const value = item.start;
+      return value instanceof Date ? value : new Date(value);
+    })
+    .sort((left, right) => left.getTime() - right.getTime());
+
+  const nearest = itemStarts.reduce((best, current) => {
+    const currentDistance = Math.abs(current.getTime() - now.getTime());
+    const bestDistance = Math.abs(best.getTime() - now.getTime());
+    return currentDistance < bestDistance ? current : best;
+  }, itemStarts[0]);
+
+  return {
+    start: addDays(nearest, -3),
+    end: addDays(nearest, 10),
+  };
+}
+
 export function TimelineCanvas({
   items,
   members,
@@ -83,6 +112,11 @@ export function TimelineCanvas({
 }: TimelineCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const timelineRef = useRef<Timeline | null>(null);
+  const onMoveItemRef = useRef(onMoveItem);
+
+  useEffect(() => {
+    onMoveItemRef.current = onMoveItem;
+  }, [onMoveItem]);
 
   const membersMap = useMemo(() => new Map(members.map((member) => [member.id, member.name])), [members]);
 
@@ -131,33 +165,43 @@ export function TimelineCanvas({
     return groups;
   }, [groupMode, items]);
 
+  const initialWindow = useMemo(() => resolveInitialWindow(timelineItems), [timelineItems]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
     const dataSet = new DataSet<DataItem>(timelineItems);
     const groupDataSet = timelineGroups ? new DataSet<DataGroup>(timelineGroups) : undefined;
 
-    const options: TimelineOptions = {
+    const options: TimelineOptions & { throttleRedraw?: number } = {
       stack: true,
       selectable: true,
       moveable: enableDrag,
       editable: enableDrag ? { updateTime: true, updateGroup: groupMode === "workspace" } : false,
-      zoomMin: 1000 * 60 * 60,
-      zoomMax: 1000 * 60 * 60 * 24 * 365,
+      start: initialWindow.start,
+      end: initialWindow.end,
+      zoomMin: 1000 * 60 * 15,
+      zoomMax: 1000 * 60 * 60 * 24 * 90,
+      zoomFriction: 8,
+      throttleRedraw: 32,
+      timeAxis: { scale: "day", step: 1 },
+      snap: null,
       margin: { item: 12, axis: 8 },
       orientation: { axis: "top" },
-      showCurrentTime: true,
+      showCurrentTime: false,
       groupOrder: "content",
       onMove: (movedItem: TimelineItem, callback) => {
         const startDate = new Date(movedItem.start);
         const endDate = movedItem.end ? new Date(movedItem.end) : new Date(startDate);
 
-        if (!onMoveItem) {
+        const moveHandler = onMoveItemRef.current;
+
+        if (!moveHandler) {
           callback(movedItem);
           return;
         }
 
-        onMoveItem({
+        moveHandler({
           itemId: String(movedItem.id),
           start: startDate,
           end: endDate,
@@ -179,7 +223,7 @@ export function TimelineCanvas({
       timeline.destroy();
       timelineRef.current = null;
     };
-  }, [enableDrag, groupMode, onMoveItem, timelineGroups, timelineItems]);
+  }, [enableDrag, groupMode, initialWindow.end, initialWindow.start, timelineGroups, timelineItems]);
 
   return (
     <div className={cn("relative min-h-[520px] overflow-hidden rounded-xl border bg-card p-3", className)}>
