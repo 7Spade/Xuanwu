@@ -40,5 +40,5 @@ src/
 ## 相容遷移（Legacy → Canonical）
 
 - Canonical 目標入口：`@/shared-kernel`（`src/shared-kernel/index.ts`）。
-- 既有相容入口：`@/features/shared-kernel`（歷史路徑，保留以避免一次性大規模破壞）。
+- 匯入入口統一為：`@/shared-kernel`（canonical）。
 - 新增/修改程式碼時，優先使用 Canonical 入口；舊路徑以分批遷移方式逐步收斂。
