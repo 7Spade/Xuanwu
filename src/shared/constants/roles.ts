@@ -40,21 +40,21 @@ export interface OrgRoleMeta {
 export const ORG_ROLE_META: Record<OrganizationRole, OrgRoleMeta> = {
   Owner: {
     role: 'Owner',
-    zhLabel: '?��???,
+    zhLabel: '擁有者',
     enLabel: 'Owner',
     rank: 4,
     colorClass: 'bg-violet-100 text-violet-800',
   },
   Admin: {
     role: 'Admin',
-    zhLabel: '管�???,
+    zhLabel: '管理員',
     enLabel: 'Admin',
     rank: 3,
     colorClass: 'bg-blue-100 text-blue-800',
   },
   Member: {
     role: 'Member',
-    zhLabel: '?�員',
+    zhLabel: '?�員',
     enLabel: 'Member',
     rank: 2,
     colorClass: 'bg-green-100 text-green-800',
@@ -103,21 +103,21 @@ export interface WorkspaceRoleMeta {
 export const WORKSPACE_ROLE_META: Record<WorkspaceRole, WorkspaceRoleMeta> = {
   Manager: {
     role: 'Manager',
-    zhLabel: '管�???,
+    zhLabel: '管理者',
     enLabel: 'Manager',
     rank: 3,
     colorClass: 'bg-indigo-100 text-indigo-800',
   },
   Contributor: {
     role: 'Contributor',
-    zhLabel: '?��???,
+    zhLabel: '貢獻者',
     enLabel: 'Contributor',
     rank: 2,
     colorClass: 'bg-teal-100 text-teal-800',
   },
   Viewer: {
     role: 'Viewer',
-    zhLabel: '檢�???,
+    zhLabel: '檢視者',
     enLabel: 'Viewer',
     rank: 1,
     colorClass: 'bg-gray-100 text-gray-600',

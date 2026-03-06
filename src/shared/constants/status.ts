@@ -43,28 +43,28 @@ export interface ScheduleStatusMeta {
 export const SCHEDULE_STATUS_META: Record<ScheduleStatus, ScheduleStatusMeta> = {
   PROPOSAL: {
     status: 'PROPOSAL',
-    zhLabel: '?êÊ?‰∏?,
+    zhLabel: 'ÊèêÊ°à‰∏≠',
     enLabel: 'Proposal',
     colorClass: 'bg-amber-100 text-amber-800',
     bgClass: 'bg-amber-50',
   },
   OFFICIAL: {
     status: 'OFFICIAL',
-    zhLabel: 'Ê≠???íÁè≠',
+    zhLabel: 'ÔøΩ???ÔøΩÁè≠',
     enLabel: 'Official',
     colorClass: 'bg-green-100 text-green-800',
     bgClass: 'bg-green-50',
   },
   REJECTED: {
     status: 'REJECTED',
-    zhLabel: 'Â∑≤Ê?Áµ?,
+    zhLabel: 'Â∑≤ÊãíÁµï',
     enLabel: 'Rejected',
     colorClass: 'bg-red-100 text-red-800',
     bgClass: 'bg-red-50',
   },
   COMPLETED: {
     status: 'COMPLETED',
-    zhLabel: 'Â∑≤Â???,
+    zhLabel: 'Â∑≤ÂÆåÊàê',
     enLabel: 'Completed',
     colorClass: 'bg-slate-100 text-slate-600',
     bgClass: 'bg-slate-50',
@@ -95,19 +95,19 @@ export const WORKSPACE_LIFECYCLE_STATE_META: Record<
 > = {
   preparatory: {
     state: 'preparatory',
-    zhLabel: 'Á±åÂ?‰∏?,
+    zhLabel: 'Á±åÂÇô‰∏≠',
     enLabel: 'Preparatory',
     colorClass: 'bg-sky-100 text-sky-800',
   },
   active: {
     state: 'active',
-    zhLabel: '?≤Ë?‰∏?,
+    zhLabel: 'ÈÄ≤Ë°å‰∏≠',
     enLabel: 'Active',
     colorClass: 'bg-green-100 text-green-800',
   },
   stopped: {
     state: 'stopped',
-    zhLabel: 'Â∑≤Â?Ê≠?,
+    zhLabel: 'Â∑≤ÂÅúÊ≠¢',
     enLabel: 'Stopped',
     colorClass: 'bg-gray-100 text-gray-500',
   },
@@ -137,19 +137,19 @@ export interface AuditLogTypeMeta {
 export const AUDIT_LOG_TYPE_META: Record<AuditLogType, AuditLogTypeMeta> = {
   create: {
     type: 'create',
-    zhLabel: 'Âª∫Á?',
+    zhLabel: 'Âª∫ÔøΩ?',
     enLabel: 'Create',
     colorClass: 'bg-emerald-100 text-emerald-700',
   },
   update: {
     type: 'update',
-    zhLabel: '?¥Êñ∞',
+    zhLabel: '?ÔøΩÊñ∞',
     enLabel: 'Update',
     colorClass: 'bg-blue-100 text-blue-700',
   },
   delete: {
     type: 'delete',
-    zhLabel: '?™Èô§',
+    zhLabel: '?ÔøΩÈô§',
     enLabel: 'Delete',
     colorClass: 'bg-red-100 text-red-700',
   },
@@ -184,19 +184,19 @@ export interface InviteStateMeta {
 export const INVITE_STATE_META: Record<InviteState, InviteStateMeta> = {
   pending: {
     state: 'pending',
-    zhLabel: 'ÂæÖÁ¢∫Ë™?,
+    zhLabel: 'ÂæÖÁ¢∫Ë™ç',
     enLabel: 'Pending',
     colorClass: 'bg-amber-100 text-amber-700',
   },
   accepted: {
     state: 'accepted',
-    zhLabel: 'Â∑≤Êé•??,
+    zhLabel: 'Â∑≤Êé•Âèó',
     enLabel: 'Accepted',
     colorClass: 'bg-green-100 text-green-700',
   },
   expired: {
     state: 'expired',
-    zhLabel: 'Â∑≤È???,
+    zhLabel: 'Â∑≤ÈÅéÊúü',
     enLabel: 'Expired',
     colorClass: 'bg-gray-100 text-gray-500',
   },
@@ -222,19 +222,19 @@ export interface PresenceMeta {
 export const PRESENCE_META: Record<Presence, PresenceMeta> = {
   active: {
     presence: 'active',
-    zhLabel: '?®Á?',
+    zhLabel: '?ÔøΩÔøΩ?',
     enLabel: 'Active',
     dotClass: 'bg-green-500',
   },
   away: {
     presence: 'away',
-    zhLabel: '?¢È?',
+    zhLabel: '?ÔøΩÔøΩ?',
     enLabel: 'Away',
     dotClass: 'bg-amber-400',
   },
   offline: {
     presence: 'offline',
-    zhLabel: '?¢Á?',
+    zhLabel: '?ÔøΩÔøΩ?',
     enLabel: 'Offline',
     dotClass: 'bg-gray-300',
   },
@@ -263,7 +263,7 @@ export interface NotificationTypeMeta {
 export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMeta> = {
   info: {
     type: 'info',
-    zhLabel: 'Ë≥áË?',
+    zhLabel: 'Ë≥áÔøΩ?',
     enLabel: 'Info',
     colorClass: 'bg-blue-100 text-blue-700',
   },
@@ -275,7 +275,7 @@ export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMe
   },
   success: {
     type: 'success',
-    zhLabel: '?êÂ?',
+    zhLabel: '?ÔøΩÔøΩ?',
     enLabel: 'Success',
     colorClass: 'bg-green-100 text-green-700',
   },

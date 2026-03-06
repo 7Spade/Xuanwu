@@ -10,8 +10,8 @@
  * same collection ??no separate projection collection required.
  *
  * Status mapping (FR-W0):
- *   PROPOSAL  ??"å¾…æ?æ´¾é?æ±? (open / amber) ??drag-sortable for HR prioritisation
- *   OFFICIAL  ??"å·²æ?æ´¾é?æ±? (assigned / green)
+ *   PROPOSAL  ??"å¾…ï¿½?æ´¾ï¿½?ï¿½? (open / amber) ??drag-sortable for HR prioritisation
+ *   OFFICIAL  ??"å·²ï¿½?æ´¾ï¿½?ï¿½? (assigned / green)
  *   REJECTED / COMPLETED ??hidden from board
  */
 
@@ -105,11 +105,11 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
 
   const statusBadge = isOpen ? (
     <Badge variant="outline" className="shrink-0 border-amber-500 text-[9px] uppercase tracking-widest text-amber-600">
-      <Clock className="mr-1 size-2.5" /> å¾…æ?æ´?
+      <Clock className="mr-1 size-2.5" /> å¾…è™•ç†
     </Badge>
   ) : (
     <Badge variant="outline" className="shrink-0 border-emerald-500 text-[9px] uppercase tracking-widest text-emerald-600">
-      <CheckCircle2 className="mr-1 size-2.5" /> å·²æ?æ´?
+      <CheckCircle2 className="mr-1 size-2.5" /> å·²è™•ç†
     </Badge>
   );
 
@@ -117,7 +117,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     if (!item.assigneeIds?.length) return null;
     return item.assigneeIds
       .map((id) => orgMembers.find((m) => m.id === id)?.name ?? id)
-      .join('??);
+      .join('ã€');
   }, [item.assigneeIds, orgMembers]);
 
   const handleAssign = useCallback(async () => {
@@ -126,13 +126,13 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     try {
       const result = await approveScheduleItemWithMember(orgId, item.id, selectedMemberId);
       if (result.success) {
-        toast({ title: '?’ç?å·²æ?æ´?, description: `??{item.title}?æ??¡æ?æ´¾æ??Ÿã€‚` });
+        toast({ title: 'æŒ‡æ´¾å·²å®Œæˆ', description: `${item.title} å·²æˆåŠŸæŒ‡æ´¾ã€‚` });
         setSelectedMemberId('');
       } else {
-        toast({ variant: 'destructive', title: '?‡æ´¾å¤±æ?', description: result.error.message });
+        toast({ variant: 'destructive', title: 'æŒ‡æ´¾å¤±æ•—', description: result.error.message });
       }
     } catch {
-      toast({ variant: 'destructive', title: '?ä?å¤±æ?', description: 'è«‹ç?å¾Œå?è©¦ã€? });
+      toast({ variant: 'destructive', title: 'æ“ä½œå¤±æ•—', description: 'è«‹ç¨å¾Œå†è©¦ã€‚' });
     } finally {
       setLoading(false);
     }
@@ -143,12 +143,12 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     try {
       const result = await updateScheduleItemStatus(orgId, item.id, 'REJECTED');
       if (result.success) {
-        toast({ title: '?€æ±‚å·²?–æ?', description: `??{item.title}?å·²??HR ?¤å??‚` });
+        toast({ title: 'è«‹æ±‚å·²å–æ¶ˆ', description: `${item.title} å·²é€šçŸ¥ HR æ›´æ–°ç‹€æ…‹ã€‚` });
       } else {
-        toast({ variant: 'destructive', title: '?–æ?å¤±æ?', description: result.error.message });
+        toast({ variant: 'destructive', title: 'æ“ä½œå¤±æ•—', description: result.error.message });
       }
     } catch {
-      toast({ variant: 'destructive', title: '?ä?å¤±æ?', description: 'è«‹ç?å¾Œå?è©¦ã€? });
+      toast({ variant: 'destructive', title: 'æ“ä½œå¤±æ•—', description: 'è«‹ç¨å¾Œå†è©¦ã€‚' });
     } finally {
       setLoading(false);
     }
@@ -166,10 +166,10 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             )}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatTimestamp(item.startDate)} ??{formatTimestamp(item.endDate)}
+            {formatTimestamp(item.startDate)} è‡³ {formatTimestamp(item.endDate)}
           </p>
           {assignedMemberNames && (
-            <p className="text-xs text-emerald-600">?‡æ´¾çµ¦ï?{assignedMemberNames}</p>
+            <p className="text-xs text-emerald-600">å·²æŒ‡æ´¾çµ¦ï¼š{assignedMemberNames}</p>
           )}
         </div>
         {statusBadge}
@@ -182,7 +182,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             return (
               <div key={req.tagSlug} className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-[10px]">
-                  {skillName} ??{req.minimumTier} ? {req.quantity}
+                  {skillName} æœ€ä½ {req.minimumTier} Ã— {req.quantity}
                 </Badge>
               </div>
             );
@@ -194,7 +194,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
         <div className="flex items-center gap-2">
           <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
             <SelectTrigger className="h-8 flex-1 text-xs">
-              <SelectValue placeholder="?¸æ??‡æ´¾?å“¡" />
+              <SelectValue placeholder="?ï¿½ï¿½??ï¿½æ´¾?ï¿½å“¡" />
             </SelectTrigger>
             <SelectContent>
               {orgMembers.map((m) => (
@@ -210,7 +210,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             className="size-8 shrink-0 text-emerald-600 hover:text-emerald-700"
             disabled={!selectedMemberId || loading}
             onClick={handleAssign}
-            title="?‹å??‡æ´¾"
+            title="?ï¿½ï¿½??ï¿½æ´¾"
           >
             <UserCheck className="size-4" />
           </Button>
@@ -220,7 +220,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             className="size-8 shrink-0 text-destructive hover:text-destructive/80"
             disabled={loading}
             onClick={handleCancel}
-            title="?–æ??€æ±?
+            title="å–æ¶ˆè«‹æ±‚"
           >
             <XCircle className="size-4" />
           </Button>
@@ -258,7 +258,7 @@ function SortableDemandRow(props: DemandRowProps) {
           {...attributes}
           {...listeners}
           className="mt-5 cursor-grab touch-none text-muted-foreground hover:text-foreground focus:outline-none active:cursor-grabbing"
-          aria-label="?–æ›³?’å?"
+          aria-label="?ï¿½æ›³?ï¿½ï¿½?"
           type="button"
         >
           <GripVertical className="size-4" />
@@ -282,7 +282,7 @@ function SortableDemandRow(props: DemandRowProps) {
  * the same collection used by the Calendar tab ??so all three schedule
  * tabs always show consistent data with zero extra subscriptions.
  *
- * "å¾…æ?æ´¾é?æ±? cards are drag-sortable so HR can prioritise visually.
+ * "å¾…ï¿½?æ´¾ï¿½?ï¿½? cards are drag-sortable so HR can prioritise visually.
  * The sort order is local-only (no server write required for reordering).
  */
 export function DemandBoard() {
@@ -359,7 +359,7 @@ export function DemandBoard() {
   if (!orgId) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        ?€æ±‚ç??¿å??¨ç?ç¹”å¸³?Ÿä??¯ç”¨??
+        ?ï¿½æ±‚ï¿½??ï¿½ï¿½??ï¿½ï¿½?ç¹”å¸³?ï¿½ï¿½??ï¿½ç”¨??
       </p>
     );
   }
@@ -370,7 +370,7 @@ export function DemandBoard() {
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-amber-600">
-            å¾…æ?æ´¾é?æ±?({openItems.length})
+            å¾…ï¿½?æ´¾ï¿½?ï¿½?({openItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -387,7 +387,7 @@ export function DemandBoard() {
                 <div className="space-y-3 p-4">
                   {openItems.length === 0 && (
                     <p className="py-6 text-center text-xs italic text-muted-foreground">
-                      ?®å??¡å??‡æ´¾?€æ±‚ã€?
+                      ?ï¿½ï¿½??ï¿½ï¿½??ï¿½æ´¾?ï¿½æ±‚ï¿½?
                     </p>
                   )}
                   {openItems.map((item) => (
@@ -409,7 +409,7 @@ export function DemandBoard() {
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-emerald-600">
-            å·²æ?æ´¾é?æ±?({assignedItems.length})
+            å·²ï¿½?æ´¾ï¿½?ï¿½?({assignedItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -417,7 +417,7 @@ export function DemandBoard() {
             <div className="space-y-3 p-4">
               {assignedItems.length === 0 && (
                 <p className="py-6 text-center text-xs italic text-muted-foreground">
-                  ?®å??¡å·²?‡æ´¾?€æ±‚ã€?
+                  ?ï¿½ï¿½??ï¿½å·²?ï¿½æ´¾?ï¿½æ±‚ï¿½?
                 </p>
               )}
               {assignedItems.map((item) => (

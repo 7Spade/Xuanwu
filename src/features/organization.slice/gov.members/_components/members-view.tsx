@@ -139,10 +139,10 @@ export function MembersView() {
                     <Badge
                       variant="outline"
                       className={`px-1.5 py-0.5 text-[9px] font-bold uppercase ${eligibilityMap[member.id] ? 'border-green-500/40 bg-green-500/10 text-green-600' : 'border-muted bg-muted/20 text-muted-foreground'}`}
-                      title={eligibilityMap[member.id] ? '?��??? : '不可?�班'}
+                      title={eligibilityMap[member.id] ? '可排班' : '不可排班'}
                     >
                       <Sparkles className="mr-0.5 inline size-2" />
-                      {eligibilityMap[member.id] ? '?��??? : '不可?�班'}
+                      {eligibilityMap[member.id] ? '可排班' : '不可排班'}
                     </Badge>
                   )}
                 </div>
