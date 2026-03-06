@@ -15,3 +15,8 @@ export { useGlobalSchedule } from './use-global-schedule';
 export { useScheduleActions } from './use-schedule-commands';
 export { useWorkspaceSchedule } from './use-workspace-schedule';
 export { useScheduleEventHandler } from './use-schedule-event-handler';
+
+// Timeline hooks (origin: timelineing.slice)
+export * from './use-account-timeline';
+export * from './use-timeline-commands';
+export * from './use-workspace-timeline';

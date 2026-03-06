@@ -1,12 +1,12 @@
 /**
- * scheduling.slice ??_queries.ts
+ * workforce-scheduling.slice ??_queries.ts
  *
  * Read-only queries for the VS6 Scheduling domain.
  * Single source of truth: accounts/{orgId}/schedule_items
  *
  * QGWAY_SCHED [#14 #15 #16]:
  *   Eligible-member queries route through projection.org-eligible-member-view
- *   via the QGWAY_SCHED channel only.  scheduling.slice must NOT query
+ *   via the QGWAY_SCHED channel only.  workforce-scheduling.slice must NOT query
  *   Firestore for member eligibility directly (D7 cross-slice isolation).
  */
 
@@ -227,5 +227,34 @@ export function subscribeToWorkspaceScheduleItems(
     (snap) =>
       onUpdate(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ScheduleItem)),
     (err) => onError?.(err),
+  );
+}
+
+// =================================================================
+// Timeline-specific subscriptions (origin: timelineing.slice)
+// =================================================================
+
+/**
+ * Opens a real-time listener on schedule_items filtered to a specific workspace,
+ * ordered by startDate ascending (timeline view).
+ *
+ * Path: accounts/{accountId}/schedule_items where workspaceId == workspaceId
+ */
+export function subscribeToWorkspaceTimelineItems(
+  accountId: string,
+  workspaceId: string,
+  onUpdate: (items: ScheduleItem[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe {
+  const q = query(
+    collection(db, 'accounts', accountId, 'schedule_items'),
+    where('workspaceId', '==', workspaceId),
+    orderBy('startDate', 'asc')
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => onUpdate(snapshot.docs.map((doc) => ({ ...(doc.data() as Omit<ScheduleItem, 'id'>), id: doc.id }))),
+    (error) => onError?.(error as Error)
   );
 }

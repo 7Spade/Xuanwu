@@ -1,7 +1,10 @@
 /**
- * scheduling.slice — Public API
+ * workforce-scheduling.slice — Public API
  *
- * Unified VS6 Scheduling vertical slice.
+ * Unified VS6 Workforce Scheduling vertical slice.
+ * Merges `scheduling.slice` (CalendarView) and `timelineing.slice` (TimelineView)
+ * under a single "one core, two views" architecture.
+ *
  * Domain: accounts/{orgId}/schedule_items (single source of truth)
  * Staleness: DEMAND_BOARD ≤ 5s | STANDARD ≤ 10s (SK_STALENESS_CONTRACT)
  *
@@ -48,6 +51,8 @@ export {
   manualAssignScheduleMember,
   cancelScheduleProposalAction,
   completeOrgScheduleAction,
+  // Timeline-specific mutation
+  updateTimelineItemDateRange,
 } from './_actions';
 
 // =================================================================
@@ -69,6 +74,8 @@ export {
   getEligibleMemberForSchedule,
   getEligibleMembersForSchedule,
   DEMAND_BOARD_STALENESS,
+  // Timeline-specific subscription
+  subscribeToWorkspaceTimelineItems,
 } from './_queries';
 export type { OrgEligibleMemberView, OrgMemberSkillWithTier } from './_queries';
 
@@ -83,6 +90,10 @@ export {
   useScheduleActions,
   useWorkspaceSchedule,
   useScheduleEventHandler,
+  // Timeline hooks (origin: timelineing.slice)
+  useAccountTimeline,
+  useWorkspaceTimeline,
+  useTimelineCommands,
 } from './_hooks';
 
 // =================================================================
@@ -102,6 +113,14 @@ export { ScheduleDataTable } from './_components/schedule-data-table';
 export { AccountCapabilityTabs, WorkspaceCapabilityTabs } from './_components/schedule-capability-tabs';
 export { UnifiedCalendarGrid } from './_components/unified-calendar-grid';
 export { DemandBoard } from './_components/demand-board';
+
+// --- TimelineView components (origin: timelineing.slice) ---
+export { AccountTimelineSection } from './_components/timeline.account-view';
+export { WorkspaceTimeline } from './_components/timeline.workspace-view';
+export {
+  AccountTimelineCapabilityTabs,
+  WorkspaceTimelineCapabilityTabs,
+} from './_components/timeline-capability-tabs';
 
 // =================================================================
 // Projectors (event handlers — used by projection.event-funnel)
@@ -152,3 +171,8 @@ export type { SagaState, SagaStep, SagaStatus } from './_saga';
 // Domain rules
 // =================================================================
 export { canTransitionScheduleStatus, VALID_STATUS_TRANSITIONS } from './_schedule.rules';
+
+// =================================================================
+// Local types
+// =================================================================
+export type { WorkforceMember, TimelineMember } from './_types';
