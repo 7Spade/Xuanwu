@@ -6,7 +6,7 @@
  */
 
 import type { Timestamp } from '@/shared/ports';
-import type { SkillRequirement } from '@/features/shared-kernel/skill-tier';
+import type { SkillRequirement } from '@/shared-kernel/data-contracts/skill-tier';
 
 export interface Location {
   building?: string;

@@ -1,14 +1,14 @@
 /**
- * notification-hub.slice â€” _services.ts
+ * notification-hub.slice ??_services.ts
  *
- * Cross-cutting Authority â€” Event subscriber and tag-aware routing engine.
+ * Cross-cutting Authority ??Event subscriber and tag-aware routing engine.
  *
  * Listens to projection.bus tag change events and domain events,
  * evaluates tag-based routing rules via VS8 semantics, and triggers
  * delivery channels accordingly.
  *
  * Per logic-overview.md (VS7 enhanced):
- *   Notification Hub = åæ‡‰ä¸­æ¨
+ *   Notification Hub = ?æ?ä¸­æ?
  *   - Monitors projection.bus for tag lifecycle events
  *   - Routes via VS8 tag semantics to appropriate channels
  *   - Sole side-effect outlet [D26]
@@ -17,10 +17,10 @@
  *   [D8]   Routing logic lives HERE, not in shared-kernel.
  *   [D24]  No direct firebase imports.
  *   [D26]  notification-hub owns its services.
- *   [#A10] Notification routing is stateless â€” no persistent state in routing engine.
+ *   [#A10] Notification routing is stateless ??no persistent state in routing engine.
  */
 
-import type { NotificationPriority } from '@/features/shared-kernel';
+import type { NotificationPriority } from '@/shared-kernel';
 import { NOTIFICATION_PRIORITY_ORDER } from './_notification-authority';
 
 import type {
@@ -33,7 +33,7 @@ import type {
   NotificationSubscription,
 } from './_types';
 
-// â”€â”€â”€ In-memory routing rule registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ In-memory routing rule registry ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 const routingRules = new Map<string, TagRoutingRule>();
 const subscriptions = new Map<string, NotificationSubscription>();
@@ -235,7 +235,7 @@ export function emitProjectionBusEvent(event: NotificationSourceEvent): void {
 }
 
 /**
- * Initialize the TAG_CHANGED subscription â€” connects projection.bus
+ * Initialize the TAG_CHANGED subscription ??connects projection.bus
  * tag lifecycle events to the notification routing pipeline.
  *
  * Returns an unsubscribe function for cleanup.
@@ -266,7 +266,7 @@ export function getHubStats(): NotificationHubStats {
   };
 }
 
-// â”€â”€â”€ Internal helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Internal helpers ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 let dispatchIdCounter = 0;
 function generateDispatchId(): string {

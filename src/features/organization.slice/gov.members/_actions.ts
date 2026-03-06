@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * account-organization.member — _actions.ts
+ * account-organization.member ??_actions.ts
  *
  * Server actions for organization member management.
  *
@@ -15,8 +15,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
-import type { MemberReference } from "@/features/shared-kernel";
+} from "@/shared-kernel";
+import type { MemberReference } from "@/shared-kernel";
 import {
   recruitOrganizationMember,
   dismissOrganizationMember,

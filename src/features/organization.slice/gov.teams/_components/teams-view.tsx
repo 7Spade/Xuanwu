@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react"
 
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { useTeamManagement } from "@/features/organization.slice"
-import type { Team } from "@/features/shared-kernel"
+import type { Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"

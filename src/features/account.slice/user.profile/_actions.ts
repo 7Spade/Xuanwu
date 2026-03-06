@@ -12,8 +12,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
-import type { Account } from "@/features/shared-kernel";
+} from "@/shared-kernel";
+import type { Account } from "@/shared-kernel";
 import {
   createUserAccount as createUserAccountFacade,
   updateUserProfile as updateUserProfileFacade,

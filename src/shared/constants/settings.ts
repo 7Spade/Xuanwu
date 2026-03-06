@@ -1,5 +1,5 @@
 /**
- * @fileoverview shared/constants/settings.ts — App-wide configuration defaults.
+ * @fileoverview shared/constants/settings.ts ??App-wide configuration defaults.
  *
  * Single source of truth for numeric limits, defaults, and feature flags used
  * across the application.  Update values here instead of scattering magic numbers
@@ -16,7 +16,7 @@
 // ---------------------------------------------------------------------------
 
 export const PAGINATION = {
-  /** Default page size for list views (audit logs, members, schedule items…). */
+  /** Default page size for list views (audit logs, members, schedule items??. */
   DEFAULT_PAGE_SIZE: 20,
   /** Compact page size used in sidebar / summary panels. */
   COMPACT_PAGE_SIZE: 10,
@@ -29,9 +29,9 @@ export const PAGINATION = {
 // ---------------------------------------------------------------------------
 
 /**
- * XP bounds — duplicated here for components that must not import from feature slices.
+ * XP bounds ??duplicated here for components that must not import from feature slices.
  * The canonical computation function (getTier / resolveSkillTier) remains in
- * `@/features/shared-kernel/skill-tier` per the dependency direction rule.
+ * `@/shared-kernel/data-contracts/skill-tier` per the dependency direction rule.
  */
 export const SKILL_XP = {
   MIN: 0,
@@ -118,7 +118,7 @@ export const UI = {
 
 export const APP = {
   /** Application name shown in page titles and emails. */
-  NAME: '玄武工程協作平台',
+  NAME: '?�武工�??��?平台',
   /** Short English name used in metadata and alt text. */
   NAME_EN: 'Xuanwu',
   /** Support email address. */

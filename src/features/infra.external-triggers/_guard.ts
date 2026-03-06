@@ -1,16 +1,16 @@
 /**
- * infra.external-triggers — _guard.ts
+ * infra.external-triggers ??_guard.ts
  *
- * [L0] External Triggers — ResilienceGuard [S5]
+ * [L0] External Triggers ??ResilienceGuard [S5]
  *
  * Per logic-overview_v1.md L0 · External Triggers:
- *   EXT_CLIENT  — Next.js _actions.ts → rate-limit → circuit-break → CBG_ENTRY
- *   EXT_WEBHOOK — Webhook / Edge Fn  → rate-limit → circuit-break → (handler)
- *   EXT_AUTH    — Firebase Auth      → AUTH_ID    → ID_LINK      → CTX_MGR
+ *   EXT_CLIENT  ??Next.js _actions.ts ??rate-limit ??circuit-break ??CBG_ENTRY
+ *   EXT_WEBHOOK ??Webhook / Edge Fn  ??rate-limit ??circuit-break ??(handler)
+ *   EXT_AUTH    ??Firebase Auth      ??AUTH_ID    ??ID_LINK      ??CTX_MGR
  *
  * This module provides an in-process ResilienceGuard implementing [S5]:
- *   R1 rate-limit   : per user ∪ per org → 429 + Retry-After
- *   R2 circuit-break: consecutive 5xx → open; half-open probe recovery
+ *   R1 rate-limit   : per user ??per org ??429 + Retry-After
+ *   R2 circuit-break: consecutive 5xx ??open; half-open probe recovery
  *   R3 bulkhead     : slice isolation; fault does not cross slice boundary
  *
  * Usage (any _actions.ts entry point):
@@ -19,8 +19,8 @@
  *   if (!check.allowed) throw new RateLimitError(check.retryAfterMs);
  *
  * Invariants:
- *   D17 — All non-`_actions.ts` external entries must satisfy SK_RESILIENCE_CONTRACT [S5]
- *   D10 — traceId is NOT generated here; it is injected at CBG_ENTRY [R8]
+ *   D17 ??All non-`_actions.ts` external entries must satisfy SK_RESILIENCE_CONTRACT [S5]
+ *   D10 ??traceId is NOT generated here; it is injected at CBG_ENTRY [R8]
  */
 
 import type {
@@ -28,11 +28,11 @@ import type {
   CircuitBreakerConfig,
   BulkheadConfig,
   ResilienceContract,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import {
   DEFAULT_RATE_LIMIT,
   DEFAULT_CIRCUIT_BREAKER,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -123,7 +123,7 @@ function evaluateCircuit(
 
 /**
  * In-process resilience guard for an external-trigger entry point.
- * One instance per slice / entry-point — created via `createExternalTriggerGuard`.
+ * One instance per slice / entry-point ??created via `createExternalTriggerGuard`.
  */
 export interface ResilienceGuard {
   /**
@@ -178,22 +178,22 @@ export function createExternalTriggerGuard(
     contract,
 
     check(caller: CallerContext): GuardCheckResult {
-      // R1 — per-user rate limit
+      // R1 ??per-user rate limit
       if (!checkWindow(userWindows, caller.uid, rateCfg.perUserLimit, rateCfg.windowMs)) {
         return { allowed: false, retryAfterMs: rateCfg.windowMs, reason: 'RATE_LIMITED' };
       }
-      // R1 — per-org rate limit
+      // R1 ??per-org rate limit
       if (caller.orgId) {
         if (!checkWindow(orgWindows, caller.orgId, rateCfg.perOrgLimit, rateCfg.windowMs)) {
           return { allowed: false, retryAfterMs: rateCfg.windowMs, reason: 'RATE_LIMITED' };
         }
       }
-      // R2 — circuit breaker
+      // R2 ??circuit breaker
       if (!evaluateCircuit(circuitStatus, cbCfg)) {
         const retryAfterMs = cbCfg.openDurationMs - (Date.now() - circuitStatus.openedAt);
         return { allowed: false, retryAfterMs, reason: 'CIRCUIT_OPEN' };
       }
-      // R3 — bulkhead
+      // R3 ??bulkhead
       if (activeConcurrency >= maxConcurrency) {
         return { allowed: false, reason: 'BULKHEAD_FULL' };
       }

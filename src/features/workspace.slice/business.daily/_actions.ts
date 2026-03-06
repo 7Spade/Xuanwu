@@ -12,7 +12,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
+} from "@/shared-kernel";
 import {
   toggleDailyLogLike,
   addDailyLogComment as addDailyLogCommentFacade,

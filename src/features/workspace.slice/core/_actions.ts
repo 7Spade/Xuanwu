@@ -10,7 +10,7 @@
  * NOTE on CommandResult version field [R4]:
  *   CommandSuccess.version is `Date.now()` (millisecond timestamp) here because the
  *   workspace facade does not yet maintain an event-sourced aggregate version counter.
- *   This is a monotonically-increasing wall-clock version — sufficient to establish
+ *   This is a monotonically-increasing wall-clock version ??sufficient to establish
  *   "happened after" ordering for optimistic UI updates until proper aggregate versioning
  *   is implemented as part of full event-sourcing adoption.
  */
@@ -19,8 +19,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
-import type { Account } from "@/features/shared-kernel"
+} from '@/shared-kernel';
+import type { Account } from "@/shared-kernel"
 import {
   createWorkspace as createWorkspaceFacade,
   authorizeWorkspaceTeam as authorizeWorkspaceTeamFacade,
@@ -163,12 +163,12 @@ export async function deleteWorkspace(workspaceId: string): Promise<CommandResul
 }
 
 // =================================================================
-// WorkspaceLocation Commands — FR-L1/FR-L2/FR-L3
+// WorkspaceLocation Commands ??FR-L1/FR-L2/FR-L3
 // =================================================================
 
 /**
  * Creates a new sub-location inside a workspace.
- * FR-L1: HR or Workspace OWNER can define sub-locations (zones within 廠區).
+ * FR-L1: HR or Workspace OWNER can define sub-locations (zones within 廠�?).
  */
 export async function createWorkspaceLocation(
   workspaceId: string,

@@ -12,7 +12,7 @@ import {
   type SkillRequirement,
   commandFailureFrom,
   commandSuccess,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 
 import {
   approveOrgScheduleProposal,

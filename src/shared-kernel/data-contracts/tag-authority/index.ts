@@ -174,4 +174,3 @@ export interface ImplementsTagStaleGuard {
    */
   readonly maxStalenessMs: number;
 }
-

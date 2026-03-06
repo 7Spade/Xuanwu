@@ -1,5 +1,5 @@
 /**
- * infra.event-router — _router.ts
+ * infra.event-router ??_router.ts
  *
  * [IER] Integration Event Router [R2]
  *
@@ -15,11 +15,11 @@
  *   - Provide registerSubscriber for slices to declare interest
  *
  * Invariants:
- *   D9 — traceId is read from the envelope and forwarded; never overwritten by IER.
- *   R8 — All events carry traceId from the originating Command.
+ *   D9 ??traceId is read from the envelope and forwarded; never overwritten by IER.
+ *   R8 ??All events carry traceId from the originating Command.
  */
 
-import type { EventEnvelope } from '@/features/shared-kernel';
+import type { EventEnvelope } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -91,7 +91,7 @@ export async function routeEvent(envelope: EventEnvelope, lane: IerLane): Promis
 }
 
 /**
- * IER delivery entry point — compatible with IerDeliveryFn from infra.outbox-relay.
+ * IER delivery entry point ??compatible with IerDeliveryFn from infra.outbox-relay.
  *
  * Wire this as the delivery function when starting outbox relay workers:
  *   startOutboxRelay('tagOutbox', publishToLane);

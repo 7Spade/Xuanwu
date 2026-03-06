@@ -1,22 +1,22 @@
 /**
- * projection.tag-snapshot — _projector.ts
+ * projection.tag-snapshot ??_projector.ts
  *
  * Tag Authority global read model.
  * Final-consistent snapshot of the global tag dictionary.
  *
  * Per logic-overview.md (VS8 Tag Lifecycle Views):
- *   TAG_SNAPSHOT["projection.tag-snapshot\ntagSlug / label / category\n組織作用域快照\n來源: TagLifecycleEvent\n消費方唯讀快取"]
+ *   TAG_SNAPSHOT["projection.tag-snapshot\ntagSlug / label / category\n組�?作用?�快?�\n來�?: TagLifecycleEvent\n消費?�唯讀快�?"]
  *
  * Invariants:
- *   T5 — TAG_SNAPSHOT is the final-consistent read model; consumers must not write.
- *   #9  — Projections must be fully rebuildable from events.
- *   A7  — Event Funnel composes projections; does not enforce cross-BC invariants.
+ *   T5 ??TAG_SNAPSHOT is the final-consistent read model; consumers must not write.
+ *   #9  ??Projections must be fully rebuildable from events.
+ *   A7  ??Event Funnel composes projections; does not enforce cross-BC invariants.
  *
  * Stored at: tagSnapshot/{tagSlug}
  */
 
-import { versionGuardAllows } from '@/features/shared-kernel';
-import type { TagCreatedPayload, TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
+import type { TagCreatedPayload, TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
@@ -40,10 +40,10 @@ export interface TagSnapshotEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Projector functions (called by Event Funnel — Invariant A7)
+// Projector functions (called by Event Funnel ??Invariant A7)
 // ---------------------------------------------------------------------------
 
-/** applyTagCreated — no version guard needed; creates are idempotent. */
+/** applyTagCreated ??no version guard needed; creates are idempotent. */
 export async function applyTagCreated(payload: TagCreatedPayload, traceId?: string): Promise<void> {
   await setDocument(`tagSnapshot/${payload.tagSlug}`, {
     tagSlug: payload.tagSlug,
@@ -103,7 +103,7 @@ export async function applyTagDeprecated(
   });
 }
 
-/** applyTagDeleted — no version guard needed; deletes are final. */
+/** applyTagDeleted ??no version guard needed; deletes are final. */
 export async function applyTagDeleted(payload: TagDeletedPayload): Promise<void> {
   await deleteDocument(`tagSnapshot/${payload.tagSlug}`);
 }

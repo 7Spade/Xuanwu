@@ -1,36 +1,36 @@
 /**
- * scheduling.slice — _aggregate.ts
+ * scheduling.slice ??_aggregate.ts
  *
- * organization.schedule Aggregate Root — manages the Schedule lifecycle:
- *   draft → proposed → confirmed | cancelled
+ * organization.schedule Aggregate Root ??manages the Schedule lifecycle:
+ *   draft ??proposed ??confirmed | cancelled
  *
  * Per logic-overview.md:
- *   WORKSPACE_OUTBOX →|ScheduleProposed（跨層事件 · saga）| ORGANIZATION_SCHEDULE
- *   ORGANIZATION_SCHEDULE → ORGANIZATION_EVENT_BUS → ACCOUNT_NOTIFICATION_ROUTER (FCM Layer 2+)
+ *   WORKSPACE_OUTBOX ?�|ScheduleProposed（跨層�?�?· saga）| ORGANIZATION_SCHEDULE
+ *   ORGANIZATION_SCHEDULE ??ORGANIZATION_EVENT_BUS ??ACCOUNT_NOTIFICATION_ROUTER (FCM Layer 2+)
  *
  * Aggregate lifecycle (state machine):
- *   draft → proposed → confirmed → completed        (normal path)
- *                                 → assignmentCancelled  (post-approval cancellation)
- *                    → cancelled                    (proposal rejected / compensating path)
+ *   draft ??proposed ??confirmed ??completed        (normal path)
+ *                                 ??assignmentCancelled  (post-approval cancellation)
+ *                    ??cancelled                    (proposal rejected / compensating path)
  *
  * Single source of truth: accounts/{orgId}/schedule_items/{scheduleItemId}
  * The workspace layer creates the document; this aggregate enriches and transitions it.
  *
  * Invariants respected:
- *   #1  — This BC only writes to accounts/{orgId}/schedule_items (ScheduleItem SSOT).
- *   #2  — Reads workspace schedule data only via the event payload (not domain model).
- *   #4a — Domain Events produced by ORGANIZATION_SCHEDULE aggregate only.
- *   #4b — Transaction Runner only delivers to Outbox; does not produce Domain Events.
- *   #12 — Tier is NEVER stored. Only xp is persisted; getTier(xp) is computed at runtime.
- *   #14 — Schedule reads ONLY projection.org-eligible-member-view, never Account aggregate.
- *   A5  — ScheduleAssignRejected is the compensating event when skill validation fails.
+ *   #1  ??This BC only writes to accounts/{orgId}/schedule_items (ScheduleItem SSOT).
+ *   #2  ??Reads workspace schedule data only via the event payload (not domain model).
+ *   #4a ??Domain Events produced by ORGANIZATION_SCHEDULE aggregate only.
+ *   #4b ??Transaction Runner only delivers to Outbox; does not produce Domain Events.
+ *   #12 ??Tier is NEVER stored. Only xp is persisted; getTier(xp) is computed at runtime.
+ *   #14 ??Schedule reads ONLY projection.org-eligible-member-view, never Account aggregate.
+ *   A5  ??ScheduleAssignRejected is the compensating event when skill validation fails.
  */
 
 import { publishOrgEvent } from '@/features/organization.slice';
 import { getOrgMemberEligibility } from '@/features/projection.bus';
-import { resolveSkillTier, tierSatisfies } from '@/features/shared-kernel';
-import type { WorkspaceScheduleProposedPayload, SkillRequirement } from '@/features/shared-kernel';
-import type { ScheduleItem, ScheduleStatus } from '@/features/shared-kernel';
+import { resolveSkillTier, tierSatisfies } from '@/shared-kernel';
+import type { WorkspaceScheduleProposedPayload, SkillRequirement } from '@/shared-kernel';
+import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 
 import {
@@ -53,19 +53,19 @@ export type {
 /**
  * Aggregate lifecycle states for organization.schedule.
  *
- *   draft               — initial state; exists only in memory / not yet persisted
- *   proposed            — received from workspace layer; persisted, awaiting org approval
- *   confirmed           — skill check passed; ScheduleAssigned event published
- *   cancelled           — skill check failed or manually cancelled; ScheduleAssignRejected published
- *   completed           — assignment successfully fulfilled; ScheduleCompleted event published
- *   assignmentCancelled — confirmed assignment withdrawn post-approval; ScheduleAssignmentCancelled event published
+ *   draft               ??initial state; exists only in memory / not yet persisted
+ *   proposed            ??received from workspace layer; persisted, awaiting org approval
+ *   confirmed           ??skill check passed; ScheduleAssigned event published
+ *   cancelled           ??skill check failed or manually cancelled; ScheduleAssignRejected published
+ *   completed           ??assignment successfully fulfilled; ScheduleCompleted event published
+ *   assignmentCancelled ??confirmed assignment withdrawn post-approval; ScheduleAssignmentCancelled event published
  *
  * These domain states map to ScheduleStatus as follows:
- *   proposed            → PROPOSAL
- *   confirmed           → OFFICIAL
- *   cancelled           → REJECTED
- *   completed           → COMPLETED
- *   assignmentCancelled → REJECTED
+ *   proposed            ??PROPOSAL
+ *   confirmed           ??OFFICIAL
+ *   cancelled           ??REJECTED
+ *   completed           ??COMPLETED
+ *   assignmentCancelled ??REJECTED
  */
 /** Firestore path for a schedule item (single source of truth). */
 function scheduleItemPath(orgId: string, scheduleItemId: string): string {
@@ -83,10 +83,10 @@ function scheduleItemPath(orgId: string, scheduleItemId: string): string {
  * This function enriches it with org-domain fields (version, traceId, proposedBy,
  * skill requirements) so the org governance layer has all necessary context.
  *
- * Does NOT immediately assign — assignment requires explicit governance approval
+ * Does NOT immediately assign ??assignment requires explicit governance approval
  * via approveOrgScheduleProposal().
  *
- * [D3] Returns a WriteOp — the caller must execute `updateDocument(op.path, op.data)`.
+ * [D3] Returns a WriteOp ??the caller must execute `updateDocument(op.path, op.data)`.
  */
 export function handleScheduleProposed(
   payload: WorkspaceScheduleProposedPayload
@@ -108,7 +108,7 @@ export function handleScheduleProposed(
 // =================================================================
 
 /**
- * Result type for approveOrgScheduleProposal — enables callers to handle
+ * Result type for approveOrgScheduleProposal ??enables callers to handle
  * both outcomes without catching exceptions (Compensating Event pattern).
  *
  * [D3] Each outcome carries a `writeOp` the caller must execute via `updateDocument`.
@@ -118,9 +118,9 @@ export function handleScheduleProposed(
  *
  * Skill Validation (Invariant #14 + #12):
  *   1. Reads projection.org-eligible-member-view (never Account aggregate).
- *   2. For each SkillRequirement, derives tier via resolveSkillTier(xp) — NOT from DB.
- *   3. If all requirements are met → confirms and publishes `organization:schedule:assigned`.
- *   4. If any requirement fails → cancels and publishes `organization:schedule:assignRejected`
+ *   2. For each SkillRequirement, derives tier via resolveSkillTier(xp) ??NOT from DB.
+ *   3. If all requirements are met ??confirms and publishes `organization:schedule:assigned`.
+ *   4. If any requirement fails ??cancels and publishes `organization:schedule:assignRejected`
  *      (Compensating Event per Invariant A5). B-track issues do NOT flow back to A-track tasks.
  *
  * @param scheduleItemId  The proposal to approve.
@@ -156,7 +156,7 @@ export async function approveOrgScheduleProposal(
       return { outcome: 'rejected', scheduleItemId, reason, writeOp };
     }
 
-    // Validate each skill requirement — tier derived via getTier(xp), never from DB (Invariant #12)
+    // Validate each skill requirement ??tier derived via getTier(xp), never from DB (Invariant #12)
     for (const req of skillRequirements) {
       const skillEntry = memberView.skills[req.tagSlug];
 
@@ -178,12 +178,12 @@ export async function approveOrgScheduleProposal(
     }
   }
 
-  // --- All checks passed → Confirm ---
+  // --- All checks passed ??Confirm ---
   // Read current version and increment to ensure proper aggregateVersion for ELIGIBLE_UPDATE_GUARD [R7]
   const existing = await getDocument<ScheduleItem>(scheduleItemPath(opts.orgId, scheduleItemId));
   const nextVersion = (existing?.version ?? 1) + 1;
 
-  // [D3] Return WriteOp — caller executes updateDocument(writeOp.path, writeOp.data)
+  // [D3] Return WriteOp ??caller executes updateDocument(writeOp.path, writeOp.data)
   const writeOp: WriteOp = {
     path: scheduleItemPath(opts.orgId, scheduleItemId),
     data: {
@@ -217,7 +217,7 @@ export async function approveOrgScheduleProposal(
 /**
  * Builds the WriteOp for cancelling a proposal and publishes the compensating event.
  *
- * [D3] Does NOT call updateDocument — returns WriteOp for the caller to execute.
+ * [D3] Does NOT call updateDocument ??returns WriteOp for the caller to execute.
  */
 async function _buildCancelWriteOp(
   scheduleItemId: string,
@@ -225,7 +225,7 @@ async function _buildCancelWriteOp(
   opts: { workspaceId: string; orgId: string; traceId?: string },
   reason: string
 ): Promise<WriteOp> {
-  // Compensating Event (Invariant A5) — discrete recovery; B-track does NOT flow back to A-track.
+  // Compensating Event (Invariant A5) ??discrete recovery; B-track does NOT flow back to A-track.
   await publishOrgEvent('organization:schedule:assignRejected', {
     scheduleItemId,
     orgId: opts.orgId,
@@ -258,7 +258,7 @@ async function _buildCancelWriteOp(
  *
  * Invariant #1: only writes to accounts/{orgId}/schedule_items (ScheduleItem SSOT).
  *
- * [D3] Returns a WriteOp — the caller must execute `updateDocument(op.path, op.data)`.
+ * [D3] Returns a WriteOp ??the caller must execute `updateDocument(op.path, op.data)`.
  */
 export async function cancelOrgScheduleProposal(
   scheduleItemId: string,
@@ -293,7 +293,7 @@ export async function cancelOrgScheduleProposal(
 /**
  * Marks a confirmed schedule assignment as completed.
  *
- * Invariant #15: completed → eligible = true.
+ * Invariant #15: completed ??eligible = true.
  * The `organization:schedule:completed` event published here is consumed by
  * the event funnel which calls both `applyScheduleCompleted` (account-schedule
  * projection) and `updateOrgMemberEligibility(orgId, accountId, true)` to
@@ -301,7 +301,7 @@ export async function cancelOrgScheduleProposal(
  *
  * Invariant #1: only writes to accounts/{orgId}/schedule_items (ScheduleItem SSOT).
  *
- * [D3] Returns a WriteOp — the caller must execute `updateDocument(op.path, op.data)`.
+ * [D3] Returns a WriteOp ??the caller must execute `updateDocument(op.path, op.data)`.
  */
 export async function completeOrgSchedule(
   scheduleItemId: string,
@@ -315,7 +315,7 @@ export async function completeOrgSchedule(
   const existing = await getDocument<ScheduleItem>(scheduleItemPath(orgId, scheduleItemId));
   if (!existing || existing.status !== 'OFFICIAL') {
     throw new Error(
-      `completeOrgSchedule: invalid state transition — scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
+      `completeOrgSchedule: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
     );
   }
   const nextVersion = (existing.version ?? 1) + 1;
@@ -352,13 +352,13 @@ export async function completeOrgSchedule(
  * have NOT yet been confirmed. This function handles the case where a confirmed
  * assignment is later withdrawn by HR, restoring the member's eligible flag.
  *
- * Invariant #15: cancelled → eligible = true.
+ * Invariant #15: cancelled ??eligible = true.
  * Publishes `organization:schedule:assignmentCancelled` consumed by the event
  * funnel which calls `updateOrgMemberEligibility(orgId, accountId, true)`.
  *
  * Invariant #1: only writes to accounts/{orgId}/schedule_items (ScheduleItem SSOT).
  *
- * [D3] Returns a WriteOp — the caller must execute `updateDocument(op.path, op.data)`.
+ * [D3] Returns a WriteOp ??the caller must execute `updateDocument(op.path, op.data)`.
  */
 export async function cancelOrgScheduleAssignment(
   scheduleItemId: string,
@@ -373,7 +373,7 @@ export async function cancelOrgScheduleAssignment(
   const existing = await getDocument<ScheduleItem>(scheduleItemPath(orgId, scheduleItemId));
   if (!existing || existing.status !== 'OFFICIAL') {
     throw new Error(
-      `cancelOrgScheduleAssignment: invalid state transition — scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
+      `cancelOrgScheduleAssignment: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
     );
   }
   const nextVersion = (existing.version ?? 1) + 1;

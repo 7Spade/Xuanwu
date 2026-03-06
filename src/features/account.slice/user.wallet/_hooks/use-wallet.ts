@@ -1,14 +1,14 @@
 'use client';
 
 /**
- * account-user.wallet — _hooks/use-wallet.ts
+ * account-user.wallet ??_hooks/use-wallet.ts
  *
  * React hook for subscribing to a user's wallet balance.
  */
 
 import { useState, useEffect } from 'react';
 
-import type { Wallet } from '@/features/shared-kernel';
+import type { Wallet } from '@/shared-kernel';
 
 import { subscribeToWalletBalance, subscribeToWalletTransactions } from '../_queries';
 import type { WalletTransactionRecord } from '../_queries';

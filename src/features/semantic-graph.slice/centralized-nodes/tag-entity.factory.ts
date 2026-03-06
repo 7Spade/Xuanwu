@@ -1,5 +1,5 @@
 /**
- * semantic-graph.slice/centralized-nodes â€” [D21] TE1~TE6 Tag Entity Node Factory
+ * semantic-graph.slice/centralized-nodes ??[D21] TE1~TE6 Tag Entity Node Factory
  *
  * Builds typed semantic tag entity nodes from a CentralizedTagEntry.
  * Each node carries a `semanticUri` in the `tag::{category}/{slug}` format [D21],
@@ -8,7 +8,7 @@
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
  */
 
-import { tagSlugRef, type TagCategory } from '@/features/shared-kernel';
+import { tagSlugRef, type TagCategory } from '@/shared-kernel';
 
 import type {
   TagEntity,
@@ -20,7 +20,7 @@ import type {
   TE6_PartnerTagEntity,
 } from '../centralized-types';
 
-// â”€â”€â”€ Factory input â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Factory input ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Minimal input required by the factory.
@@ -33,7 +33,7 @@ export interface TagEntityFactoryInput {
   readonly aggregateVersion: number;
 }
 
-// â”€â”€â”€ Per-category builders (TE1â€“TE6) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Per-category builders (TE1?“TE6) ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 function buildTE1(input: TagEntityFactoryInput): TE1_SkillTagEntity {
   const slug = input.tagSlug;
@@ -107,12 +107,12 @@ function buildTE6(input: TagEntityFactoryInput): TE6_PartnerTagEntity {
   };
 }
 
-// â”€â”€â”€ Main factory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Main factory ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Build a typed TagEntity node from a factory input.
  *
- * Dispatches to TE1â€“TE6 based on `category`.
+ * Dispatches to TE1?“TE6 based on `category`.
  * Throws if an unrecognised category is supplied.
  *
  * Invariant [S2]: the returned node includes `aggregateVersion` so upstream

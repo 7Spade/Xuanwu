@@ -1,5 +1,5 @@
 /**
- * scheduling.slice — _queries.ts
+ * scheduling.slice ??_queries.ts
  *
  * Read-only queries for the VS6 Scheduling domain.
  * Single source of truth: accounts/{orgId}/schedule_items
@@ -16,8 +16,8 @@ import {
   type OrgEligibleMemberView,
   type OrgMemberSkillWithTier,
 } from '@/features/projection.bus';
-import type { ImplementsStalenessContract } from '@/features/shared-kernel';
-import type { ScheduleItem, ScheduleStatus } from '@/features/shared-kernel';
+import type { ImplementsStalenessContract } from '@/shared-kernel';
+import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { fetchScheduleItems } from '@/shared/infra/firestore/firestore.facade';
 import {
@@ -167,7 +167,7 @@ export async function getAccountActiveAssignments(
 }
 
 // =================================================================
-// QGWAY_SCHED — Eligible member queries [#14 #15 #16]
+// QGWAY_SCHED ??Eligible member queries [#14 #15 #16]
 // =================================================================
 // All scheduling eligibility reads must pass through these functions.
 // Direct Firestore access for member eligibility is forbidden (D7 D24).
@@ -177,7 +177,7 @@ export type { OrgEligibleMemberView, OrgMemberSkillWithTier };
 
 /**
  * Returns the full eligible-member view (with computed skill tiers) for a single
- * org member.  Routing: VS6 → QGWAY_SCHED → projection.org-eligible-member-view.
+ * org member.  Routing: VS6 ??QGWAY_SCHED ??projection.org-eligible-member-view.
  *
  * Per logic-overview.md Invariant #14: scheduling reads ORG_ELIGIBLE_MEMBER_VIEW.
  */
@@ -192,7 +192,7 @@ export async function getEligibleMemberForSchedule(
  * Returns all eligible members (eligible=true) for an org with computed tiers.
  * Used by the scheduling saga [A5] to find assignable candidates.
  *
- * Routing: VS6 → QGWAY_SCHED → projection.org-eligible-member-view [#14].
+ * Routing: VS6 ??QGWAY_SCHED ??projection.org-eligible-member-view [#14].
  */
 export async function getEligibleMembersForSchedule(
   orgId: string

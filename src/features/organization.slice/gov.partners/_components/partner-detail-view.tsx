@@ -12,7 +12,7 @@ import {
 import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
-import type { PartnerInvite, MemberReference , Team } from "@/features/shared-kernel"
+import type { PartnerInvite, MemberReference , Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
@@ -38,7 +38,7 @@ import { subscribeToOrgPartnerInvites } from "../_queries"
 /**
  * PartnerDetailView - Manages recruitment and identity governance within a specific partner team.
  * Invites are subscribed directly from `accounts/{orgId}/invites` (Account BC / Subject Center)
- * via subscribeToOrgPartnerInvites — NOT via useAccount (WorkspaceContainer).
+ * via subscribeToOrgPartnerInvites ??NOT via useAccount (WorkspaceContainer).
  */
 export function PartnerDetailView() {
   const { id: teamId } = useParams()
@@ -57,7 +57,7 @@ export function PartnerDetailView() {
     setMounted(true)
   }, [])
 
-  // Subscribe to this org's invites directly (Account BC data — accounts/{orgId}/invites)
+  // Subscribe to this org's invites directly (Account BC data ??accounts/{orgId}/invites)
   useEffect(() => {
     const orgId = activeAccount?.id
     if (!orgId) return

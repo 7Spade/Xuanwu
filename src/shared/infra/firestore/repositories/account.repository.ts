@@ -1,7 +1,7 @@
 /**
  * @fileoverview Account Repository.
  *
- * Firestore write operations for the `accounts` collection — organization and
+ * Firestore write operations for the `accounts` collection ??organization and
  * user account management, teams, and member roster operations.
  */
 
@@ -19,7 +19,7 @@ import type {
   MemberReference,
   Team,
   ThemeConfig,
-} from '@/features/shared-kernel'
+} from '@/shared-kernel'
 
 import { db } from '../firestore.client'
 import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'

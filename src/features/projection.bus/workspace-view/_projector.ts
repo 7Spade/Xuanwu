@@ -1,5 +1,5 @@
 /**
- * projection.workspace-view — _projector.ts
+ * projection.workspace-view ??_projector.ts
  *
  * Maintains the workspace projection read model.
  * Stored at: workspaceView/{workspaceId}
@@ -8,7 +8,7 @@
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 import type { Workspace } from '@/features/workspace.slice';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';

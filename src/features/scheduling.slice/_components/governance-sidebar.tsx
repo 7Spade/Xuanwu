@@ -2,8 +2,8 @@
 
 import { Check, X } from "lucide-react";
 
-import type { SkillRequirement } from '@/features/shared-kernel';
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import { SKILLS } from '@/shared/constants/skills';
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
@@ -27,7 +27,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
     <Card className="flex h-full flex-col rounded-none border-none shadow-none">
       <CardHeader className="border-b">
         <CardTitle className="text-sm font-bold uppercase tracking-widest">
-          待審提案 ({proposals.length})
+          待審?��? ({proposals.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
@@ -45,7 +45,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
                           const skillName = SKILLS.find((s) => s.slug === req.tagSlug)?.name ?? req.tagSlug;
                           return (
                             <Badge key={req.tagSlug} variant="secondary" className="text-[9px]">
-                              {skillName} ≥ {req.minimumTier} × {req.quantity}
+                              {skillName} ??{req.minimumTier} ? {req.quantity}
                             </Badge>
                           );
                         })}
@@ -65,7 +65,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
             ))}
             {proposals.length === 0 && (
               <div className="py-12 text-center text-xs italic text-muted-foreground">
-                目前無待審提案。
+                ?��??��?審�?案�?
               </div>
             )}
           </div>

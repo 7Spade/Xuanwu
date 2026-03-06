@@ -1,5 +1,5 @@
 /**
- * account-organization.core — _queries.ts
+ * account-organization.core ??_queries.ts
  *
  * Read queries for the organization aggregate.
  *
@@ -7,7 +7,7 @@
  * onSnapshot provides real-time updates.
  */
 
-import type { Account } from '@/features/shared-kernel'
+import type { Account } from '@/shared-kernel'
 import { db } from '@/shared/infra/firestore/firestore.client'
 import { doc, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter'
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter'

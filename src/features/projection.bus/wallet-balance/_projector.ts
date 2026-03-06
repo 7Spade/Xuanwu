@@ -1,5 +1,5 @@
 /**
- * projection.wallet-balance — _projector.ts
+ * projection.wallet-balance ??_projector.ts
  *
  * Maintains the wallet balance projection read model.
  * Provides a cached EVENTUAL_READ view of account wallet balance
@@ -8,8 +8,8 @@
  * Stored at: walletBalanceView/{accountId}
  *
  * Per logic-overview.md (PROJ_BUS CRIT_PROJ):
- *   WALLET_V["projection.wallet-balance\n[S3: EVENTUAL_READ]\n顯示用・精確交易回源 AGG"]
- *   QGWAY_WALLET → projection.wallet-balance (STRONG_READ [Q8][D5])
+ *   WALLET_V["projection.wallet-balance\n[S3: EVENTUAL_READ]\n顯示?�・精確交�??��? AGG"]
+ *   QGWAY_WALLET ??projection.wallet-balance (STRONG_READ [Q8][D5])
  *
  * Read-consistency contract [S3]:
  *   - EVENTUAL_READ: this projection (display balance, refreshed on wallet events)
@@ -22,7 +22,7 @@
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -150,7 +150,7 @@ export async function applyWalletDebited(
 /**
  * Syncs the projection balance from the authoritative Account aggregate.
  * Used for initial backfill or to reconcile after STRONG_READ operations.
- * [D5] This is the EVENTUAL_READ surface — true balance lives in the aggregate.
+ * [D5] This is the EVENTUAL_READ surface ??true balance lives in the aggregate.
  */
 export async function syncWalletBalanceFromAggregate(
   accountId: string,

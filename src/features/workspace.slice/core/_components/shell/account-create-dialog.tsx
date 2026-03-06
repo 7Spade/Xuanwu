@@ -4,7 +4,7 @@
 import { Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 
-import { type Account } from "@/features/shared-kernel"
+import { type Account } from "@/shared-kernel"
 import { Button } from "@/shared/shadcn-ui/button"
 import {
   Dialog,

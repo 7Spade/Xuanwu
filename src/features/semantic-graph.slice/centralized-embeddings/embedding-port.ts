@@ -1,14 +1,14 @@
 /**
- * semantic-graph.slice/centralized-embeddings â€” IEmbeddingPort [D24][D26]
+ * semantic-graph.slice/centralized-embeddings ??IEmbeddingPort [D24][D26]
  *
  * Port interface for semantic vector generation.
- * MUST NOT import any AI SDK or firebase/* directly â€” this is a pure
+ * MUST NOT import any AI SDK or firebase/* directly ??this is a pure
  * dependency-inversion port that lives in SK_PORTS per D24/D25.
  *
  * Architecture:
- *   IEmbeddingPort (this file) â† registered in SK_PORTS
- *   â†‘ consumed by centralized-embeddings/semantic-embedder.ts
- *   â†“ implemented by infra adapter (e.g. VertexAI, OpenAI) in src/shared/infra/
+ *   IEmbeddingPort (this file) ??registered in SK_PORTS
+ *   ??consumed by centralized-embeddings/semantic-embedder.ts
+ *   ??implemented by infra adapter (e.g. VertexAI, OpenAI) in src/shared/infra/
  *
  * The produced TagEmbedding is projected to projection.tag-snapshot for use
  * by Global Search (VS8) in cross-domain retrieval [D26].
@@ -16,14 +16,14 @@
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
  */
 
-import type { TagSlugRef } from '@/features/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
 
 import type { TagEmbedding } from '../centralized-types';
 
-// â”€â”€â”€ Port interface â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Port interface ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
- * IEmbeddingPort â€” Dependency-inversion port for AI-backed embedding generation.
+ * IEmbeddingPort ??Dependency-inversion port for AI-backed embedding generation.
  *
  * [D24] Feature slices MUST depend on this interface, never on AI SDK directly.
  * [D25] Concrete adapter registered in composition root (src/shared/infra/embeddings/).
@@ -44,7 +44,7 @@ export interface IEmbeddingPort {
   embedBatch(texts: readonly string[]): Promise<readonly (readonly number[])[]>;
 }
 
-// â”€â”€â”€ No-op stub for use in tests / before adapter registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ No-op stub for use in tests / before adapter registration ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * A zero-vector stub that satisfies IEmbeddingPort without calling any external service.
@@ -57,7 +57,7 @@ export const NOOP_EMBEDDING_PORT: IEmbeddingPort = {
   embedBatch: async (texts: readonly string[]) => texts.map(() => []),
 };
 
-// â”€â”€â”€ Port registry (simple composition-root injection) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Port registry (simple composition-root injection) ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 let _embeddingPort: IEmbeddingPort = NOOP_EMBEDDING_PORT;
 
@@ -74,7 +74,7 @@ export function getEmbeddingPort(): IEmbeddingPort {
   return _embeddingPort;
 }
 
-// â”€â”€â”€ Embedder helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Embedder helper ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Build a TagEmbedding for the given tag by calling the registered IEmbeddingPort.

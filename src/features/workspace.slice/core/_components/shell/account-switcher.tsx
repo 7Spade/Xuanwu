@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 
-import type { Account } from "@/features/shared-kernel"
+import type { Account } from "@/shared-kernel"
 import { ROUTES } from "@/shared/constants/routes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import {
@@ -98,7 +98,7 @@ export function AccountSwitcher({
   return (
     <>
       <Link href={ROUTES.DASHBOARD} className="mb-2 flex items-center px-1 transition-opacity hover:opacity-80">
-        <div className="select-none text-3xl">üê¢</div>
+        <div className="select-none text-3xl">?ê¢</div>
       </Link>
 
       <SidebarMenu>

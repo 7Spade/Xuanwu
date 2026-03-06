@@ -1,10 +1,10 @@
 /**
- * @fileoverview entities/workspace — Pure workspace domain rules.
+ * @fileoverview entities/workspace ??Pure workspace domain rules.
  * No async, no I/O, no React, no Firebase.
  */
 
 import { isOwner, getUserTeamIds } from "@/features/account.slice"
-import type { Account } from "@/features/shared-kernel"
+import type { Account } from "@/shared-kernel"
 
 import type { Workspace } from "./core/_types"
 

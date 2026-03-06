@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 
-import type { Account } from '@/features/shared-kernel'
+import type { Account } from '@/shared-kernel'
 import { useAuth } from '@/shared/app-providers/auth-provider'
 
 import {

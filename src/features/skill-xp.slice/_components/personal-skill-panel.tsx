@@ -1,9 +1,9 @@
 'use client';
 
 /**
- * skill-xp.slice — _components/personal-skill-panel.tsx
+ * skill-xp.slice ??_components/personal-skill-panel.tsx
  *
- * FR-K1: Personal skill profile page — XP bar and tier badge for each skill.
+ * FR-K1: Personal skill profile page ??XP bar and tier badge for each skill.
  *
  * Invariant #12: tier is NEVER read from DB; derived via resolveSkillTier(xp).
  */
@@ -11,7 +11,7 @@
 import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { resolveSkillTier, TIER_DEFINITIONS } from '@/features/shared-kernel';
+import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
 import { useApp } from '@/shared/app-providers/app-context';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
@@ -71,7 +71,7 @@ export function PersonalSkillPanel() {
 
   if (loading) {
     return (
-      <p className="py-12 text-center text-sm italic text-muted-foreground">載入技能資料…</p>
+      <p className="py-12 text-center text-sm italic text-muted-foreground">載入?�?��??��?/p>
     );
   }
 
@@ -80,9 +80,9 @@ export function PersonalSkillPanel() {
       <Card>
         <CardContent className="py-12 text-center">
           <Sparkles className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <p className="text-sm font-medium text-muted-foreground">尚無技能紀錄</p>
+          <p className="text-sm font-medium text-muted-foreground">尚無?�?��???/p>
           <p className="mt-1 text-xs text-muted-foreground">
-            完成排程任務後系統將自動累積 XP。
+            完�??��?任�?後系統�??��?累�? XP??
           </p>
         </CardContent>
       </Card>
@@ -114,7 +114,7 @@ export function PersonalSkillPanel() {
             </div>
             <Progress value={row.progressPct} className="h-1.5" />
             <p className="text-[10px] text-muted-foreground">
-              {row.xpInTier} / {row.xpNeeded} XP → 下一等級
+              {row.xpInTier} / {row.xpNeeded} XP ??下�?等�?
             </p>
           </CardContent>
         </Card>

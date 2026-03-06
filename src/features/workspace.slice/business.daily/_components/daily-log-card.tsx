@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from "react";
 
-import type { Account } from "@/features/shared-kernel";
+import type { Account } from "@/shared-kernel";
 import type { Timestamp } from "@/shared/ports";
 import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import { Card } from "@/shared/shadcn-ui/card";
@@ -83,7 +83,7 @@ export function DailyLogCard({ log, currentUser, onOpen }: DailyLogCardProps) {
         <div className="flex flex-col">
           <span className="text-sm font-bold">{log.workspaceName}</span>
           <span className="text-xs text-muted-foreground">
-            by {log.author.name} • <TimeAgo date={log.createdAt} />
+            by {log.author.name} ??<TimeAgo date={log.createdAt} />
           </span>
         </div>
       </div>

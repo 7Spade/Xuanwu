@@ -1,5 +1,5 @@
 /**
- * semantic-graph.slice/centralized-tag — _actions.ts
+ * semantic-graph.slice/centralized-tag ??_actions.ts
  *
  * CTA (Centralized Tag Aggregate) Firestore-backed operations.
  *
@@ -15,12 +15,12 @@
  * Consumers: import from '@/features/semantic-graph.slice'.
  */
 
-import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel/command-result-contract';
-import { buildIdempotencyKey, type DlqTier } from '@/features/shared-kernel/outbox-contract';
-import type { TagCategory } from '@/features/shared-kernel/tag-authority';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel/data-contracts/command-result-contract';
+import { buildIdempotencyKey, type DlqTier } from '@/shared-kernel/infra-contracts/outbox-contract';
+import type { TagCategory } from '@/shared-kernel/data-contracts/tag-authority';
 import type {
   CommandResult,
-} from '@/features/shared-kernel/command-result-contract';
+} from '@/shared-kernel/data-contracts/command-result-contract';
 import type { CentralizedTagEntry, TagDeleteRule } from './_contract';
 import { publishTagEvent } from './_bus';
 import { Timestamp, getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
@@ -34,7 +34,7 @@ import {
 // Outbox helper [Q2][S1][R8]
 // Writes a pending OutboxDocument to tagOutbox/{id}.
 // The OUTBOX_RELAY_WORKER (infra.outbox-relay) picks this up via CDC and
-// delivers it to IER BACKGROUND_LANE → VS4_TAG_SUBSCRIBER.
+// delivers it to IER BACKGROUND_LANE ??VS4_TAG_SUBSCRIBER.
 //
 // S1: uses buildIdempotencyKey(eventId, aggId, version) from shared.kernel.outbox-contract.
 // R8: traceId carried in the envelope if supplied by the calling action.
@@ -66,7 +66,7 @@ async function writeTagOutbox(
     eventType,
     envelopeJson: JSON.stringify(envelope),
     lane: 'BACKGROUND_LANE',
-    // [S1] dlqTier required by OutboxRecord contract — tag events are idempotent
+    // [S1] dlqTier required by OutboxRecord contract ??tag events are idempotent
     dlqTier: 'SAFE_AUTO' satisfies DlqTier,
     status: 'pending',
     createdAt: occurredAt,
@@ -213,7 +213,7 @@ export async function deprecateTag(
     }
     if (existing.deprecatedAt) {
       // Idempotent: tag already deprecated. Log for observability.
-      console.debug('[centralized-tag] deprecateTag no-op — already deprecated', tagSlug);
+      console.debug('[centralized-tag] deprecateTag no-op ??already deprecated', tagSlug);
       return commandSuccess(tagSlug, 0);
     }
 
@@ -260,7 +260,7 @@ export async function deleteTag(
     const existing = await getDocument<CentralizedTagEntry>(path);
     if (!existing) {
       // Idempotent: tag already absent. Log for observability.
-      console.debug('[centralized-tag] deleteTag no-op — tag not found', tagSlug);
+      console.debug('[centralized-tag] deleteTag no-op ??tag not found', tagSlug);
       return commandSuccess(tagSlug, 0);
     }
 

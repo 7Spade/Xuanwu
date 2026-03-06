@@ -3,7 +3,7 @@
 
 import { Bell, Trash2, Check } from "lucide-react";
 
-import { type Notification } from "@/features/shared-kernel";
+import { type Notification } from "@/shared-kernel";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
 import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";

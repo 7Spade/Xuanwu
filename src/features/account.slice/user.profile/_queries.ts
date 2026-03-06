@@ -1,12 +1,12 @@
 /**
- * account-user.profile — _queries.ts
+ * account-user.profile ??_queries.ts
  *
  * Read queries for user profile data.
  *
  * Per slice standard: reads live in _queries.ts; mutations live in _actions.ts.
  */
 
-import type { Account } from "@/features/shared-kernel"
+import type { Account } from "@/shared-kernel"
 import {
   getUserProfile as getUserProfileFacade,
 } from "@/shared/infra/firestore/firestore.facade"

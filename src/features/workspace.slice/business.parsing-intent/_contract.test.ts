@@ -1,20 +1,20 @@
 /**
- * @fileoverview Tests for ParsingIntentContract — Digital Twin [#A4]
+ * @fileoverview Tests for ParsingIntentContract ??Digital Twin [#A4]
  *
  * Validates that:
  *   1. createParsingIntentContract produces a valid contract with SkillRequirement[] [#A4][TE_SK]
  *   2. skillRequirements defaults to [] when not provided
  *   3. markParsingIntentImported transitions status to 'imported'
  *   4. supersedeParsingIntent transitions status to 'superseded'
- *   5. Immutability — operations return new objects without mutating the original
+ *   5. Immutability ??operations return new objects without mutating the original
  *
  * Tags: [#A4] Digital Twin contract, [TE_SK] task::skill anchor, [A5] Scheduling Saga
  */
 
 import { describe, it, expect } from 'vitest';
 
-import type { SkillRequirement } from '@/features/shared-kernel';
-import { tagSlugRef } from '@/features/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import { tagSlugRef } from '@/shared-kernel';
 import {
   createParsingIntentContract,
   markParsingIntentImported,
@@ -162,7 +162,7 @@ describe('supersedeParsingIntent', () => {
     expect(superseded.skillRequirements).toEqual(SKILL_REQUIREMENTS);
   });
 
-  it('allows chaining: imported → superseded (Digital Twin version chain [#A4])', () => {
+  it('allows chaining: imported ??superseded (Digital Twin version chain [#A4])', () => {
     const v1 = createParsingIntentContract(BASE_INPUT);
     const v1imported = markParsingIntentImported(v1);
     const v1superseded = supersedeParsingIntent(v1imported, 'intent-002');
@@ -174,10 +174,10 @@ describe('supersedeParsingIntent', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IntentDeltaProposedPayload contract [#A4 — Digital Twin event]
+// IntentDeltaProposedPayload contract [#A4 ??Digital Twin event]
 // ---------------------------------------------------------------------------
 
-describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', () => {
+describe('IntentDeltaProposedPayload [#A4 ??ws-outbox at-least-once event]', () => {
   it('accepts required fields only', () => {
     const payload: IntentDeltaProposedPayload = {
       intentId: 'intent-001',
@@ -229,8 +229,8 @@ describe('IntentDeltaProposedPayload [#A4 — ws-outbox at-least-once event]', (
     expect(payload.oldIntentId).toBeUndefined();
   });
 
-  it('payload fields match what document-parser-view dispatches [#A4×document-parser]', () => {
-    // Mirrors the shape built in handleImport() — prevents shape drift
+  it('payload fields match what document-parser-view dispatches [#A4?document-parser]', () => {
+    // Mirrors the shape built in handleImport() ??prevents shape drift
     const simulatedDispatch = (
       intentId: string,
       intentVersion: number,

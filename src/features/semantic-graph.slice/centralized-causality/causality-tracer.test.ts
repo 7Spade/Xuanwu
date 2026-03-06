@@ -1,22 +1,22 @@
 /**
- * @test VS8 Semantic Graph â€” Causality Tracer [D21-6]
+ * @test VS8 Semantic Graph ??Causality Tracer [D21-6]
  *
  * Validates pure business logic in centralized-causality/causality-tracer.ts:
- *   1. traceAffectedNodes   â€” BFS from source; populates hopCount + semanticWeight
- *   2. rankAffectedNodes    â€” order by (hopCount asc, semanticWeight desc)
- *   3. buildDownstreamEvents â€” advisory lifecycle events for each AffectedNode
- *   4. buildCausalityChain  â€” end-to-end CausalityChain assembly
+ *   1. traceAffectedNodes   ??BFS from source; populates hopCount + semanticWeight
+ *   2. rankAffectedNodes    ??order by (hopCount asc, semanticWeight desc)
+ *   3. buildDownstreamEvents ??advisory lifecycle events for each AffectedNode
+ *   4. buildCausalityChain  ??end-to-end CausalityChain assembly
  *
  * Architecture:
  *   [D21-6] Causality Tracer bridges Neural Network graph distances with
- *           lifecycle management â€” triggered by TagLifecycleEvents, produces
+ *           lifecycle management ??triggered by TagLifecycleEvents, produces
  *           advisory DownstreamEvents for the VS8 Routing Layer (VS8_RL).
  *   [D21-3] Edge weights drive semanticWeight accumulation.
  *   [D8]    All tag logic stays in semantic-graph.slice.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { tagSlugRef } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/shared-kernel';
 
 import { addEdge, _clearEdgesForTest } from '../centralized-edges/semantic-edge-store';
 import type { TagLifecycleEvent } from '../centralized-types';
@@ -28,7 +28,7 @@ import {
   buildCausalityChain,
 } from './causality-tracer';
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Helpers ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 function makeEvent(
   tagSlug: string,
@@ -48,15 +48,15 @@ function makeEvent(
   };
 }
 
-// â”€â”€â”€ Setup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Setup ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 beforeEach(() => {
   _clearEdgesForTest();
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 // traceAffectedNodes
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 
 describe('traceAffectedNodes', () => {
   it('returns empty array when source node has no edges', () => {
@@ -135,16 +135,16 @@ describe('traceAffectedNodes', () => {
     addEdge('a', 'b', 'IS_A');
     addEdge('b', 'c', 'IS_A');
     const event = makeEvent('a', 'TAG_DEPRECATED', 'Active', 'Deprecated');
-    // Only pass ['a', 'b'] â€” c should not appear
+    // Only pass ['a', 'b'] ??c should not appear
     const result = traceAffectedNodes(event, ['a', 'b']);
     const cNode = result.find((n) => n.tagSlug === 'c');
     expect(cNode).toBeUndefined();
   });
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 // rankAffectedNodes
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 
 describe('rankAffectedNodes', () => {
   it('returns empty array for empty input', () => {
@@ -186,9 +186,9 @@ describe('rankAffectedNodes', () => {
   });
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 // buildDownstreamEvents
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 
 describe('buildDownstreamEvents', () => {
   it('returns empty array for empty affected nodes', () => {
@@ -252,9 +252,9 @@ describe('buildDownstreamEvents', () => {
   });
 });
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 // buildCausalityChain [D21-6]
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ?â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â??â???
 
 describe('buildCausalityChain', () => {
   it('returns a chain with the original source event', () => {
@@ -285,7 +285,7 @@ describe('buildCausalityChain', () => {
     const event = makeEvent('src', 'TAG_DEPRECATED', 'Active', 'Deprecated');
     const chain = buildCausalityChain(event, ['src', 'dest']);
 
-    // 1 affected node â†’ at least 1 downstream event
+    // 1 affected node ??at least 1 downstream event
     expect(chain.downstreamEvents.length).toBeGreaterThanOrEqual(1);
     const destEvent = chain.downstreamEvents.find((e) => e.targetTagSlug === 'dest');
     expect(destEvent).toBeDefined();
@@ -314,7 +314,7 @@ describe('buildCausalityChain', () => {
     addEdge('src', 'child', 'IS_A', 1.0);
     const event = makeEvent('src', 'TAG_DELETED', 'Deprecated', 'Deprecated');
     const chain = buildCausalityChain(event, ['src', 'child']);
-    // Deleted source â€” no further lifecycle suggestions
+    // Deleted source ??no further lifecycle suggestions
     expect(chain.downstreamEvents).toHaveLength(0);
   });
 });

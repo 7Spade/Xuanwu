@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react"
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"
-import { type MemberReference } from "@/features/shared-kernel"
+import { type MemberReference } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
@@ -139,10 +139,10 @@ export function MembersView() {
                     <Badge
                       variant="outline"
                       className={`px-1.5 py-0.5 text-[9px] font-bold uppercase ${eligibilityMap[member.id] ? 'border-green-500/40 bg-green-500/10 text-green-600' : 'border-muted bg-muted/20 text-muted-foreground'}`}
-                      title={eligibilityMap[member.id] ? '可排班' : '不可排班'}
+                      title={eligibilityMap[member.id] ? '?��??? : '不可?�班'}
                     >
                       <Sparkles className="mr-0.5 inline size-2" />
-                      {eligibilityMap[member.id] ? '可排班' : '不可排班'}
+                      {eligibilityMap[member.id] ? '?��??? : '不可?�班'}
                     </Badge>
                   )}
                 </div>

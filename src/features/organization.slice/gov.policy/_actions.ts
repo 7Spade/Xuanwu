@@ -1,12 +1,12 @@
 'use server';
 
 /**
- * account-organization.policy — _actions.ts
+ * account-organization.policy ??_actions.ts
  *
  * Server actions for organization-level policy management.
  *
  * Per logic-overview.md:
- *   ORGANIZATION_EVENT_BUS →|政策變更事件| WORKSPACE_ORG_POLICY_CACHE
+ *   ORGANIZATION_EVENT_BUS ?�|?��?變更事件| WORKSPACE_ORG_POLICY_CACHE
  *   Policy changes flow through the org event bus to update workspace's local org-policy cache.
  *
  * Per logic-overview.md [R4] COMMAND_RESULT_CONTRACT:
@@ -19,7 +19,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
@@ -62,7 +62,7 @@ export interface UpdateOrgPolicyInput {
 
 /**
  * Creates a new organization policy.
- * Publishes OrgPolicyChanged event → workspace org-policy-cache updates downstream.
+ * Publishes OrgPolicyChanged event ??workspace org-policy-cache updates downstream.
  */
 export async function createOrgPolicy(input: CreateOrgPolicyInput): Promise<CommandResult> {
   try {

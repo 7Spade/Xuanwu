@@ -6,7 +6,7 @@
  */
 
 import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
-import type { ReadConsistencyMode } from '@/features/shared-kernel';
+import type { ReadConsistencyMode } from '@/shared-kernel';
 
 export type FinanceLifecycleStage =
   | 'claim-preparation'

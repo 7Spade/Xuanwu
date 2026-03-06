@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * account-organization.team — _actions.ts
+ * account-organization.team ??_actions.ts
  *
  * Server actions for organization team management.
  *
@@ -15,7 +15,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
+} from "@/shared-kernel";
 import {
   createTeam as createTeamFacade,
   updateTeamMembers as updateTeamMembersFacade,

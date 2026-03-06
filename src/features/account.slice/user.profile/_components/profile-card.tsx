@@ -3,7 +3,7 @@
 import { User, Loader2, Upload } from "lucide-react";
 import type React from "react"
 
-import { type Account } from "@/features/shared-kernel"
+import { type Account } from "@/shared-kernel"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";

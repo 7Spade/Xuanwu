@@ -9,7 +9,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import {
   createTask as createTaskFacade,
   updateTask as updateTaskFacade,
@@ -92,13 +92,13 @@ export async function batchImportTasks(
  *
  * **Per-item decision table**:
  * - Old task found AND `progressState === 'todo'`
- *   → update the task's mutable line-item fields (qty / price / discount / subtotal)
+ *   ??update the task's mutable line-item fields (qty / price / discount / subtotal)
  *     **and** re-point `sourceIntentId` / `sourceIntentVersion` to the new intent so
  *     subsequent idempotency guards work correctly.
- * - Old task found BUT in any other state (doing / blocked / completed / …)
- *   → create a **new** task; the in-progress work is left untouched.
+ * - Old task found BUT in any other state (doing / blocked / completed / ??
+ *   ??create a **new** task; the in-progress work is left untouched.
  * - No old task found for this item name
- *   → create a **new** task (net-new line item introduced in the re-parse).
+ *   ??create a **new** task (net-new line item introduced in the re-parse).
  *
  * This means a re-parse of a 12-item invoice where 9 items already exist in
  * `todo` state produces 9 updates + 3 creates (12 tasks total) instead of

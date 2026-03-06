@@ -1,10 +1,10 @@
 /**
- * skill-xp.slice — _tag-pool.ts
+ * skill-xp.slice ??_tag-pool.ts
  *
  * Skill Tag Pool: organization-scoped view of the global Tag Authority Center.
  *
  * Per logic-overview.md (VS4):
- *   SKILL_TAG_POOL[("職能標籤庫\nskill-xp.slice\n= Tag Authority 的組織作用域快照\n消費 TagLifecycleEvent 被動更新")]
+ *   SKILL_TAG_POOL[("?�能標籤庫\nskill-xp.slice\n= Tag Authority ?��?織�??��?快照\n消費 TagLifecycleEvent 被�??�新")]
  *
  * v5 Role Change:
  *   - CENTRALIZED_TAG_AGGREGATE (centralized-tag) is now the global semantic dictionary
@@ -20,7 +20,7 @@
  *   only tagSlugs from centralized-tag may be activated here.
  */
 
-import type { TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/features/shared-kernel';
+import type { TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   setDocument,
@@ -35,7 +35,7 @@ import {
 /** A single entry in the org's skill tag pool. */
 export interface OrgSkillTagEntry {
   orgId: string;
-  /** Portable slug — must match a tagSlug from centralized-tag (Invariant T2). */
+  /** Portable slug ??must match a tagSlug from centralized-tag (Invariant T2). */
   tagSlug: string;
   /** Human-readable display name (snapshot from Tag Authority at activation time, kept in sync via TagLifecycleEvent). */
   tagName: string;
@@ -56,7 +56,7 @@ export interface OrgSkillTagEntry {
  * The tagSlug MUST already exist in the global centralized-tag dictionary (Invariant T2).
  *
  * Enforces uniqueness: if the tag already exists, returns without error.
- * Tags are referenced by `tagSlug` — a portable, stable identifier.
+ * Tags are referenced by `tagSlug` ??a portable, stable identifier.
  */
 export async function addSkillTagToPool(
   orgId: string,
@@ -66,7 +66,7 @@ export async function addSkillTagToPool(
 ): Promise<void> {
   const path = `orgSkillTagPool/${orgId}/tags/${tagSlug}`;
   const existing = await getDocument<OrgSkillTagEntry>(path);
-  if (existing) return; // idempotent — tag already present
+  if (existing) return; // idempotent ??tag already present
 
   await setDocument(path, {
     orgId,
@@ -92,7 +92,7 @@ export async function removeSkillTagFromPool(
 ): Promise<void> {
   const path = `orgSkillTagPool/${orgId}/tags/${tagSlug}`;
   const existing = await getDocument<OrgSkillTagEntry>(path);
-  if (!existing) return; // already absent — idempotent
+  if (!existing) return; // already absent ??idempotent
 
   if (existing.refCount > 0) {
     throw new Error(
@@ -153,7 +153,7 @@ export async function syncTagUpdateToPool(
 ): Promise<void> {
   const path = `orgSkillTagPool/${orgId}/tags/${payload.tagSlug}`;
   const existing = await getDocument<OrgSkillTagEntry>(path);
-  if (!existing) return; // org has not activated this tag — no-op
+  if (!existing) return; // org has not activated this tag ??no-op
 
   await updateDocument(path, { tagName: payload.label });
 }

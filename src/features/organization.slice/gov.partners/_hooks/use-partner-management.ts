@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 
-import type { MemberReference } from '@/features/shared-kernel';
+import type { MemberReference } from '@/shared-kernel';
 import { useApp } from '@/shared/app-providers/app-context';
 
 import {

@@ -3,7 +3,7 @@
 
 import { useCallback } from "react";
 
-import type { Account } from "@/features/shared-kernel";
+import type { Account } from "@/shared-kernel";
 import { useApp } from "@/shared/app-providers/app-context";
 
 import { writeDailyLog, writeAuditLog } from '../_actions';
@@ -13,7 +13,7 @@ import type { AuditLog } from "../_types";
 /**
  * useLogger - Zero-cognition logging interface.
  * Automatically handles the physical separation of Daily and Audit logs.
- * [D3][D5] All Firestore writes delegated to _actions.ts — no infra imports here.
+ * [D3][D5] All Firestore writes delegated to _actions.ts ??no infra imports here.
  */
 export function useLogger(workspaceId?: string, workspaceName?: string) {
   const { state: appState } = useApp();

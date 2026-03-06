@@ -1,12 +1,12 @@
 /**
- * @fileoverview intent-actions.ts — Firestore CRUD for ParsingIntent (Digital Twin)
+ * @fileoverview intent-actions.ts ??Firestore CRUD for ParsingIntent (Digital Twin)
  * and ParsingImport execution ledger.
  *
  * Called from workspace event orchestration to persist parser outcomes before and
  * during task materialization.
  */
 
-import type { SkillRequirement } from '@/features/shared-kernel'
+import type { SkillRequirement } from '@/shared-kernel'
 import {
   createParsingImport as createParsingImportFacade,
   createParsingIntent as createParsingIntentFacade,
@@ -110,7 +110,7 @@ export type ParsingImportFinishInput = {
  *
  * **Firestore document ID constraint**: the returned string must never contain
  * forward-slashes (`/`), must not be `.` or `..`, and must not be surrounded
- * by double-underscores (`__…__`). The `import:<uuid>:<number>` format
+ * by double-underscores (`__?�__`). The `import:<uuid>:<number>` format
  * satisfies all of these requirements as long as `intentId` is a valid UUID or
  * Firestore auto-ID (no `/`).  Callers MUST NOT pass a raw path segment as
  * `intentId`.
@@ -154,9 +154,9 @@ export async function saveParsingIntent(
 
   // [D14/D15] Write-idempotency guard: when a sourceFileId is supplied, check
   // whether a non-superseded ParsingIntent already exists for this source file.
-  //   • Same semanticHash  → content is identical; return the existing intent
+  //   ??Same semanticHash  ??content is identical; return the existing intent
   //                          without creating a duplicate document.
-  //   • Different hash     → the file was re-parsed; automatically supersede the
+  //   ??Different hash     ??the file was re-parsed; automatically supersede the
   //                          previous intent and create a fresh one.
   if (options?.sourceFileId) {
     const existing = await getParsingIntentBySourceFileIdFacade(
@@ -165,13 +165,13 @@ export async function saveParsingIntent(
     )
     if (existing) {
       if (existing.semanticHash === semanticHash) {
-        // True duplicate — identical content; return the existing intent.
+        // True duplicate ??identical content; return the existing intent.
         // The caller receives the same intentId it would from a fresh create, so
         // all downstream consumers (document-parser-view, import ledger) behave
         // normally. No Firestore write is made and no side-effects are triggered.
         return { intentId: existing.id as IntentID }
       }
-      // Content changed — supersede the previous intent.
+      // Content changed ??supersede the previous intent.
       options = { ...options, previousIntentId: existing.id as IntentID }
     }
   }
@@ -180,7 +180,7 @@ export async function saveParsingIntent(
   // direct-upload path where handleFileChange does not set sourceFileIdRef),
   // but a previousIntentId IS provided, fetch the previous intent and compare
   // hashes.  If the content is identical the user just re-submitted the same
-  // document without uploading a new file — return the existing intent as a
+  // document without uploading a new file ??return the existing intent as a
   // no-op to prevent a duplicate intent chain and the duplicate tasks it would
   // produce [D14].
   // Any fetch failure is non-fatal: log a warning and fall through to create a

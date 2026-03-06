@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * notification-hub.slice/user.notification — _components/notification-list.tsx
+ * notification-hub.slice/user.notification ??_components/notification-list.tsx
  *
  * Dropdown/panel displaying recent notifications.
  * Marks items as read when clicked.
  */
 
-import type { Notification } from '@/features/shared-kernel';
+import type { Notification } from '@/shared-kernel';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
 import { cn } from '@/shared/shadcn-ui/utils/utils';
 
@@ -20,7 +20,7 @@ export function NotificationList({ notifications, onMarkRead }: NotificationList
   if (notifications.length === 0) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
-        暫無通知
+        ?�無?�知
       </div>
     );
   }

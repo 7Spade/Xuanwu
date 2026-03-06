@@ -11,7 +11,7 @@ import {
   type CommandResult,
   commandFailureFrom,
   commandSuccess,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { setScheduleItemDateRange } from '@/shared/infra/firestore/firestore.facade';
 import { Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 

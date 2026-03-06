@@ -1,5 +1,5 @@
 /**
- * Module: semantic-graph.slice/projections â€” [L7 VS8_PROJ] Graph Selectors
+ * Module: semantic-graph.slice/projections ??[L7 VS8_PROJ] Graph Selectors
  *
  * Exposes read-only query functions for use by:
  *   - VS6 scheduling eligibility (checks whether a candidate's tags satisfy requirements)
@@ -9,12 +9,12 @@
  * Architecture rules:
  *   [L7]  Projections are pure, side-effect-free, and read-only [D21-7, T5].
  *   [D7]  Only selectors exported via index.ts (edges/nodes/workflows are private).
- *   [D24] No direct Firebase import â€” data is passed in or read from in-memory stores.
+ *   [D24] No direct Firebase import ??data is passed in or read from in-memory stores.
  *
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
  */
 
-import type { TagCategory } from '@/features/shared-kernel';
+import type { TagCategory } from '@/shared-kernel';
 
 import { isSupersetOf } from '../centralized-edges/semantic-edge-store';
 import type {
@@ -25,7 +25,7 @@ import type {
 } from '../centralized-types';
 import { getAllLifecycleRecords } from '../centralized-workflows/tag-lifecycle.workflow';
 
-// â”€â”€â”€ Eligible tags query [VS6 / VS4] â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Eligible tags query [VS6 / VS4] ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Return all tags that satisfy the eligibility query.
@@ -68,14 +68,14 @@ export function getEligibleTags(
   return results;
 }
 
-// â”€â”€â”€ Supersetting query for VS6 scheduling eligibility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Supersetting query for VS6 scheduling eligibility ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Returns true if the `candidateTagSlug` semantically covers the `requiredTagSlug`
  * via IS_A transitive closure.
  *
  * Example:
- *   skill:expert IS_A skill:senior â†’ satisfiesSemanticRequirement('skill:expert', 'skill:senior') = true
+ *   skill:expert IS_A skill:senior ??satisfiesSemanticRequirement('skill:expert', 'skill:senior') = true
  */
 export function satisfiesSemanticRequirement(
   candidateTagSlug: string,
@@ -84,7 +84,7 @@ export function satisfiesSemanticRequirement(
   return isSupersetOf(candidateTagSlug, requiredTagSlug);
 }
 
-// â”€â”€â”€ Active tags by category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Active tags by category ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Convenience selector: return all active tags for a category.
@@ -96,7 +96,7 @@ export function getActiveTagsByCategory(
   return getEligibleTags(tagEntities, { category, state: 'Active' });
 }
 
-// â”€â”€â”€ Tag eligibility matrix â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Tag eligibility matrix ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * For a list of required tag slugs, return which candidate tags satisfy at least
@@ -115,7 +115,7 @@ export function buildEligibilityMatrix(
   return matrix;
 }
 
-// â”€â”€â”€ Private helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Private helpers ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 function _buildLifecycleMap(): Map<string, TagLifecycleRecord> {
   const map = new Map<string, TagLifecycleRecord>();

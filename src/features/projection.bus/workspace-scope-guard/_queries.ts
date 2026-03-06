@@ -1,11 +1,11 @@
 /**
- * projection.workspace-scope-guard — _queries.ts
+ * projection.workspace-scope-guard ??_queries.ts
  *
  * Read-side queries for the scope guard read model.
  * Used exclusively by workspace-application/_scope-guard.ts.
  */
 
-import type { AuthoritySnapshot } from '@/features/shared-kernel';
+import type { AuthoritySnapshot } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 
 import type { WorkspaceScopeGuardView } from './_read-model';

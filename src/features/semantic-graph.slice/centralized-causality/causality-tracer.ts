@@ -1,5 +1,5 @@
 /**
- * semantic-graph.slice/centralized-causality â€” Causality Tracer [D21-6]
+ * semantic-graph.slice/centralized-causality ??Causality Tracer [D21-6]
  *
  * The CausalityTracer is the computation engine for L3 VS8_NG (Neural Computation).
  * It produces causality chains consumed by VS8_ROUT (L4 Reflection Arc)
@@ -16,7 +16,7 @@
  * Dependency rule: reads only from centralized-edges and centralized-neural-net.
  */
 
-import { tagSlugRef } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/shared-kernel';
 
 import { getEdgesFrom, getEdgesTo } from '../centralized-edges/semantic-edge-store';
 import { computeRelationWeight } from '../centralized-neural-net/neural-network';
@@ -29,7 +29,7 @@ import type {
   TagLifecycleState,
 } from '../centralized-types';
 
-// â”€â”€â”€ BFS traversal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ BFS traversal ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 interface _TraversalEntry {
   slug: string;
@@ -42,10 +42,10 @@ interface _TraversalEntry {
  * `maxHops`.  Nodes reachable via multiple paths get the entry with the most
  * direct relationship reason and lowest hopCount.
  *
- * @param sourceSlug     â€” slug of the source node
- * @param candidateSlugs â€” allow-list; if non-empty, only slugs in this set are
+ * @param sourceSlug     ??slug of the source node
+ * @param candidateSlugs ??allow-list; if non-empty, only slugs in this set are
  *                         included in the result (source itself is always excluded)
- * @param maxHops        â€” maximum BFS depth
+ * @param maxHops        ??maximum BFS depth
  */
 function _bfsAffected(
   sourceSlug: string,
@@ -109,18 +109,18 @@ function _bfsAffected(
   return result;
 }
 
-// â”€â”€â”€ Downstream event generation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Downstream event generation ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Suggest a downstream lifecycle transition for an affected node given the
  * source event and the node's relationship to the source.
  *
  * Rules:
- *   - TAG_DEPRECATED â†’ immediate Deprecated for direct IS_A children;
+ *   - TAG_DEPRECATED ??immediate Deprecated for direct IS_A children;
  *     deferred for REQUIRES-dependants and transitive nodes.
- *   - TAG_STALE_FLAGGED â†’ deferred Stale suggestion for IS_A children.
- *   - TAG_ACTIVATED â†’ deferred Active re-activation for IS_A children.
- *   - TAG_CREATED / TAG_DELETED â†’ no automatic downstream.
+ *   - TAG_STALE_FLAGGED ??deferred Stale suggestion for IS_A children.
+ *   - TAG_ACTIVATED ??deferred Active re-activation for IS_A children.
+ *   - TAG_CREATED / TAG_DELETED ??no automatic downstream.
  */
 function _suggestDownstreamEvent(
   targetSlug: string,
@@ -133,7 +133,7 @@ function _suggestDownstreamEvent(
     return {
       targetTagSlug: tagSlugRef(targetSlug),
       suggestedTransition: 'Deprecated' as TagLifecycleState,
-      reason: `Parent/dependency deprecated â€” propagated via ${reason}`,
+      reason: `Parent/dependency deprecated ??propagated via ${reason}`,
       priority,
     };
   }
@@ -161,7 +161,7 @@ function _suggestDownstreamEvent(
   return null;
 }
 
-// â”€â”€â”€ Public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Public API ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Return all nodes directly or transitively affected by a lifecycle event,
@@ -169,10 +169,10 @@ function _suggestDownstreamEvent(
  *
  * The source node itself is never included in the result.
  *
- * @param event          â€” the lifecycle event that triggered the trace
- * @param candidateSlugs â€” slugs to consider; pass an empty array to trace the
+ * @param event          ??the lifecycle event that triggered the trace
+ * @param candidateSlugs ??slugs to consider; pass an empty array to trace the
  *                         entire graph (no filtering)
- * @param maxHops        â€” max BFS traversal depth (default 5)
+ * @param maxHops        ??max BFS traversal depth (default 5)
  */
 export function traceAffectedNodes(
   event: TagLifecycleEvent,
@@ -213,16 +213,16 @@ export function rankAffectedNodes(nodes: readonly AffectedNode[]): readonly Affe
  *
  * These are advisory signals; the caller (VS8_ROUT) decides whether to apply them.
  *
- * TAG_DELETED source â†’ no downstream events (nothing to lifecycle-manage).
+ * TAG_DELETED source ??no downstream events (nothing to lifecycle-manage).
  *
- * @param event         â€” the lifecycle event that triggered the chain
- * @param affectedNodes â€” nodes computed by traceAffectedNodes
+ * @param event         ??the lifecycle event that triggered the chain
+ * @param affectedNodes ??nodes computed by traceAffectedNodes
  */
 export function buildDownstreamEvents(
   event: TagLifecycleEvent,
   affectedNodes: readonly AffectedNode[]
 ): readonly DownstreamEvent[] {
-  // TAG_DELETED: hard delete â€” no cascading lifecycle management
+  // TAG_DELETED: hard delete ??no cascading lifecycle management
   if (event.eventType === 'TAG_DELETED') return [];
 
   const downstream: DownstreamEvent[] = [];
@@ -243,10 +243,10 @@ export function buildDownstreamEvents(
  * The returned chain is consumed by VS8_ROUT to dispatch downstream commands
  * without hardcoding relationships (configuration-driven routing).
  *
- * @param event          â€” the lifecycle event that triggered the chain
- * @param candidateSlugs â€” slugs to consider; pass an empty array to trace the
+ * @param event          ??the lifecycle event that triggered the chain
+ * @param candidateSlugs ??slugs to consider; pass an empty array to trace the
  *                         entire graph (no filtering)
- * @param maxHops        â€” max BFS traversal depth (default 5)
+ * @param maxHops        ??max BFS traversal depth (default 5)
  */
 export function buildCausalityChain(
   event: TagLifecycleEvent,

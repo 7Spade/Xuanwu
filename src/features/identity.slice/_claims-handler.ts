@@ -1,33 +1,33 @@
 /**
- * identity.slice — _claims-handler.ts
+ * identity.slice ??_claims-handler.ts
  *
- * CLAIMS_HANDLER — single Claims refresh trigger point [E6][S6]
+ * CLAIMS_HANDLER ??single Claims refresh trigger point [E6][S6]
  *
  * Per logic-overview.md [S6]:
- *   RoleChanged | PolicyChanged → IER CRITICAL_LANE → CLAIMS_HANDLER
+ *   RoleChanged | PolicyChanged ??IER CRITICAL_LANE ??CLAIMS_HANDLER
  *   CLAIMS_HANDLER emits TOKEN_REFRESH_SIGNAL on success.
- *   Failure routes to DLQ SECURITY_BLOCK → DOMAIN_ERRORS alert.
+ *   Failure routes to DLQ SECURITY_BLOCK ??DOMAIN_ERRORS alert.
  *
  * Three-way handshake parties [SK_TOKEN_REFRESH_CONTRACT S6]:
- *   VS1 (this file) — CLAIMS_HANDLER, emitter of TOKEN_REFRESH_SIGNAL
- *   IER             — routes account:role:changed / account:policy:changed via CRITICAL_LANE
- *   Frontend        — force-refreshes Firebase token on TOKEN_REFRESH_SIGNAL
+ *   VS1 (this file) ??CLAIMS_HANDLER, emitter of TOKEN_REFRESH_SIGNAL
+ *   IER             ??routes account:role:changed / account:policy:changed via CRITICAL_LANE
+ *   Frontend        ??force-refreshes Firebase token on TOKEN_REFRESH_SIGNAL
  *
  * Invariant: This is the ONLY place in VS1 that handles claims refresh dispatch.
  *            Do NOT duplicate this logic elsewhere in the identity slice.
  *
- * Architecture note — Dual-path TOKEN_REFRESH_SIGNAL pattern [S6]:
+ * Architecture note ??Dual-path TOKEN_REFRESH_SIGNAL pattern [S6]:
  *   In the current implementation, governance slices (account-governance.role,
  *   account-governance.policy) also write TOKEN_REFRESH_SIGNAL directly to Firestore
  *   as a "fast path" within the same process (zero-latency, no outbox round-trip).
  *   The IER subscriptions below act as a DEFENSIVE / FALLBACK path that handles
  *   role or policy changes arriving through the event bus from external systems
- *   or cross-process flows. Neither path is dead code — they serve different latency
+ *   or cross-process flows. Neither path is dead code ??they serve different latency
  *   and isolation requirements:
- *     • Governance direct write = same-process, synchronous, low-latency [FAST PATH]
- *     • IER CRITICAL_LANE subscription = cross-process, async, fully audited [FALLBACK]
+ *     ??Governance direct write = same-process, synchronous, low-latency [FAST PATH]
+ *     ??IER CRITICAL_LANE subscription = cross-process, async, fully audited [FALLBACK]
  *
- *   Migration guidance — when to move to IER-only dispatch:
+ *   Migration guidance ??when to move to IER-only dispatch:
  *   Consider removing the governance direct writes and routing exclusively through IER when:
  *   (a) outbox relay latency becomes acceptable for token refresh UX (< 500 ms P95), OR
  *   (b) stricter auditability / replay guarantees are required for ALL refresh events.
@@ -38,12 +38,12 @@
  */
 
 import { logDomainError } from '@/features/observability';
-import type { EventEnvelope } from '@/features/shared-kernel';
+import type { EventEnvelope } from '@/shared-kernel';
 import { COLLECTIONS } from '@/shared/infra/firestore/collection-paths';
 import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
 // ---------------------------------------------------------------------------
-// Internal — TOKEN_REFRESH_SIGNAL emission
+// Internal ??TOKEN_REFRESH_SIGNAL emission
 // ---------------------------------------------------------------------------
 
 /**
@@ -56,9 +56,9 @@ import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
  */
 async function emitRefreshSignal(accountId: string, traceId: string): Promise<void> {
   // Guard against path-traversal: accountId must be a safe Firestore document ID
-  // (alphanumeric, hyphens, underscores only — no slashes or special chars).
+  // (alphanumeric, hyphens, underscores only ??no slashes or special chars).
   if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format — must match /^[\\w-]+$/`);
+    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
   }
   await setDocument(`${COLLECTIONS.tokenRefreshSignals}/${accountId}`, {
     accountId,
@@ -69,7 +69,7 @@ async function emitRefreshSignal(accountId: string, traceId: string): Promise<vo
 }
 
 // ---------------------------------------------------------------------------
-// Internal — CRITICAL_LANE event handler
+// Internal ??CRITICAL_LANE event handler
 // ---------------------------------------------------------------------------
 
 /**
@@ -90,7 +90,7 @@ async function handleClaimsRefreshTrigger(envelope: EventEnvelope): Promise<void
       occurredAt: new Date().toISOString(),
       traceId,
       source: 'identity.slice:claims-handler',
-      message: `SECURITY_BLOCK — ClaimsRefresh received event without accountId: eventType="${envelope.eventType}" eventId="${envelope.eventId}"`,
+      message: `SECURITY_BLOCK ??ClaimsRefresh received event without accountId: eventType="${envelope.eventType}" eventId="${envelope.eventId}"`,
     });
     return;
   }
@@ -99,29 +99,29 @@ async function handleClaimsRefreshTrigger(envelope: EventEnvelope): Promise<void
     await emitRefreshSignal(accountId, traceId);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    // ClaimsRefresh failure → SECURITY_BLOCK alert [S6][GEMINI.md §4]
+    // ClaimsRefresh failure ??SECURITY_BLOCK alert [S6][GEMINI.md §4]
     logDomainError({
       occurredAt: new Date().toISOString(),
       traceId,
       source: 'identity.slice:claims-handler',
-      message: `SECURITY_BLOCK — ClaimsRefresh failed for account "${accountId}": ${message}`,
+      message: `SECURITY_BLOCK ??ClaimsRefresh failed for account "${accountId}": ${message}`,
       detail: `eventType=${envelope.eventType} eventId=${envelope.eventId}`,
     });
   }
 }
 
 // ---------------------------------------------------------------------------
-// Public — registration
+// Public ??registration
 // ---------------------------------------------------------------------------
-// Public — IER lane type (mirrored from infra.event-router to avoid direct import [D1])
+// Public ??IER lane type (mirrored from infra.event-router to avoid direct import [D1])
 // ---------------------------------------------------------------------------
 
-/** IER delivery lane — mirrors infra.event-router IerLane [D1 compliance].
+/** IER delivery lane ??mirrors infra.event-router IerLane [D1 compliance].
  *  Keep in sync with `IerLane` in @/features/infra.event-router/_router.ts. */
 type IerLane = 'CRITICAL_LANE' | 'STANDARD_LANE' | 'BACKGROUND_LANE';
 
 /**
- * Subscriber registrar function — injected by the caller so that identity.slice
+ * Subscriber registrar function ??injected by the caller so that identity.slice
  * does not import infra.event-router directly [D1].
  *
  * Callers (e.g., app bootstrap or infra.* coordinator) should pass
@@ -148,8 +148,8 @@ export type ClaimsSubscriberRegistrar = (
  *   const unsub = registerClaimsHandler(registerSubscriber);
  *
  * Covered trigger event types [SK_TOKEN_REFRESH_CONTRACT]:
- *   - `account:role:changed`   → RoleChanged trigger
- *   - `account:policy:changed` → PolicyChanged trigger
+ *   - `account:role:changed`   ??RoleChanged trigger
+ *   - `account:policy:changed` ??PolicyChanged trigger
  */
 export function registerClaimsHandler(registerFn: ClaimsSubscriberRegistrar): () => void {
   const unsubRoleChanged = registerFn(

@@ -1,20 +1,20 @@
 /**
- * @fileoverview shared/constants/status.ts — Domain status / lifecycle state metadata.
+ * @fileoverview shared/constants/status.ts ??Domain status / lifecycle state metadata.
  *
  * Centralises the labelled, coloured descriptors for every status / state string union
  * used across the domain model.  Note: all types are now canonical in their feature slices:
- * `@/features/shared-kernel` and `@/features/workspace.slice`.
+ * `@/shared-kernel` and `@/features/workspace.slice`.
  *
  * Covered union types:
- *   - ScheduleStatus          (→ @/shared-kernel/data-contracts/scheduling/schedule-contract)
- *   - WorkspaceLifecycleState (→ @/features/workspace.slice)
- *   - AuditLogType            (→ @/features/workspace.slice)
- *   - InviteState             (→ @/features/shared-kernel → PartnerInvite.inviteState)
- *   - Presence                (→ @/features/shared-kernel → MemberReference.presence)
- *   - NotificationType        (→ @/features/shared-kernel → Notification.type)
+ *   - ScheduleStatus          (??@/shared-kernel/data-contracts/scheduling/schedule-contract)
+ *   - WorkspaceLifecycleState (??@/features/workspace.slice)
+ *   - AuditLogType            (??@/features/workspace.slice)
+ *   - InviteState             (??@/shared-kernel ??PartnerInvite.inviteState)
+ *   - Presence                (??@/shared-kernel ??MemberReference.presence)
+ *   - NotificationType        (??@/shared-kernel ??Notification.type)
  */
 
-import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/features/shared-kernel';
+import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/shared-kernel';
 import type { AuditLogType } from '@/features/workspace.slice';
 import type { WorkspaceLifecycleState } from '@/features/workspace.slice';
 
@@ -36,35 +36,35 @@ export interface ScheduleStatusMeta {
   enLabel: string;
   /** Tailwind colour class for badge / chip. */
   colorClass: string;
-  /** Muted background Tailwind class — for row highlights. */
+  /** Muted background Tailwind class ??for row highlights. */
   bgClass: string;
 }
 
 export const SCHEDULE_STATUS_META: Record<ScheduleStatus, ScheduleStatusMeta> = {
   PROPOSAL: {
     status: 'PROPOSAL',
-    zhLabel: '提案中',
+    zhLabel: '?��?�?,
     enLabel: 'Proposal',
     colorClass: 'bg-amber-100 text-amber-800',
     bgClass: 'bg-amber-50',
   },
   OFFICIAL: {
     status: 'OFFICIAL',
-    zhLabel: '正式排班',
+    zhLabel: '�???�班',
     enLabel: 'Official',
     colorClass: 'bg-green-100 text-green-800',
     bgClass: 'bg-green-50',
   },
   REJECTED: {
     status: 'REJECTED',
-    zhLabel: '已拒絕',
+    zhLabel: '已�?�?,
     enLabel: 'Rejected',
     colorClass: 'bg-red-100 text-red-800',
     bgClass: 'bg-red-50',
   },
   COMPLETED: {
     status: 'COMPLETED',
-    zhLabel: '已完成',
+    zhLabel: '已�???,
     enLabel: 'Completed',
     colorClass: 'bg-slate-100 text-slate-600',
     bgClass: 'bg-slate-50',
@@ -95,19 +95,19 @@ export const WORKSPACE_LIFECYCLE_STATE_META: Record<
 > = {
   preparatory: {
     state: 'preparatory',
-    zhLabel: '籌備中',
+    zhLabel: '籌�?�?,
     enLabel: 'Preparatory',
     colorClass: 'bg-sky-100 text-sky-800',
   },
   active: {
     state: 'active',
-    zhLabel: '進行中',
+    zhLabel: '?��?�?,
     enLabel: 'Active',
     colorClass: 'bg-green-100 text-green-800',
   },
   stopped: {
     state: 'stopped',
-    zhLabel: '已停止',
+    zhLabel: '已�?�?,
     enLabel: 'Stopped',
     colorClass: 'bg-gray-100 text-gray-500',
   },
@@ -137,19 +137,19 @@ export interface AuditLogTypeMeta {
 export const AUDIT_LOG_TYPE_META: Record<AuditLogType, AuditLogTypeMeta> = {
   create: {
     type: 'create',
-    zhLabel: '建立',
+    zhLabel: '建�?',
     enLabel: 'Create',
     colorClass: 'bg-emerald-100 text-emerald-700',
   },
   update: {
     type: 'update',
-    zhLabel: '更新',
+    zhLabel: '?�新',
     enLabel: 'Update',
     colorClass: 'bg-blue-100 text-blue-700',
   },
   delete: {
     type: 'delete',
-    zhLabel: '刪除',
+    zhLabel: '?�除',
     enLabel: 'Delete',
     colorClass: 'bg-red-100 text-red-700',
   },
@@ -184,19 +184,19 @@ export interface InviteStateMeta {
 export const INVITE_STATE_META: Record<InviteState, InviteStateMeta> = {
   pending: {
     state: 'pending',
-    zhLabel: '待確認',
+    zhLabel: '待確�?,
     enLabel: 'Pending',
     colorClass: 'bg-amber-100 text-amber-700',
   },
   accepted: {
     state: 'accepted',
-    zhLabel: '已接受',
+    zhLabel: '已接??,
     enLabel: 'Accepted',
     colorClass: 'bg-green-100 text-green-700',
   },
   expired: {
     state: 'expired',
-    zhLabel: '已過期',
+    zhLabel: '已�???,
     enLabel: 'Expired',
     colorClass: 'bg-gray-100 text-gray-500',
   },
@@ -222,19 +222,19 @@ export interface PresenceMeta {
 export const PRESENCE_META: Record<Presence, PresenceMeta> = {
   active: {
     presence: 'active',
-    zhLabel: '在線',
+    zhLabel: '?��?',
     enLabel: 'Active',
     dotClass: 'bg-green-500',
   },
   away: {
     presence: 'away',
-    zhLabel: '離開',
+    zhLabel: '?��?',
     enLabel: 'Away',
     dotClass: 'bg-amber-400',
   },
   offline: {
     presence: 'offline',
-    zhLabel: '離線',
+    zhLabel: '?��?',
     enLabel: 'Offline',
     dotClass: 'bg-gray-300',
   },
@@ -263,7 +263,7 @@ export interface NotificationTypeMeta {
 export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMeta> = {
   info: {
     type: 'info',
-    zhLabel: '資訊',
+    zhLabel: '資�?',
     enLabel: 'Info',
     colorClass: 'bg-blue-100 text-blue-700',
   },
@@ -275,7 +275,7 @@ export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMe
   },
   success: {
     type: 'success',
-    zhLabel: '成功',
+    zhLabel: '?��?',
     enLabel: 'Success',
     colorClass: 'bg-green-100 text-green-700',
   },

@@ -4,12 +4,12 @@
  * Subscription factories for shared app-level providers.
  * All Firestore / infra imports are encapsulated here so that
  * `app-context.tsx` (and any future app-level provider) has zero direct
- * Firebase SDK or infra imports — satisfying D24 and D5.
+ * Firebase SDK or infra imports ??satisfying D24 and D5.
  *
  * Pattern mirrors `workspace.slice/core/_queries.ts`.
  */
 
-import type { Account } from '@/features/shared-kernel';
+import type { Account } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,

@@ -1,9 +1,9 @@
 /**
- * @fileoverview entities/account — Pure account domain rules.
+ * @fileoverview entities/account ??Pure account domain rules.
  * No async, no I/O, no React, no Firebase.
  */
 
-import type { Account, Team } from "@/features/shared-kernel"
+import type { Account, Team } from "@/shared-kernel"
 
 // ---------------------------------------------------------------------------
 // Ownership & role queries

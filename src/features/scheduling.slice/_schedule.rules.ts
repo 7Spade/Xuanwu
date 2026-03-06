@@ -1,9 +1,9 @@
 /**
- * @fileoverview entities/schedule — Pure schedule domain rules.
+ * @fileoverview entities/schedule ??Pure schedule domain rules.
  * No async, no I/O, no React, no Firebase.
  */
 
-import type { ScheduleStatus } from '@/features/shared-kernel'
+import type { ScheduleStatus } from '@/shared-kernel'
 
 // ---------------------------------------------------------------------------
 // Valid status transitions
@@ -11,7 +11,7 @@ import type { ScheduleStatus } from '@/features/shared-kernel'
 
 /**
  * Defines the allowed status transitions for a ScheduleItem.
- * Key: current status → Value: allowed next statuses.
+ * Key: current status ??Value: allowed next statuses.
  */
 export const VALID_STATUS_TRANSITIONS: Record<ScheduleStatus, ScheduleStatus[]> = {
   PROPOSAL: ["OFFICIAL", "REJECTED"],

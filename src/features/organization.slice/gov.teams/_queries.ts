@@ -1,5 +1,5 @@
 /**
- * account-organization.team — _queries.ts
+ * account-organization.team ??_queries.ts
  *
  * Read queries for org-level internal team management.
  *
@@ -7,15 +7,15 @@
  * onSnapshot on the org account document provides real-time updates.
  *
  * Per logic-overview.md:
- *   ORGANIZATION_TEAM["organization-governance.team（團隊管理 · 內部組視圖）"]
- *   ORGANIZATION_TEAM -.->|組內帳號標籤聚合視圖（唯讀）| SKILL_TAG_POOL
+ *   ORGANIZATION_TEAM["organization-governance.team（�??�管??· ?�部組�??��?"]
+ *   ORGANIZATION_TEAM -.->|組內帳�?標籤?��?視�?（唯讀）| SKILL_TAG_POOL
  *
  * Boundary constraint:
  *   These queries read ONLY from this org's account document.
- *   Skill tag data is referenced by tagSlug — read from skill-xp.slice.
+ *   Skill tag data is referenced by tagSlug ??read from skill-xp.slice.
  */
 
-import type { Account, Team } from '@/features/shared-kernel';
+import type { Account, Team } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { doc, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';

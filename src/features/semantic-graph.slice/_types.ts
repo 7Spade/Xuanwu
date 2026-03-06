@@ -1,19 +1,19 @@
 /**
- * semantic-graph.slice â€” _types.ts
+ * semantic-graph.slice ??_types.ts
  *
  * VS8 Semantic Graph Domain Types.
- * The Brain â€” manages tag taxonomy, temporal conflict detection,
+ * The Brain ??manages tag taxonomy, temporal conflict detection,
  * and semantic indexing for cross-domain queries.
  *
  * Per logic-overview.md (VS8):
- *   SemanticGraph = èªžç¾©åœ–è­œå¼•æ“Ž / The Brain
- *   â‘¥ Everything as a Tag: all domain concepts modelled as semantic tags,
+ *   SemanticGraph = èªžç¾©?–è?å¼•æ? / The Brain
+ *   ??Everything as a Tag: all domain concepts modelled as semantic tags,
  *      governed by VS8.
  *
  * Invariants:
  *   [D21] New tag categories only defined in VS8.
  *   [D3]  Side-effects only in _actions.ts.
- *   [D8]  Tag logic must NOT reside in shared-kernel â€” only contracts there.
+ *   [D8]  Tag logic must NOT reside in shared-kernel ??only contracts there.
  *
  * Dependency rule: ZERO infrastructure imports.
  */
@@ -23,12 +23,12 @@ import type {
   TaxonomyNode,
   SemanticSearchHit,
   TagSlugRef,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 
-// â”€â”€â”€ Temporal Conflict (Scheduling-aware) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Temporal Conflict (Scheduling-aware) ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
- * Represents a time-bound tag assignment â€” used for detecting scheduling
+ * Represents a time-bound tag assignment ??used for detecting scheduling
  * conflicts where the same tag (e.g., a member skill) is assigned to
  * overlapping time windows.
  */
@@ -72,10 +72,10 @@ export interface TemporalConflictCheckResult {
   readonly conflicts: readonly TemporalConflict[];
 }
 
-// â”€â”€â”€ Taxonomy Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Taxonomy Validation ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
- * Taxonomy tree structure â€” hierarchical view of all tags in a dimension.
+ * Taxonomy tree structure ??hierarchical view of all tags in a dimension.
  */
 export interface TaxonomyTree {
   readonly dimension: TaxonomyDimension;
@@ -111,10 +111,10 @@ export type TaxonomyErrorCode =
   | 'DEPTH_EXCEEDED'
   | 'DEPRECATED_TAG';
 
-// â”€â”€â”€ Semantic Index â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Semantic Index ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
- * An entry in the VS8 semantic index â€” the in-memory searchable representation
+ * An entry in the VS8 semantic index ??the in-memory searchable representation
  * of a domain entity. Consumed by global-search.slice for cross-domain queries.
  */
 export interface SemanticIndexEntry {
@@ -130,7 +130,7 @@ export interface SemanticIndexEntry {
 }
 
 /**
- * Semantic index statistics â€” used for observability.
+ * Semantic index statistics ??used for observability.
  */
 export interface SemanticIndexStats {
   readonly totalEntries: number;
@@ -138,6 +138,6 @@ export interface SemanticIndexStats {
   readonly lastUpdatedAt: string;
 }
 
-// â”€â”€â”€ Re-export shared primitives for consumer convenience â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Re-export shared primitives for consumer convenience ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 export type { TaxonomyDimension, TaxonomyNode, SemanticSearchHit };

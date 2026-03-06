@@ -1,20 +1,20 @@
 /**
- * skill-xp.slice — _actions.ts
+ * skill-xp.slice ??_actions.ts
  *
  * Server-side action wrappers for the AccountSkill aggregate.
  *
  * Call path per logic-overview.md [E1]:
- *   SERVER_ACTION_SKILL →|addXp / deductXp Command| ACCOUNT_SKILL_AGGREGATE
- *   ACCOUNT_SKILL_AGGREGATE →|clamp 0~525 · 寫入 Ledger| ACCOUNT_SKILL_XP_LEDGER
- *   ACCOUNT_SKILL_AGGREGATE →|return { newXp, xpDelta }| _actions.ts
- *   _actions.ts →|SkillXpAdded / SkillXpDeducted| ORGANIZATION_EVENT_BUS (via IER routing E1)
+ *   SERVER_ACTION_SKILL ?�|addXp / deductXp Command| ACCOUNT_SKILL_AGGREGATE
+ *   ACCOUNT_SKILL_AGGREGATE ?�|clamp 0~525 · 寫入 Ledger| ACCOUNT_SKILL_XP_LEDGER
+ *   ACCOUNT_SKILL_AGGREGATE ?�|return { newXp, xpDelta }| _actions.ts
+ *   _actions.ts ?�|SkillXpAdded / SkillXpDeducted| ORGANIZATION_EVENT_BUS (via IER routing E1)
  *
  * Per Invariant #3: Application Layer (actions) coordinates cross-BC routing;
  * the Aggregate only enforces domain invariants (#11 #12 #13).
  *
  * Org Skill Tag Pool management actions:
- *   addOrgSkillTagAction  — activate a global skill into the org's pool (Invariant T2)
- *   removeOrgSkillTagAction — deactivate a skill from the org's pool
+ *   addOrgSkillTagAction  ??activate a global skill into the org's pool (Invariant T2)
+ *   removeOrgSkillTagAction ??deactivate a skill from the org's pool
  */
 
 'use server';
@@ -24,7 +24,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
 import { addXp, deductXp } from './_aggregate';
@@ -47,7 +47,7 @@ export interface AddXpInput {
  * Enforces Ledger write before aggregate update (Invariant #13).
  * Publishes SkillXpAdded to the org event bus after the aggregate write.
  * Per E1: event publishing belongs in the application coordinator (_actions.ts),
- * not in the aggregate, to prevent VS3 → VS4 boundary invasion.
+ * not in the aggregate, to prevent VS3 ??VS4 boundary invasion.
  */
 export async function addSkillXp(input: AddXpInput): Promise<CommandResult> {
   try {
@@ -58,7 +58,7 @@ export async function addSkillXp(input: AddXpInput): Promise<CommandResult> {
     });
     // D3: aggregate returns computed state; _actions.ts owns the persistence write.
     await setDocument(result.path, result.record);
-    // Application coordinator publishes cross-BC skill event (E1 — not from aggregate)
+    // Application coordinator publishes cross-BC skill event (E1 ??not from aggregate)
     await publishOrgEvent('organization:skill:xpAdded', {
       accountId: input.accountId,
       orgId: input.orgId,
@@ -92,7 +92,7 @@ export interface DeductXpInput {
  * Enforces Ledger write before aggregate update (Invariant #13).
  * Publishes SkillXpDeducted to the org event bus after the aggregate write.
  * Per E1: event publishing belongs in the application coordinator (_actions.ts),
- * not in the aggregate, to prevent VS3 → VS4 boundary invasion.
+ * not in the aggregate, to prevent VS3 ??VS4 boundary invasion.
  */
 export async function deductSkillXp(input: DeductXpInput): Promise<CommandResult> {
   try {
@@ -103,7 +103,7 @@ export async function deductSkillXp(input: DeductXpInput): Promise<CommandResult
     });
     // D3: aggregate returns computed state; _actions.ts owns the persistence write.
     await setDocument(result.path, result.record);
-    // Application coordinator publishes cross-BC skill event (E1 — not from aggregate)
+    // Application coordinator publishes cross-BC skill event (E1 ??not from aggregate)
     await publishOrgEvent('organization:skill:xpDeducted', {
       accountId: input.accountId,
       orgId: input.orgId,
@@ -122,7 +122,7 @@ export async function deductSkillXp(input: DeductXpInput): Promise<CommandResult
 }
 
 // ---------------------------------------------------------------------------
-// Org Skill Tag Pool — server action wrappers (Invariant T2)
+// Org Skill Tag Pool ??server action wrappers (Invariant T2)
 // ---------------------------------------------------------------------------
 
 /**
@@ -147,7 +147,7 @@ export async function addOrgSkillTagAction(
 
 /**
  * Server Action: remove a skill from the org's pool.
- * Blocked when refCount > 0 (active member/partner references exist — Invariant A6).
+ * Blocked when refCount > 0 (active member/partner references exist ??Invariant A6).
  * Idempotent: calling this when the tag is absent is a no-op.
  */
 export async function removeOrgSkillTagAction(

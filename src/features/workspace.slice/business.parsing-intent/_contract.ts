@@ -1,4 +1,4 @@
-import type { SkillRequirement } from '@/features/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
 
 export type ParsingIntentStatus = 'pending' | 'importing' | 'imported' | 'superseded' | 'failed';
 

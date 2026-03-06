@@ -11,7 +11,7 @@ import {
   type CommandResult,
   commandFailureFrom,
   commandSuccess,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import {
   assignMemberAndApprove,
   setScheduleItemDateRange,

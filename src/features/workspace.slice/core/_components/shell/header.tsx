@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import { GlobalSearch } from "@/features/global-search.slice";
-import type { Account } from '@/features/shared-kernel'
+import type { Account } from '@/shared-kernel'
 import {
   Breadcrumb,
   BreadcrumbItem,

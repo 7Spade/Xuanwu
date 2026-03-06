@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { ScheduleItem, CommandResult } from '@/features/shared-kernel';
+import type { ScheduleItem, CommandResult } from '@/shared-kernel';
 
 import type { WorkspaceTask } from '../../business.tasks/_types';
 import type { FileSendToParserPayload } from '../../core.event-bus';

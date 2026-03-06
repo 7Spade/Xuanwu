@@ -1,5 +1,5 @@
 /**
- * projection.account-view — _projector.ts
+ * projection.account-view ??_projector.ts
  *
  * Maintains the account projection read model + authority snapshot.
  * Implements shared-kernel.authority-snapshot contract.
@@ -7,15 +7,15 @@
  * Stored at: accountView/{accountId}
  *
  * Per logic-overview.md:
- *   EVENT_FUNNEL_INPUT → ACCOUNT_PROJECTION_VIEW
- *   ACCOUNT_USER_NOTIFICATION -.→ ACCOUNT_PROJECTION_VIEW (content filtering by tag)
- *   ACCOUNT_PROJECTION_VIEW -.→ shared-kernel.authority-snapshot (contract)
+ *   EVENT_FUNNEL_INPUT ??ACCOUNT_PROJECTION_VIEW
+ *   ACCOUNT_USER_NOTIFICATION -.??ACCOUNT_PROJECTION_VIEW (content filtering by tag)
+ *   ACCOUNT_PROJECTION_VIEW -.??shared-kernel.authority-snapshot (contract)
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
-import type { AuthoritySnapshot } from '@/features/shared-kernel';
-import type { Account } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
+import type { AuthoritySnapshot } from '@/shared-kernel';
+import type { Account } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -28,7 +28,7 @@ export interface AccountViewRecord {
   email?: string;
   photoURL?: string;
   /** Roles this account holds across all org memberships (denormalized) */
-  orgRoles: Record<string, string>; // orgId → role
+  orgRoles: Record<string, string>; // orgId ??role
   /** Skill tag slugs granted to this account */
   skillTagSlugs: string[];
   /** Internal/external membership flag for notification content filtering */

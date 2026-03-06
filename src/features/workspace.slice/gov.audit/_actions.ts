@@ -1,18 +1,18 @@
 'use server';
 
 /**
- * @fileoverview gov.audit/_actions.ts — Write-side audit log actions. [D3][D5][R4]
+ * @fileoverview gov.audit/_actions.ts ??Write-side audit log actions. [D3][D5][R4]
  * @description Server actions for persisting audit log entries to Firestore.
  *
  * Architectural boundaries:
  *   [D3]  All write operations go through _actions.ts.
- *   [D5]  Infrastructure imports (Firestore adapters) belong here — not in
+ *   [D5]  Infrastructure imports (Firestore adapters) belong here ??not in
  *         components, providers, or client hooks.
  *   [R4]  All exported command functions return CommandResult (SK_CMD_RESULT).
  */
 
-import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel';
-import type { CommandResult } from '@/features/shared-kernel';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
+import type { CommandResult } from '@/shared-kernel';
 import { addDocument, serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 
 import type { AuditLog } from './_types';
@@ -28,7 +28,7 @@ export interface WriteAuditLogInput {
 
 /**
  * Persists an audit log entry to the account's auditLogs collection. [R4]
- * Returns CommandResult — callers check `.success` instead of catching exceptions.
+ * Returns CommandResult ??callers check `.success` instead of catching exceptions.
  */
 export async function writeAuditLog(input: WriteAuditLogInput): Promise<CommandResult> {
   const { accountId, actor, action, target, type, workspaceId } = input;
@@ -66,7 +66,7 @@ export interface WriteDailyLogInput {
 
 /**
  * Persists a daily log entry to the account's dailyLogs collection. [R4]
- * Returns CommandResult — callers check `.success` instead of catching exceptions.
+ * Returns CommandResult ??callers check `.success` instead of catching exceptions.
  */
 export async function writeDailyLog(input: WriteDailyLogInput): Promise<CommandResult> {
   const { accountId, content, author, workspaceId, workspaceName, photoURLs } = input;

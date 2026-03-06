@@ -15,7 +15,7 @@
 import { CornerUpLeft, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import type { Account } from "@/features/shared-kernel";
+import type { Account } from "@/shared-kernel";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import type { Timestamp } from "@/shared/ports";
 import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
@@ -145,7 +145,7 @@ export function DailyLogDialog({ log, currentUser, isOpen, onOpenChange }: Daily
                     <div className="flex flex-col text-left">
                       <DialogTitle className="text-sm font-bold">{log.workspaceName}</DialogTitle>
                       <span className="text-xs text-muted-foreground">
-                        by {log.author.name} • <TimeAgo date={log.createdAt} />
+                        by {log.author.name} ??<TimeAgo date={log.createdAt} />
                       </span>
                     </div>
                 </div>

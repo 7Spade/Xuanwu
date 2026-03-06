@@ -5,8 +5,8 @@ import { CalendarIcon, ChevronsUpDown, MapPin, Plus, X } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { type DateRange } from "react-day-picker";
 
-import type { SkillRequirement } from "@/features/shared-kernel";
-import { tagSlugRef } from "@/features/shared-kernel";
+import type { SkillRequirement } from "@/shared-kernel";
+import { tagSlugRef } from "@/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { type Location } from "@/features/workspace.slice";
 import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared/constants/skills";
@@ -97,7 +97,7 @@ export function ProposalDialog({
   const [taskPickerOpen, setTaskPickerOpen] = useState(false);
   const isTaskInheritedMode = Boolean(inheritedTitle);
 
-  // FR-K5: Org skill tag pool — loaded once per dialog open when orgId is provided.
+  // FR-K5: Org skill tag pool ??loaded once per dialog open when orgId is provided.
   const [skillOptions, setSkillOptions] = useState<{ slug: string; name: string }[]>([]);
 
   useEffect(() => {
@@ -134,13 +134,13 @@ export function ProposalDialog({
     [taskOptions, selectedTaskId]
   );
 
-  // Pre-compute a slug → SkillDefinition map for O(1) lookups in the grouped picker.
+  // Pre-compute a slug ??SkillDefinition map for O(1) lookups in the grouped picker.
   const skillBySlug = useMemo(
     () => new Map(SKILLS.map(s => [s.slug, s])),
     []
   );
 
-  // Pre-compute grouped structure: group → subCategory → skillOptions entries.
+  // Pre-compute grouped structure: group ??subCategory ??skillOptions entries.
   const groupedSkillOptions = useMemo(() => {
     return SKILL_GROUPS.map(group => {
       const subCategoryEntries = group.subCategories.flatMap(subCatKey => {
@@ -154,7 +154,7 @@ export function ProposalDialog({
           name: skill.name,
           subCatZhLabel: subCatMeta?.zhLabel ?? '',
           subCatEnLabel: subCatMeta?.enLabel ?? '',
-          /** Value string for cmdk filtering — covers zh + en + sub-category labels. */
+          /** Value string for cmdk filtering ??covers zh + en + sub-category labels. */
           searchValue: `${skill.name} ${subCatMeta?.zhLabel ?? ''} ${subCatMeta?.enLabel ?? ''} ${group.zhLabel} ${group.enLabel}`,
         }));
       });
@@ -303,7 +303,7 @@ export function ProposalDialog({
                   const skillName = skillOptions.find(s => s.slug === req.tagSlug)?.name ?? req.tagSlug;
                   return (
                     <Badge key={req.tagSlug} variant="secondary" className="gap-1 pr-1">
-                      {skillName} · ×{req.quantity}
+                      {skillName} · ?{req.quantity}
                       <button
                         type="button"
                         onClick={() => handleRemoveSkillRequirement(req.tagSlug)}
@@ -342,7 +342,7 @@ export function ProposalDialog({
                         {groupedSkillOptions.map(({ group, subCategoryEntries }) => (
                           <CommandGroup
                             key={group.group}
-                            heading={`${group.zhLabel} — ${group.enLabel}`}
+                            heading={`${group.zhLabel} ??${group.enLabel}`}
                           >
                             {subCategoryEntries.map(skill => (
                               <CommandItem

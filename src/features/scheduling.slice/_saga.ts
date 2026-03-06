@@ -1,13 +1,13 @@
 /**
- * scheduling-saga — _saga.ts
+ * scheduling-saga ??_saga.ts
  *
- * [VS6] 跨組織排班協作 Saga 協調器
+ * [VS6] 跨�?織�??��?�?Saga ?�調??
  *
  * Per logic-overview.md VS6:
- *   WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned
+ *   WorkspaceScheduleProposed ??OrgEligibilityCheck ??ScheduleAssigned
  *
  * State machine:
- *   pending → eligibility_check → assigned | compensated
+ *   pending ??eligibility_check ??assigned | compensated
  *
  * Compensation [A5]: if eligibility check fails, emits ScheduleAssignRejected
  * and transitions the saga to 'compensated'.
@@ -16,7 +16,7 @@
  */
 
 import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
-import type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
+import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
@@ -106,9 +106,9 @@ export async function getSagaState(sagaId: string): Promise<SagaState | null> {
  * Called by the OUTBOX_RELAY_WORKER when it picks up a `workspace:schedule:proposed`
  * event from WORKSPACE_OUTBOX. Orchestrates the full saga:
  *
- *   Step 1 — receive_proposal: persist the OrgScheduleProposal
- *   Step 2 — eligibility_check: find the best eligible member [#14][R7]
- *   Step 3 — assign | compensate [A5]
+ *   Step 1 ??receive_proposal: persist the OrgScheduleProposal
+ *   Step 2 ??eligibility_check: find the best eligible member [#14][R7]
+ *   Step 3 ??assign | compensate [A5]
  *
  * @param event   The WorkspaceScheduleProposedPayload cross-BC event.
  * @param sagaId  Caller-assigned idempotency key (`saga:${scheduleItemId}`).
@@ -124,7 +124,7 @@ export async function startSchedulingSaga(
     return existing;
   }
 
-  // Step 1 — receive_proposal
+  // Step 1 ??receive_proposal
   const initialState: SagaState = {
     sagaId,
     scheduleItemId: event.scheduleItemId,
@@ -141,7 +141,7 @@ export async function startSchedulingSaga(
   const proposedWriteOp = handleScheduleProposed(event);
   await executeWriteOp(proposedWriteOp);
 
-  // Step 2 — eligibility_check
+  // Step 2 ??eligibility_check
   await updateSagaStatus(sagaId, {
     status: 'eligibility_check',
     currentStep: 'eligibility_check',
@@ -153,12 +153,12 @@ export async function startSchedulingSaga(
 
   const assignments = findEligibleCandidatesForRequirements(eligibleMembers, requirements);
 
-  // Step 3 — assign or compensate [A5]
+  // Step 3 ??assign or compensate [A5]
   if (!assignments || assignments.length === 0) {
     const totalNeeded = requirements.reduce((sum, r) => sum + r.quantity, 0);
     const reason =
       requirements.length > 0
-        ? `Could not find enough eligible members for requirements: ${requirements.map((r) => `${r.quantity}× ${r.tagSlug}@${r.minimumTier}`).join(', ')} (needed ${totalNeeded} total)`
+        ? `Could not find enough eligible members for requirements: ${requirements.map((r) => `${r.quantity}? ${r.tagSlug}@${r.minimumTier}`).join(', ')} (needed ${totalNeeded} total)`
         : 'No eligible members found in org-eligible-member-view.';
     const completedAt = Timestamp.now().toDate().toISOString();
     await updateSagaStatus(sagaId, {
@@ -172,7 +172,7 @@ export async function startSchedulingSaga(
 
   // Approve each candidate sequentially [A5].
   // NOTE: if an approval fails mid-loop, earlier assignments are NOT rolled back.
-  // This is an accepted saga limitation — partial compensation requires a dedicated
+  // This is an accepted saga limitation ??partial compensation requires a dedicated
   // undo command that is out of scope for this fix.
   let compensationReason: string | undefined;
   for (const { candidate, requirement } of assignments) {

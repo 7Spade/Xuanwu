@@ -1,12 +1,12 @@
 /**
- * semantic-graph.slice â€” _aggregate.ts
+ * semantic-graph.slice ??_aggregate.ts
  *
  * VS8 Semantic Graph Aggregate:
  *   - Temporal Conflict Detection (scheduling-aware tag overlap)
  *   - Taxonomy Validation (hierarchical tag classification)
  *
  * Per logic-overview.md (VS8):
- *   â‘¥ Everything as a Tag â€” conflict detection ensures tag assignments
+ *   ??Everything as a Tag ??conflict detection ensures tag assignments
  *      do not violate temporal or taxonomic constraints.
  *
  * Invariants:
@@ -17,8 +17,8 @@
  * Dependency rule: ZERO infrastructure imports. Pure functions only.
  */
 
-import { tagSlugRef } from '@/features/shared-kernel';
-import type { TaxonomyDimension, TaxonomyNode, TagSlugRef } from '@/features/shared-kernel';
+import { tagSlugRef } from '@/shared-kernel';
+import type { TaxonomyDimension, TaxonomyNode, TagSlugRef } from '@/shared-kernel';
 import { TAXONOMY_DIMENSIONS } from './_semantic-authority';
 
 import type {
@@ -133,7 +133,7 @@ export function validateTaxonomyAssignment(
 
   if (node.parentSlug) {
     if (hasCircularReference(node.slug, node.parentSlug, existingNodes)) {
-      errors.push(makeError('CIRCULAR_REFERENCE', tagSlugRef(node.slug), `Circular reference detected: "${node.slug}" â†’ "${node.parentSlug}" creates a cycle.`));
+      errors.push(makeError('CIRCULAR_REFERENCE', tagSlugRef(node.slug), `Circular reference detected: "${node.slug}" ??"${node.parentSlug}" creates a cycle.`));
     }
   }
 
@@ -242,7 +242,7 @@ function buildNodeMap(tree: TaxonomyTree): Map<string, TaxonomyNode> {
   return map;
 }
 
-// â”€â”€â”€ Internal helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Internal helpers ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 function makeError(
   code: TaxonomyErrorCode,

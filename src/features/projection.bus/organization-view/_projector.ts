@@ -1,16 +1,16 @@
 /**
- * projection.organization-view — _projector.ts
+ * projection.organization-view ??_projector.ts
  *
  * Maintains the organization projection read model.
  * Stored at: organizationView/{orgId}
  *
  * Per logic-overview.md:
- *   EVENT_FUNNEL_INPUT → ORGANIZATION_PROJECTION_VIEW
+ *   EVENT_FUNNEL_INPUT ??ORGANIZATION_PROJECTION_VIEW
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
-import type { Account } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
+import type { Account } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -24,7 +24,7 @@ export interface OrganizationViewRecord {
   partnerCount: number;
   /** Flat list of member account IDs */
   memberIds: string[];
-  /** Map of teamId → team name */
+  /** Map of teamId ??team name */
   teamIndex: Record<string, string>;
   readModelVersion: number;
   /** Last aggregate version processed by this projection [S2] */

@@ -1,12 +1,12 @@
 'use server';
 
 /**
- * account-user.wallet — _actions.ts
+ * account-user.wallet ??_actions.ts
  *
  * Server actions for user wallet balance management.
  *
  * Per logic-overview.md (A1):
- *   USER_WALLET_AGGREGATE — strong consistency balance invariant.
+ *   USER_WALLET_AGGREGATE ??strong consistency balance invariant.
  *   Balance must never go negative.
  *
  * Architecture:
@@ -20,7 +20,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { collection, doc } from '@/shared/infra/firestore/firestore.read.adapter';
 import { runTransaction, serverTimestamp, type Transaction } from '@/shared/infra/firestore/firestore.write.adapter';

@@ -1,5 +1,5 @@
 /**
- * scheduling.slice â€” _selectors.ts
+ * scheduling.slice ??_selectors.ts
  *
  * Pure data-derivation functions for the schedule domain.
  *
@@ -9,7 +9,7 @@
  *
  * Conventions:
  *   - Every selector is a pure function (no side-effects, no I/O).
- *   - Input types deliberately use `Record<string, â€¦>` to decouple from
+ *   - Input types deliberately use `Record<string, ??` to decouple from
  *     specific store shapes and improve reusability.
  *   - Generic parameter <M> for members avoids a cross-BC type dependency
  *     on Account while still allowing callers to retain full type information.
@@ -17,9 +17,9 @@
 
 import { subDays, isFuture, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 
-// â”€â”€â”€ View-model types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ View-model types ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /** ScheduleItem enriched with a resolved workspace display name. */
 export interface ScheduleItemWithWorkspace extends ScheduleItem {
@@ -31,7 +31,7 @@ export type ScheduleItemWithMembers<M> = ScheduleItemWithWorkspace & {
   members: M[];
 };
 
-// â”€â”€â”€ Selectors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Selectors ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Enriches every ScheduleItem with the resolved `workspaceName` from the

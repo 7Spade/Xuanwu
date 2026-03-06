@@ -1,5 +1,5 @@
 /**
- * projection.workspace-scope-guard — _projector.ts
+ * projection.workspace-scope-guard ??_projector.ts
  *
  * Applies workspace domain events to maintain the scope guard read model.
  * Called by the Event Funnel (EVENT_FUNNEL_INPUT) for workspace events.
@@ -8,7 +8,7 @@
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';

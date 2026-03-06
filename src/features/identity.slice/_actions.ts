@@ -10,15 +10,15 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel'
+} from '@/shared-kernel'
 import { authAdapter } from "@/shared/infra/auth/auth.adapter"
 
 /**
  * Signs in an existing user with email and password.
- * Returns CommandResult [R4] — callers should check `result.success` instead of using try/catch.
+ * Returns CommandResult [R4] ??callers should check `result.success` instead of using try/catch.
  *
  * aggregateId: Firebase Auth UID of the authenticated user.
- * version: 0 — sign-in authenticates an existing session; no versioned aggregate is written.
+ * version: 0 ??sign-in authenticates an existing session; no versioned aggregate is written.
  */
 export async function signIn(email: string, password: string): Promise<CommandResult> {
   try {
@@ -34,7 +34,7 @@ export async function signIn(email: string, password: string): Promise<CommandRe
  * Registers a new user with email and password, sets their display name,
  * and returns the new Firebase user's uid.
  *
- * Internal helper — not exported from the slice's public API (index.ts).
+ * Internal helper ??not exported from the slice's public API (index.ts).
  * Called only by completeRegistration.
  */
 async function registerUser(
@@ -52,10 +52,10 @@ async function registerUser(
 
 /**
  * Signs in anonymously.
- * Returns CommandResult [R4] — callers should check `result.success` instead of using try/catch.
+ * Returns CommandResult [R4] ??callers should check `result.success` instead of using try/catch.
  *
  * aggregateId: Firebase Auth UID of the newly-created anonymous session.
- * version: 0 — anonymous sign-in creates a transient credential; no versioned aggregate is written.
+ * version: 0 ??anonymous sign-in creates a transient credential; no versioned aggregate is written.
  */
 export async function signInAnonymously(): Promise<CommandResult> {
   try {
@@ -69,9 +69,9 @@ export async function signInAnonymously(): Promise<CommandResult> {
 
 /**
  * Sends a password reset email.
- * Returns CommandResult [R4] — callers should check `result.success` instead of using try/catch.
+ * Returns CommandResult [R4] ??callers should check `result.success` instead of using try/catch.
  *
- * Note on aggregateId: Firebase Auth password-reset is unauthenticated — no user UID is
+ * Note on aggregateId: Firebase Auth password-reset is unauthenticated ??no user UID is
  * available at call time. The email address is used as the request identifier.
  * version: 0 because no versioned domain aggregate is written by this operation.
  */
@@ -87,7 +87,7 @@ export async function sendPasswordResetEmail(email: string): Promise<CommandResu
 
 /**
  * Signs out the current user.
- * Returns CommandResult [R4] — callers should check `result.success` instead of using try/catch.
+ * Returns CommandResult [R4] ??callers should check `result.success` instead of using try/catch.
  *
  * Uses the current user's UID as aggregateId when available, falling back to 'anonymous'.
  * version: 0 because sign-out does not write a new aggregate version.
@@ -107,7 +107,7 @@ export async function signOut(): Promise<CommandResult> {
 
 /**
  * Registration use case: creates a Firebase Auth account and the VS2 user profile aggregate.
- * Returns CommandResult [R4] — callers should check `result.success` instead of using try/catch.
+ * Returns CommandResult [R4] ??callers should check `result.success` instead of using try/catch.
  */
 export async function completeRegistration(
   email: string,

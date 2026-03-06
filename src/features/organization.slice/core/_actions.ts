@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * account-organization.core — _actions.ts
+ * account-organization.core ??_actions.ts
  *
  * Server actions for core organization lifecycle management.
  *
@@ -15,8 +15,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
-import type { Account, ThemeConfig } from "@/features/shared-kernel";
+} from "@/shared-kernel";
+import type { Account, ThemeConfig } from "@/shared-kernel";
 import {
   createOrganization as createOrganizationFacade,
   updateOrganizationSettings as updateOrganizationSettingsFacade,

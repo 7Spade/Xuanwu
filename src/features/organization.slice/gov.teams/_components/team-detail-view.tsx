@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
 import { useTeamManagement } from "@/features/organization.slice"
-import type { MemberReference, Team } from "@/features/shared-kernel"
+import type { MemberReference, Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent } from "@/shared/shadcn-ui/card"
@@ -13,7 +13,7 @@ import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
 import { PageHeader } from "@/shared/ui/page-header"
 
 /**
- * TeamDetailView - 職責：管理特定團隊內的成員 (Team Member 清單)
+ * TeamDetailView - ?�責：管?�特定�??�內?��???(Team Member 清單)
  */
 export function TeamDetailView() {
   const { id } = useParams()

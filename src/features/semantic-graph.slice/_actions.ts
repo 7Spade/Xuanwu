@@ -1,5 +1,5 @@
 /**
- * semantic-graph.slice — _actions.ts
+ * semantic-graph.slice ??_actions.ts
  *
  * VS8 Semantic Graph: server actions for tag management. [D3]
  *
@@ -14,16 +14,16 @@
  *   [D26] semantic-graph.slice owns _actions.ts; does not parasitize shared-kernel.
  *
  * New subsystem commands (centralized-*):
- *   addSemanticEdge        — register IS_A / REQUIRES edge [D3]
- *   removeSemanticEdge     — deregister edge [D3]
- *   registerTagLifecycle   — create a Tag lifecycle record in Draft state [T1]
- *   activateTagLifecycle   — transition Draft → Active [T1]
- *   transitionTagLifecycle — generic state transition [T1]
+ *   addSemanticEdge        ??register IS_A / REQUIRES edge [D3]
+ *   removeSemanticEdge     ??deregister edge [D3]
+ *   registerTagLifecycle   ??create a Tag lifecycle record in Draft state [T1]
+ *   activateTagLifecycle   ??transition Draft ??Active [T1]
+ *   transitionTagLifecycle ??generic state transition [T1]
  */
 
-import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel';
-import type { CommandResult, TagSlugRef } from '@/features/shared-kernel';
-import type { TaxonomyNode } from '@/features/shared-kernel';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
+import type { CommandResult, TagSlugRef } from '@/shared-kernel';
+import type { TaxonomyNode } from '@/shared-kernel';
 
 import { detectTemporalConflicts, validateTaxonomyAssignment } from './_aggregate';
 import { indexEntity, removeFromIndex } from './_services';
@@ -85,7 +85,7 @@ export async function upsertTagWithConflictCheck(
 
       if (conflictResult.hasConflict) {
         const conflictSummary = conflictResult.conflicts
-          .map((c) => `${c.overlapStartDate}–${c.overlapEndDate}`)
+          .map((c) => `${c.overlapStartDate}??{c.overlapEndDate}`)
           .join(', ');
         return commandFailureFrom(
           'TEMPORAL_CONFLICT',
@@ -143,7 +143,7 @@ export async function removeTag(tagSlug: string): Promise<CommandResult> {
 // =================================================================
 
 /**
- * Assigns a semantic tag — semantic alias for upsertTagWithConflictCheck.
+ * Assigns a semantic tag ??semantic alias for upsertTagWithConflictCheck.
  *
  * Provides the assignSemanticTag entry point requested by the VS8
  * architecture spec. Currently delegates all validation and indexing
@@ -172,8 +172,8 @@ export async function assignSemanticTag(
  * Register a semantic edge between two tag nodes.
  *
  * Supported relation types:
- *   IS_A     — inheritance / subsumption (skill:expert IS_A skill:senior)
- *   REQUIRES — dependency (role:lead REQUIRES skill:leadership)
+ *   IS_A     ??inheritance / subsumption (skill:expert IS_A skill:senior)
+ *   REQUIRES ??dependency (role:lead REQUIRES skill:leadership)
  *
  * [D3] All edge mutations go through this action.
  * [S2] aggregateVersion in the returned edge ensures idempotency on re-runs.
@@ -193,7 +193,7 @@ export async function addSemanticEdge(
     if (fromTagSlug === toTagSlug) {
       return commandFailureFrom(
         'SELF_LOOP_EDGE',
-        `Self-loop edge not allowed: "${fromTagSlug}" → "${toTagSlug}"`
+        `Self-loop edge not allowed: "${fromTagSlug}" ??"${toTagSlug}"`
       );
     }
     const edge = addEdge(fromTagSlug, toTagSlug, relationType);
@@ -208,7 +208,7 @@ export async function addSemanticEdge(
  * Remove a semantic edge between two tag nodes.
  *
  * Returns CommandResult with aggVersion=0 if the edge did not exist
- * (idempotent — removing a non-existent edge is not an error).
+ * (idempotent ??removing a non-existent edge is not an error).
  *
  * [D3] All edge mutations go through this action.
  */
@@ -219,7 +219,7 @@ export async function removeSemanticEdge(
 ): Promise<CommandResult> {
   try {
     const removed = removeEdge(fromTagSlug, toTagSlug, relationType);
-    return commandSuccess(`${relationType}:${fromTagSlug}→${toTagSlug}`, removed ? 1 : 0);
+    return commandSuccess(`${relationType}:${fromTagSlug}??{toTagSlug}`, removed ? 1 : 0);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return commandFailureFrom('EDGE_REMOVE_FAILED', message);
@@ -251,7 +251,7 @@ export async function registerTagLifecycle(
 }
 
 /**
- * Transition a tag from Draft → Active. [T1]
+ * Transition a tag from Draft ??Active. [T1]
  *
  * Convenience shortcut over transitionTagLifecycle.
  * [S2] nextVersion must be greater than the current aggregateVersion.
@@ -274,10 +274,10 @@ export async function activateTagLifecycle(
  * Transition a tag to any allowed lifecycle state. [T1]
  *
  * Allowed transitions:
- *   Draft      → Active
- *   Active     → Stale | Deprecated
- *   Stale      → Active | Deprecated
- *   Deprecated → (terminal)
+ *   Draft      ??Active
+ *   Active     ??Stale | Deprecated
+ *   Stale      ??Active | Deprecated
+ *   Deprecated ??(terminal)
  *
  * [S2] nextVersion must be greater than the current aggregateVersion.
  * [S1] The returned outboxEvent is tagged BACKGROUND_LANE for async delivery.

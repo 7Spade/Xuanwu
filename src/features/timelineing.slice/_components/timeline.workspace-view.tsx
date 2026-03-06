@@ -10,7 +10,7 @@
 import { Clock3 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 
-import type { ScheduleItem } from "@/features/shared-kernel";
+import type { ScheduleItem } from "@/shared-kernel";
 
 import { useTimelineCommands, useWorkspaceTimeline } from "../_hooks";
 
@@ -37,7 +37,7 @@ export function WorkspaceTimeline() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock3 className="size-4" />
-          以時序方式檢視 {workspace.name} 的排程項目。
+          以�?序方式檢�?{workspace.name} ?��?程�??��?
         </p>
       </div>
 

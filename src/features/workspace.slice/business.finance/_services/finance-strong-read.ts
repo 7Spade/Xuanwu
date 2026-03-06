@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { resolveReadConsistency } from '@/features/shared-kernel';
+import { resolveReadConsistency } from '@/shared-kernel';
 
 import type { FinanceStrongReadSnapshot } from '../_types';
 

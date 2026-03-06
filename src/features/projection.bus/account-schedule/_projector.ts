@@ -1,5 +1,5 @@
 /**
- * projection.account-schedule — _projector.ts
+ * projection.account-schedule ??_projector.ts
  *
  * Maintains the account schedule projection read model.
  * Tracks active schedule assignments per account for availability filtering.
@@ -8,15 +8,15 @@
  *
  * Per logic-overview.md (PROJ_BUS STD_PROJ):
  *   ACC_SCHED_V["projection.account-schedule"]
- *   EVENT_FUNNEL_INPUT → ACCOUNT_PROJECTION_SCHEDULE
- *   ORG_SCH -.→ ACCOUNT_PROJECTION_SCHEDULE (過濾可用帳號)
+ *   EVENT_FUNNEL_INPUT ??ACCOUNT_PROJECTION_SCHEDULE
+ *   ORG_SCH -.??ACCOUNT_PROJECTION_SCHEDULE (?�濾?�用帳�?)
  *
  * [S2] SK_VERSION_GUARD: versionGuardAllows enforced before every write.
  * [R8] traceId from the originating EventEnvelope is propagated into the record.
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -25,7 +25,7 @@ export interface AccountScheduleProjection {
   accountId: string;
   /** Active schedule assignment IDs */
   activeAssignmentIds: string[];
-  /** Map of scheduleItemId → assignment detail */
+  /** Map of scheduleItemId ??assignment detail */
   assignmentIndex: Record<string, AccountScheduleAssignment>;
   readModelVersion: number;
   /** Last aggregate version processed by this projection [S2] */

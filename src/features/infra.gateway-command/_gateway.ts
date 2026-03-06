@@ -1,23 +1,23 @@
 /**
- * infra.gateway-command — _gateway.ts
+ * infra.gateway-command ??_gateway.ts
  *
- * [GW] Command Bus Gateway — unified write entry point. [E4][R4][R8][Q4][Q7]
+ * [GW] Command Bus Gateway ??unified write entry point. [E4][R4][R8][Q4][Q7]
  *
  * Per logic-overview.md GW_CMD:
- *   CBG_ENTRY  — unified-command-gateway: injects TraceID [E4][R8]
- *   CBG_AUTH   — universal-authority-interceptor: AuthoritySnapshot [Q4]
+ *   CBG_ENTRY  ??unified-command-gateway: injects TraceID [E4][R8]
+ *   CBG_AUTH   ??universal-authority-interceptor: AuthoritySnapshot [Q4]
  *               ACTIVE_CTX takes precedence over Claims when they conflict.
- *   CBG_ROUTE  — command-router: routes to the correct slice handler,
+ *   CBG_ROUTE  ??command-router: routes to the correct slice handler,
  *               returns SK_CMD_RESULT [R4]
  *
  * Invariants:
- *   D9  — traceId written into every envelope at entry; never overwritten downstream.
- *   R8  — All commands carry a traceId shared across the full event chain.
- *   Q7  — Three-layer guard: rate-limit → circuit-breaker → bulkhead (stub hooks provided).
+ *   D9  ??traceId written into every envelope at entry; never overwritten downstream.
+ *   R8  ??All commands carry a traceId shared across the full event chain.
+ *   Q7  ??Three-layer guard: rate-limit ??circuit-breaker ??bulkhead (stub hooks provided).
  */
 
-import type { AuthoritySnapshot, CommandResult } from '@/features/shared-kernel';
-import { commandFailureFrom } from '@/features/shared-kernel';
+import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
+import { commandFailureFrom } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Command descriptor
@@ -79,7 +79,7 @@ export interface DispatchOptions {
 }
 
 // ---------------------------------------------------------------------------
-// CBG_ENTRY — TraceID injection [E4][R8]
+// CBG_ENTRY ??TraceID injection [E4][R8]
 // ---------------------------------------------------------------------------
 
 function injectTraceId(opts?: DispatchOptions): string {
@@ -90,14 +90,14 @@ function injectTraceId(opts?: DispatchOptions): string {
 }
 
 // ---------------------------------------------------------------------------
-// CBG_AUTH — universal-authority-interceptor [Q4]
+// CBG_AUTH ??universal-authority-interceptor [Q4]
 // ---------------------------------------------------------------------------
 
 /**
  * Validates that the caller is permitted to issue the given command.
  *
  * Current implementation: presence of an AuthoritySnapshot is sufficient.
- * TODO: Enforce per-commandType RBAC checks [D12] — track in architecture backlog
+ * TODO: Enforce per-commandType RBAC checks [D12] ??track in architecture backlog
  *       as "gateway-command: role-based per-commandType permission enforcement".
  *
  * ACTIVE_CTX precedence: the authority snapshot passed in here represents
@@ -110,7 +110,7 @@ function checkAuthority(
   if (!authority) {
     return commandFailureFrom(
       'UNAUTHORIZED',
-      `Command "${command.commandType}" rejected — no authority snapshot provided.`,
+      `Command "${command.commandType}" rejected ??no authority snapshot provided.`,
       { aggregateId: command.aggregateId }
     );
   }
@@ -118,7 +118,7 @@ function checkAuthority(
 }
 
 // ---------------------------------------------------------------------------
-// CBG_ROUTE — command-router [R4]
+// CBG_ROUTE ??command-router [R4]
 // ---------------------------------------------------------------------------
 
 async function routeCommand(
@@ -144,7 +144,7 @@ async function routeCommand(
  * Unified command dispatch entry point.
  *
  * Pipeline:
- *   [Q7 guard hooks] → CBG_ENTRY (TraceID) → CBG_AUTH (authority) → CBG_ROUTE
+ *   [Q7 guard hooks] ??CBG_ENTRY (TraceID) ??CBG_AUTH (authority) ??CBG_ROUTE
  *
  * @example
  * const result = await dispatchCommand(

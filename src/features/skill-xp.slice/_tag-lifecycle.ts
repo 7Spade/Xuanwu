@@ -1,13 +1,13 @@
 /**
- * skill-xp.slice — _tag-lifecycle.ts
+ * skill-xp.slice ??_tag-lifecycle.ts
  *
- * VS4_TAG_SUBSCRIBER [R3] — keeps SKILL_TAG_POOL up to date when TagLifecycleEvents arrive.
+ * VS4_TAG_SUBSCRIBER [R3] ??keeps SKILL_TAG_POOL up to date when TagLifecycleEvents arrive.
  *
- * Per logic-overview.md [R3] SKILL_TAG_POOL 更新路徑閉環:
- *   IER BACKGROUND_LANE → VS4_TAG_SUBSCRIBER → SKILL_TAG_POOL
+ * Per logic-overview.md [R3] SKILL_TAG_POOL ?�新路�??�環:
+ *   IER BACKGROUND_LANE ??VS4_TAG_SUBSCRIBER ??SKILL_TAG_POOL
  *
  * This subscriber is the explicit named handler the Event Funnel delegates to.
- * It stays within the skill-xp.slice boundary (切片內部消費, 不穿透邊界) and
+ * It stays within the skill-xp.slice boundary (?��??�部消費, 不穿?��??? and
  * MUST NOT import from other feature slices.
  *
  * Cross-org fan-out strategy:
@@ -15,7 +15,7 @@
  *   org that has activated the affected tagSlug without needing a global org list.
  *
  * Invariant T2: SKILL_TAG_POOL = Tag Authority's org-scope projection.
- *   Only passive sync here — no active tag creation.
+ *   Only passive sync here ??no active tag creation.
  * Invariant #17: centralized-tag is the sole authority for tagSlug semantics.
  */
 
@@ -24,7 +24,7 @@ import type {
   TagUpdatedPayload,
   TagDeprecatedPayload,
   TagDeletedPayload,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collectionGroup,
@@ -42,7 +42,7 @@ import {
 import type { OrgSkillTagEntry } from './_tag-pool';
 
 // ---------------------------------------------------------------------------
-// Internal helper — find all orgs that have activated a given tagSlug
+// Internal helper ??find all orgs that have activated a given tagSlug
 // ---------------------------------------------------------------------------
 
 /**
@@ -61,7 +61,7 @@ async function getOrgsWithTag(tagSlug: string): Promise<string[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Public subscriber handlers — called by projection.event-funnel [R3]
+// Public subscriber handlers ??called by projection.event-funnel [R3]
 // ---------------------------------------------------------------------------
 
 /**

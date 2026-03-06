@@ -3,7 +3,7 @@
 /**
  * shared/app-providers/app-context.tsx
  *
- * Active Account Context â€” cross-cutting identity state.
+ * Active Account Context ??cross-cutting identity state.
  *
  * Holds the set of accounts visible to the current user plus the
  * currently active account selection.  This context is consumed by
@@ -12,9 +12,9 @@
  * without creating a circular dependency.
  *
  * Dependency direction:
- *   Subject Center â”€â”€â–¶ shared/app-providers/app-context  â—€â”€â”€ workspace-core
+ *   Subject Center ?€?€??shared/app-providers/app-context  ?€?€?€ workspace-core
  *
- * NOT a Workspace Container concern â€” account selection predates any
+ * NOT a Workspace Container concern ??account selection predates any
  * workspace context and must be accessible to Subject Center slices.
  */
 
@@ -22,7 +22,7 @@ import type React from 'react'
 import { type ReactNode, createContext, useReducer, useEffect } from 'react'
 import { useContext } from 'react'
 
-import { type Account, type Notification } from '@/features/shared-kernel';
+import { type Account, type Notification } from '@/shared-kernel';
 import type { CapabilitySpec } from '@/features/workspace.slice';
 
 import { subscribeToAccountsForUser } from './_queries'

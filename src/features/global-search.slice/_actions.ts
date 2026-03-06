@@ -1,7 +1,7 @@
 /**
- * global-search.slice — _actions.ts
+ * global-search.slice ??_actions.ts
  *
- * Cross-cutting Authority — Server actions for the sole search portal. [D3]
+ * Cross-cutting Authority ??Server actions for the sole search portal. [D3]
  *
  * Per logic-overview.md [D26]:
  *   global-search.slice is the system's sole search authority.
@@ -14,8 +14,8 @@
  * L6 Query Gateway: searches via semantic-graph's (VS8) semantic index.
  */
 
-import type { CommandResult } from '@/features/shared-kernel';
-import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel';
+import type { CommandResult } from '@/shared-kernel';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
 
 import { executeSearch as executeSearchService } from './_services';
 import type { ExecuteSearchInput, SearchResponse } from './_types';
@@ -25,7 +25,7 @@ import type { ExecuteSearchInput, SearchResponse } from './_types';
 // =================================================================
 
 /**
- * Result wrapper for global search — carries both CommandResult and SearchResponse.
+ * Result wrapper for global search ??carries both CommandResult and SearchResponse.
  */
 export interface ExecuteGlobalSearchResult {
   readonly commandResult: CommandResult;

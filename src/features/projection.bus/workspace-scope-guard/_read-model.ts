@@ -1,5 +1,5 @@
 /**
- * projection.workspace-scope-guard — _scope-guard-read-model.ts
+ * projection.workspace-scope-guard ??_scope-guard-read-model.ts
  *
  * Firestore schema for the scope guard read model.
  * Stored at: scopeGuardView/{workspaceId}
@@ -8,14 +8,14 @@
  * Invariant #8: Implements shared-kernel.authority-snapshot contract.
  */
 
-import type { AuthoritySnapshot } from '@/features/shared-kernel';
+import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { Timestamp } from '@/shared/ports';
 
 export interface WorkspaceScopeGuardView {
   readonly implementsAuthoritySnapshot: true;
   workspaceId: string;
   ownerId: string;
-  /** Map of userId → { role, status, snapshotAt } */
+  /** Map of userId ??{ role, status, snapshotAt } */
   grantIndex: Record<string, WorkspaceScopeGrantEntry>;
   /** Latest version processed from event stream */
   readModelVersion: number;

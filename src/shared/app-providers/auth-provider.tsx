@@ -5,7 +5,7 @@ import type React from 'react';
 import {type ReactNode} from 'react';
 import { createContext, useReducer, useContext, useEffect } from 'react';
 
-import { type Account } from '@/features/shared-kernel';
+import { type Account } from '@/shared-kernel';
 import { authAdapter } from '@/shared/infra/auth/auth.adapter';
 
 interface AuthState {

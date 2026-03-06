@@ -17,7 +17,7 @@ import {
   where,
 } from 'firebase/firestore'
 
-import type { ScheduleItem } from '@/features/shared-kernel'
+import type { ScheduleItem } from '@/shared-kernel'
 
 import { db } from '../firestore.client'
 import { createConverter } from '../firestore.converter'
@@ -41,7 +41,7 @@ export const createScheduleItem = async (
     assigneeIds: itemData.assigneeIds ?? [],
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    // Optional fields — omitted when undefined so Firestore never sees undefined.
+    // Optional fields ??omitted when undefined so Firestore never sees undefined.
     // Use !== undefined (not truthy) so empty strings are preserved if ever valid.
     ...(itemData.workspaceName !== undefined ? { workspaceName: itemData.workspaceName } : {}),
     ...(itemData.description !== undefined ? { description: itemData.description } : {}),

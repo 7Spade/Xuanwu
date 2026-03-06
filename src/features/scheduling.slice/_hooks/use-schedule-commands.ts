@@ -11,8 +11,8 @@
 import { useCallback } from "react";
 
 import { getOrgMemberEligibilityWithTier } from "@/features/projection.bus";
-import { tierSatisfies } from "@/features/shared-kernel";
-import type { ScheduleItem } from '@/features/shared-kernel';
+import { tierSatisfies } from "@/shared-kernel";
+import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
@@ -43,7 +43,7 @@ export function useScheduleActions() {
       return;
     }
 
-    // W_B_SCHEDULE -.→ ACCOUNT_PROJECTION_SCHEDULE: filter available accounts via projection
+    // W_B_SCHEDULE -.??ACCOUNT_PROJECTION_SCHEDULE: filter available accounts via projection
     // (Invariant #2: read cross-BC data only via Projection, not Domain Core)
     const activeAssignments = await getAccountActiveAssignments(memberId).catch(() => []);
     const conflicting = activeAssignments.some(
@@ -58,9 +58,9 @@ export function useScheduleActions() {
       return;
     }
 
-    // W_B_SCHEDULE -.→ ORG_ELIGIBLE_MEMBER_VIEW: soft skill-eligibility check
-    // (Invariant #14: only reads Projection — never Account aggregate)
-    // (Invariant #12: tier is derived via resolveSkillTier(xp) — never stored in DB)
+    // W_B_SCHEDULE -.??ORG_ELIGIBLE_MEMBER_VIEW: soft skill-eligibility check
+    // (Invariant #14: only reads Projection ??never Account aggregate)
+    // (Invariant #12: tier is derived via resolveSkillTier(xp) ??never stored in DB)
     // Warning-only guard; hard validation happens in approveOrgScheduleProposal.
     if (item.requiredSkills && item.requiredSkills.length > 0) {
       const memberView = await getOrgMemberEligibilityWithTier(activeAccount.id, memberId).catch(() => null);
@@ -74,7 +74,7 @@ export function useScheduleActions() {
           toast({
             variant: "destructive",
             title: "Skill Requirements Not Met",
-            description: `Member does not meet skill requirements: ${unmetSkills.map((r) => `${r.tagSlug} ≥ ${r.minimumTier}`).join(', ')}.`,
+            description: `Member does not meet skill requirements: ${unmetSkills.map((r) => `${r.tagSlug} ??${r.minimumTier}`).join(', ')}.`,
           });
           return;
         }
@@ -123,7 +123,7 @@ export function useScheduleActions() {
 
   const approveItem = useCallback(async (item: ScheduleItem) => {
     if (!canTransitionScheduleStatus(item.status, "OFFICIAL")) {
-      throw new Error(`Cannot approve: invalid transition ${item.status} → OFFICIAL`);
+      throw new Error(`Cannot approve: invalid transition ${item.status} ??OFFICIAL`);
     }
     const result = await updateScheduleItemStatus(item.accountId, item.id, "OFFICIAL");
     if (!result.success) throw new Error(result.error.message);
@@ -131,7 +131,7 @@ export function useScheduleActions() {
 
   const rejectItem = useCallback(async (item: ScheduleItem) => {
     if (!canTransitionScheduleStatus(item.status, "REJECTED")) {
-      throw new Error(`Cannot reject: invalid transition ${item.status} → REJECTED`);
+      throw new Error(`Cannot reject: invalid transition ${item.status} ??REJECTED`);
     }
     const result = await updateScheduleItemStatus(item.accountId, item.id, "REJECTED");
     if (!result.success) throw new Error(result.error.message);

@@ -1,5 +1,5 @@
 /**
- * account-organization.member — _queries.ts
+ * account-organization.member ??_queries.ts
  *
  * Read queries for org-level member management.
  *
@@ -7,7 +7,7 @@
  * onSnapshot on the org document provides real-time member list updates.
  */
 
-import type { Account, MemberReference } from '@/features/shared-kernel'
+import type { Account, MemberReference } from '@/shared-kernel'
 import { db } from '@/shared/infra/firestore/firestore.client'
 import { doc, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter'
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter'

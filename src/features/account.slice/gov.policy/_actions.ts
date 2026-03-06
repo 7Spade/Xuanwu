@@ -1,14 +1,14 @@
 'use server';
 
 /**
- * account-governance.policy — _actions.ts
+ * account-governance.policy ??_actions.ts
  *
  * Server actions for account-level policy management.
  *
  * Per logic-overview.md:
- *   ACCOUNT_POLICY → CUSTOM_CLAIMS
+ *   ACCOUNT_POLICY ??CUSTOM_CLAIMS
  *   Policy changes are account-scoped; CUSTOM_CLAIMS refresh is triggered downstream
- *   by account governance logic (not via org event bus — this is an account-level BC).
+ *   by account governance logic (not via org event bus ??this is an account-level BC).
  *
  * Invariant #1: This BC only writes its own aggregate.
  * Invariant #3: Application layer coordinates flow only.
@@ -20,7 +20,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import { COLLECTIONS } from '@/shared/infra/firestore/collection-paths';
 import { getDocument, Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -38,7 +38,7 @@ import { addDocument, updateDocument, deleteDocument } from '@/shared/infra/fire
 async function emitPolicyChangedRefreshSignal(accountId: string, traceId?: string): Promise<void> {
   // Guard against path-traversal: accountId must be a safe Firestore document ID.
   if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format — must match /^[\\w-]+$/`);
+    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
   }
   await updateDocument(`${COLLECTIONS.tokenRefreshSignals}/${accountId}`, {
     accountId,
@@ -134,9 +134,9 @@ export async function updateAccountPolicy(
       ...(traceId ? { traceId } : {}),
     });
 
-    // PolicyChanged → TOKEN_REFRESH_SIGNAL [S6]
+    // PolicyChanged ??TOKEN_REFRESH_SIGNAL [S6]
     // Best-effort: signal failure does NOT roll back the policy update.
-    // accountId is optional — signal is only emitted when the caller provides it.
+    // accountId is optional ??signal is only emitted when the caller provides it.
     if (accountId) {
       try {
         await emitPolicyChangedRefreshSignal(accountId, traceId);
@@ -156,7 +156,7 @@ export async function updateAccountPolicy(
 /**
  * Deletes an account policy.
  * [R8] Reads the policy first to obtain accountId, then emits a token-refresh
- * signal so stale claims are invalidated — matching the create/update pattern.
+ * signal so stale claims are invalidated ??matching the create/update pattern.
  */
 export async function deleteAccountPolicy(policyId: string, traceId?: string): Promise<CommandResult> {
   try {

@@ -1,20 +1,20 @@
 'use client';
 
 /**
- * scheduling.slice — _hooks/use-org-schedule.ts
+ * scheduling.slice ??_hooks/use-org-schedule.ts
  *
  * React hook for subscribing to org schedule items.
  * Used by the org governance UI to display and act on pending proposals.
  *
  * Per logic-overview.md:
- *   ORGANIZATION_SCHEDULE → (org governance reads pending proposals via this hook)
+ *   ORGANIZATION_SCHEDULE ??(org governance reads pending proposals via this hook)
  *
  * Single source of truth: accounts/{orgId}/schedule_items
  */
 
 import { useState, useEffect } from 'react';
 
-import type { ScheduleItem, ScheduleStatus } from '@/features/shared-kernel';
+import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 
 import { subscribeToOrgScheduleProposals, subscribeToPendingProposals, subscribeToConfirmedProposals } from '../_queries';
 

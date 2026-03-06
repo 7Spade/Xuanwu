@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 
-import { type Team, type MemberReference } from "@/features/shared-kernel";
+import { type Team, type MemberReference } from "@/shared-kernel";
 import { useApp } from '@/shared/app-providers/app-context';
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
@@ -271,7 +271,7 @@ export function WorkspaceMembers() {
           <h4 className="text-xs font-bold uppercase tracking-widest">Access Governance Principles</h4>
         </div>
         <p className="text-[11px] italic leading-relaxed text-muted-foreground">
-          This workspace uses &quot;Composite Authorization&quot;. A member&apos;s final access = (Team Inheritance ∪ Direct Individual Grant).
+          This workspace uses &quot;Composite Authorization&quot;. A member&apos;s final access = (Team Inheritance ??Direct Individual Grant).
           When access is granted via multiple paths, the &quot;Least Restrictive&quot; principle is applied to ensure uninterrupted operational momentum.
         </p>
       </div>

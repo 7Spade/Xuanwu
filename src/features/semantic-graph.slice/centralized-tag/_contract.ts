@@ -1,4 +1,4 @@
-import type { TagCategory } from '@/features/shared-kernel/tag-authority';
+import type { TagCategory } from '@/shared-kernel/data-contracts/tag-authority';
 
 export type TagDeleteRule = 'allow' | 'block-if-referenced';
 

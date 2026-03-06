@@ -4,8 +4,8 @@ import type React from 'react';
 import {type ReactNode} from 'react';
 import { createContext, useReducer, useEffect } from 'react';
 
-import type { ScheduleItem } from '@/features/shared-kernel';
-import type { PartnerInvite } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
+import type { PartnerInvite } from '@/shared-kernel';
 
 import type { DailyLog } from '../../business.daily/_types';
 import type { WorkspaceIssue } from '../../business.issues/_types';

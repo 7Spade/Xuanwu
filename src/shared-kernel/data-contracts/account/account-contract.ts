@@ -6,7 +6,7 @@
  */
 
 import type { Timestamp } from '@/shared/ports';
-import type { SkillGrant } from '@/features/shared-kernel/skill-tier';
+import type { SkillGrant } from '@/shared-kernel/data-contracts/skill-tier';
 
 export type AccountType = 'user' | 'organization';
 export type OrganizationRole = 'Owner' | 'Admin' | 'Member' | 'Guest';

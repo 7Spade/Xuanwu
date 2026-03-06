@@ -9,7 +9,7 @@
 
 import { useCallback } from 'react';
 
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from '@/shared/app-providers/app-context';
 import { useAuth } from '@/shared/app-providers/auth-provider';
 import { toast } from '@/shared/shadcn-ui/hooks/use-toast';

@@ -1,10 +1,10 @@
 /**
- * projection.account-view — _queries.ts
+ * projection.account-view ??_queries.ts
  *
  * Read-side queries for the account projection view.
  */
 
-import type { AuthoritySnapshot } from '@/features/shared-kernel';
+import type { AuthoritySnapshot } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 
 import type { AccountViewRecord } from './_projector';

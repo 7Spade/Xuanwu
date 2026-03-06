@@ -1,18 +1,18 @@
 'use client';
 
 /**
- * scheduling.slice — _components/demand-board.tsx
+ * scheduling.slice ??_components/demand-board.tsx
  *
- * Demand Board UI — org HR real-time view of open and assigned demands.
+ * Demand Board UI ??org HR real-time view of open and assigned demands.
  *
  * Single source of truth: accounts/{orgId}/schedule_items.
  * All three schedule tabs (Calendar, DemandBoard, HR Governance) read from this
- * same collection — no separate projection collection required.
+ * same collection ??no separate projection collection required.
  *
  * Status mapping (FR-W0):
- *   PROPOSAL  → "待指派需求" (open / amber) — drag-sortable for HR prioritisation
- *   OFFICIAL  → "已指派需求" (assigned / green)
- *   REJECTED / COMPLETED → hidden from board
+ *   PROPOSAL  ??"待�?派�?�? (open / amber) ??drag-sortable for HR prioritisation
+ *   OFFICIAL  ??"已�?派�?�? (assigned / green)
+ *   REJECTED / COMPLETED ??hidden from board
  */
 
 import {
@@ -35,8 +35,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, UserCheck, XCircle, Clock, CheckCircle2 } from 'lucide-react';
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
-import type { SkillRequirement } from '@/features/shared-kernel';
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/shared/app-providers/app-context';
 import { SKILLS } from '@/shared/constants/skills';
@@ -88,7 +88,7 @@ interface OrgMember {
 }
 
 // ---------------------------------------------------------------------------
-// Demand row — driven by ScheduleItem (single source of truth)
+// Demand row ??driven by ScheduleItem (single source of truth)
 // ---------------------------------------------------------------------------
 
 interface DemandRowProps {
@@ -105,11 +105,11 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
 
   const statusBadge = isOpen ? (
     <Badge variant="outline" className="shrink-0 border-amber-500 text-[9px] uppercase tracking-widest text-amber-600">
-      <Clock className="mr-1 size-2.5" /> 待指派
+      <Clock className="mr-1 size-2.5" /> 待�?�?
     </Badge>
   ) : (
     <Badge variant="outline" className="shrink-0 border-emerald-500 text-[9px] uppercase tracking-widest text-emerald-600">
-      <CheckCircle2 className="mr-1 size-2.5" /> 已指派
+      <CheckCircle2 className="mr-1 size-2.5" /> 已�?�?
     </Badge>
   );
 
@@ -117,7 +117,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     if (!item.assigneeIds?.length) return null;
     return item.assigneeIds
       .map((id) => orgMembers.find((m) => m.id === id)?.name ?? id)
-      .join('、');
+      .join('??);
   }, [item.assigneeIds, orgMembers]);
 
   const handleAssign = useCallback(async () => {
@@ -126,13 +126,13 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     try {
       const result = await approveScheduleItemWithMember(orgId, item.id, selectedMemberId);
       if (result.success) {
-        toast({ title: '排程已指派', description: `「${item.title}」成員指派成功。` });
+        toast({ title: '?��?已�?�?, description: `??{item.title}?��??��?派�??�。` });
         setSelectedMemberId('');
       } else {
-        toast({ variant: 'destructive', title: '指派失敗', description: result.error.message });
+        toast({ variant: 'destructive', title: '?�派失�?', description: result.error.message });
       }
     } catch {
-      toast({ variant: 'destructive', title: '操作失敗', description: '請稍後再試。' });
+      toast({ variant: 'destructive', title: '?��?失�?', description: '請�?後�?試�? });
     } finally {
       setLoading(false);
     }
@@ -143,12 +143,12 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     try {
       const result = await updateScheduleItemStatus(orgId, item.id, 'REJECTED');
       if (result.success) {
-        toast({ title: '需求已取消', description: `「${item.title}」已由 HR 撤回。` });
+        toast({ title: '?�求已?��?', description: `??{item.title}?�已??HR ?��??�` });
       } else {
-        toast({ variant: 'destructive', title: '取消失敗', description: result.error.message });
+        toast({ variant: 'destructive', title: '?��?失�?', description: result.error.message });
       }
     } catch {
-      toast({ variant: 'destructive', title: '操作失敗', description: '請稍後再試。' });
+      toast({ variant: 'destructive', title: '?��?失�?', description: '請�?後�?試�? });
     } finally {
       setLoading(false);
     }
@@ -166,10 +166,10 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             )}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatTimestamp(item.startDate)} – {formatTimestamp(item.endDate)}
+            {formatTimestamp(item.startDate)} ??{formatTimestamp(item.endDate)}
           </p>
           {assignedMemberNames && (
-            <p className="text-xs text-emerald-600">指派給：{assignedMemberNames}</p>
+            <p className="text-xs text-emerald-600">?�派給�?{assignedMemberNames}</p>
           )}
         </div>
         {statusBadge}
@@ -182,7 +182,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             return (
               <div key={req.tagSlug} className="flex items-center gap-2">
                 <Badge variant="secondary" className="text-[10px]">
-                  {skillName} ≥ {req.minimumTier} × {req.quantity}
+                  {skillName} ??{req.minimumTier} ? {req.quantity}
                 </Badge>
               </div>
             );
@@ -194,7 +194,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
         <div className="flex items-center gap-2">
           <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
             <SelectTrigger className="h-8 flex-1 text-xs">
-              <SelectValue placeholder="選擇指派成員" />
+              <SelectValue placeholder="?��??�派?�員" />
             </SelectTrigger>
             <SelectContent>
               {orgMembers.map((m) => (
@@ -210,7 +210,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             className="size-8 shrink-0 text-emerald-600 hover:text-emerald-700"
             disabled={!selectedMemberId || loading}
             onClick={handleAssign}
-            title="手動指派"
+            title="?��??�派"
           >
             <UserCheck className="size-4" />
           </Button>
@@ -220,7 +220,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             className="size-8 shrink-0 text-destructive hover:text-destructive/80"
             disabled={loading}
             onClick={handleCancel}
-            title="取消需求"
+            title="?��??��?
           >
             <XCircle className="size-4" />
           </Button>
@@ -231,7 +231,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
 }
 
 // ---------------------------------------------------------------------------
-// SortableDemandRow — thin wrapper that adds drag-handle affordance
+// SortableDemandRow ??thin wrapper that adds drag-handle affordance
 // ---------------------------------------------------------------------------
 
 function SortableDemandRow(props: DemandRowProps) {
@@ -253,12 +253,12 @@ function SortableDemandRow(props: DemandRowProps) {
   return (
     <div ref={setNodeRef} style={style}>
       <div className="flex items-start gap-1">
-        {/* Drag handle — only activates drag; does not capture clicks */}
+        {/* Drag handle ??only activates drag; does not capture clicks */}
         <button
           {...attributes}
           {...listeners}
           className="mt-5 cursor-grab touch-none text-muted-foreground hover:text-foreground focus:outline-none active:cursor-grabbing"
-          aria-label="拖曳排序"
+          aria-label="?�曳?��?"
           type="button"
         >
           <GripVertical className="size-4" />
@@ -276,13 +276,13 @@ function SortableDemandRow(props: DemandRowProps) {
 // ---------------------------------------------------------------------------
 
 /**
- * DemandBoard — real-time org demand board (FR-W0 + FR-W6).
+ * DemandBoard ??real-time org demand board (FR-W0 + FR-W6).
  *
- * Reads directly from accounts/{orgId}/schedule_items via useAccount() —
- * the same collection used by the Calendar tab — so all three schedule
+ * Reads directly from accounts/{orgId}/schedule_items via useAccount() ??
+ * the same collection used by the Calendar tab ??so all three schedule
  * tabs always show consistent data with zero extra subscriptions.
  *
- * "待指派需求" cards are drag-sortable so HR can prioritise visually.
+ * "待�?派�?�? cards are drag-sortable so HR can prioritise visually.
  * The sort order is local-only (no server write required for reordering).
  */
 export function DemandBoard() {
@@ -359,18 +359,18 @@ export function DemandBoard() {
   if (!orgId) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        需求看板僅在組織帳號下可用。
+        ?�求�??��??��?織帳?��??�用??
       </p>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Open demands — drag-sortable for HR prioritisation */}
+      {/* Open demands ??drag-sortable for HR prioritisation */}
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-amber-600">
-            待指派需求 ({openItems.length})
+            待�?派�?�?({openItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -387,7 +387,7 @@ export function DemandBoard() {
                 <div className="space-y-3 p-4">
                   {openItems.length === 0 && (
                     <p className="py-6 text-center text-xs italic text-muted-foreground">
-                      目前無待指派需求。
+                      ?��??��??�派?�求�?
                     </p>
                   )}
                   {openItems.map((item) => (
@@ -405,11 +405,11 @@ export function DemandBoard() {
         </CardContent>
       </Card>
 
-      {/* Assigned demands — static list */}
+      {/* Assigned demands ??static list */}
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-emerald-600">
-            已指派需求 ({assignedItems.length})
+            已�?派�?�?({assignedItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -417,7 +417,7 @@ export function DemandBoard() {
             <div className="space-y-3 p-4">
               {assignedItems.length === 0 && (
                 <p className="py-6 text-center text-xs italic text-muted-foreground">
-                  目前無已指派需求。
+                  ?��??�已?�派?�求�?
                 </p>
               )}
               {assignedItems.map((item) => (

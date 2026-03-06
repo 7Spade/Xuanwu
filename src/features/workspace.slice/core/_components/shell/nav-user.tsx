@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 
-import type { Account } from "@/features/shared-kernel"
+import type { Account } from "@/shared-kernel"
 import { ROUTES } from "@/shared/constants/routes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
 import {

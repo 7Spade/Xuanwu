@@ -8,8 +8,8 @@
 'use client';
 
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
-import { tierSatisfies } from '@/features/shared-kernel';
-import type { ScheduleItem, SkillRequirement } from '@/features/shared-kernel';
+import { tierSatisfies } from '@/shared-kernel';
+import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
 import { findSkill } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared/ports';
 import { Avatar, AvatarFallback } from '@/shared/shadcn-ui/avatar';

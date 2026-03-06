@@ -1,24 +1,24 @@
 'use server';
 
 /**
- * account-governance.role — _actions.ts
+ * account-governance.role ??_actions.ts
  *
  * Server actions for account role management.
  *
  * Per logic-overview.md:
- *   ACCOUNT_ROLE → CUSTOM_CLAIMS
+ *   ACCOUNT_ROLE ??CUSTOM_CLAIMS
  *   Role changes trigger CUSTOM_CLAIMS refresh.
  *
  * Per logic-overview.md [R2] TOKEN_REFRESH_SIGNAL:
  *   After claims are set, write a TOKEN_REFRESH_SIGNAL document so the
  *   frontend can detect the change and force a token refresh.
- *   Semantics: high-priority eventual consistency (async — Firebase limitation).
+ *   Semantics: high-priority eventual consistency (async ??Firebase limitation).
  *   The frontend detects this via onSnapshot on `tokenRefreshSignals/{accountId}`.
  *
  * Invariants:
- *   #1 — This BC only writes its own aggregate.
- *   #5 — Custom Claims are a permission cache, not the source of truth.
- *   R2  — CRITICAL_LANE semantics: high-priority, not synchronous.
+ *   #1 ??This BC only writes its own aggregate.
+ *   #5 ??Custom Claims are a permission cache, not the source of truth.
+ *   R2  ??CRITICAL_LANE semantics: high-priority, not synchronous.
  */
 
 import { publishOrgEvent } from '@/features/organization.slice';
@@ -26,8 +26,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
-import type { OrganizationRole } from '@/features/shared-kernel';
+} from '@/shared-kernel';
+import type { OrganizationRole } from '@/shared-kernel';
 import { COLLECTIONS } from '@/shared/infra/firestore/collection-paths';
 import { Timestamp } from '@/shared/infra/firestore/firestore.read.adapter';
 import { setDocument, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
@@ -55,7 +55,7 @@ export interface AssignRoleInput {
 
 /**
  * Assigns an org-level role to an account.
- * Publishes OrgMemberJoined event downstream — triggers CUSTOM_CLAIMS refresh.
+ * Publishes OrgMemberJoined event downstream ??triggers CUSTOM_CLAIMS refresh.
  * Emits TOKEN_REFRESH_SIGNAL after role change so the frontend refreshes its token. [R2]
  */
 export async function assignAccountRole(input: AssignRoleInput): Promise<CommandResult> {
@@ -100,7 +100,7 @@ export async function assignAccountRole(input: AssignRoleInput): Promise<Command
 
 /**
  * Revokes an org-level role from an account.
- * Publishes OrgMemberLeft event downstream — triggers CUSTOM_CLAIMS refresh.
+ * Publishes OrgMemberLeft event downstream ??triggers CUSTOM_CLAIMS refresh.
  * Emits TOKEN_REFRESH_SIGNAL after role change so the frontend refreshes its token. [R2]
  * [R8] traceId propagated from CBG_ENTRY into event publish and signal document.
  */
@@ -164,7 +164,7 @@ export interface TokenRefreshSignal {
  * Frontend onSnapshot listener calls user.getIdToken(true) when this changes.
  *
  * Semantics: high-priority eventual consistency.
- * (Not synchronous — Firebase architecture does not allow synchronous claims propagation.)
+ * (Not synchronous ??Firebase architecture does not allow synchronous claims propagation.)
  *
  * Security: accountId is validated against a safe Firestore document ID pattern
  * to prevent path-traversal injection [OWASP: A01 / CWE-22].
@@ -175,9 +175,9 @@ async function emitTokenRefreshSignal(
   traceId?: string
 ): Promise<void> {
   // Guard against path-traversal: accountId must be a safe Firestore document ID
-  // (alphanumeric, hyphens, underscores only — no slashes or special chars).
+  // (alphanumeric, hyphens, underscores only ??no slashes or special chars).
   if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format — must match /^[\\w-]+$/`);
+    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
   }
   const signal: TokenRefreshSignal = {
     accountId,

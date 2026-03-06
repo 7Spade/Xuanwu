@@ -8,18 +8,18 @@
  *   1. Candidate selection when skills match exactly
  *   2. Candidate selection when member has higher tier (should pass)
  *   3. Rejection when no member meets skill requirements
- *   4. Empty requirements → any eligible member is a candidate
- *   5. Multiple requirements — all must be satisfied (AND logic)
- *   6. WorkspaceScheduleProposedPayload carries skillRequirements correctly [A4×A5]
+ *   4. Empty requirements ??any eligible member is a candidate
+ *   5. Multiple requirements ??all must be satisfied (AND logic)
+ *   6. WorkspaceScheduleProposedPayload carries skillRequirements correctly [A4?A5]
  */
 
 import { describe, it, expect } from 'vitest';
 
-import type { SkillTier, SkillRequirement, WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
-import { tierSatisfies, tagSlugRef } from '@/features/shared-kernel';
+import type { SkillTier, SkillRequirement, WorkspaceScheduleProposedPayload } from '@/shared-kernel';
+import { tierSatisfies, tagSlugRef } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
-// Helpers — mirrors the eligibility logic inside _saga.ts
+// Helpers ??mirrors the eligibility logic inside _saga.ts
 // ---------------------------------------------------------------------------
 
 /** Subset of the org eligible-member-view projection used by the saga. */
@@ -150,15 +150,15 @@ describe('Saga eligibility candidate selection [A5]', () => {
     expect(candidate).toBeUndefined();
   });
 
-  it('AND logic — all requirements must be satisfied simultaneously', () => {
+  it('AND logic ??all requirements must be satisfied simultaneously', () => {
     const reqs: SkillRequirement[] = [
       { tagSlug: tagSlugRef('civil-structural'), minimumTier: 'expert', quantity: 1 },
       { tagSlug: tagSlugRef('bim'), minimumTier: 'artisan', quantity: 1 },
     ];
-    // EXPERT_MEMBER: civil-structural=expert ✓, but has no bim skill ✗
+    // EXPERT_MEMBER: civil-structural=expert ?? but has no bim skill ??
     expect(selectCandidate([EXPERT_MEMBER], reqs)).toBeUndefined();
 
-    // GRANDMASTER_MEMBER: civil-structural=grandmaster ✓, bim=artisan ✓
+    // GRANDMASTER_MEMBER: civil-structural=grandmaster ?? bim=artisan ??
     expect(selectCandidate([GRANDMASTER_MEMBER], reqs)?.accountId).toBe('member-004');
   });
 
@@ -173,16 +173,16 @@ describe('Saga eligibility candidate selection [A5]', () => {
 });
 
 // ---------------------------------------------------------------------------
-// WorkspaceScheduleProposedPayload contract [A4 × A5]
+// WorkspaceScheduleProposedPayload contract [A4 ? A5]
 // ---------------------------------------------------------------------------
 
-describe('WorkspaceScheduleProposedPayload contract [A4×A5]', () => {
-  it('accepts skillRequirements propagated from ParsingIntent [TE_SK → A5]', () => {
+describe('WorkspaceScheduleProposedPayload contract [A4?A5]', () => {
+  it('accepts skillRequirements propagated from ParsingIntent [TE_SK ??A5]', () => {
     const payload: WorkspaceScheduleProposedPayload = {
       scheduleItemId: 'sched-001',
       workspaceId: 'ws-abc',
       orgId: 'org-xyz',
-      title: '基礎開挖工程',
+      title: '?��??��?工�?',
       startDate: '2026-04-01',
       endDate: '2026-04-30',
       proposedBy: 'account-001',
@@ -206,7 +206,7 @@ describe('WorkspaceScheduleProposedPayload contract [A4×A5]', () => {
       scheduleItemId: 'sched-002',
       workspaceId: 'ws-abc',
       orgId: 'org-xyz',
-      title: '水電配管工程',
+      title: '水電?�管工�?',
       startDate: '2026-05-01',
       endDate: '2026-05-15',
       proposedBy: 'account-002',

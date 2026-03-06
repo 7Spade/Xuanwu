@@ -1,5 +1,5 @@
 /**
- * semantic-graph.slice â€” _services.ts
+ * semantic-graph.slice ??_services.ts
  *
  * VS8 Semantic Index Service:
  *   In-memory semantic index for cross-domain entity search.
@@ -17,12 +17,12 @@
  * Dependency rule: Pure in-memory index. No infrastructure imports.
  */
 
-import type { SearchDomain, SemanticSearchHit } from '@/features/shared-kernel';
+import type { SearchDomain, SemanticSearchHit } from '@/shared-kernel';
 import { SEARCH_DOMAINS } from './_semantic-authority';
 
 import type { SemanticIndexEntry, SemanticIndexStats } from './_types';
 
-// â”€â”€â”€ In-memory index store â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ In-memory index store ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 const index = new Map<string, SemanticIndexEntry>();
 
@@ -124,7 +124,7 @@ export function getIndexStats(): SemanticIndexStats {
   };
 }
 
-// â”€â”€â”€ Internal helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Internal helpers ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 function isValidSearchDomain(domain: string): domain is SearchDomain {
   return (SEARCH_DOMAINS as readonly string[]).includes(domain);

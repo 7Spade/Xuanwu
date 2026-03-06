@@ -1,16 +1,16 @@
 /**
- * workspace.slice/core — Firestore subscription factories (D5-compliant)
+ * workspace.slice/core ??Firestore subscription factories (D5-compliant)
  *
  * Encapsulates all `onSnapshot` / Firestore read-adapter calls so that
  * `account-provider.tsx` (and any other client component) has zero direct
  * infra imports per D5.
  *
- * Pattern follows `business.files/_queries.ts` — all Firestore API surface
+ * Pattern follows `business.files/_queries.ts` ??all Firestore API surface
  * stays in this file; callbacks receive typed domain records.
  */
 
-import type { ScheduleItem } from '@/features/shared-kernel';
-import type { PartnerInvite } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
+import type { PartnerInvite } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,

@@ -1,34 +1,34 @@
 /**
- * skill-xp.slice — _projector.ts
+ * skill-xp.slice ??_projector.ts
  *
- * Account skill read model: tracks accountId → skillId → xp.
+ * Account skill read model: tracks accountId ??skillId ??xp.
  *
  * Per logic-overview.md invariants:
- *   #12 — Tier is NEVER stored; always computed via resolveSkillTier(xp).
- *   #14 — Schedule reads this projection; never queries Account aggregate directly.
+ *   #12 ??Tier is NEVER stored; always computed via resolveSkillTier(xp).
+ *   #14 ??Schedule reads this projection; never queries Account aggregate directly.
  *
  * Stored at: accountSkillView/{accountId}/skills/{skillId}
  *
  * Event sources (via EVENT_FUNNEL_INPUT):
- *   organization:skill:xpAdded   → applySkillXpAdded
- *   organization:skill:xpDeducted → applySkillXpDeducted
+ *   organization:skill:xpAdded   ??applySkillXpAdded
+ *   organization:skill:xpDeducted ??applySkillXpDeducted
  */
 
 
-import { versionGuardAllows } from '@/features/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
 import { setDocument } from '@/shared/infra/firestore/firestore.write.adapter';
 
 /**
  * Per-skill entry stored in Firestore.
- * NOTE: `tier` is intentionally absent — derived at read time via resolveSkillTier(xp).
+ * NOTE: `tier` is intentionally absent ??derived at read time via resolveSkillTier(xp).
  */
 export interface AccountSkillEntry {
   accountId: string;
-  /** tagSlug — portable skill identifier (matches SkillGrant.tagSlug). */
+  /** tagSlug ??portable skill identifier (matches SkillGrant.tagSlug). */
   skillId: string;
-  /** Clamped XP 0–525. The ONLY persisted skill attribute (Invariant #12). */
+  /** Clamped XP 0??25. The ONLY persisted skill attribute (Invariant #12). */
   xp: number;
   readModelVersion: number;
   /** Last aggregate version processed by this projection [S2] */

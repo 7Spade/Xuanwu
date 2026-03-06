@@ -1,7 +1,7 @@
 /**
- * notification-hub.slice — _actions.ts
+ * notification-hub.slice ??_actions.ts
  *
- * Cross-cutting Authority — Server actions for the sole side-effect outlet. [D3]
+ * Cross-cutting Authority ??Server actions for the sole side-effect outlet. [D3]
  *
  * Per logic-overview.md [D26]:
  *   notification-hub = sole side-effect outlet.
@@ -13,8 +13,8 @@
  *   [D26]  Owns _actions.ts / _services.ts; does not parasitize shared-kernel.
  */
 
-import type { CommandResult } from '@/features/shared-kernel';
-import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel';
+import type { CommandResult } from '@/shared-kernel';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
 
 import {
   processNotificationEvent,
@@ -32,7 +32,7 @@ import type {
 // =================================================================
 
 /**
- * Result wrapper for notification dispatch — carries both CommandResult
+ * Result wrapper for notification dispatch ??carries both CommandResult
  * and the full dispatch result for status tracking.
  */
 export interface DispatchNotificationResult {
@@ -105,11 +105,11 @@ export async function unregisterRoutingRule(
 // =================================================================
 
 /**
- * Trigger the final notification dispatch — executes transmission
+ * Trigger the final notification dispatch ??executes transmission
  * and records the dispatch status.
  *
  * This is an alias for dispatchNotification that emphasises the
- * "trigger → delivery" semantics requested by the event routing
+ * "trigger ??delivery" semantics requested by the event routing
  * architecture (VS7 · TagEventRouter pipeline).
  */
 export async function triggerDispatch(

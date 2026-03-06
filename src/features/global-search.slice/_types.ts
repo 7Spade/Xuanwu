@@ -1,7 +1,7 @@
 /**
- * global-search.slice â€” _types.ts
+ * global-search.slice ??_types.ts
  *
- * Cross-cutting Authority â€” Domain Types for the system's sole search portal.
+ * Cross-cutting Authority ??Domain Types for the system's sole search portal.
  *
  * Per logic-overview.md [D26]:
  *   global-search.slice = sole search authority.
@@ -22,9 +22,9 @@ import type {
   SemanticSearchHit,
   SemanticSearchResult,
   TagSlugRef,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 
-// â”€â”€â”€ Search Filter Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Search Filter Types ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Date range filter for scoping search results.
@@ -46,7 +46,7 @@ export interface SearchFilters {
   readonly createdBy?: string;
 }
 
-// â”€â”€â”€ Search State (Client-side) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Search State (Client-side) ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Client-side search state for the Cmd+K search portal.
@@ -73,7 +73,7 @@ export const INITIAL_SEARCH_STATE: SearchState = {
   recentQueries: [],
 };
 
-// â”€â”€â”€ Search Action Input/Output â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Search Action Input/Output ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 /**
  * Input for executing a cross-domain search.
@@ -108,7 +108,7 @@ export interface SearchResponse {
   readonly traceId?: string;
 }
 
-// â”€â”€â”€ Re-exports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Re-exports ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
 export type {
   SearchDomain,

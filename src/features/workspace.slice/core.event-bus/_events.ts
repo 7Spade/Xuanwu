@@ -1,13 +1,13 @@
-// [職責] 事件名稱與 Payload 的 TypeScript 類型定義 (Contract)
+// [?�責] 事件?�稱??Payload ??TypeScript 類�?定義 (Contract)
 import type { CostItemType } from "@/features/semantic-graph.slice"
-import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/features/shared-kernel"
+import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/shared-kernel"
 
 import type { DailyLog } from "../business.daily/_types"
 import type { WorkspaceTask } from "../business.tasks/_types"
 
-// WorkspaceScheduleProposedPayload is a cross-BC contract — defined in shared-kernel.
+// WorkspaceScheduleProposedPayload is a cross-BC contract ??defined in shared-kernel.
 // Re-exported for consumers that import from workspace-core.event-bus.
-export type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel';
+export type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 
 // =================================================================
 // == Payload Interfaces
@@ -15,7 +15,7 @@ export type { WorkspaceScheduleProposedPayload } from '@/features/shared-kernel'
 
 export interface WorkspaceTaskCompletedPayload {
   task: WorkspaceTask
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
@@ -58,7 +58,7 @@ export interface DocumentParserItemsExtractedPayload {
     discount?: number
     subtotal: number
     /**
-     * Layer-2 Semantic Classification (VS8) — populated during the document parse
+     * Layer-2 Semantic Classification (VS8) ??populated during the document parse
      * phase by `classifyCostItem`.  The semantic router in the event handler uses
      * this to decide whether to materialise the item as a WorkspaceTask (EXECUTABLE)
      * or to route it to a different domain model / skip task creation.
@@ -79,16 +79,16 @@ export interface DocumentParserItemsExtractedPayload {
    * When this parse supersedes a prior intent, the old intent ID is forwarded so
    * the import handler can reconcile existing tasks instead of creating duplicates [#A4].
    * Tasks linked to the old intent that are still in `todo` state will be updated in-place;
-   * tasks in any other state (doing / blocked / completed / …) will get a new task created.
+   * tasks in any other state (doing / blocked / completed / ?? will get a new task created.
    */
   oldIntentId?: string
 }
 
 /**
- * IntentDeltaProposed — emitted by a ParsingIntent Digital Twin [#A4].
+ * IntentDeltaProposed ??emitted by a ParsingIntent Digital Twin [#A4].
  *
  * Per logic-overview.md: PARSE_INT -.->|"IntentDeltaProposed [#A4]"| A_TASKS
- * Invariant #A4: ParsingIntent only allows proposing events (CQS — no direct mutation).
+ * Invariant #A4: ParsingIntent only allows proposing events (CQS ??no direct mutation).
  *
  * This event is persisted to the ws-outbox Firestore collection [S1][E5] for
  * at-least-once delivery via the OUTBOX_RELAY_WORKER [R1].
@@ -122,7 +122,7 @@ export interface FileSendToParserPayload {
   fileName: string
   downloadURL: string
   fileType: string
-  /** The WorkspaceFile document ID — used by the parser to record a SourcePointer in ParsingIntent. */
+  /** The WorkspaceFile document ID ??used by the parser to record a SourcePointer in ParsingIntent. */
   fileId?: string
 }
 
@@ -132,14 +132,14 @@ export interface WorkspaceIssueResolvedPayload {
   resolvedBy: string
   /** SourcePointer: ID of the A-track task to unblock after resolution (Discrete Recovery). */
   sourceTaskId?: string
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
 export interface WorkspaceDocumentParserFailedPayload {
   sourceDocument: string
   reason: string
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
@@ -162,20 +162,20 @@ export interface WorkspaceFinanceDisbursementFailedPayload {
   taskTitle: string
   amount: number
   reason: string
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
 export interface WorkspaceFinanceCompletedPayload {
   cycleIndex: number
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
 export interface WorkspaceTaskBlockedPayload {
   task: WorkspaceTask
   reason?: string
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 
@@ -187,9 +187,9 @@ export interface WorkspaceTaskAssignedPayload {
   workspaceId: string
   /** SourcePointer: the IntentID that originated this task, if any. */
   sourceIntentId?: string
-  /** [TE_SK] Skill requirements from the originating task — forwarded to the schedule proposal for VS6 eligibility checks. */
+  /** [TE_SK] Skill requirements from the originating task ??forwarded to the schedule proposal for VS6 eligibility checks. */
   requiredSkills?: SkillRequirement[]
-  /** TraceID from the originating EventEnvelope — required for R8 audit trail. */
+  /** TraceID from the originating EventEnvelope ??required for R8 audit trail. */
   traceId?: string
 }
 

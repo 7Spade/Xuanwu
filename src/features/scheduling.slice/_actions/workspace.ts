@@ -13,8 +13,8 @@ import {
   type CommandResult,
   commandFailureFrom,
   commandSuccess,
-} from '@/features/shared-kernel';
-import type { ScheduleItem } from '@/features/shared-kernel';
+} from '@/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import {
   assignMemberToScheduleItem,
   saveScheduleItem,

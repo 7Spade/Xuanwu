@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,

@@ -1,11 +1,11 @@
 /**
- * @fileoverview workspace-business.files — Firestore CRUD actions.
+ * @fileoverview workspace-business.files ??Firestore CRUD actions.
  *
  * Wraps createWorkspaceFile, addWorkspaceFileVersion, and
  * restoreWorkspaceFileVersion so that UI components (files-view.tsx) do not
  * import from @/shared/infra directly.
  *
- * [D3]  All mutations live here — not in _components/.
+ * [D3]  All mutations live here ??not in _components/.
  * [D5]  UI components must not import src/shared/infra; use this module.
  * [R4]  All exported functions return CommandResult (commandSuccess / commandFailureFrom).
  */
@@ -14,7 +14,7 @@ import {
   type CommandResult,
   commandFailureFrom,
   commandSuccess,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import {
   createWorkspaceFile as createFileFacade,
   addWorkspaceFileVersion as addVersionFacade,

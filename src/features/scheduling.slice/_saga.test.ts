@@ -1,5 +1,5 @@
 /**
- * @test [A5] Scheduling Saga â€” eligibility matching logic
+ * @test [A5] Scheduling Saga ??eligibility matching logic
  *
  * Validates the pure eligibility-matching logic used by `startSchedulingSaga`
  * to find the best candidate, imported directly from `_eligibility.ts`.
@@ -8,13 +8,13 @@
  *      transitions to 'compensated' state.
  * [P4] Eligibility check: member.eligible must be true AND all skill requirements
  *      must be satisfied by the member's skill tiers.
- * [TE_SK] skill-requirement = tagSlug Ã— minimumTier â€” cross-BC staffing contract.
+ * [TE_SK] skill-requirement = tagSlug ? minimumTier ??cross-BC staffing contract.
  */
 import { describe, it, expect } from 'vitest';
 
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
-import type { SkillRequirement } from '@/features/shared-kernel';
-import { tierSatisfies, TIER_DEFINITIONS, tagSlugRef } from '@/features/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import { tierSatisfies, TIER_DEFINITIONS, tagSlugRef } from '@/shared-kernel';
 
 import {
   SAGA_TIER_ORDER,
@@ -23,9 +23,9 @@ import {
   findEligibleCandidatesForRequirements,
 } from './_eligibility';
 
-// â”€â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ Tests ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
 
-describe('[A5] Scheduling Saga â€” eligibility matching [P4][TE_SK]', () => {
+describe('[A5] Scheduling Saga ??eligibility matching [P4][TE_SK]', () => {
   describe('sagaTierIndex helper', () => {
     it('returns 0 for apprentice (lowest)', () => {
       expect(sagaTierIndex('apprentice')).toBe(0);
@@ -52,7 +52,7 @@ describe('[A5] Scheduling Saga â€” eligibility matching [P4][TE_SK]', () => {
     });
   });
 
-  describe('findEligibleCandidate â€” [P4] eligibility gate', () => {
+  describe('findEligibleCandidate ??[P4] eligibility gate', () => {
     function makeMember(
       accountId: string,
       eligible: boolean,
@@ -127,7 +127,7 @@ describe('[A5] Scheduling Saga â€” eligibility matching [P4][TE_SK]', () => {
       expect(findEligibleCandidate([titanMember, expertMember], reqs)?.accountId).toBe('member-titan');
     });
 
-    it('[A5] returns undefined when no member satisfies requirements â†’ triggers compensation', () => {
+    it('[A5] returns undefined when no member satisfies requirements ??triggers compensation', () => {
       const result = findEligibleCandidate([ineligibleMember], [
         { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
       ]);
@@ -157,9 +157,9 @@ describe('[A5] Scheduling Saga â€” eligibility matching [P4][TE_SK]', () => {
   });
 });
 
-// â”€â”€â”€ findEligibleCandidatesForRequirements â€” multi-member assignment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ?€?€?€ findEligibleCandidatesForRequirements ??multi-member assignment ?€?€?€?€?€?€?€?€?€?€
 
-describe('[A5] findEligibleCandidatesForRequirements â€” multi-member [quantity][TE_SK]', () => {
+describe('[A5] findEligibleCandidatesForRequirements ??multi-member [quantity][TE_SK]', () => {
   function makeMember(
     accountId: string,
     eligible: boolean,
@@ -196,7 +196,7 @@ describe('[A5] findEligibleCandidatesForRequirements â€” multi-member [quantity]
     });
   });
 
-  describe('quantity > 1 â€” multiple members for same skill', () => {
+  describe('quantity > 1 ??multiple members for same skill', () => {
     it('assigns 2 distinct members for quantity: 2', () => {
       const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 2 }];
       const result = findEligibleCandidatesForRequirements([memberA, memberB], reqs);
@@ -208,19 +208,19 @@ describe('[A5] findEligibleCandidatesForRequirements â€” multi-member [quantity]
 
     it('compensates when pool has fewer members than quantity requires', () => {
       const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 2 }];
-      // Only memberA and memberD qualify (expert+); memberB is journeyman â†’ below expert
+      // Only memberA and memberD qualify (expert+); memberB is journeyman ??below expert
       const result = findEligibleCandidatesForRequirements([memberA, memberB], reqs);
       expect(result).toBeUndefined();
     });
 
     it('no member is assigned twice even if they satisfy quantity', () => {
-      // Only one eligible member â€” cannot satisfy quantity: 2
+      // Only one eligible member ??cannot satisfy quantity: 2
       const reqs: SkillRequirement[] = [{ tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'journeyman', quantity: 2 }];
       expect(findEligibleCandidatesForRequirements([memberA], reqs)).toBeUndefined();
     });
   });
 
-  describe('multiple skill requirements â€” one member per skill type', () => {
+  describe('multiple skill requirements ??one member per skill type', () => {
     it('assigns one member per distinct skill requirement', () => {
       const reqs: SkillRequirement[] = [
         { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
@@ -239,7 +239,7 @@ describe('[A5] findEligibleCandidatesForRequirements â€” multi-member [quantity]
         { tagSlug: tagSlugRef('civil-structural:concrete'), minimumTier: 'expert', quantity: 1 },
         { tagSlug: tagSlugRef('bim:revit'), minimumTier: 'artisan', quantity: 1 },
       ];
-      // memberD has both skills â€” but is only assigned once (first requirement)
+      // memberD has both skills ??but is only assigned once (first requirement)
       // memberC covers the second requirement
       const result = findEligibleCandidatesForRequirements([memberD, memberC], reqs);
       expect(result).toHaveLength(2);

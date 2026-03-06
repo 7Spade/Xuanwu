@@ -1,16 +1,16 @@
 /**
- * account-organization.event-bus — _bus.ts
+ * account-organization.event-bus ??_bus.ts
  *
  * In-process organization event bus.
  * Mirrors the workspace event bus pattern.
  *
  * Per logic-overview.md:
- *   ORGANIZATION_ENTITY → ORGANIZATION_EVENT_BUS
- *   ORGANIZATION_EVENT_BUS → all downstream listeners
- *   ORGANIZATION_EVENT_BUS -.→ shared-kernel.event-envelope（契約遵循）
+ *   ORGANIZATION_ENTITY ??ORGANIZATION_EVENT_BUS
+ *   ORGANIZATION_EVENT_BUS ??all downstream listeners
+ *   ORGANIZATION_EVENT_BUS -.??shared-kernel.event-envelope（�?約遵循�?
  */
 
-import type { ImplementsEventEnvelopeContract } from '@/features/shared-kernel';
+import type { ImplementsEventEnvelopeContract } from '@/shared-kernel';
 
 import type { OrganizationEventPayloadMap, OrganizationEventKey } from './_events';
 

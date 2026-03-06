@@ -1,10 +1,10 @@
 /**
- * account-user.wallet — _queries.ts
+ * account-user.wallet ??_queries.ts
  *
  * Read queries for user wallet balance and transaction history.
  */
 
-import type { Account, Wallet } from '@/features/shared-kernel';
+import type { Account, Wallet } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { doc, collection, query, orderBy, limit, onSnapshot, type Unsubscribe } from '@/shared/infra/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';

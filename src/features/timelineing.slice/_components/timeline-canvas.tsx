@@ -19,7 +19,7 @@ import {
 } from "vis-timeline/standalone";
 import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 
-import type { ScheduleItem, Timestamp } from "@/features/shared-kernel";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
 import { cn } from "@/shared/shadcn-ui/utils/utils";
 
 import type { TimelineMember } from "../_types";

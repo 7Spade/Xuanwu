@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * account-organization.partner — _actions.ts
+ * account-organization.partner ??_actions.ts
  *
  * Server actions for organization partner management.
  *
@@ -15,8 +15,8 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from "@/features/shared-kernel";
-import type { MemberReference } from "@/features/shared-kernel";
+} from "@/shared-kernel";
+import type { MemberReference } from "@/shared-kernel";
 import {
   createTeam as createTeamFacade,
   sendPartnerInvite as sendPartnerInviteFacade,

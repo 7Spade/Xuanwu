@@ -1,12 +1,12 @@
 'use server';
 
 /**
- * workspace-governance.role — _actions.ts
+ * workspace-governance.role ??_actions.ts
  *
  * Server actions for workspace-level role management.
  *
  * Per logic-overview.md:
- *   WORKSPACE_ROLE — split from workspace-governance.members, workspace access control only.
+ *   WORKSPACE_ROLE ??split from workspace-governance.members, workspace access control only.
  *   Does NOT sign CUSTOM_CLAIMS; that is account-governance.role's responsibility.
  *
  * Invariant #1: This BC only writes its own aggregate (workspace grants).
@@ -16,7 +16,7 @@ import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
-} from '@/features/shared-kernel';
+} from '@/shared-kernel';
 import {
   grantIndividualWorkspaceAccess,
   revokeIndividualWorkspaceAccess,
@@ -38,7 +38,7 @@ export interface RevokeWorkspaceRoleInput {
 
 /**
  * Assigns a workspace-level role to a user.
- * Delegates to the workspace core repository — atomic grant guard included.
+ * Delegates to the workspace core repository ??atomic grant guard included.
  */
 export async function assignWorkspaceRole(input: AssignWorkspaceRoleInput): Promise<CommandResult> {
   try {

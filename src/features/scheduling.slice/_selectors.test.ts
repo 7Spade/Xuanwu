@@ -1,20 +1,20 @@
 /**
  * @fileoverview Tests for scheduling.slice pure selectors [D8]
  *
- * These selectors have zero I/O and no React dependency — every test is
+ * These selectors have zero I/O and no React dependency ??every test is
  * synchronous and runs without mocking Firebase or React contexts.
  *
  * Tests cover:
- *   1. selectAllScheduleItems — workspace name resolution, unknown workspace fallback
- *   2. selectPendingProposals — status filter (PROPOSAL only)
- *   3. selectDecisionHistory — last-7-days filter and descending sort
- *   4. selectUpcomingEvents — future OFFICIAL items with members attached
- *   5. selectPresentEvents — today's OFFICIAL items with members attached
+ *   1. selectAllScheduleItems ??workspace name resolution, unknown workspace fallback
+ *   2. selectPendingProposals ??status filter (PROPOSAL only)
+ *   3. selectDecisionHistory ??last-7-days filter and descending sort
+ *   4. selectUpcomingEvents ??future OFFICIAL items with members attached
+ *   5. selectPresentEvents ??today's OFFICIAL items with members attached
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 
 import {
   selectAllScheduleItems,
@@ -45,7 +45,7 @@ const TEN_DAYS_AGO = new Date('2025-06-05T12:00:00Z');
 const TOMORROW = new Date('2025-06-16T12:00:00Z');
 const NEXT_WEEK = new Date('2025-06-22T12:00:00Z');
 
-/** Typed base factory — all required ScheduleItem fields are populated with safe defaults. */
+/** Typed base factory ??all required ScheduleItem fields are populated with safe defaults. */
 function makeItem(overrides: Partial<ScheduleItem> = {}): ScheduleItem {
   return {
     id: 'item-1',
@@ -232,7 +232,7 @@ describe('selectPresentEvents', () => {
   const members = [{ id: 'u1', name: 'Alice' }];
 
   it('returns OFFICIAL items spanning today', () => {
-    // Event that started yesterday and ends today → currently in progress
+    // Event that started yesterday and ends today ??currently in progress
     const START = new Date('2025-06-14T08:00:00Z');
     const END = new Date('2025-06-15T18:00:00Z');
 

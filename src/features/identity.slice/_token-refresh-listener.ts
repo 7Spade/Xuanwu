@@ -1,37 +1,37 @@
 'use client';
 
 /**
- * identity.slice — _token-refresh-listener.ts
+ * identity.slice ??_token-refresh-listener.ts
  *
- * Frontend Party [S6] — Client Token Refresh Listener
+ * Frontend Party [S6] ??Client Token Refresh Listener
  *
  * Per logic-overview.md [S6] three-way Claims refresh handshake:
- *   Party 1 (VS1) — CLAIMS_HANDLER emits TOKEN_REFRESH_SIGNAL to `tokenRefreshSignals/{accountId}`
- *   Party 2 (IER) — routes RoleChanged / PolicyChanged via CRITICAL_LANE to CLAIMS_HANDLER
- *   Party 3 (Frontend — this file) — listens for TOKEN_REFRESH_SIGNAL and force-refreshes token
+ *   Party 1 (VS1) ??CLAIMS_HANDLER emits TOKEN_REFRESH_SIGNAL to `tokenRefreshSignals/{accountId}`
+ *   Party 2 (IER) ??routes RoleChanged / PolicyChanged via CRITICAL_LANE to CLAIMS_HANDLER
+ *   Party 3 (Frontend ??this file) ??listens for TOKEN_REFRESH_SIGNAL and force-refreshes token
  *
  * Client obligation per SK_TOKEN_REFRESH_CONTRACT:
- *   On receiving TOKEN_REFRESH_SIGNAL → getIdToken(true) → new token attached to requests
+ *   On receiving TOKEN_REFRESH_SIGNAL ??getIdToken(true) ??new token attached to requests
  *
  * Invariant: this listener MUST be mounted once per authenticated session in the shell layout.
  */
 
 import { useEffect } from 'react';
 
-import type { ImplementsTokenRefreshContract } from '@/features/shared-kernel';
+import type { ImplementsTokenRefreshContract } from '@/shared-kernel';
 import { auth } from '@/shared/infra/auth/auth.client';
 import { COLLECTIONS } from '@/shared/infra/firestore/collection-paths';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { onSnapshot, doc } from '@/shared/infra/firestore/firestore.read.adapter';
 
-// Marker — confirms this module fulfils Party 3 of the SK_TOKEN_REFRESH_CONTRACT [S6]
+// Marker ??confirms this module fulfils Party 3 of the SK_TOKEN_REFRESH_CONTRACT [S6]
 const _contractConformance: ImplementsTokenRefreshContract = {
   implementsTokenRefreshContract: true,
 };
 void _contractConformance;
 
 /**
- * React hook — mounts an onSnapshot listener on `tokenRefreshSignals/{accountId}`.
+ * React hook ??mounts an onSnapshot listener on `tokenRefreshSignals/{accountId}`.
  * When the document changes (TOKEN_REFRESH_SIGNAL received), force-refreshes the
  * Firebase ID token so subsequent requests carry updated Custom Claims.
  *

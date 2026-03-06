@@ -7,7 +7,7 @@
 
 import { eachDayOfInterval, format, isBefore } from "date-fns";
 
-import type { ScheduleItem, Timestamp } from "@/features/shared-kernel";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
 
 export type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
 

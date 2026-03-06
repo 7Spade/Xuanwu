@@ -16,7 +16,7 @@ import {
   type FieldValue,
 } from 'firebase/firestore';
 
-import type { Account } from '@/features/shared-kernel';
+import type { Account } from '@/shared-kernel';
 import type {
   Workspace,
   WorkspaceRole,
@@ -238,7 +238,7 @@ export const getWorkspaceGrants = async (
 };
 
 // =================================================================
-// WorkspaceLocation CRUD — FR-L1/FR-L2/FR-L3
+// WorkspaceLocation CRUD ??FR-L1/FR-L2/FR-L3
 // =================================================================
 
 /**

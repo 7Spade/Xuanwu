@@ -1,9 +1,9 @@
 /**
- * @fileoverview features/workspace — Multi-step workspace use cases.
+ * @fileoverview features/workspace ??Multi-step workspace use cases.
  * No React. No UI. Callable from hooks, context, or Server Actions.
  */
 
-import type { CommandResult, Account } from '@/features/shared-kernel';
+import type { CommandResult, Account } from '@/shared-kernel';
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { createWorkspace, mountCapabilities, updateWorkspaceSettings, deleteWorkspace } from "./_actions";
@@ -17,7 +17,7 @@ import type { Capability, WorkspaceLifecycleState, Address, WorkspacePersonnel }
  * @param name         Workspace name
  * @param account      The owning account
  * @param capabilities Initial capabilities to mount (may be empty)
- * @returns            CommandResult — aggregateId is the new workspace ID on success
+ * @returns            CommandResult ??aggregateId is the new workspace ID on success
  */
 export async function createWorkspaceWithCapabilities(
   name: string,

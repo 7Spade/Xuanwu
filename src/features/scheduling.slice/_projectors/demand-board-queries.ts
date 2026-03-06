@@ -1,5 +1,5 @@
 /**
- * scheduling.slice/_projectors — demand-board-queries.ts
+ * scheduling.slice/_projectors ??demand-board-queries.ts
  *
  * Read-side queries for the Demand Board projection.
  * Per docs/prd-schedule-workforce-skills.md FR-W0:
@@ -7,12 +7,12 @@
  *   - REJECTED / COMPLETED items are hidden from the default board view.
  *
  * Single source of truth: accounts/{orgId}/schedule_items
- * Staleness: PROJ_STALE_DEMAND_BOARD ≤ 5s (SK_STALENESS_CONTRACT).
+ * Staleness: PROJ_STALE_DEMAND_BOARD ??5s (SK_STALENESS_CONTRACT).
  */
 
 
-import type { ImplementsStalenessContract } from '@/features/shared-kernel';
-import type { ScheduleItem } from '@/features/shared-kernel';
+import type { ImplementsStalenessContract } from '@/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import {
   collection,
@@ -45,7 +45,7 @@ export async function getActiveDemands(orgId: string): Promise<ScheduleItem[]> {
  * Real-time subscription to org schedule items visible on the Demand Board.
  * (PROPOSAL + OFFICIAL only.)
  * Returns an unsubscribe function.
- * Staleness: PROJ_STALE_DEMAND_BOARD ≤ 5s — Firestore onSnapshot satisfies this.
+ * Staleness: PROJ_STALE_DEMAND_BOARD ??5s ??Firestore onSnapshot satisfies this.
  */
 export function subscribeToDemandBoard(
   orgId: string,
