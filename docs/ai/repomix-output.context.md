@@ -332,6 +332,10 @@ src/features/semantic-graph.slice/centralized-learning/learning-engine.ts
 src/features/semantic-graph.slice/centralized-neural-net/neural-network.ts
 src/features/semantic-graph.slice/centralized-nodes/tag-entity.factory.ts
 src/features/semantic-graph.slice/centralized-tag/_actions.ts
+src/features/semantic-graph.slice/centralized-tag/_bus.ts
+src/features/semantic-graph.slice/centralized-tag/_contract.ts
+src/features/semantic-graph.slice/centralized-tag/_events.ts
+src/features/semantic-graph.slice/centralized-tag/index.ts
 src/features/semantic-graph.slice/centralized-types/index.ts
 src/features/semantic-graph.slice/centralized-utils/semantic-utils.ts
 src/features/semantic-graph.slice/centralized-workflows/tag-lifecycle.workflow.ts
@@ -343,14 +347,13 @@ src/features/semantic-graph.slice/projections/tag-snapshot.slice.ts
 src/features/semantic-graph.slice/proposal-stream/index.ts
 src/features/semantic-graph.slice/subscribers/lifecycle-subscriber.ts
 src/features/semantic-graph.slice/wiki-editor/index.ts
+src/features/shared-kernel/account-contract/account-aggregate.ts
+src/features/shared-kernel/account-contract/account-identity.ts
 src/features/shared-kernel/account-contract/index.ts
+src/features/shared-kernel/account-contract/notification-contract.ts
+src/features/shared-kernel/account-contract/organization-membership.ts
 src/features/shared-kernel/authority-snapshot/index.ts
-src/features/shared-kernel/centralized-tag/_aggregate.ts
-src/features/shared-kernel/centralized-tag/_bus.ts
-src/features/shared-kernel/centralized-tag/_events.ts
-src/features/shared-kernel/centralized-tag/index.ts
 src/features/shared-kernel/command-result-contract/index.ts
-src/features/shared-kernel/constants/index.ts
 src/features/shared-kernel/event-envelope/index.ts
 src/features/shared-kernel/index.ts
 src/features/shared-kernel/infrastructure-ports/index.ts
@@ -358,6 +361,9 @@ src/features/shared-kernel/outbox-contract/index.ts
 src/features/shared-kernel/read-consistency/index.ts
 src/features/shared-kernel/resilience-contract/index.ts
 src/features/shared-kernel/schedule-contract/index.ts
+src/features/shared-kernel/schedule-contract/location.ts
+src/features/shared-kernel/schedule-contract/schedule-item.ts
+src/features/shared-kernel/schedule-contract/status.ts
 src/features/shared-kernel/semantic-primitives/index.ts
 src/features/shared-kernel/skill-tier/index.ts
 src/features/shared-kernel/staleness-contract/index.ts
@@ -474,6 +480,7 @@ src/features/workspace.slice/business.workflow/_aggregate.ts
 src/features/workspace.slice/business.workflow/_issue-handler.ts
 src/features/workspace.slice/business.workflow/_persistence.ts
 src/features/workspace.slice/business.workflow/_stage-transition.ts
+src/features/workspace.slice/business.workflow/_workflow.constants.ts
 src/features/workspace.slice/business.workflow/index.ts
 src/features/workspace.slice/core.event-bus/_bus.ts
 src/features/workspace.slice/core.event-bus/_context.ts
@@ -2944,14 +2951,14 @@ function computeRelevanceScore(entry: SemanticIndexEntry, terms: string[]): numb
 
 ## File: src/features/semantic-graph.slice/centralized-tag/_actions.ts
 ```typescript
-import { commandSuccess, commandFailureFrom, publishTagEvent, buildIdempotencyKey } from '@/features/shared-kernel';
+import { commandSuccess, commandFailureFrom } from '@/features/shared-kernel/command-result-contract';
+import { buildIdempotencyKey, type DlqTier } from '@/features/shared-kernel/outbox-contract';
+import type { TagCategory } from '@/features/shared-kernel/tag-authority';
 import type {
   CommandResult,
-  CentralizedTagEntry,
-  TagDeleteRule,
-  TagCategory,
-  DlqTier,
-} from '@/features/shared-kernel';
+} from '@/features/shared-kernel/command-result-contract';
+import type { CentralizedTagEntry, TagDeleteRule } from './_contract';
+import { publishTagEvent } from './_bus';
 import { Timestamp, getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   setDocument,
@@ -2992,118 +2999,9 @@ export async function deleteTag(
 export async function getTag(tagSlug: string): Promise<CentralizedTagEntry | null>
 ```
 
-## File: src/features/shared-kernel/account-contract/index.ts
+## File: src/features/semantic-graph.slice/centralized-tag/_bus.ts
 ```typescript
-import type { Timestamp } from '@/shared/ports'
-import type { SkillGrant } from '../skill-tier'
-export type AccountType = 'user' | 'organization'
-export type OrganizationRole = 'Owner' | 'Admin' | 'Member' | 'Guest'
-export type Presence = 'active' | 'away' | 'offline'
-export type InviteState = 'pending' | 'accepted' | 'expired'
-export type NotificationType = 'info' | 'alert' | 'success'
-export interface Account {
-  id: string
-  name: string
-  accountType: AccountType
-  email?: string
-  photoURL?: string
-  bio?: string
-  achievements?: string[]
-  expertiseBadges?: ExpertiseBadge[]
-  skillGrants?: SkillGrant[]
-  wallet?: Wallet
-  description?: string
-  ownerId?: string
-  role?: OrganizationRole
-  theme?: ThemeConfig
-  members?: MemberReference[]
-  memberIds?: string[]
-  teams?: Team[]
-  createdAt?: Timestamp
-}
-export interface MemberReference {
-  id: string
-  name: string
-  email: string
-  role: OrganizationRole
-  presence: Presence
-  isExternal?: boolean
-  expiryDate?: Timestamp
-  skillGrants?: SkillGrant[]
-}
-export interface Team {
-  id: string
-  name: string
-  description: string
-  type: 'internal' | 'external'
-  memberIds: string[]
-}
-export interface ThemeConfig {
-  primary: string
-  background: string
-  accent: string
-}
-export interface Wallet {
-  balance: number
-}
-export interface ExpertiseBadge {
-  id: string
-  name: string
-  icon?: string
-}
-export interface Notification {
-  id: string
-  title: string
-  message: string
-  type: NotificationType
-  read: boolean
-  timestamp: number
-}
-export interface PartnerInvite {
-  id: string
-  email: string
-  teamId: string
-  role: OrganizationRole
-  inviteState: InviteState
-  invitedAt: Timestamp
-  protocol: string
-}
-```
-
-## File: src/features/shared-kernel/authority-snapshot/index.ts
-```typescript
-export interface AuthoritySnapshot {
-  readonly subjectId: string;
-  readonly roles: readonly string[];
-  readonly permissions: readonly string[];
-  readonly snapshotAt: string;
-  readonly readModelVersion: number;
-}
-export interface ImplementsAuthoritySnapshotContract {
-  readonly implementsAuthoritySnapshot: true;
-}
-```
-
-## File: src/features/shared-kernel/centralized-tag/_aggregate.ts
-```typescript
-import type { TagCategory } from '../tag-authority';
-export type TagDeleteRule = 'allow' | 'block-if-referenced';
-export interface CentralizedTagEntry {
-  tagSlug: string;
-  label: string;
-  category: TagCategory;
-  deprecatedAt?: string;
-  replacedByTagSlug?: string;
-  deleteRule: TagDeleteRule;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
-## File: src/features/shared-kernel/centralized-tag/_bus.ts
-```typescript
-import type { ImplementsEventEnvelopeContract } from '../event-envelope';
+import type { ImplementsEventEnvelopeContract } from '@/features/shared-kernel/event-envelope';
 import type { TagLifecycleEventPayloadMap, TagLifecycleEventKey } from './_events';
 type TagEventHandler<K extends TagLifecycleEventKey> = (
   payload: TagLifecycleEventPayloadMap[K]
@@ -3122,14 +3020,153 @@ export function publishTagEvent<K extends TagLifecycleEventKey>(
 ): void
 ```
 
-## File: src/features/shared-kernel/centralized-tag/_events.ts
+## File: src/features/semantic-graph.slice/centralized-tag/_contract.ts
+```typescript
+import type { TagCategory } from '@/features/shared-kernel/tag-authority';
+export type TagDeleteRule = 'allow' | 'block-if-referenced';
+export interface CentralizedTagEntry {
+  tagSlug: string;
+  label: string;
+  category: TagCategory;
+  deprecatedAt?: string;
+  replacedByTagSlug?: string;
+  deleteRule: TagDeleteRule;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+## File: src/features/semantic-graph.slice/centralized-tag/_events.ts
+```typescript
+import type {
+  TagCreatedPayload,
+  TagUpdatedPayload,
+  TagDeprecatedPayload,
+  TagDeletedPayload,
+  TagLifecycleEventPayloadMap,
+  TagLifecycleEventKey,
+} from '@/features/shared-kernel/tag-authority';
+```
+
+## File: src/features/semantic-graph.slice/centralized-tag/index.ts
 ```typescript
 
 ```
 
-## File: src/features/shared-kernel/centralized-tag/index.ts
+## File: src/features/shared-kernel/account-contract/account-aggregate.ts
+```typescript
+import type { Timestamp } from '@/shared/ports';
+import type { SkillGrant } from '../skill-tier';
+import type { AccountType, OrganizationRole } from './account-identity';
+import type { MemberReference, Team } from './organization-membership';
+export interface ThemeConfig {
+  primary: string;
+  background: string;
+  accent: string;
+}
+export interface Wallet {
+  balance: number;
+}
+export interface ExpertiseBadge {
+  id: string;
+  name: string;
+  icon?: string;
+}
+export interface Account {
+  id: string;
+  name: string;
+  accountType: AccountType;
+  email?: string;
+  photoURL?: string;
+  bio?: string;
+  achievements?: string[];
+  expertiseBadges?: ExpertiseBadge[];
+  skillGrants?: SkillGrant[];
+  wallet?: Wallet;
+  description?: string;
+  ownerId?: string;
+  role?: OrganizationRole;
+  theme?: ThemeConfig;
+  members?: MemberReference[];
+  memberIds?: string[];
+  teams?: Team[];
+  createdAt?: Timestamp;
+}
+```
+
+## File: src/features/shared-kernel/account-contract/account-identity.ts
+```typescript
+export type AccountType = 'user' | 'organization';
+export type OrganizationRole = 'Owner' | 'Admin' | 'Member' | 'Guest';
+export type Presence = 'active' | 'away' | 'offline';
+export type InviteState = 'pending' | 'accepted' | 'expired';
+export type NotificationType = 'info' | 'alert' | 'success';
+```
+
+## File: src/features/shared-kernel/account-contract/index.ts
 ```typescript
 
+```
+
+## File: src/features/shared-kernel/account-contract/notification-contract.ts
+```typescript
+import type { NotificationType } from './account-identity';
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: NotificationType;
+  read: boolean;
+  timestamp: number;
+}
+```
+
+## File: src/features/shared-kernel/account-contract/organization-membership.ts
+```typescript
+import type { Timestamp } from '@/shared/ports';
+import type { SkillGrant } from '../skill-tier';
+import type { InviteState, OrganizationRole, Presence } from './account-identity';
+export interface MemberReference {
+  id: string;
+  name: string;
+  email: string;
+  role: OrganizationRole;
+  presence: Presence;
+  isExternal?: boolean;
+  expiryDate?: Timestamp;
+  skillGrants?: SkillGrant[];
+}
+export interface Team {
+  id: string;
+  name: string;
+  description: string;
+  type: 'internal' | 'external';
+  memberIds: string[];
+}
+export interface PartnerInvite {
+  id: string;
+  email: string;
+  teamId: string;
+  role: OrganizationRole;
+  inviteState: InviteState;
+  invitedAt: Timestamp;
+  protocol: string;
+}
+```
+
+## File: src/features/shared-kernel/authority-snapshot/index.ts
+```typescript
+export interface AuthoritySnapshot {
+  readonly subjectId: string;
+  readonly roles: readonly string[];
+  readonly permissions: readonly string[];
+  readonly snapshotAt: string;
+  readonly readModelVersion: number;
+}
+export interface ImplementsAuthoritySnapshotContract {
+  readonly implementsAuthoritySnapshot: true;
+}
 ```
 
 ## File: src/features/shared-kernel/command-result-contract/index.ts
@@ -3156,13 +3193,6 @@ export function commandFailureFrom(
   message: string,
   context?: Record<string, unknown>,
 ): CommandFailure
-```
-
-## File: src/features/shared-kernel/constants/index.ts
-```typescript
-export type WorkflowStatus = (typeof WorkflowStatusValues)[number];
-⋮----
-export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 ```
 
 ## File: src/features/shared-kernel/event-envelope/index.ts
@@ -3254,6 +3284,53 @@ export interface ResilienceContract {
 export interface ImplementsResilienceContract {
   readonly implementsResilienceContract: true;
 }
+```
+
+## File: src/features/shared-kernel/schedule-contract/location.ts
+```typescript
+export interface Location {
+  building?: string;
+  floor?: string;
+  room?: string;
+  description: string;
+}
+```
+
+## File: src/features/shared-kernel/schedule-contract/schedule-item.ts
+```typescript
+import type { Timestamp } from '@/shared/ports';
+import type { SkillRequirement } from '@/features/shared-kernel/skill-tier';
+import type { Location } from './location';
+import type { ScheduleStatus, ScheduleTemporalKind } from './status';
+export interface ScheduleItem {
+  id: string;
+  accountId: string;
+  workspaceId: string;
+  workspaceName?: string;
+  title: string;
+  description?: string;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+  startDate: Timestamp;
+  endDate: Timestamp;
+  temporalKind?: ScheduleTemporalKind;
+  status: ScheduleStatus;
+  originType: 'MANUAL' | 'TASK_AUTOMATION';
+  originTaskId?: string;
+  assigneeIds: string[];
+  location?: Location;
+  locationId?: string;
+  requiredSkills?: SkillRequirement[];
+  proposedBy?: string;
+  version?: number;
+  traceId?: string;
+}
+```
+
+## File: src/features/shared-kernel/schedule-contract/status.ts
+```typescript
+export type ScheduleStatus = 'PROPOSAL' | 'OFFICIAL' | 'REJECTED' | 'COMPLETED';
+export type ScheduleTemporalKind = 'point' | 'range' | 'allDay';
 ```
 
 ## File: src/features/shared-kernel/semantic-primitives/index.ts
@@ -4360,6 +4437,13 @@ export async function listWorkflowStates(
 ): Promise<WorkflowAggregateState[]>
 ```
 
+## File: src/features/workspace.slice/business.workflow/_workflow.constants.ts
+```typescript
+export type WorkflowStatus = (typeof WorkflowStatusValues)[number];
+⋮----
+export type WorkflowErrorCode = (typeof WorkflowErrorCodes)[keyof typeof WorkflowErrorCodes];
+```
+
 ## File: src/features/workspace.slice/core.event-bus/_bus.ts
 ```typescript
 import { recordEventPublished } from "@/features/observability"
@@ -4455,6 +4539,21 @@ interface CreateWorkspaceDialogProps {
 const onCreate = async () =>
 ```
 
+## File: src/features/workspace.slice/core/_components/dashboard-view.tsx
+```typescript
+import { User as UserIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useI18n } from "@/config/i18n/i18n-provider"
+import { PermissionTree } from "@/features/account.slice"
+import { AccountGrid } from "@/features/organization.slice"
+import { useAuth } from "@/shared/app-providers/auth-provider"
+import { Badge } from "@/shared/shadcn-ui/badge"
+import { PageHeader } from "@/shared/ui/page-header"
+import { useApp } from "../_hooks/use-app"
+import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
+import { WorkspaceList } from "./workspace-list"
+```
+
 ## File: src/features/workspace.slice/core/_components/shell/dashboard-sidebar.tsx
 ```typescript
 import { usePathname } from 'next/navigation';
@@ -4479,6 +4578,49 @@ import { AccountSwitcher } from "./account-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { NavWorkspaces } from "./nav-workspaces";
+```
+
+## File: src/features/workspace.slice/core/_components/shell/nav-main.tsx
+```typescript
+import {
+  LayoutDashboard,
+  Layers,
+  FolderTree,
+  ChevronRight,
+  Users,
+  Globe,
+  Grid3X3,
+  Calendar,
+  MessageSquare,
+  History,
+} from "lucide-react";
+import Link from "next/link";
+import { ROUTES } from "@/shared/constants/routes";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shared/shadcn-ui/collapsible";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarMenuButton,
+} from "@/shared/shadcn-ui/sidebar";
+interface NavMainProps {
+  pathname: string;
+  isOrganizationAccount: boolean;
+  t: (key: string) => string;
+}
+⋮----
+const isActive = (path: string)
+const isPartiallyActive = (path: string)
+⋮----
+<SidebarMenuButton asChild isActive=
+⋮----
+<SidebarMenuSubButton asChild isActive=
 ```
 
 ## File: src/features/workspace.slice/core/_components/stat-cards.tsx
@@ -5300,11 +5442,6 @@ service firebase.storage {
     }
   }
 }
-```
-
-## File: src/shared-kernel/index.ts
-```typescript
-
 ```
 
 ## File: src/shared/app-providers/app-context.tsx
@@ -7779,7 +7916,7 @@ export function registerOrganizationFunnel(): () => void
 
 ## File: src/features/projection.bus/_tag-funnel.ts
 ```typescript
-import { onTagEvent } from '@/features/shared-kernel';
+import { onTagEvent } from '@/features/semantic-graph.slice';
 import {
   handleTagDeletedForPool,
   handleTagDeprecatedForPool,
@@ -8585,39 +8722,7 @@ function _buildLifecycleMap(): Map<string, TagLifecycleRecord>
 
 ## File: src/features/shared-kernel/schedule-contract/index.ts
 ```typescript
-import type { SkillRequirement } from '@/features/shared-kernel/skill-tier';
-import type { Timestamp } from '@/shared/ports';
-export interface Location {
-  building?: string;
-  floor?: string;
-  room?: string;
-  description: string;
-}
-export type ScheduleStatus = 'PROPOSAL' | 'OFFICIAL' | 'REJECTED' | 'COMPLETED';
-export type ScheduleTemporalKind = 'point' | 'range' | 'allDay';
-export interface ScheduleItem {
-  id: string;
-  accountId: string;
-  workspaceId: string;
-  workspaceName?: string;
-  title: string;
-  description?: string;
-  createdAt: Timestamp;
-  updatedAt?: Timestamp;
-  startDate: Timestamp;
-  endDate: Timestamp;
-  temporalKind?: ScheduleTemporalKind;
-  status: ScheduleStatus;
-  originType: 'MANUAL' | 'TASK_AUTOMATION';
-  originTaskId?: string;
-  assigneeIds: string[];
-  location?: Location;
-  locationId?: string;
-  requiredSkills?: SkillRequirement[];
-  proposedBy?: string;
-  version?: number;
-  traceId?: string;
-}
+
 ```
 
 ## File: src/features/timelineing.slice/_actions/index.ts
@@ -9703,21 +9808,6 @@ const accountReducer = (state: AccountState, action: Action): AccountState =>
 export const AccountProvider = (
 ```
 
-## File: src/features/workspace.slice/core/_components/dashboard-view.tsx
-```typescript
-import { User as UserIcon } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
-import { useI18n } from "@/config/i18n/i18n-provider"
-import { PermissionTree } from "@/features/account.slice"
-import { AccountGrid } from "@/features/organization.slice"
-import { useAuth } from "@/shared/app-providers/auth-provider"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { PageHeader } from "@/shared/ui/page-header"
-import { useApp } from "../_hooks/use-app"
-import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
-import { WorkspaceList } from "./workspace-list"
-```
-
 ## File: src/features/workspace.slice/core/_components/shell/account-create-dialog.tsx
 ```typescript
 import { Loader2 } from "lucide-react"
@@ -9816,49 +9906,6 @@ function usePageBreadcrumbs(pathname: string)
 const down = (e: KeyboardEvent) =>
 ⋮----
 const handleSwitchOrganization = (organization: Account) =>
-```
-
-## File: src/features/workspace.slice/core/_components/shell/nav-main.tsx
-```typescript
-import {
-  LayoutDashboard,
-  Layers,
-  FolderTree,
-  ChevronRight,
-  Users,
-  Globe,
-  Grid3X3,
-  Calendar,
-  MessageSquare,
-  History,
-} from "lucide-react";
-import Link from "next/link";
-import { ROUTES } from "@/shared/constants/routes";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shared/shadcn-ui/collapsible";
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarMenuButton,
-} from "@/shared/shadcn-ui/sidebar";
-interface NavMainProps {
-  pathname: string;
-  isOrganizationAccount: boolean;
-  t: (key: string) => string;
-}
-⋮----
-const isActive = (path: string)
-const isPartiallyActive = (path: string)
-⋮----
-<SidebarMenuButton asChild isActive=
-⋮----
-<SidebarMenuSubButton asChild isActive=
 ```
 
 ## File: src/features/workspace.slice/core/_components/shell/nav-user.tsx
@@ -10878,6 +10925,11 @@ type PortalLayoutProps = {
   children: ReactNode;
 };
 export function PortalLayout(
+```
+
+## File: src/shared-kernel/index.ts
+```typescript
+
 ```
 
 ## File: src/shared/app-providers/_queries.ts

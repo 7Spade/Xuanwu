@@ -12,7 +12,6 @@
  * │  authority-snapshot    SK_AUTH_SNAP            Permission snapshot contract  │
  * │  skill-tier            SK_SKILL_TIER [#12]    Tier computation + staffing   │
  * │  command-result-contract SK_CMD_RESULT [R4]   Command success/failure union │
- * │  constants                                    WorkflowStatus + ErrorCodes   │
  * ├─ ⚙️ Infrastructure Behaviour Contracts ────────────────────────────────────┤
  * │  outbox-contract       SK_OUTBOX [S1]         At-least-once delivery        │
  * │  version-guard         SK_VERSION_GUARD [S2]  Monotonic projection writes   │
@@ -91,13 +90,6 @@ export {
   commandFailureFrom,
 } from './command-result-contract';
 
-// Cross-BC constants [R6]
-export {
-  WorkflowStatusValues,
-  ErrorCodes,
-} from './constants';
-export type { WorkflowStatus, ErrorCode } from './constants';
-
 // ─── ⚙️ Infrastructure Behaviour Contracts ────────────────────────────────────
 
 // SK_OUTBOX [S1]
@@ -139,7 +131,7 @@ export { TOKEN_REFRESH_SIGNAL, CLIENT_TOKEN_REFRESH_OBLIGATION } from './token-r
 
 // ─── 🏷️ Tag Authority Center [#A6][#17][D21] ──────────────────────────────────
 
-export { TAG_CATEGORIES, tagSlugRef, onTagEvent } from './tag-authority';
+export { TAG_CATEGORIES, tagSlugRef } from './tag-authority';
 export type {
   TagCategory,
   TagSlugRef,
@@ -152,14 +144,6 @@ export type {
   ITagReadPort,
   ImplementsTagStaleGuard,
 } from './tag-authority';
-
-// ─── 🏷️ Centralized Tag Aggregate [#A6][#17][D8][D21] ────────────────────────
-// CentralizedTagEntry and publishTagEvent are needed by the sole write authority
-// (semantic-graph.slice/centralized-tag/_actions.ts). Export here so consumers
-// satisfy D7 (import via slice barrel, not sub-path).
-
-export { publishTagEvent } from './centralized-tag';
-export type { CentralizedTagEntry, TagDeleteRule } from './centralized-tag';
 
 // ─── 🔍 Semantic Primitives (VS8/VS9/VS7) [D19][D21][D26] ────────────────────
 

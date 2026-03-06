@@ -174,7 +174,17 @@ export {
   deleteTag,
   getTag,
 } from './centralized-tag/_actions';
-export type { CentralizedTagEntry, TagDeleteRule } from '@/features/shared-kernel';
+export { onTagEvent, publishTagEvent } from './centralized-tag';
+export type {
+  CentralizedTagEntry,
+  TagDeleteRule,
+  TagLifecycleEventPayloadMap,
+  TagLifecycleEventKey,
+  TagCreatedPayload,
+  TagUpdatedPayload,
+  TagDeprecatedPayload,
+  TagDeletedPayload,
+} from './centralized-tag';
 
 // =================================================================
 // L5 Blood-Brain Barrier — SemanticGuard [D21-H D21-K]

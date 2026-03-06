@@ -19,5 +19,14 @@ export {
   listWorkflowStates,
 } from './_persistence';
 
+export {
+  WorkflowStatusValues,
+  WorkflowErrorCodes,
+} from './_workflow.constants';
+export type {
+  WorkflowStatus,
+  WorkflowErrorCode,
+} from './_workflow.constants';
+
 /** [R6] B-track workflow handlers — issue create/resolve mutate blockedBy set. */
 export { handleIssueCreatedForWorkflow, handleIssueResolvedForWorkflow } from './_issue-handler';

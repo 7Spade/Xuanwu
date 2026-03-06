@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { onTagEvent } from '@/features/shared-kernel';
+import { onTagEvent } from '@/features/semantic-graph.slice';
 import {
   handleTagDeletedForPool,
   handleTagDeprecatedForPool,

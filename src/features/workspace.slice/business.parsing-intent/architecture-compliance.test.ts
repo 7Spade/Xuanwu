@@ -397,27 +397,27 @@ describe('[Architecture] VS5×VS6 integration compliance', () => {
       });
     }
 
-    it('shared-kernel/centralized-tag/_aggregate.ts has no Firestore imports [D8]', () => {
+    it('semantic-graph.slice/centralized-tag/_contract.ts has no Firestore imports [D8]', () => {
       const aggPath = path.join(
-        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_aggregate.ts'
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_contract.ts'
       );
       const content = fs.readFileSync(aggPath, 'utf8');
       expect(content).not.toMatch(/from ['"]@\/shared\/infra/);
       expect(content).not.toMatch(/firestore/);
     });
 
-    it('shared-kernel/centralized-tag/_aggregate.ts has no async functions [D8]', () => {
+    it('semantic-graph.slice/centralized-tag/_contract.ts has no async functions [D8]', () => {
       const aggPath = path.join(
-        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_aggregate.ts'
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_contract.ts'
       );
       const content = fs.readFileSync(aggPath, 'utf8');
       expect(content).not.toMatch(/^export async function/m);
       expect(content).not.toMatch(/^async function/m);
     });
 
-    it('shared-kernel/centralized-tag/_bus.ts publishTagEvent is synchronous [D8]', () => {
+    it('semantic-graph.slice/centralized-tag/_bus.ts publishTagEvent is synchronous [D8]', () => {
       const busPath = path.join(
-        SRC_ROOT, 'features', 'shared-kernel', 'centralized-tag', '_bus.ts'
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_bus.ts'
       );
       const content = fs.readFileSync(busPath, 'utf8');
       // Must not be `async function publishTagEvent`
