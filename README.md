@@ -11,9 +11,12 @@
 * **src/app** → Next.js App Router, routing, layouts, pages. Only composition, no business logic or runtime wiring.
 * **src/app-runtime** → Application runtime layer. Holds providers, runtime hooks, AI flows, and dependency wiring. Initializes SDKs and injects context. No domain logic.
 * **src/config** → Static configuration: environment variables, feature flags, i18n, themes. Pure data, no runtime side effects.
+* **src/shared-kernel** → VS0 global contract center (data contracts, infra contracts, infrastructure ports). Canonical cross-slice contract entry.
 * **src/features** → Business domain slices, rules, feature-specific logic. Depends on shared contracts and app-runtime, never on infra directly.
 * **src/shared** → Contracts, interfaces, constants, pure utilities, shared types. No runtime side effects or business logic.
 * **src/shared-infra** → External system adapters: Firebase, APIs, storage, messaging. Implements shared contracts. Features and app-runtime may depend on this, never the other way around.
+
+> Legacy compatibility note: `src/features/shared-kernel` is a historical path kept for gradual migration. New code should import from `@/shared-kernel`.
 
 ---
 
@@ -50,7 +53,7 @@ shared-infra
 
 # One-Line Summary
 
-Each folder has a single responsibility: app = UI, app-runtime = runtime wiring, config = static config, features = business logic, shared = contracts/utils, shared-infra = external adapters.
+Each folder has a single responsibility: app = UI, app-runtime = runtime wiring, config = static config, shared-kernel = global contracts, features = business logic, shared = contracts/utils, shared-infra = external adapters.
 
 repomix --skill-generate xuanwu-skill --skill-output ./skills --force
 npx repomix --config repomix.config.ts

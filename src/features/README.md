@@ -123,7 +123,10 @@ Slices communicate **only** via the Integration Event Router (IER) lane system [
 
 ## Shared-Kernel Contracts
 
-`src/features/shared-kernel` contains **cross-cutting primitives** that all slices depend on. It is not a feature slice — it has no commands or domain logic. It exposes:
+Canonical location is `src/shared-kernel` (VS0/L1 global contract center).
+`src/features/shared-kernel` is kept as a **legacy compatibility path** during migration.
+
+It exposes:
 
 | Export | Purpose |
 |--------|---------|
@@ -142,7 +145,8 @@ Slices communicate **only** via the Integration Event Router (IER) lane system [
 |-----------|------|
 | ✅ Allowed | `src/features/{slice}` → `src/shared` |
 | ✅ Allowed | `src/features/{slice}` → `src/config` |
-| ✅ Allowed | `src/features/{slice}` → `src/features/shared-kernel` |
+| ✅ Allowed | `src/features/{slice}` → `src/shared-kernel` (canonical) |
+| ✅ Allowed | `src/features/{slice}` → `src/features/shared-kernel` (legacy compatibility) |
 | ✅ Allowed | `src/features/{slice}` → other slice's `index.ts` public API |
 | ❌ Forbidden | Direct private file imports across slices |
 | ❌ Forbidden | Any feature slice importing from `firebase/*` directly [D24] |

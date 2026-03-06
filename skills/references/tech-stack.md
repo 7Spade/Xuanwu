@@ -72,6 +72,8 @@
 - tailwind-merge (^3.5.0)
 - tailwindcss-animate (^1.0.7)
 - vaul (^1.1.2)
+- vis-data (^8.0.3)
+- vis-timeline (^8.5.0)
 - xstate (^5.28.0)
 - zod (^3.25.76)
 - zustand (^5.0.3)
@@ -105,5 +107,5 @@
 
 ## Configuration Files
 
-- package.json
 - tsconfig.json
+- package.json
