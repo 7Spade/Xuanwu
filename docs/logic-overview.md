@@ -652,7 +652,7 @@ W_SCHED -.->|"tagSlug T4"| TAG_RO
 W_SCHED -.->|"人力需求契約"| SK_SKILL_REQ
 
 %% ── VS6 Scheduling ──
-subgraph VS6["🟨 VS6 · Scheduling Slice（排班協作）"]
+subgraph VS6["🟨 VS6 · Workforce Scheduling Slice（排班協作）"]
     direction TB
 
     subgraph VS6_DOM["⚙️ Schedule Domain"]
