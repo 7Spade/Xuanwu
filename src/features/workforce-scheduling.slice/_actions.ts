@@ -12,6 +12,7 @@ export {
   approveScheduleItemWithMember,
   updateScheduleItemStatus,
   updateScheduleItemDateRange,
+  updateTimelineItemDateRange,
   manualAssignScheduleMember,
   cancelScheduleProposalAction,
   completeOrgScheduleAction,
