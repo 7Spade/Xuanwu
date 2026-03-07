@@ -11,4 +11,4 @@ export {
   registerWorkspaceFunnel,
   registerOrganizationFunnel,
   replayWorkspaceProjections,
-} from '@/features/projection.bus';
+} from '@/shared-infra/projection.bus';

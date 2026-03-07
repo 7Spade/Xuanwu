@@ -125,7 +125,7 @@ export {
   applyDemandAssignmentCancelled,
   applyDemandProposalCancelled,
   applyDemandAssignRejected,
-} from '@/features/projection.bus';
+} from '@/shared-infra/projection.bus';
 
 // AccountScheduleProjection types — read model types for scheduling queries.
 // Write-side projection logic lives in projection.bus/account-schedule/.
