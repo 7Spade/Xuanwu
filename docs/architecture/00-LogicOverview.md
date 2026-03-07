@@ -54,6 +54,11 @@
 %%    D21-K=語義衝突裁決 D21-S=同義詞重定向 D21-T=命名共識律    D21-U=禁止重複定義
 %%    D21-V=提案鎖定機制 D21-W=跨組織透明性 D21-X=語義自動激發
 %%    D22=強型別引用   D27-A=語義感知路由
+%%    D28=applyVersionGuard-enforcement    D29=skill-tier-capability-contract
+%%    D30=cost-semantic-delegation         D31=semantic-graph-access-restriction
+%%    R101=no-direct-firebase-import       R102=acl-error-transform
+%%    R103=traceid-mandatory-propagation   R104=version-guard-automation
+%%    R105=query-gateway-authority         R106=tag-semantic-consistency
 %%    P1=IER-lane-priority        P4=eligibility-query   P5=projection-funnel
 %%    T1=tag-lifecycle-sub        T3=eligible-tag-logic  T5=tag-snapshot-readonly
 %%    E2=OrgContextProvisioned    E3=ScheduleAssigned    E5=ws-event-flow   E6=claims-refresh
@@ -95,22 +100,43 @@
 %%  ── 4) Governance Rules（治理與演化）──
 %%    新規則先索引、再實作；優先引用現有契約；未定義語義需先進 VS8 註冊；
 %%    D27 屬 Extension Gate，僅影響 document-parser / finance-routing 變更。
+%%  ── 5) Infra Sink Rationale（基礎設施下沉根因）──
+%%  ┌────────────────┬─────────────────────────────────────┬────────────────────────────────────────────┐
+%%  │ 下沉層         │ 下沉核心原因                         │ 解決的痛點                                  │
+%%  ├────────────────┼─────────────────────────────────────┼────────────────────────────────────────────┤
+%%  │ L8 · Firebase  │ 設計原則③：SDK 初始化與實體鎖定核心  │ 升版或配置變更只改 L8，不須觸碰業務切片      │
+%%  │ Infrastructure │                                     │                                            │
+%%  ├────────────────┼─────────────────────────────────────┼────────────────────────────────────────────┤
+%%  │ L7 · Firebase  │ D24/D25：Ports→Adapters 防腐層       │ 業務切片永不見 QuerySnapshot/setDoc 等 SDK  │
+%%  │ ACL Adapters   │                                     │ 型別；Firebase Error→Domain Error 在此轉換  │
+%%  ├────────────────┼─────────────────────────────────────┼────────────────────────────────────────────┤
+%%  │ L9 · Observa-  │ R8：橫切關注點必須統一               │ traceId 在 Command/Bus/Projection 之間保持  │
+%%  │ bility         │                                     │ 完整鏈路；解決日誌不一致、監控斷鏈問題        │
+%%  ├────────────────┼─────────────────────────────────────┼────────────────────────────────────────────┤
+%%  │ L6 · Query     │ S2/S3：統一讀取契約                  │ 強制執行 Staleness 檢查與 T5 投影讀取限制；  │
+%%  │ Gateway        │                                     │ 解決各切片私自下 Query、無視版本守衛問題      │
+%%  └────────────────┴─────────────────────────────────────┴────────────────────────────────────────────┘
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  FINAL REVIEW BASELINE（最終態審查基準 · Team Gate）
 %%  ── Scope（本輪必審）──
 %%    1) VS0~VS8：每個切片必須有明確層位（L1/L3）與單一職責
-%%    2) D1~D26：列為 Mandatory Gate（PR 必須全通過）
+%%    2) D1~D31：列為 Mandatory Gate（PR 必須全通過）
+%%       D1~D26 = 核心 Mandatory；D27 = Extension Gate（document-parser/finance-routing 變更時強制）
+%%       D28~D31 = Infra-Sink Gates（投影寫路徑/技能能力/成本語義/語義圖存取 變更時強制）
 %%    3) TE1~TE6：語義引用必須強型別，禁止裸字串 tagSlug
 %%    4) S1~S6：契約與 SLA 僅能引用 SK_* 常數，禁止硬寫
 %%    5) L/R/A：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
+%%    6) R101~R106：Infra 邊界規則 合規（基礎設施下沉後不得迴避 L6/L7/L8/L9）
 %%  ── D27 定位（擴展）──
 %%    D27（成本語義路由）為 Extension Gate；僅在 document-parser / finance-routing 變更時強制審查
 %%  ── No-Smell 定義（可作為 Code Review Checklist）──
 %%    - 無重複定義：同一規則只保留一個主定義，其他位置僅做索引引用
-%%    - 無邊界污染：Feature Slice 不跨邊界 mutate、不直連 firebase/* [D24]
+%%    - 無邊界污染：Feature Slice 不跨邊界 mutate、不直連 firebase/* [D24 R101]
 %%    - 無語義漂移：tag 語義只能透過 TE1~TE6 + VS8 CTA 來源 [D21-1 D22]
-%%    - 無一致性破口：Projection 全量遵守 S2；SLA 全量遵守 S4
+%%    - 無一致性破口：Projection 全量遵守 S2；SLA 全量遵守 S4；寫路徑必須呼叫 applyVersionGuard [D28]
 %%    - 無副作用旁路：通知與搜尋必須經 D26 權威出口
+%%    - 無技術污染：SDK Error 必須在 L7 ACL 層轉換為 Domain Error [R102]
+%%    - 無鏈路斷層：所有下沉層操作必須傳遞 traceId，開發環境缺 traceId 應拋出警告 [R103]
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  KEY INVARIANTS（絕對遵守）:
 %%    [R8]  traceId 在 CBG_ENTRY 注入一次，全鏈唯讀不可覆蓋
@@ -186,6 +212,13 @@
 %%    語義衝突提案禁止繞過 invariant-guard.ts，BBB 擁有最高裁決權 [D21-H D21-K]
 %%    合併提案通過後禁止直接刪除舊標籤，必須轉為 Alias 自動重定向歷史引用 [D21-S]
 %%    用戶新增重複語義標籤時禁止靜默建立，embeddings 必須即時提示相似標籤 [D21-U]
+%%    Projection 寫路徑禁止自訂 aggVersion 比較邏輯，必須統一呼叫 applyVersionGuard() [D28]
+%%    VS3/VS6 禁止硬寫 XP→Tier 門檻，必須呼叫 getTier() from shared.kernel.skill-tier [D29 D12]
+%%    VS5 禁止自行判斷 costItemType，必須委派 VS8._cost-classifier.classifyCostItem() [D30 D27]
+%%    業務切片（VS1~VS6）禁止直接存取 graph/adjacency-list.ts / semantic-edge-store [D31 T5]
+%%    UI 元件禁止繞過 L6 Query Gateway 直讀 L8 Firebase 資料 [R105]
+%%    L7 Adapter 禁止讓業務層暴露 Firebase 原生 Exception，必須在 Adapter 層轉換為 Domain Error [R102]
+%%    任何下沉層操作禁止省略 traceId 傳遞，開發環境必須拋出警告 [R103 D10 R8]
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
 
 flowchart TD
@@ -1127,8 +1160,15 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  FIREBASE 隔離規則 與 Cross-cutting Authority 治理 [D24~D26]
 %%  （詳見 UNIFIED DEVELOPMENT RULES 完整定義）
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  UNIFIED DEVELOPMENT RULES [D1~D26 Mandatory + D27 Extension]
-%%  ── 規則分層：Hard Invariants (D1~D20 核心不變量) / Semantic Governance D21(D21-1~D21-10+D21-A~D21-X)/D22~D23 / Infrastructure (D24~D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) ──
+%%  UNIFIED DEVELOPMENT RULES [D1~D31 Mandatory + D27 Extension + R101~R106 Infra-Boundary]
+%%  ── 規則分層 ──
+%%    Hard Invariants    : D1~D20（核心不變量）
+%%    Semantic Governance: D21（D21-1~D21-10 + D21-A~D21-X）/ D22~D23
+%%    Infrastructure     : D24~D25（Firebase 隔離）
+%%    Authority Gov.     : D26（跨切片權威出口）
+%%    Cost Semantic Ext. : D27（成本語義路由）
+%%    Infra-Sink Gates   : D28~D31（投影寫路徑 / 技能能力 / 成本語義 / 語義圖存取）
+%%    Infra-Boundary     : R101~R106（L6/L7/L8/L9 邊界規則）
 %%  ── 基礎路徑約束（D1~D12）──
 %%  D1  事件傳遞只透過 infra.outbox-relay；domain slice 禁止直接 import infra.event-router
 %%  D2  跨切片引用：import from '@/features/{slice}/index' only；_*.ts 為私有
@@ -1236,4 +1276,72 @@ class NOTIF_HUB_SVC crossCutAuth
 %%      [Timeline] overlap 判定與 resource grouping 必須在 L5 投影層完成，前端僅渲染
 %%      禁止 VS5 document-parser 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
 %%      禁止 Layer-3 Semantic Router 繞過 costItemType 直接物化非 EXECUTABLE 項目
+%%  ── 基礎設施下沉閘門（D28~D31 · Infra-Sink Gates）──
+%%  D28 投影寫路徑版本守衛（Projection Write Path Version Guard）：
+%%      所有 Projection 寫路徑必須呼叫 applyVersionGuard(event.aggVersion, view.lastVersion)；
+%%      禁止在業務切片中編寫自訂的 aggVersion 比較邏輯；
+%%      applyVersionGuard 是 SK_VERSION_GUARD [S2] 唯一實作點。
+%%      作用範圍：L5 Projection Bus 所有投影更新函式
+%%      違規症狀：各切片各自實作 `if (event.aggVersion > view.lastVersion)` 判斷
+%%  D29 技能能力真相統一（Skill Capability Single-Source）：
+%%      VS3 技能能力等級判斷必須呼叫 getTier(xp) from shared.kernel.skill-tier [D12]；
+%%      VS6 排班資格檢查必須引用 SK_SKILL_REQ(tagSlug × minXp) 作為排班資格契約；
+%%      禁止在業務切片中硬寫 tier 門檻數值或自行換算 XP→Tier；
+%%      getTier() 為純函式（[D8] 禁止 async / Firestore / 副作用）[#12]
+%%  D30 成本語義判斷委派（Cost-Semantic Judgement Delegation）：
+%%      VS5 Workspace 的所有成本語義判斷必須委派給 VS8._cost-classifier.classifyCostItem()；
+%%      任務物化閘門必須委派給 shouldMaterializeAsTask() [D27 #A14]；
+%%      禁止 VS5 自行判斷 costItemType 或繞過 shouldMaterializeAsTask() 直接物化；
+%%      classifyCostItem 與 shouldMaterializeAsTask 是成本語義的唯一決策點
+%%  D31 語義圖存取限制（Semantic Graph Access Restriction）：
+%%      業務切片（VS1~VS6）禁止直接存取 graph/adjacency-list.ts 或 semantic-edge-store；
+%%      所有語義查詢必須透過訂閱 projection/tag-snapshot.slice.ts [T5 D21-7]；
+%%      DocumentParser UI 視覺屬性（icon/color/label）必須從 tag-snapshot 投影讀取，不得由分類器硬編碼；
+%%      全域搜尋必須透過 L6 Query Gateway 的 tag-snapshot 路由進入 VS8 語義索引 [D26 #A12]
+%%  ── 基礎設施邊界規則（R101~R106 · Infra-Boundary Rules）──
+%%  R101 禁止越權依賴（No Direct Firebase Import）：
+%%       src/features/*（業務切片）嚴禁直接 import 來自 firebase/* 的任何 SDK 函式；
+%%       所有數據存取必須透過 shared/infra 提供的 SK_PORTS 介面 [D24 D25]；
+%%       違規數量：目前追蹤中 43 個 D24 遷移目標，禁止新增
+%%  R102 ACL 轉換義務（ACL Error Transform）：
+%%       L7 Adapter 必須負責將 Firebase 低階 Error（如 auth/user-not-found）轉換為 Domain Error（如 UserNotFoundError）；
+%%       業務層禁止處理 Firebase 原生 Exception；
+%%       轉換必須發生在 shared/infra/{auth|firestore|messaging|storage}/ 的對應 Adapter 內
+%%  R103 TraceId 強制傳遞（TraceId Mandatory Propagation）：
+%%       所有下沉層（L6/L7/L8/L9）的操作必須接收並記錄來自 L9 的 traceId；
+%%       traceId 僅在 CBG_ENTRY 設定（D10），其他地方唯讀 [R8]；
+%%       若操作不帶 traceId，開發環境必須拋出警告（production 降級為 error log）
+%%  R104 版本守衛自動化（Version Guard Automation）：
+%%       L7 Adapter 在執行 write 操作時，必須自動注入 applyVersionGuard 邏輯 [D28 S2]；
+%%       禁止在業務切片中手動編寫版本檢查；
+%%       aggregateVersion 單調遞增驗證必須在 FirestoreAdapter 統一執行
+%%  R105 Query Gateway 權威性（QGWAY Authority）：
+%%       所有 UI 元件禁止繞過 L6 直接讀取 L8 Firebase 資料 [L6-Gateway]；
+%%       所有讀取操作必須經過 L6 Query Gateway，並接受 SK_STALENESS_CONTRACT [S4] 過期時間檢查；
+%%       涉及分類標籤的讀取，L6 回傳前必須強制調用 VS8 tag-snapshot 投影確保 icon/color/label SSOT 正確
+%%  R106 標籤語義一致性（Tag Semantic Consistency）：
+%%       L6 Query Gateway 回傳含分類標籤的數據時，必須強制引用 VS8 Semantic Graph 的 tag-snapshot 投影；
+%%       確保 icon/color/label 的 SSOT 來自語義圖而非各切片自行維護 [D21-1 D22 D31]；
+%%       禁止業務切片在自己的 View Model 中儲存或衍生 tagSlug 對應的視覺屬性
+%%  ── 基礎設施內部結構建議（Recommended Infra Layout）──
+%%  shared-kernel 下沉後的標準目錄結構（以 src/shared-kernel/ 為根）：
+%%
+%%    src/shared-kernel/
+%%    ├── domain/            // L1: 介面定義 (Repository Ports, Trace Context, SK_PORTS)
+%%    ├── infra/             // 技術實作層
+%%    │   ├── firebase/      // L8: Firebase SDK 初始化與 Client 實體（SOLE SDK 初始化點）
+%%    │   └── adapters/      // L7: 實作 SK_PORTS 介面的 ACL Adapters [D24 D25 R102]
+%%    │       ├── auth/      //     AuthAdapter → IAuthService
+%%    │       ├── firestore/ //     FirestoreAdapter → IFirestoreRepo [S2 D28 R104]
+%%    │       ├── messaging/ //     FCMAdapter → IMessaging [R8 R103]
+%%    │       └── storage/   //     StorageAdapter → IFileStore
+%%    ├── query/             // L6: Query Gateway 實作 [S2 S3 T5 R105 R106]
+%%    └── obs/               // L9: Observability（Logger, TraceId, DomainMetrics）[R103]
+%%
+%%  遵守準則：
+%%    - infra/firebase/ 僅負責 SDK 初始化，禁止在此目錄包含業務邏輯
+%%    - infra/adapters/ 每個 Adapter 必須完整實作對應 SK_PORTS Port（不得部分實作）
+%%    - infra/adapters/firestore/ FirestoreAdapter 必須內建 applyVersionGuard 與 aggregateVersion 單調遞增驗證 [D28 R104]
+%%    - query/ 所有讀取路徑必須引用 SK_STALENESS_CONTRACT [S4] 並注入 tag-snapshot 語義 [R106]
+%%    - obs/ 提供全鏈路 traceId 傳遞與 DomainMetrics 埋點，僅觀察不產生副作用 [L9 R103]
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
