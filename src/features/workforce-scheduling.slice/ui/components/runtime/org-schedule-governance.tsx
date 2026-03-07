@@ -11,7 +11,7 @@
  *
  * Status mapping:
  *   PROPOSAL   ??å¾…æ ¸??(pending assignment / amber)
- *   OFFICIAL   ??å·²ç¢ºèª?(assigned, can be marked complete / green)
+ *   OFFICIAL   ??å·²ç¢ºï¿½?(assigned, can be marked complete / green)
  *   COMPLETED  ??hidden (completed)
  *   REJECTED   ??hidden (cancelled/rejected)
  *
@@ -44,7 +44,7 @@ import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
  *
  * Shows:
  *   PROPOSAL items  ??assign or cancel (å¾…æ ¸??
- *   OFFICIAL items  ??mark complete (å·²ç¢ºèª? FR-S6)
+ *   OFFICIAL items  ??mark complete (å·²ç¢ºï¿½? FR-S6)
  *   REJECTED/COMPLETED ??hidden
  */
 export function OrgScheduleGovernance() {
@@ -86,8 +86,8 @@ export function OrgScheduleGovernance() {
     return (
       <Empty className="rounded-xl border-muted/40 bg-muted/5 py-12">
         <EmptyHeader>
-          <EmptyTitle>?…é?çµ„ç?å¸³è?</EmptyTitle>
-          <EmptyDescription>çµ„ç?å±¤ç???HR ?’ç?æ²»ç??…åœ¨çµ„ç?å¸³è?ä¸‹å¯?¨ã€?/EmptyDescription>
+          <EmptyTitle>?ï¿½ï¿½?çµ„ï¿½?å¸³ï¿½?</EmptyTitle>
+          <EmptyDescription>çµ„ï¿½?å±¤ï¿½???HR ?ï¿½ï¿½?æ²»ï¿½??ï¿½åœ¨çµ„ï¿½?å¸³ï¿½?ä¸‹å¯?ï¿½ï¿½?</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -97,13 +97,13 @@ export function OrgScheduleGovernance() {
     <div className="space-y-4">
       <PageHeader
         size="compact"
-        title="HR ?’ç?æ²»ç?"
-        description={`å¾…æ ¸??${pending.length} ç­†ãƒ»å·²ç¢ºèª?${confirmed.length} ç­†`}
+        title="HR ?ï¿½ï¿½?æ²»ï¿½?"
+        description={`å¾…æ ¸??${pending.length} ç­†ãƒ»å·²ç¢ºï¿½?${confirmed.length} ç­†`}
       />
 
       <Card className="flex h-full flex-col">
         <CardHeader className="border-b py-3">
-          <CardTitle className="text-sm font-semibold">?æ??‡æ?æ´¾æ???/CardTitle>
+          <CardTitle className="text-sm font-semibold">?ï¿½ï¿½??ï¿½ï¿½?æ´¾ï¿½???</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden p-0">
           <ScrollArea className="h-full">
@@ -112,8 +112,8 @@ export function OrgScheduleGovernance() {
                 <Empty className="rounded-xl border-muted/40 bg-muted/5 py-10">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">??</EmptyMedia>
-                    <EmptyTitle>?®å??¡å??•ç??æ?</EmptyTitle>
-                    <EmptyDescription>?°ç??’ç??æ??ƒå‡º?¾åœ¨?™è£¡ï¼Œä? HR ?‡æ´¾?‡æ ¸?†ã€?/EmptyDescription>
+                    <EmptyTitle>?ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½?</EmptyTitle>
+                    <EmptyDescription>?ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½??ï¿½å‡º?ï¿½åœ¨?ï¿½è£¡ï¼Œï¿½? HR ?ï¿½æ´¾?ï¿½æ ¸?ï¿½ï¿½?</EmptyDescription>
                   </EmptyHeader>
                 </Empty>
               )}
@@ -131,7 +131,7 @@ export function OrgScheduleGovernance() {
             {confirmed.length > 0 && (
               <div className="border-t pt-3">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  å·²ç¢ºèªæ?ç¨????¯æ?è¨˜å???
+                  å·²ç¢ºèªï¿½?ï¿½????ï¿½ï¿½?è¨˜ï¿½???
                 </p>
                 {confirmed.map((item: ScheduleItem) => (
                   <ConfirmedRow

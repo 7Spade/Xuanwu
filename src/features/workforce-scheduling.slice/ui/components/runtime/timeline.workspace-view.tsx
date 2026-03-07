@@ -37,7 +37,7 @@ export function WorkspaceTimeline() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock3 className="size-4" />
-          ä»¥æ??“å??¹å?æª¢è? {workspace.name} ?„æ?ç¨‹è?è¡ç???
+          ä»¥ï¿½??ï¿½ï¿½??ï¿½ï¿½?æª¢ï¿½? {workspace.name} ?ï¿½ï¿½?ç¨‹ï¿½?è¡ï¿½???
         </p>
       </div>
 

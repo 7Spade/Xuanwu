@@ -5,8 +5,8 @@
  * all write operations (approve/reject/assign).
  *
  * Tabs:
- *   - ?’ç??¥æ? (Calendar): unified calendar grid + upcoming/present/history tables
- *   - äººå?ç®¡ç? (Workforce): skill-aware proposal assignment + lifecycle (OrgScheduleGovernance)
+ *   - ?ï¿½ï¿½??ï¿½ï¿½? (Calendar): unified calendar grid + upcoming/present/history tables
+ *   - äººï¿½?ç®¡ï¿½? (Workforce): skill-aware proposal assignment + lifecycle (OrgScheduleGovernance)
  *
  * Merge rationale:
  *   - DemandBoard (old Tab 2) removed: OrgScheduleGovernance covers the same lifecycle
@@ -69,9 +69,9 @@ function MemberAssignPopover({ item, members, onAssign, onUnassign }: MemberAssi
       </PopoverTrigger>
       <PopoverContent className="w-60 p-0" align="end">
         <Command>
-          <CommandInput placeholder="?œå??å“¡..." />
+          <CommandInput placeholder="?ï¿½ï¿½??ï¿½å“¡..." />
           <CommandList>
-            <CommandEmpty>?¡ç¬¦?ˆæ???/CommandEmpty>
+            <CommandEmpty>?ï¿½ç¬¦?ï¿½ï¿½???</CommandEmpty>
             <CommandGroup heading="Assign Member">
               {members.map(member => {
                 const isAssigned = item.assigneeIds.includes(member.id);
@@ -153,15 +153,15 @@ export function AccountScheduleSection() {
         <TabsList className="mb-6 w-full justify-start">
           <TabsTrigger value="calendar" className="gap-2">
             <Calendar className="size-4" />
-            ?’ç??¥æ?
+            ?ï¿½ï¿½??ï¿½ï¿½?
           </TabsTrigger>
           <TabsTrigger value="hr-management" className="gap-2">
             <Users className="size-4" />
-            äººå?ç®¡ç?
+            äººï¿½?ç®¡ï¿½?
           </TabsTrigger>
           <TabsTrigger value="skill-pool" className="gap-2">
             <BookOpen className="size-4" />
-            ?€?½åº«
+            ?ï¿½?ï¿½åº«
           </TabsTrigger>
         </TabsList>
 
@@ -204,7 +204,7 @@ export function AccountScheduleSection() {
           </div>
         </TabsContent>
 
-        {/* Tab 2: äººå?ç®¡ç? ??unified workforce management
+        {/* Tab 2: äººï¿½?ç®¡ï¿½? ??unified workforce management
             Covers: PROPOSAL (skill-aware assign + approve/cancel) + OFFICIAL (mark complete).
             Supersedes the old DemandBoard tab (simple assign) and the GovernanceSidebar
             (approve-only, no assignment) that previously lived in the Calendar tab. */}
@@ -212,7 +212,7 @@ export function AccountScheduleSection() {
           <OrgScheduleGovernance />
         </TabsContent>
 
-        {/* Tab 3: ?€?½åº« ??manage which global skills apply to this organization.
+        {/* Tab 3: ?ï¿½?ï¿½åº« ??manage which global skills apply to this organization.
             Activated skills appear in ProposalDialog's picker instead of the full
             global library, reducing browsing burden for HR (FR-K5). */}
         <TabsContent value="skill-pool" className="flex-1">
