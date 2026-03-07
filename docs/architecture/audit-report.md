@@ -20,18 +20,11 @@ Completed sequential phases from the requested prompt:
 
 ## 2. High-Impact Findings
 
-### A. Missing Modules/Folders (expected by SSOT, not present as canonical layout)
+### A. Missing Modules/Folders
 
-1. Missing canonical L7 path family:
-	 - Expected by SSOT: `src/shared/infra/{auth,firestore,messaging,storage}/`
-	 - Evidence in snapshot points to legacy layout instead: `src/shared-infra/frontend-firebase/...`
-	 - Rule reference: Layering section + `D24`, `D25` in `00-LogicOverview.md`
-	 - Suggested target:
-		 - Create `src/shared/infra/auth/`
-		 - Create `src/shared/infra/firestore/`
-		 - Create `src/shared/infra/messaging/`
-		 - Create `src/shared/infra/storage/`
-		 - Migrate adapters from `src/shared-infra/frontend-firebase/` to those modules.
+1. No hard missing folder found for L7 ACL boundary.
+	 - Clarification: this repository's active ACL convention is `src/shared-infra/frontend-firebase/*`.
+	 - Resolution: prior mention of `src/shared/infra/*` was a document-path inconsistency, not an actual codebase gap.
 
 ### B. Misplaced Elements
 
@@ -58,9 +51,8 @@ Completed sequential phases from the requested prompt:
 	 - Evidence: `docs/ai/repomix-output.context.md:347`
 	 - Rule reference: naming clarity and SSOT folder naming consistency.
 
-2. `shared-infra/frontend-firebase` -> expected canonical `shared/infra/*` ACL boundary naming
-	 - Evidence: repeated imports, e.g. `docs/ai/repomix-output.context.md:8305`, `docs/ai/repomix-output.context.md:10602`
-	 - Rule reference: `D24`, `D25`.
+2. Removed false-positive naming finding for `shared-infra/frontend-firebase`.
+	 - Current naming is the repository baseline and now aligned with `00-LogicOverview.md`.
 
 ### D. Boundary Violations
 
@@ -106,7 +98,6 @@ Completed sequential phases from the requested prompt:
 
 ## 3. Actionable Refactoring Checklist
 
-- [ ] Introduce canonical `src/shared/infra/*` ACL folders and migrate `shared-infra/frontend-firebase/*` adapters.
 - [ ] Replace direct `@/shared-infra/*` imports in feature slices with SK_PORTS interfaces (`D24`).
 - [ ] Move `workforce-scheduling.slice/_projectors/*` into `projection.bus` and keep VS6 command/domain focused (`L5-Bus`, `S2`, `P5`).
 - [ ] Normalize `timelineing.slice` naming and align timeline overlap/grouping to L5 read-side processing.
@@ -118,7 +109,7 @@ Completed sequential phases from the requested prompt:
 
 The repository has strong foundational alignment with SSOT (L2/L4/L5/L6 modules, VS8 semantic engine, notification hub authority, global search authority all exist), but the main architecture debt remains boundary hardening and canonical path alignment:
 
-1. Infrastructure boundary naming and import discipline (`shared-infra` -> `shared/infra`, `D24`),
+1. Infrastructure boundary import discipline (`D24`),
 2. Projection responsibility placement (L5 consolidation),
 3. Contract consistency (outbox status enum),
 4. Strong typed semantic references (`D22`).

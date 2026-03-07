@@ -53,7 +53,7 @@ The `~1390 lint warnings` include **43 D24 warnings** — direct `firebase/fires
 These are **tracked migration targets**, not regressions. Per `docs/00-LogicOverview.md` [D24]:
 
 > Feature slices must not import `firebase/*` directly. All SDK calls must go through `FIREBASE_ACL`
-> adapters at `src/shared/infra/{auth,firestore,messaging,storage}/`, accessed via `SK_PORTS` interfaces.
+> adapters at `src/shared-infra/frontend-firebase/{auth,firestore,messaging,storage}/`, accessed via `SK_PORTS` interfaces.
 
 Current D24 violation files (43 total):
 - `src/features/account.slice/` — gov.policy, gov.role, user.profile, user.wallet (4 files)

@@ -39,7 +39,7 @@
 %%  ── 標準目錄結構（Standard Directory Structure · 單向依賴鏈對齊）──
 %%    src/
 %%      shared-kernel/                          # L1: SK contracts/constants/pure functions only [D8]
-%%      shared/infra/                           # L7: Firebase ACL adapters only
+%%      shared-infra/frontend-firebase/         # L7: Firebase ACL adapters only
 %%        auth/
 %%        firestore/
 %%        messaging/
@@ -65,7 +65,7 @@
 %%  ── 依賴方向約束（對應目錄）──
 %%    寫鏈：infra.external-triggers → infra.gateway-command → *.slice → infra.event-router → projection.bus
 %%    讀鏈：app/UI → infra.gateway-query → projection.bus
-%%    Infra鏈：*.slice/projection/query → shared-kernel(SK_PORTS) → shared/infra(FIREBASE_ACL)
+%%    Infra鏈：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/frontend-firebase(FIREBASE_ACL)
 %%  ── RULESET-MUST（不可違反）: R · S · A · # ──
 %%    R1=relay-lag-metrics   R5=DLQ-failure-rule   R6=workflow-state-rule
 %%    R7=aggVersion-relay    R8=traceId-readonly
@@ -321,7 +321,7 @@ subgraph SK["🔷 L1 · Shared Kernel — 全域契約中心（VS0）"]
             QGWAY --> QGWAY_SCHED & QGWAY_CAL & QGWAY_TL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
         end
 
-        subgraph FIREBASE_ACL["🔌 L7 · Firebase ACL Adapters（防腐層 · src/shared/infra）[D24 D25]"]
+        subgraph FIREBASE_ACL["🔌 L7 · Firebase ACL Adapters（防腐層 · src/shared-infra/frontend-firebase）[D24 D25]"]
             direction LR
 
             AUTH_ADP["auth.adapter.ts\nAuthAdapter\n實作 IAuthService\nFirebase User ↔ Auth Identity\n[D24] 唯一合法 firebase/auth 呼叫點"]
@@ -1207,7 +1207,7 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D2  跨切片引用：import from '@/features/{slice}/index' only；_*.ts 為私有
 %%  D3  所有 mutation：src/features/{slice}/_actions.ts only
 %%  D4  所有 read：src/features/{slice}/_queries.ts only
-%%  D5  src/app/ 與 UI 元件禁止 import src/shared/infra/firestore
+%%  D5  src/app/ 與 UI 元件禁止 import src/shared-infra/frontend-firebase/firestore
 %%  D6  "use client" 只在 _components/ 或 _hooks/ 葉節點；layout/page server components 禁用
 %%  D7  跨切片：import from '@/features/{other-slice}/index'；禁止 _private 引用
 %%  D8  shared.kernel.* 禁止 async functions、Firestore calls、side effects
@@ -1273,7 +1273,7 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
 %%  ── Firebase 隔離守則（D24~D25）──
 %%  D24 MUST: IF 位於 feature slice / shared/types / app THEN 必須禁止直接 import firebase/*
-%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared/infra/{auth|firestore|messaging|storage}）
+%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|messaging|storage}）
 %%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
 %%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
 %%  D25 MUST: IF 新增 Firebase 功能 THEN 必須在 FIREBASE_ACL 新增 Adapter 以實作對應 SK_PORTS Port
