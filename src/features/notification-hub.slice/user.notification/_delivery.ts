@@ -1,8 +1,11 @@
 /**
- * notification-hub.slice/user.notification ??_delivery.ts
+ * Module: _delivery.ts
+ * Purpose: Deliver user notifications through VS7 authority boundary
+ * Responsibilities: sanitize payloads, persist notifications, attempt push delivery
+ * Constraints: deterministic logic, respect module boundaries
  *
- * FCM Layer 3: Notification Delivery
- * Receives routed notifications, stores them in Firestore, and pushes FCM.
+ * FCM + RTDB delivery layer.
+ * Receives routed notifications, stores them in Realtime Database, and pushes FCM.
  *
  * Per 00-LogicOverview.md:
  *   ACCOUNT_USER_NOTIFICATION ??FCM_GATEWAY ??USER_DEVICE
@@ -10,20 +13,22 @@
  *
  * Architecture:
  *  - Reads FCM token from account-user.profile public API (never writes to profile)
- *  - Stores notification in Firestore: accounts/{accountId}/notifications/{notifId}
+ *  - Stores notification in RTDB: user-notifications/{accountId}/{notifId}
  *  - Pushes to FCM via Firebase Admin SDK pattern (server-side) or client SDK
  *
  * Account tag filtering: if the account is 'external' type, content is sanitized
  * (financial amounts, internal workspace IDs are redacted).
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
 import {
-  collection,
+  createAccountNotification,
+  trackAnalyticsEvent,
+} from '@/shared-infra/frontend-firebase';
+import {
   doc,
   getDoc,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDoc, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/frontend-firebase';
 
 
 export interface NotificationDeliveryInput {
@@ -49,7 +54,7 @@ export interface DeliveryResult {
  * Steps:
  * 1. Looks up account tags (internal/external) from Firestore
  * 2. Filters/sanitizes content based on account tag
- * 3. Persists notification to Firestore sub-collection
+ * 3. Persists notification to RTDB
  * 4. Attempts FCM push (fire-and-forget, non-blocking)
  *
  * @param targetAccountId - The account to deliver the notification to
@@ -73,19 +78,24 @@ export async function deliverNotification(
     ? sanitizeForExternal(input.message)
     : input.message;
 
-  // Step 3: Persist to Firestore
-  const notifRef = collection(db, 'accounts', targetAccountId, 'notifications');
-  const docRef = await addDoc(notifRef, {
+  // Step 3: Persist to RTDB
+  const notificationId = await createAccountNotification(targetAccountId, {
     title: sanitizedTitle,
     message: sanitizedMessage,
     type: input.type,
     sourceEvent: input.sourceEvent,
     sourceId: isExternal ? '[redacted]' : input.sourceId,
     workspaceId: isExternal ? '[redacted]' : input.workspaceId,
-    // [R8] traceId carried from originating EventEnvelope for globalAuditView correlation
     ...(input.traceId !== undefined && { traceId: input.traceId }),
-    read: false,
-    timestamp: serverTimestamp(),
+    category: input.type === 'success' ? 'task' : 'system',
+    semanticType: input.type === 'alert' ? 'ACTION_REQUIRED' : 'INFO_ONLY',
+  });
+
+  trackAnalyticsEvent('notification_delivered', {
+    accountId: targetAccountId,
+    type: input.type,
+    sourceEvent: input.sourceEvent,
+    isExternal,
   });
 
   // Step 4: Attempt FCM push (best-effort, non-blocking)
@@ -117,7 +127,7 @@ export async function deliverNotification(
   }
 
   return {
-    notificationId: docRef.id,
+    notificationId,
     delivered: true,
     fcmSent,
   };

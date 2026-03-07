@@ -1,7 +1,7 @@
 /**
  * notification-hub.slice/_services/notification-listener.ts
  *
- * Encapsulates real-time Firestore notification listening per [D3].
+ * Encapsulates real-time notification listening per [D3].
  * Components MUST NOT call Firestore SDK directly; all subscription
  * management goes through this service layer.
  *
@@ -20,7 +20,7 @@ import { subscribeToNotifications } from '../user.notification/_queries';
 export type NotificationListenerCleanup = () => void;
 
 /**
- * Shape of optional classification fields that Firestore may store
+ * Shape of optional classification fields that storage adapters may store
  * on a notification document, used to avoid unsafe casting when mapping
  * raw Notification → HubNotification.
  */
@@ -32,14 +32,14 @@ interface RawHubFields {
 /**
  * Creates a real-time listener for a user's notifications.
  *
- * Per [D3], this is the only authorized path for setting up Firestore
+ * Per [D3], this is the only authorized path for setting up realtime
  * subscriptions within the notification-hub slice. Components invoke
  * this via the `useUserNotifications` hook — never directly.
  *
  * @param accountId   The authenticated user's account ID.
  * @param onUpdate    Callback invoked whenever the notification list changes.
  * @param maxCount    Maximum number of notifications to load (default 20).
- * @returns A cleanup function that tears down the Firestore listener.
+ * @returns A cleanup function that tears down the realtime listener.
  */
 export function createNotificationListener(
   accountId: string,

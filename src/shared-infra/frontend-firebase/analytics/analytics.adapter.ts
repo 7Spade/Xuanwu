@@ -1,21 +1,35 @@
 /**
- * @fileoverview Firebase Analytics Adapter.
- * This file contains functions for logging custom events to Firebase Analytics,
- * allowing for detailed tracking of user behavior and application performance.
+ * Module: analytics.adapter.ts
+ * Purpose: Provide safe wrappers for Firebase Analytics writes
+ * Responsibilities: log telemetry-only events through ACL boundary
+ * Constraints: deterministic logic, respect module boundaries
  */
-import { logEvent } from 'firebase/analytics';
+
+import { logEvent, setUserId } from 'firebase/analytics';
 
 import { analytics } from './analytics.client';
 
-/**
- * Logs a custom event to Firebase Analytics.
- * @param eventName The name of the event to log.
- * @param eventParams Optional parameters to associate with the event.
- */
-export const logAnalyticsEvent = (eventName: string, eventParams?: Record<string, unknown>) => {
-  if (analytics) {
-    logEvent(analytics, eventName, eventParams);
-  } else {
-    console.log(`Analytics not initialized. Event not logged: ${eventName}`, eventParams);
+export interface AnalyticsEventPayload {
+  readonly [key: string]: string | number | boolean | null | undefined;
+}
+
+export function trackAnalyticsEvent(
+  name: string,
+  payload?: AnalyticsEventPayload,
+): void {
+  if (!analytics) {
+    return;
   }
-};
+
+  logEvent(analytics, name, payload);
+}
+
+export function bindAnalyticsUser(userId: string | null): void {
+  if (!analytics) {
+    return;
+  }
+
+  setUserId(analytics, userId ?? null);
+}
+
+export const logAnalyticsEvent = trackAnalyticsEvent;

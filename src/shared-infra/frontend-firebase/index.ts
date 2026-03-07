@@ -16,3 +16,14 @@ export { fileStore } from './storage/storage.adapter';
 export { messaging } from './messaging/messaging.client';
 export { messagingAdapter } from './messaging/messaging.adapter';
 export { analytics } from './analytics/analytics.client';
+export {
+	trackAnalyticsEvent,
+	bindAnalyticsUser,
+	logAnalyticsEvent,
+} from './analytics/analytics.adapter';
+export { rtdb } from './realtime-database/realtime-database.client';
+export {
+	subscribeAccountNotifications,
+	createAccountNotification,
+	setAccountNotificationRead,
+} from './realtime-database/notification-rtdb.adapter';

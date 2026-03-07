@@ -1,22 +1,18 @@
 /**
- * notification-hub.slice/user.notification ??_queries.ts
- *
- * Firestore reads for a user's personal notification list.
- * Stored at: accounts/{accountId}/notifications/{notifId}
+ * Module: _queries.ts
+ * Purpose: Query-side adapters for user notifications in notification-hub slice
+ * Responsibilities: subscribe user notifications and mark as read via ACL adapters
+ * Constraints: deterministic logic, respect module boundaries
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
 import {
-  collection,
-  query,
-  orderBy,
-  limit,
-  onSnapshot,
-  doc,
-  type Unsubscribe,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { updateDoc } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+  setAccountNotificationRead,
+  subscribeAccountNotifications,
+  trackAnalyticsEvent,
+} from '@/shared-infra/frontend-firebase';
 import type { Notification } from '@/shared-kernel';
+
+type Unsubscribe = () => void;
 
 /**
  * Subscribes to the latest notifications for a user.
@@ -27,25 +23,7 @@ export function subscribeToNotifications(
   maxCount: number,
   onUpdate: (notifications: Notification[]) => void
 ): Unsubscribe {
-  const ref = collection(db, 'accounts', accountId, 'notifications');
-  const q = query(ref, orderBy('timestamp', 'desc'), limit(maxCount));
-
-  return onSnapshot(q, (snap) => {
-    const notifications: Notification[] = snap.docs.map((d) => {
-      const data = d.data();
-      return {
-        id: d.id,
-        title: data.title as string,
-        message: data.message as string,
-        type: (data.type as Notification['type']) ?? 'info',
-        read: (data.read as boolean) ?? false,
-        timestamp: typeof data.timestamp?.toMillis === 'function'
-          ? data.timestamp.toMillis()
-          : Date.now(),
-      };
-    });
-    onUpdate(notifications);
-  });
+  return subscribeAccountNotifications(accountId, maxCount, onUpdate);
 }
 
 /**
@@ -55,6 +33,9 @@ export async function markNotificationRead(
   accountId: string,
   notificationId: string
 ): Promise<void> {
-  const ref = doc(db, 'accounts', accountId, 'notifications', notificationId);
-  await updateDoc(ref, { read: true });
+  await setAccountNotificationRead(accountId, notificationId);
+  trackAnalyticsEvent('notification_mark_read', {
+    accountId,
+    notificationId,
+  });
 }
