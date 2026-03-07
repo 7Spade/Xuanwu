@@ -55,6 +55,8 @@ export interface TranslationMessages {
     dimensionCore: string;
     accountGovernance: string;
     quickAccess: string;
+    expand: string;
+    collapse: string;
     userSettings: string;
     owner: string;
     guest: string;

@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { Terminal } from "lucide-react";
 import Link from "next/link";
 
@@ -22,10 +23,19 @@ interface NavWorkspacesProps {
   t: (key: string) => string;
 }
 
+const QUICK_ACCESS_VISIBLE_LIMIT = 10;
+
 export function NavWorkspaces({ workspaces, pathname, t }: NavWorkspacesProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   if (workspaces.length === 0) {
     return null;
   }
+
+  const hasOverflow = workspaces.length > QUICK_ACCESS_VISIBLE_LIMIT;
+  const visibleWorkspaces = hasOverflow && !isExpanded
+    ? workspaces.slice(0, QUICK_ACCESS_VISIBLE_LIMIT)
+    : workspaces;
 
   return (
     <SidebarGroup>
@@ -34,7 +44,7 @@ export function NavWorkspaces({ workspaces, pathname, t }: NavWorkspacesProps) {
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
-          {workspaces.map((workspace) => (
+          {visibleWorkspaces.map((workspace) => (
             <SidebarMenuItem key={workspace.id}>
               <SidebarMenuButton
                 asChild
@@ -50,6 +60,16 @@ export function NavWorkspaces({ workspaces, pathname, t }: NavWorkspacesProps) {
               </SidebarMenuBadge>
             </SidebarMenuItem>
           ))}
+          {hasOverflow ? (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={() => setIsExpanded((prev) => !prev)}
+                className="justify-center text-xs"
+              >
+                <span>{isExpanded ? t('sidebar.collapse') : t('sidebar.expand')}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ) : null}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

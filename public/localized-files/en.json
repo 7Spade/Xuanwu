@@ -56,6 +56,8 @@
     "dimensionCore": "Organization",
     "accountGovernance": "Account Management",
     "quickAccess": "Quick Access",
+    "expand": "Expand",
+    "collapse": "Collapse",
     "userSettings": "User Settings",
     "owner": "Owner",
     "guest": "Guest",

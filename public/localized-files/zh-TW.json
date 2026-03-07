@@ -56,6 +56,8 @@
     "dimensionCore": "組織",
     "accountGovernance": "帳戶管理",
     "quickAccess": "快速存取",
+    "expand": "展開",
+    "collapse": "收合",
     "userSettings": "使用者設定",
     "owner": "擁有者",
     "guest": "訪客",
