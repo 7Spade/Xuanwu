@@ -1,30 +1,34 @@
 /**
- * Module: storage.adapter.ts
- * Purpose: Implement IFileStore using Firebase Web Storage SDK
- * Responsibilities: upload, resolve URL, and delete files through Storage APIs
- * Constraints: deterministic logic, respect module boundaries
+ * storage.adapter.ts — StorageAdapter
+ *
+ * [D24] Sole legitimate firebase/storage call site (all SDK calls are confined to
+ *       storage.write.adapter.ts and storage.read.adapter.ts; this class orchestrates
+ *       through those modules and never imports firebase/storage directly).
+ * [D25] Implements IFileStore Port so feature slices never import firebase/storage directly.
  */
 
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import type { IFileStore, UploadOptions } from '@/shared-kernel/ports/i-file-store';
+import { getFileDownloadURL } from './storage.read.adapter';
+import { deleteFile, uploadFile } from './storage.write.adapter';
 
-import type { IFileStore, UploadOptions } from '@/shared-kernel/ports';
-
-import { storage } from './storage.client';
-
-class FirebaseFileStore implements IFileStore {
+export class StorageAdapter implements IFileStore {
   async upload(path: string, file: File | Blob, options?: UploadOptions): Promise<string> {
-    const targetRef = ref(storage, path);
-    await uploadBytes(targetRef, file, options?.contentType ? { contentType: options.contentType } : undefined);
-    return getDownloadURL(targetRef);
+    await uploadFile(
+      path,
+      file,
+      options?.contentType ? { contentType: options.contentType } : undefined
+    );
+    return getFileDownloadURL(path);
   }
 
   async getDownloadURL(path: string): Promise<string> {
-    return getDownloadURL(ref(storage, path));
+    return getFileDownloadURL(path);
   }
 
   async deleteFile(path: string): Promise<void> {
-    await deleteObject(ref(storage, path));
+    return deleteFile(path);
   }
 }
 
-export const fileStore: IFileStore = new FirebaseFileStore();
+export const storageAdapter: IFileStore = new StorageAdapter();
+export const fileStore: IFileStore = storageAdapter;

@@ -1,76 +1,32 @@
 /**
- * Module: auth.adapter.ts
- * Purpose: Implement IAuthService using Firebase Web Auth SDK
- * Responsibilities: map Firebase auth operations to SK_PORTS auth contract
- * Constraints: deterministic logic, respect module boundaries
+ * @fileoverview Firebase Authentication Adapter.
+ * This file contains all functions related to Firebase Authentication services,
+ * serving as a single point of interaction for the UI layer with auth logic.
  */
-
 import {
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   sendPasswordResetEmail,
   signInAnonymously,
-  signInWithEmailAndPassword,
-  signOut,
   updateProfile,
-  type User,
+  verifyBeforeUpdateEmail,
+  signOut,
+  onAuthStateChanged,
+  type User as FirebaseUser,
 } from 'firebase/auth';
-
-import type { AuthUser, IAuthService } from '@/shared-kernel/ports';
 
 import { auth } from './auth.client';
 
-function toAuthUser(user: User): AuthUser {
-  return {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
-    photoURL: user.photoURL,
-  };
-}
+export const authAdapter = {
+  signInWithEmailAndPassword: (email: string, pass: string) => signInWithEmailAndPassword(auth, email, pass),
+  createUserWithEmailAndPassword: (email: string, pass: string) => createUserWithEmailAndPassword(auth, email, pass),
+  sendPasswordResetEmail: (email: string) => sendPasswordResetEmail(auth, email),
+  signInAnonymously: () => signInAnonymously(auth),
+  updateProfile: (user: FirebaseUser, profile: { displayName?: string, photoURL?: string }) => updateProfile(user, profile),
+  signOut: () => signOut(auth),
+  onAuthStateChanged: (callback: (user: FirebaseUser | null) => void) => onAuthStateChanged(auth, callback),
+  getCurrentUser: () => auth.currentUser,
+  verifyBeforeUpdateEmail: (user: FirebaseUser, newEmail: string) => verifyBeforeUpdateEmail(user, newEmail),
+};
 
-class FirebaseAuthService implements IAuthService {
-  async signInWithEmailAndPassword(email: string, password: string): Promise<AuthUser> {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    return toAuthUser(credential.user);
-  }
-
-  async createUserWithEmailAndPassword(email: string, password: string): Promise<AuthUser> {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    return toAuthUser(credential.user);
-  }
-
-  async sendPasswordResetEmail(email: string): Promise<void> {
-    await sendPasswordResetEmail(auth, email);
-  }
-
-  async signInAnonymously(): Promise<AuthUser> {
-    const credential = await signInAnonymously(auth);
-    return toAuthUser(credential.user);
-  }
-
-  async updateProfile(user: AuthUser, profile: { displayName?: string; photoURL?: string }): Promise<void> {
-    const currentUser = auth.currentUser;
-    if (!currentUser || currentUser.uid !== user.uid) {
-      throw new Error('AUTH_USER_MISMATCH');
-    }
-    await updateProfile(currentUser, profile);
-  }
-
-  async signOut(): Promise<void> {
-    await signOut(auth);
-  }
-
-  onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
-    return onAuthStateChanged(auth, (firebaseUser) => {
-      callback(firebaseUser ? toAuthUser(firebaseUser) : null);
-    });
-  }
-
-  getCurrentUser(): AuthUser | null {
-    const currentUser = auth.currentUser;
-    return currentUser ? toAuthUser(currentUser) : null;
-  }
-}
-
-export const authService: IAuthService = new FirebaseAuthService();
+export const authService = authAdapter;
