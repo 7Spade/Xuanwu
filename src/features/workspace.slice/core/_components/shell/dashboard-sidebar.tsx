@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Dashboard Sidebar - Main Assembly Component
  *
@@ -12,22 +11,12 @@
 
 "use client";
 
-// ============================================================================
-// Next.js & React Imports
-// ============================================================================
 import { usePathname } from 'next/navigation';
 
-// ============================================================================
-// UI Components
-// ============================================================================
 import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useUser } from "@/features/account.slice";
 import { useOrganizationManagement } from "@/features/organization.slice";
-
-// ============================================================================
-// Contexts & Hooks
-// ============================================================================
 import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
 import { useVisibleWorkspaces } from "@/features/workspace.slice/core/_hooks/use-visible-workspaces";
 import {
@@ -42,10 +31,6 @@ import {
   SidebarSeparator,
 } from "@/shadcn-ui/sidebar";
 
-
-// ============================================================================
-// Sidebar Sub-components
-// ============================================================================
 import { AccountSwitcher } from "./account-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
