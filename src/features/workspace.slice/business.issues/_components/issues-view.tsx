@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, MessageSquare, CornerUpLeft, CheckCircle2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";

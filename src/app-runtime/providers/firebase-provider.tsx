@@ -13,7 +13,7 @@ import { app } from '@/shared/infra/app.client';
 import { auth } from '@/shared/infra/auth/auth.client';
 import { db } from '@/shared/infra/firestore/firestore.client';
 import { storage } from '@/shared/infra/storage/storage.client';
-import { FirebaseContext } from './firebase-context';
+import { FirebaseContext } from '../contexts/firebase-context';
 
 export function FirebaseClientProvider({ children }: { children: ReactNode; }) {
   const value = { app, db, auth, storage };

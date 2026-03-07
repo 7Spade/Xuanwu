@@ -13,7 +13,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
 import type { PartnerInvite, MemberReference , Team } from "@/shared-kernel"
-import { useApp } from "@/shared/app-providers/app-provider"
+import { useApp } from "@/app-runtime/providers/app-provider"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"

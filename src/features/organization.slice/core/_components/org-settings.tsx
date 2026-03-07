@@ -4,8 +4,8 @@ import { AlertTriangle, Building2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useI18n } from "@/shared/app-providers/i18n-provider";
-import { useApp } from "@/shared/app-providers/app-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { useApp } from "@/app-runtime/providers/app-provider";
 import { ROUTES } from "@/shared/constants/routes";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/shadcn-ui/alert-dialog";
 import { Button } from "@/shared/shadcn-ui/button";

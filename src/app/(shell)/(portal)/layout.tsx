@@ -17,7 +17,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 
 type PortalLayoutProps = {
   children: ReactNode;

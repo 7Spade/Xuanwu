@@ -12,7 +12,7 @@ import { useContext, useEffect, useState, type ReactNode } from 'react'
 import { getPreferredLocale, i18nConfig, loadMessages, setLocalePreference } from '@/config/i18n/i18n'
 import { type Locale, type TranslationMessages } from '@/config/i18n/i18n-types'
 
-import { I18nContext } from './i18n-context'
+import { I18nContext } from '../contexts/i18n-context'
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(i18nConfig.defaultLocale)

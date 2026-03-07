@@ -5,10 +5,10 @@
 import { User as UserIcon } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { PermissionTree } from "@/features/account.slice"
 import { AccountGrid } from "@/features/organization.slice"
-import { useAuth } from "@/shared/app-providers/auth-provider"
+import { useAuth } from "@/app-runtime/providers/auth-provider"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { PageHeader } from "@/shared/shadcn-ui/custom-ui/page-header"
 

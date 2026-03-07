@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react"
 
 import { useTeamManagement } from "@/features/organization.slice"
 import type { MemberReference, Team } from "@/shared-kernel"
-import { useApp } from "@/shared/app-providers/app-provider"
+import { useApp } from "@/app-runtime/providers/app-provider"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent } from "@/shared/shadcn-ui/card"
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast"

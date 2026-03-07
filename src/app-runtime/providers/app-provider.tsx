@@ -24,10 +24,10 @@
 import { type ReactNode, useReducer, useEffect } from 'react'
 import { useContext } from 'react'
 
-import { AppContext, type AppAction, type AppState } from './app-context'
+import { AppContext, type AppAction, type AppState } from '../contexts/app-context'
 
 import { subscribeToAccountsForUser } from './app-provider.queries'
-import { useAuth } from './auth-provider'
+import { useAuth } from '../../shared/app-providers/auth-provider'
 
 // ---------------------------------------------------------------------------
 // Initial state

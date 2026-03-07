@@ -5,7 +5,7 @@ import { Globe, MoreVertical, Users, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 import { type Account } from "@/shared-kernel"
-import { useApp } from "@/shared/app-providers/app-provider"
+import { useApp } from "@/app-runtime/providers/app-provider"
 import { Button } from "@/shared/shadcn-ui/button"
 import {
   Card,

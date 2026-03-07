@@ -12,7 +12,7 @@ import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
-import { useApp } from '@/shared/app-providers/app-provider';
+import { useApp } from '@/app-runtime/providers/app-provider';
 import { Badge } from '@/shared/shadcn-ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { Progress } from '@/shared/shadcn-ui/progress';

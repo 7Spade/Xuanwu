@@ -17,8 +17,8 @@ import {
   subscribeToWorkspacesForAccount,
 } from './account-provider.queries'
 
-import { type AccountAction, AccountContext, type AccountState } from './account-context'
-import { useApp } from './app-provider'
+import { type AccountAction, AccountContext, type AccountState } from '../contexts/account-context'
+import { useApp } from '../../shared/app-providers/app-provider'
 
 const initialState: AccountState = {
   workspaces: {},

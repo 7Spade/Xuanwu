@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 
-import { useApp } from '@/shared/app-providers/app-provider';
+import { useApp } from '@/app-runtime/providers/app-provider';
 
 import {
   uploadDailyPhoto as uploadDailyPhotoAction,

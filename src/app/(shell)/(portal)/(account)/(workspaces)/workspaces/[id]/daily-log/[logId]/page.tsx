@@ -9,7 +9,7 @@ import { use } from "react"
 
 import { DailyLogDialog } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
-import { useAuth } from "@/shared/app-providers/auth-provider"
+import { useAuth } from "@/app-runtime/providers/auth-provider"
 import { Button } from "@/shared/shadcn-ui/button"
 
 interface PageProps {

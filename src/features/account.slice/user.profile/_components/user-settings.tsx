@@ -4,8 +4,8 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 
-import { useI18n } from "@/shared/app-providers/i18n-provider";
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { useUser } from "../_hooks/use-user";

@@ -9,6 +9,6 @@
 
 // Re-exported from shared/app-providers/app-provider for backward compatibility.
 // All new code should import directly from '@/shared/app-providers/app-provider'.
-export { AppProvider, useApp } from '@/shared/app-providers/app-provider'
-export { AppContext } from '@/shared/app-providers/app-context'
-export type { AppAction } from '@/shared/app-providers/app-context'
+export { AppProvider, useApp } from '@/app-runtime/providers/app-provider'
+export { AppContext } from '@/app-runtime/contexts/app-context'
+export type { AppAction } from '@/app-runtime/contexts/app-context'

@@ -35,4 +35,4 @@ export interface AppContextValue {
 
 export const AppContext = createContext<AppContextValue | null>(null)
 
-export { AppProvider, useApp } from './app-provider'
+export { AppProvider, useApp } from '../providers/app-provider'

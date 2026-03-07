@@ -3,7 +3,7 @@
 
 import { useMemo } from 'react'
 
-import { useAuth } from '@/shared/app-providers/auth-provider'
+import { useAuth } from '@/app-runtime/providers/auth-provider'
 
 import { filterVisibleWorkspaces } from '../../_workspace.rules'
 

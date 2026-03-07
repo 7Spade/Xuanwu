@@ -11,7 +11,7 @@ import { AlertCircle, Clock3 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 
 import type { ScheduleItem } from "@/shared-kernel";
-import { useApp } from "@/shared/app-providers/app-provider";
+import { useApp } from "@/app-runtime/providers/app-provider";
 
 import { useAccountTimeline, useTimelineCommands } from "../_hooks";
 

@@ -4,7 +4,7 @@
 
 import { useRouter } from "next/navigation"
 
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { AccountNewForm } from "@/features/organization.slice"
 import {
   Dialog,

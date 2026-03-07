@@ -12,7 +12,7 @@ import {type ReactNode} from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
 import { authAdapter } from '@/shared/infra/auth/auth.adapter';
-import { AuthContext, type AuthAction, type AuthState } from './auth-context';
+import { AuthContext, type AuthAction, type AuthState } from '../contexts/auth-context';
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {

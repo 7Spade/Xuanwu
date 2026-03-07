@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 import type { Account } from '@/shared-kernel'
-import { useAuth } from '@/shared/app-providers/auth-provider'
+import { useAuth } from '@/app-runtime/providers/auth-provider'
 
 import {
   updateUserProfile as updateUserProfileAction,

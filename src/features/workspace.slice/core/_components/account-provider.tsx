@@ -7,6 +7,6 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-export { AccountProvider } from '@/shared/app-providers/account-provider'
-export { AccountContext } from '@/shared/app-providers/account-context'
-export type { AccountAction, AccountContextValue, AccountState } from '@/shared/app-providers/account-context'
+export { AccountProvider } from '@/app-runtime/providers/account-provider'
+export { AccountContext } from '@/app-runtime/contexts/account-context'
+export type { AccountAction, AccountContextValue, AccountState } from '@/app-runtime/contexts/account-context'

@@ -3,7 +3,7 @@
 import { Trophy, CheckCircle2, Search, XCircle, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";

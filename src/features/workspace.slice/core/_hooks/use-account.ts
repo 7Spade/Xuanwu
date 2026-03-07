@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { AccountContext } from '@/shared/app-providers/account-context';
+import { AccountContext } from '@/app-runtime/contexts/account-context';
 
 export const useAccount = () => {
     const context = useContext(AccountContext);

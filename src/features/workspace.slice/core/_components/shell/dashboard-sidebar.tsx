@@ -20,10 +20,10 @@ import { usePathname } from 'next/navigation';
 // ============================================================================
 // UI Components
 // ============================================================================
-import { useI18n } from "@/shared/app-providers/i18n-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useUser } from "@/features/account.slice";
 import { useOrganizationManagement } from "@/features/organization.slice";
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import {
   Sidebar,
   SidebarContent,

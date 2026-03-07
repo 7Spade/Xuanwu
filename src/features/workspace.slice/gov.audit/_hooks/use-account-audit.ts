@@ -14,7 +14,7 @@
 
 import { useMemo, useState } from "react";
 
-import { useApp } from "@/shared/app-providers/app-provider";
+import { useApp } from "@/app-runtime/providers/app-provider";
 
 import { useAccount } from "../../core";
 import { type AuditLog } from "../_types";

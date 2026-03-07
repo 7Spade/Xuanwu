@@ -5,4 +5,4 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-export { I18nProvider, useI18n } from '@/shared/app-providers/i18n-provider'
+export { I18nProvider, useI18n } from '@/app-runtime/providers/i18n-provider'

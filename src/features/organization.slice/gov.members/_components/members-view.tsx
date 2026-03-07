@@ -3,11 +3,11 @@
 import { UserPlus, Trash2, Mail, AlertCircle, Sparkles } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 
-import { useI18n } from "@/shared/app-providers/i18n-provider"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"
 import { type MemberReference } from "@/shared-kernel"
-import { useApp } from "@/shared/app-providers/app-provider"
+import { useApp } from "@/app-runtime/providers/app-provider"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"

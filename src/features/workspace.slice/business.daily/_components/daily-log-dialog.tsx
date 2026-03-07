@@ -16,7 +16,7 @@ import { CornerUpLeft, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { Account } from "@/shared-kernel";
-import { useAuth } from "@/shared/app-providers/auth-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import type { Timestamp } from "@/shared-kernel/ports";
 import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
 import { Button } from "@/shared/shadcn-ui/button";

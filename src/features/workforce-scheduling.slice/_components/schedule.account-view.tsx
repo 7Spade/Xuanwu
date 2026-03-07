@@ -23,7 +23,7 @@ import { useState, useCallback } from "react";
 
 import type { ScheduleItem } from '@/shared-kernel';
 import type { MemberReference } from "@/shared-kernel";
-import { useApp } from "@/shared/app-providers/app-provider";
+import { useApp } from "@/app-runtime/providers/app-provider";
 import { Button } from "@/shared/shadcn-ui/button";
 import {
   Command,
