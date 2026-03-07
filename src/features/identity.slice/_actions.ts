@@ -22,7 +22,7 @@ import {
  */
 export async function signIn(email: string, password: string): Promise<CommandResult> {
   try {
-    const { user } = await authAdapter.signInWithEmailAndPassword(email, password)
+    const user = await authAdapter.signInWithEmailAndPassword(email, password)
     return commandSuccess(user.uid, 0)
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
@@ -42,7 +42,7 @@ async function registerUser(
   password: string,
   displayName: string
 ): Promise<string> {
-  const { user } = await authAdapter.createUserWithEmailAndPassword(
+  const user = await authAdapter.createUserWithEmailAndPassword(
     email,
     password
   )
@@ -59,7 +59,7 @@ async function registerUser(
  */
 export async function signInAnonymously(): Promise<CommandResult> {
   try {
-    const { user } = await authAdapter.signInAnonymously()
+    const user = await authAdapter.signInAnonymously()
     return commandSuccess(user.uid, 0)
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
