@@ -702,7 +702,6 @@ cat docs/knowledge-graph.json
 
 ### 🔴 Critical — Immediate (system integrity at risk)
 
-- [ ] **A-01 / E-01** Add `src/features/account.slice/account-event-bus.ts` and wire `gov.policy/_actions.ts` through `acc-outbox` (`CRITICAL_LANE` / `SECURITY_BLOCK`) instead of direct `publishOrgEvent`
 - [ ] **F-01** Dissolve `workforce-scheduling.slice/policy-mapper/`; move mapping logic into `semantic-graph.slice/routing/reflex-arc/policy-mapper/` (VS8 authoritative mapper); VS6 calls VS8 via read-only projection
 
 ### 🟠 High — Short-term (architectural coherence)

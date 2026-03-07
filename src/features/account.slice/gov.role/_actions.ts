@@ -31,7 +31,10 @@ import {
   commandFailureFrom,
 } from '@/shared-kernel';
 
-import { enqueueAccountOutboxEvent } from '../acc-outbox';
+import {
+  enqueueAccountLifecycleOutboxEvent,
+  enqueueAccountOutboxEvent,
+} from '../acc-outbox';
 
 export interface AccountRoleRecord {
   accountId: string;
@@ -86,6 +89,18 @@ export async function assignAccountRole(input: AssignRoleInput): Promise<Command
       dlqTier: 'SECURITY_BLOCK',
     });
 
+    await enqueueAccountLifecycleOutboxEvent('account:role:changed', {
+      accountId: input.accountId,
+      orgId: input.orgId,
+      role: input.role,
+      changeType: 'assigned',
+      changedBy: input.grantedBy,
+      ...(input.traceId ? { traceId: input.traceId } : {}),
+    }, {
+      lane: 'CRITICAL_LANE',
+      dlqTier: 'SECURITY_BLOCK',
+    });
+
     // TOKEN_REFRESH_SIGNAL [R2]: notify frontend that claims have changed.
     // Wrapped in try-catch: a signal failure must NOT roll back the role assignment.
     // Frontend will re-sync on next token expiry / page reload in the worst case.
@@ -125,6 +140,18 @@ export async function revokeAccountRole(
       orgId,
       accountId,
       removedBy: revokedBy,
+      ...(traceId ? { traceId } : {}),
+    }, {
+      lane: 'CRITICAL_LANE',
+      dlqTier: 'SECURITY_BLOCK',
+    });
+
+    await enqueueAccountLifecycleOutboxEvent('account:role:changed', {
+      accountId,
+      orgId,
+      role: 'revoked',
+      changeType: 'revoked',
+      changedBy: revokedBy,
       ...(traceId ? { traceId } : {}),
     }, {
       lane: 'CRITICAL_LANE',

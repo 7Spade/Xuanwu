@@ -25,6 +25,8 @@ import {
   commandFailureFrom,
 } from '@/shared-kernel';
 
+import { enqueueAccountLifecycleOutboxEvent } from '../acc-outbox';
+
 // ---------------------------------------------------------------------------
 // TOKEN_REFRESH_SIGNAL helper [S6]
 // Defined locally per VSA cross-slice boundary rules (no import from account-governance.role).
@@ -110,6 +112,18 @@ export async function createAccountPolicy(input: CreatePolicyInput): Promise<Com
         ...(input.traceId ? { traceId: input.traceId } : {}),
       }
     );
+
+    await enqueueAccountLifecycleOutboxEvent('account:policy:changed', {
+      accountId: input.accountId,
+      policyId: ref.id,
+      changeType: 'created',
+      changedBy: input.accountId,
+      ...(input.traceId ? { traceId: input.traceId } : {}),
+    }, {
+      lane: 'CRITICAL_LANE',
+      dlqTier: 'SECURITY_BLOCK',
+    });
+
     return commandSuccess(ref.id, Date.now());
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -132,6 +146,17 @@ export async function updateAccountPolicy(
       ...fields,
       updatedAt: Timestamp.now().toDate().toISOString(),
       ...(traceId ? { traceId } : {}),
+    });
+
+    await enqueueAccountLifecycleOutboxEvent('account:policy:changed', {
+      accountId: accountId ?? 'unknown-account',
+      policyId,
+      changeType: 'updated',
+      changedBy: accountId ?? 'system',
+      ...(traceId ? { traceId } : {}),
+    }, {
+      lane: 'CRITICAL_LANE',
+      dlqTier: 'SECURITY_BLOCK',
     });
 
     // PolicyChanged ??TOKEN_REFRESH_SIGNAL [S6]
@@ -163,6 +188,18 @@ export async function deleteAccountPolicy(policyId: string, traceId?: string): P
     // Read accountId before deletion so we can emit the refresh signal [R8].
     const existing = await getDocument<AccountPolicy>(`accountPolicies/${policyId}`);
     await deleteDocument(`accountPolicies/${policyId}`);
+
+    await enqueueAccountLifecycleOutboxEvent('account:policy:changed', {
+      accountId: existing?.accountId ?? 'unknown-account',
+      policyId,
+      changeType: 'deleted',
+      changedBy: existing?.accountId ?? 'system',
+      ...(traceId ? { traceId } : {}),
+    }, {
+      lane: 'CRITICAL_LANE',
+      dlqTier: 'SECURITY_BLOCK',
+    });
+
     // If we found the policy, emit a token-refresh signal so stale claims are invalidated.
     if (existing?.accountId) {
       await emitPolicyChangedRefreshSignal(existing.accountId, traceId);

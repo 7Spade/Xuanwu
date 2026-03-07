@@ -6,16 +6,17 @@
  */
 
 import {
-  publishAccountEvent,
-  type AccountEventKey,
-  type AccountEventPayloadMap,
-} from './account-event-bus';
-import {
   publishOrgEvent,
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
 import type { DlqTier } from '@/shared-kernel';
+
+import {
+  publishAccountEvent,
+  type AccountEventKey,
+  type AccountEventPayloadMap,
+} from './account-event-bus';
 
 export type AccountOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
 
