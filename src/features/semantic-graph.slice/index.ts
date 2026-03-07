@@ -200,15 +200,28 @@ export type {
 } from './centralized-tag';
 
 // =================================================================
-// L5 Blood-Brain Barrier — SemanticGuard [D21-H D21-K]
+// L5 Blood-Brain Barrier — InvariantGuard [D21-H D21-K]
 // Supreme arbiter of semantic-graph validity.  Call validateEdgeProposal()
 // BEFORE addEdge() to enforce all graph invariants at the BBB layer.
 // External slices must never bypass this guard to write edges directly.
 // =================================================================
-export { validateEdgeProposal } from './centralized-guards/semantic-guard';
+export { validateEdgeProposal } from './centralized-guards/invariant-guard';
 export type {
   EdgeProposal,
   SemanticGuardDecision,
   SemanticGuardRejectionCode,
   SemanticGuardResult,
-} from './centralized-guards/semantic-guard';
+} from './centralized-guards/invariant-guard';
+
+// =================================================================
+// L8 Global Consensus Engine — ConsensusEngine [D21-I D21-K]
+// Validates tag governance proposals for logical consistency before
+// forwarding to the L5 BBB InvariantGuard.  Call validateConsensus()
+// BEFORE validateEdgeProposal() in the proposal-stream pipeline.
+// =================================================================
+export { validateConsensus } from './consensus-engine';
+export type {
+  ConsensusDecision,
+  ConsensusRejectionCode,
+  ConsensusResult,
+} from './consensus-engine';
