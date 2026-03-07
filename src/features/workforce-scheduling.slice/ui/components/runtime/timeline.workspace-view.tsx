@@ -12,7 +12,7 @@ import { useCallback, useMemo } from "react";
 
 import type { ScheduleItem } from "@/shared-kernel";
 
-import { useTimelineCommands, useWorkspaceTimeline } from "../_hooks";
+import { useTimelineCommands, useWorkspaceTimeline } from "../../hooks/runtime";
 
 import { TimelineCanvas } from "./timeline-canvas";
 
@@ -37,7 +37,7 @@ export function WorkspaceTimeline() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock3 className="size-4" />
-          ä»¥æ™‚é–“åºæ–¹å¼æª¢è¦– {workspace.name} çš„æ’ç¨‹èˆ‡è¡çªã€‚
+          ä»¥æ??“å??¹å?æª¢è? {workspace.name} ?„æ?ç¨‹è?è¡ç???
         </p>
       </div>
 

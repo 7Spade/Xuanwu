@@ -57,7 +57,7 @@ import type { Timestamp } from '@/shared-kernel/ports';
 import {
   approveScheduleItemWithMember,
   updateScheduleItemStatus,
-} from '../_actions';
+} from '../../../application/commands';
 
 // ---------------------------------------------------------------------------
 // Helpers

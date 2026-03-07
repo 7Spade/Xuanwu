@@ -14,7 +14,7 @@ import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
 
-import { updateScheduleItemStatus } from '../_actions';
+import { updateScheduleItemStatus } from '../../../application/commands';
 
 import {
   AssignedMemberAvatars,

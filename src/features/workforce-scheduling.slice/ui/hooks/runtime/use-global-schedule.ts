@@ -11,7 +11,7 @@ import {
   selectDecisionHistory,
   selectUpcomingEvents,
   selectPresentEvents,
-} from '../_selectors';
+} from '../../../application/selectors';
 
 /**
  * @fileoverview useGlobalSchedule - Hook for filtering and preparing schedule data for the account view.

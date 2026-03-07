@@ -13,7 +13,7 @@ import { useCallback, useMemo } from "react";
 import { useApp } from "@/app-runtime/providers/app-provider";
 import type { ScheduleItem } from "@/shared-kernel";
 
-import { useAccountTimeline, useTimelineCommands } from "../_hooks";
+import { useAccountTimeline, useTimelineCommands } from "../../hooks/runtime";
 
 import { TimelineCanvas } from "./timeline-canvas";
 
@@ -40,7 +40,7 @@ export function AccountTimelineSection() {
         <AlertCircle className="size-10 text-muted-foreground" />
         <h3 className="font-bold">Timeline Not Available</h3>
         <p className="text-sm text-muted-foreground">
-          組織層級的 Timeline 僅支援 organization 維度使用。
+          組�?層�???Timeline ?�支??organization 維度使用??
         </p>
       </div>
     );
@@ -52,7 +52,7 @@ export function AccountTimelineSection() {
         <h1 className="font-headline text-4xl font-bold tracking-tight">Organization Timeline</h1>
         <p className="flex items-center gap-2 text-muted-foreground">
           <Clock3 className="size-4" />
-          使用 vis timeline 呈現組織排程時序。
+          使用 vis timeline ?�現組�??��??��???
         </p>
       </div>
 

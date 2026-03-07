@@ -14,7 +14,7 @@ import { useAuth } from '@/app-runtime/providers/auth-provider';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
 import type { ScheduleItem } from '@/shared-kernel';
 
-import { updateTimelineItemDateRange } from '../_actions';
+import { updateTimelineItemDateRange } from '../../../application/commands';
 
 export function useTimelineCommands() {
   const { state: appState } = useApp();

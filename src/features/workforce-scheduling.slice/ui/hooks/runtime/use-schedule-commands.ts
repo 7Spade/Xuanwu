@@ -22,9 +22,9 @@ import {
     unassignMember,
     updateScheduleItemStatus,
   updateScheduleItemDateRange,
-} from "../_actions";
-import { getAccountActiveAssignments } from "../_queries";
-import { canTransitionScheduleStatus } from "../_schedule.rules";
+} from "../../../application/commands";
+import { getAccountActiveAssignments } from "../../../application/queries";
+import { canTransitionScheduleStatus } from "../../../domain/rules/schedule.rules";
 
 
 export function useScheduleActions() {

@@ -22,7 +22,7 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 import { cn } from "@/shadcn-ui/utils/utils";
 import type { ScheduleItem, Timestamp } from "@/shared-kernel";
 
-import type { TimelineMember } from '../_timeline.types';
+import type { TimelineMember } from '../../types/timeline.types';
 
 type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
 type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;

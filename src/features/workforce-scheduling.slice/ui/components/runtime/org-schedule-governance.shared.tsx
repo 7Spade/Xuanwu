@@ -14,7 +14,7 @@ import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
 import { findSkill } from '@/shared-kernel/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
 
-import type { OrgEligibleMemberView } from '../_queries';
+import type { OrgEligibleMemberView } from '../../../application/queries';
 
 type TimestampLike = { toDate: () => Date };
 

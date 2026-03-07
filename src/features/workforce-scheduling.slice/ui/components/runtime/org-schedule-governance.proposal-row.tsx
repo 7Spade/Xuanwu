@@ -16,7 +16,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn-ui/popover';
 
-import { assignMember, updateScheduleItemStatus } from '../_actions';
+import { assignMember, updateScheduleItemStatus } from '../../../application/commands';
 
 import {
   AssignedMemberAvatars,

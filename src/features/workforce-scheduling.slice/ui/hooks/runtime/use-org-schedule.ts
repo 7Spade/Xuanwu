@@ -16,7 +16,7 @@ import { useState, useEffect } from 'react';
 
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 
-import { subscribeToOrgScheduleProposals, subscribeToPendingProposals, subscribeToConfirmedProposals } from '../_queries';
+import { subscribeToOrgScheduleProposals, subscribeToPendingProposals, subscribeToConfirmedProposals } from '../../../application/queries';
 
 /**
  * Subscribes to all org schedule items for the given orgId.

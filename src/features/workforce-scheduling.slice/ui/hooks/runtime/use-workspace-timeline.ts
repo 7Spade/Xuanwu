@@ -13,8 +13,8 @@ import { useApp } from '@/app-runtime/providers/app-provider';
 import { useWorkspace } from '@/features/workspace.slice';
 import type { ScheduleItem } from '@/shared-kernel';
 
-import { subscribeToWorkspaceTimelineItems } from '../_timeline.queries';
-import type { TimelineMember } from '../_timeline.types';
+import { subscribeToWorkspaceTimelineItems } from '../../../application/queries/timeline.queries';
+import type { TimelineMember } from '../../types/timeline.types';
 
 export function useWorkspaceTimeline() {
   const { workspace } = useWorkspace();
