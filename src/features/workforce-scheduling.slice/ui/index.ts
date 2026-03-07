@@ -29,15 +29,19 @@ export { MemberAssignPopover } from './components/runtime/member-assign-popover'
 export { ProposalDialog } from './components/runtime/proposal-dialog';
 export { ScheduleProposalContent } from './components/runtime/schedule-proposal-content';
 export { ScheduleDataTable } from './components/runtime/schedule-data-table';
-export { AccountCapabilityTabs, WorkspaceCapabilityTabs } from './components/runtime/schedule-capability-tabs';
-export { WorkspaceScheduleTimelineTabs } from './components/runtime/workspace-schedule-timeline-tabs';
 export { UnifiedCalendarGrid } from './components/runtime/unified-calendar-grid';
 export { DemandBoard } from './components/runtime/demand-board';
 export { DemandRow } from './components/runtime/demand-row';
 export { TimelineCanvas } from './components/runtime/timeline-canvas';
 export { AccountTimelineSection } from './components/runtime/timeline.account-view';
 export { WorkspaceTimeline } from './components/runtime/timeline.workspace-view';
-export {
-  AccountTimelineCapabilityTabs,
-  WorkspaceTimelineCapabilityTabs,
-} from './components/runtime/timeline-capability-tabs';
+
+// Legacy API compatibility: account capability tabs are no longer rendered.
+export function AccountCapabilityTabs() {
+  return null;
+}
+
+// Legacy API compatibility: account timeline capability tabs are no longer rendered.
+export function AccountTimelineCapabilityTabs() {
+  return null;
+}

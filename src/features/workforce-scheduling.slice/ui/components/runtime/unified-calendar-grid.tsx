@@ -37,6 +37,10 @@ import {
 
 const DAYS_OF_WEEK = ["日", "一", "二", "三", "四", "五", "六"];
 
+function isMemberReference(value: MemberReference | undefined): value is MemberReference {
+  return value !== undefined;
+}
+
 interface UnifiedCalendarGridProps {
   items: ScheduleItem[];
   members: MemberReference[];
@@ -152,7 +156,9 @@ export function UnifiedCalendarGrid({
                   )}
 
                   {dayItems.map(item => {
-                    const assignedMembers = item.assigneeIds.map(id => membersMap.get(id)).filter(Boolean) as MemberReference[];
+                    const assignedMembers = item.assigneeIds
+                      .map((id) => membersMap.get(id))
+                      .filter(isMemberReference);
 
                     return (
                         <div key={item.id} className="space-y-1">

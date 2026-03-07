@@ -1,17 +1,17 @@
-import { WorkspaceCapabilityTabs, WorkspaceSchedule } from "@/features/workforce-scheduling.slice"
+import { WorkspaceSchedule, WorkspaceTimeline } from "@/features/workforce-scheduling.slice"
 
 /**
  * Module: page.tsx
  * Purpose: Workspace schedule capability route.
- * Responsibilities: mount capability tabs and workspace schedule view.
+ * Responsibilities: render merged workspace schedule and timeline views.
  * Constraints: deterministic logic, respect module boundaries
  */
 
 export default function ScheduleCapabilityPage() {
   return (
-    <div>
-      <WorkspaceCapabilityTabs />
+    <div className="space-y-6">
       <WorkspaceSchedule />
+      <WorkspaceTimeline />
     </div>
   )
 }

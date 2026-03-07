@@ -15,15 +15,27 @@ type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
 type TimestampLike = { toDate: () => Date };
 
 function isTimestampLike(value: unknown): value is TimestampLike {
-  return typeof value === "object" && value !== null && "toDate" in value && typeof (value as TimestampLike).toDate === "function";
+  if (typeof value !== "object" || value === null || !("toDate" in value)) {
+    return false;
+  }
+
+  return typeof Reflect.get(value, "toDate") === "function";
+}
+
+function hasSecondsField(value: unknown): value is { seconds: number } {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  return typeof Reflect.get(value, "seconds") === "number";
 }
 
 export function toDate(timestamp: CalendarTimestamp): Date | null {
   if (!timestamp) return null;
   if (timestamp instanceof Date) return timestamp;
   if (isTimestampLike(timestamp)) return timestamp.toDate();
-  if (typeof (timestamp as { seconds?: number }).seconds === "number") {
-    return new Date((timestamp as { seconds: number }).seconds * 1000);
+  if (hasSecondsField(timestamp)) {
+    return new Date(timestamp.seconds * 1000);
   }
   return null;
 }

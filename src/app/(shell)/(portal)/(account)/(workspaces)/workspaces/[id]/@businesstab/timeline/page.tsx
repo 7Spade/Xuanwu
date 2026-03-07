@@ -1,20 +1,17 @@
-import {
-  WorkspaceTimeline,
-  WorkspaceTimelineCapabilityTabs,
-} from "@/features/workforce-scheduling.slice";
+import { redirect } from "next/navigation";
 
 /**
  * Module: page.tsx
  * Purpose: Workspace timeline capability route.
- * Responsibilities: mount capability tabs and workspace timeline view.
+ * Responsibilities: preserve legacy timeline route via redirect to merged schedule page.
  * Constraints: deterministic logic, respect module boundaries
  */
 
-export default function TimelineCapabilityPage() {
-  return (
-    <div>
-      <WorkspaceTimelineCapabilityTabs />
-      <WorkspaceTimeline />
-    </div>
-  );
+export default async function TimelineCapabilityPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  redirect(`/workspaces/${id}/schedule`);
 }

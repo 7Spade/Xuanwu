@@ -29,7 +29,8 @@ import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import type { ScheduleItem } from '@/shared-kernel';
 
 import { getEligibleMembersForSchedule, type OrgEligibleMemberView } from '../../../application/queries';
-import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
+import { ConfirmedRow } from './org-schedule-governance.confirmed-row';
+import { ProposalRow } from './org-schedule-governance.proposal-row';
 
 // ---------------------------------------------------------------------------
 // Main governance panel

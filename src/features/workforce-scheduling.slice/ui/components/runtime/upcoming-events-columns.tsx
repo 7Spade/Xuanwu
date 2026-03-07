@@ -17,6 +17,10 @@ import { type MemberReference } from "@/shared-kernel"
 import type { ScheduleItem } from '@/shared-kernel'
 import { SKILLS } from "@/shared-kernel/constants/skills"
 
+function isMemberReference(value: MemberReference | undefined): value is MemberReference {
+  return value !== undefined;
+}
+
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 
 export const upcomingEventsColumns: ColumnDef<UpcomingEventItem>[] = [
@@ -88,7 +92,9 @@ export const upcomingEventsColumns: ColumnDef<UpcomingEventItem>[] = [
       const assignees = row.original.assigneeIds || []
       const members = row.original.members || []
       
-      const assigneeDetails = assignees.map(id => members.find(m => m.id === id)).filter(Boolean) as MemberReference[];
+      const assigneeDetails = assignees
+        .map((id) => members.find((m) => m.id === id))
+        .filter(isMemberReference);
 
       if (assigneeDetails.length === 0) {
         return <span className="text-[10px] italic text-muted-foreground/50">Unassigned</span>

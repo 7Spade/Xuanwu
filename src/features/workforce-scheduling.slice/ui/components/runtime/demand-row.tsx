@@ -31,7 +31,11 @@ import {
 type TimestampLike = { toDate: () => Date };
 
 function isTimestampLike(value: unknown): value is TimestampLike {
-  return typeof value === "object" && value !== null && "toDate" in value && typeof (value as TimestampLike).toDate === "function";
+  if (typeof value !== "object" || value === null || !("toDate" in value)) {
+    return false;
+  }
+
+  return typeof Reflect.get(value, "toDate") === "function";
 }
 
 function formatTimestamp(ts: Timestamp | string | undefined): string {
