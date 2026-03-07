@@ -40,6 +40,7 @@ src/app-runtime/ai/
 - `index.ts`
 	- 目前對外匯出：
 		- flow：`extractInvoiceItems`
+		- flow：`adaptUIColorToAccountContext`（含 I/O 型別 `AdaptUIColorToAccountContextInput`、`AdaptUIColorToAccountContextOutput`）
 		- schemas：`docu-parse.ts` 全部匯出
 
 ## Flows
