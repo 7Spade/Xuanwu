@@ -13,6 +13,8 @@ import {
 
 import { app } from '../app.client';
 
+const APP_CHECK_RECAPTCHA_SITE_KEY = '6LfSHGgsAAAAAAjTO77dmeQ7rZntLtaB6kOv4qPT';
+
 let appCheck: AppCheck | null = null;
 let initialized = false;
 
@@ -26,13 +28,8 @@ export function initAppCheck(): AppCheck | null {
     return null;
   }
 
-  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY;
-  if (!siteKey) {
-    return null;
-  }
-
   appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(siteKey),
+    provider: new ReCaptchaV3Provider(APP_CHECK_RECAPTCHA_SITE_KEY),
     isTokenAutoRefreshEnabled: true,
   });
 
