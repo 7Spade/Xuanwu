@@ -58,10 +58,10 @@ These are **tracked migration targets**, not regressions. Per `docs\architecture
 Current D24 violation files (43 total):
 - `src/features/account.slice/` — gov.policy, gov.role, user.profile, user.wallet (4 files)
 - `src/features/identity.slice/` — `_token-refresh-listener.ts` (1 file)
-- `src/features/notification.slice/` — user.notification delivery + queries (2 files)
+- `src/features/notification-hub.slice/` — user.notification delivery + queries (2 files)
 - `src/features/organization.slice/` — core, gov.members, gov.partners, gov.policy, gov.teams (5 files)
-- `src/features/projection.bus/` — account-audit, account-view, org-eligible-member-view, organization-view, tag-snapshot, workspace-scope-guard, workspace-view (9 files)
-- `src/features/scheduling.slice/` — aggregate, components, hooks, projectors, queries (9 files)
+- `src/shared-infra/projection.bus/` — account-audit, account-view, org-eligible-member-view, organization-view, tag-snapshot, workspace-scope-guard, workspace-view (9 files)
+- `src/features/workforce-scheduling.slice/` — aggregate, components, hooks, projectors, queries (9 files)
 - `src/features/skill-xp.slice/` — projector, queries, tag-lifecycle (3 files)
 - `src/features/workspace.slice/` — business.daily, business.document-parser, business.files, business.workflow, core, gov.audit (10 files)
 
@@ -69,15 +69,15 @@ Current D24 violation files (43 total):
 
 ## Workflow for Architecture Alignment
 
-Before making changes, always follow the GEMINI.md workflow:
+Before making changes, always follow the architecture alignment prompts:
 
-1. **`.github/prompts/GEMINI.md`** — master agent orchestration index
-2. **`compliance-audit.prompt.md`** — run before PR to verify docs alignment
-3. **`iterative-alignment-refactor.prompt.md`** — for fixing D-rule violations
+1. **`.github/prompts/compliance-audit.prompt.md`** — run before PR to verify docs alignment
+2. **`.github/prompts/iterative-alignment-refactor.prompt.md`** — for fixing D-rule violations
 
 ## Key Files
 
 - `docs\architecture\00-LogicOverview.md` — **SSOT** architecture rules (D1–D25, invariants #1–#19)
 - `eslint.config.mts` — enforces D1–D25 as ESLint rules
 - `.github/copilot-instructions.md` — agent workflow instructions
-- `.github/prompts/GEMINI.md` — AI prompt orchestration index
+- `.github/prompts/compliance-audit.prompt.md` — architecture compliance prompt
+- `.github/prompts/iterative-alignment-refactor.prompt.md` — iterative alignment refactor prompt

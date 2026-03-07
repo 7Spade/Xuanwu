@@ -5,7 +5,7 @@
 核心要點：
 
 - 每個代理需定義：名稱、簡短描述、可呼叫的 MCP 工具、輸入/輸出契約、與安全/治理考量。
-- 範例代理（與 `.github/agents/AGENTS.md` 同步）：
+- 範例代理（參考 `.github/agents/` 目錄中的各 `*.agent.md` 定義）：
   - Accessibility Expert — 用於無障礙檢測與改進建議；常用工具：`playwright-mcp`、`chrome-devtools`。
   - Context7-Expert — 用於查詢外部官方文件與範例；常用工具：`mcp_io_github_ups_get-library-docs`。
   - Next.js Expert / Expert React Frontend Engineer — 用於路由、Server Component、效能診斷；常用工具：`next-devtools`、`sequential-thinking`。
