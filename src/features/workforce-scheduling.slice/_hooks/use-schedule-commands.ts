@@ -10,12 +10,12 @@
 
 import { useCallback } from "react";
 
-import { getOrgMemberEligibilityWithTier } from "@/features/projection.bus";
-import { tierSatisfies } from "@/shared-kernel";
-import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { getOrgMemberEligibilityWithTier } from "@/features/projection.bus";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { tierSatisfies } from "@/shared-kernel";
+import type { ScheduleItem } from '@/shared-kernel';
 
 import {
     assignMember,

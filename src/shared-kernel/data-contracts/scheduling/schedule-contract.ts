@@ -5,8 +5,8 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports/i-firestore.repo';
 import type { SkillRequirement } from '@/shared-kernel/data-contracts/skill-tier';
+import type { Timestamp } from '@/shared-kernel/ports/i-firestore.repo';
 
 export interface Location {
   building?: string;

@@ -1,4 +1,5 @@
 import type { ImplementsEventEnvelopeContract } from '@/shared-kernel';
+
 import type { TagLifecycleEventPayloadMap, TagLifecycleEventKey } from './_events';
 
 type TagEventHandler<K extends TagLifecycleEventKey> = (

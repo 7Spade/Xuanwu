@@ -19,8 +19,8 @@
 
 import { tagSlugRef } from '@/shared-kernel';
 import type { TaxonomyDimension, TaxonomyNode, TagSlugRef } from '@/shared-kernel';
-import { TAXONOMY_DIMENSIONS } from './_semantic-authority';
 
+import { TAXONOMY_DIMENSIONS } from './_semantic-authority';
 import type {
   TemporalTagAssignment,
   TemporalConflict,

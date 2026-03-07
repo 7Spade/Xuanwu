@@ -12,7 +12,11 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
+import { useStorage } from '@/features/workspace.slice/business.files';
+import { useWorkspace } from '@/features/workspace.slice/core';
 import { Button } from '@/shadcn-ui/button';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
 import {
   Dialog,
   DialogContent,
@@ -30,11 +34,8 @@ import {
 } from '@/shadcn-ui/dropdown-menu';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
-import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
 
-import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
-import { useStorage } from '@/features/workspace.slice/business.files';
-import { useWorkspace } from '@/features/workspace.slice/core';
+
 import { useAttachmentsDialogController, useLocationDialogController } from '../_hooks';
 import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 

@@ -22,15 +22,15 @@
  */
 
 import { publishOrgEvent } from '@/features/organization.slice';
+import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
+import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import type { OrganizationRole } from '@/shared-kernel';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/shared-kernel';
-import type { OrganizationRole } from '@/shared-kernel';
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 export interface AccountRoleRecord {
   accountId: string;

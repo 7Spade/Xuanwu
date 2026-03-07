@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 
-import { useAccount } from "@/features/workspace.slice";
 import { useApp } from "@/app-runtime/providers/app-provider";
+import { useAccount } from "@/features/workspace.slice";
 
 import {
   selectAllScheduleItems,

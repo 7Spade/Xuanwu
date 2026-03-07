@@ -9,8 +9,8 @@
  *   import { ORG_ROLE_META, ORGANIZATION_ROLES } from '@/shared/constants/roles';
  */
 
-import type { OrganizationRole } from '@/shared-kernel';
 import type { WorkspaceRole } from '@/features/workspace.slice';
+import type { OrganizationRole } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Organization roles

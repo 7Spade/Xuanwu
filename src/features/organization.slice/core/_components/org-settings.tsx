@@ -4,9 +4,8 @@ import { AlertTriangle, Building2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shadcn-ui/alert-dialog";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";
@@ -14,6 +13,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
 import { Textarea } from "@/shadcn-ui/textarea";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 
 import { useOrganizationManagement } from "../_hooks/use-organization-management";
 

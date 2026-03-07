@@ -35,12 +35,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, UserCheck, XCircle, Clock, CheckCircle2 } from 'lucide-react';
 import { useState, useCallback, useMemo, useEffect } from 'react';
 
-import type { SkillRequirement } from '@/shared-kernel';
-import type { ScheduleItem } from '@/shared-kernel';
-import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/app-runtime/providers/app-provider';
-import { SKILLS } from '@/shared-kernel/constants/skills';
-import type { Timestamp } from '@/shared-kernel/ports';
+import { useAccount } from '@/features/workspace.slice';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
@@ -53,6 +49,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shadcn-ui/select';
+import type { ScheduleItem } from '@/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import { SKILLS } from '@/shared-kernel/constants/skills';
+import type { Timestamp } from '@/shared-kernel/ports';
 
 import {
   approveScheduleItemWithMember,

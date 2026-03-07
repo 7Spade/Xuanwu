@@ -5,7 +5,6 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { ScheduleItem } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import {
   collection,
@@ -16,6 +15,7 @@ import {
   type Unsubscribe,
   where,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { ScheduleItem } from '@/shared-kernel';
 
 function toScheduleItemSnapshot(doc: QueryDocumentSnapshot): ScheduleItem {
   return {

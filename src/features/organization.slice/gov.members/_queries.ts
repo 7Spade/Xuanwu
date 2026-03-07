@@ -7,10 +7,10 @@
  * onSnapshot on the org document provides real-time member list updates.
  */
 
-import type { Account, MemberReference } from '@/shared-kernel'
 import { db } from '@/shared-infra/frontend-firebase'
 import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+import type { Account, MemberReference } from '@/shared-kernel'
 
 /**
  * Fetches the members array of an organization account.

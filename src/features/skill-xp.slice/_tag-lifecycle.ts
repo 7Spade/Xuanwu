@@ -3,11 +3,11 @@
  *
  * VS4_TAG_SUBSCRIBER [R3] ??keeps SKILL_TAG_POOL up to date when TagLifecycleEvents arrive.
  *
- * Per 00-LogicOverview.md [R3] SKILL_TAG_POOL ?´?�路å???�環:
+ * Per 00-LogicOverview.md [R3] SKILL_TAG_POOL ?´?�路å???�環:
  *   IER BACKGROUND_LANE ??VS4_TAG_SUBSCRIBER ??SKILL_TAG_POOL
  *
  * This subscriber is the explicit named handler the Event Funnel delegates to.
- * It stays within the skill-xp.slice boundary (??��??§?��?�? 不穿??é??? and
+ * It stays within the skill-xp.slice boundary (??��??§?��?�? 不穿??é??? and
  * MUST NOT import from other feature slices.
  *
  * Cross-org fan-out strategy:
@@ -20,11 +20,6 @@
  */
 
 
-import type {
-  TagUpdatedPayload,
-  TagDeprecatedPayload,
-  TagDeletedPayload,
-} from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import {
   collectionGroup,
@@ -33,6 +28,11 @@ import {
   getDocs,
   type QueryDocumentSnapshot,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type {
+  TagUpdatedPayload,
+  TagDeprecatedPayload,
+  TagDeletedPayload,
+} from '@/shared-kernel';
 
 import {
   syncTagUpdateToPool,

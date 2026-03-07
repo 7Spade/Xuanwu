@@ -4,13 +4,13 @@ import { ArrowLeft, UserPlus, Trash2, Users } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
-import { useTeamManagement } from "@/features/organization.slice"
-import type { MemberReference, Team } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
+import { useTeamManagement } from "@/features/organization.slice"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent } from "@/shadcn-ui/card"
-import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import type { MemberReference, Team } from "@/shared-kernel"
 
 /**
  * TeamDetailView - ?瑁痊嚗恣?摰??????(Team Member 皜)

@@ -13,14 +13,14 @@
  */
 
 import {
+  grantIndividualWorkspaceAccess,
+  revokeIndividualWorkspaceAccess,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/shared-kernel';
-import {
-  grantIndividualWorkspaceAccess,
-  revokeIndividualWorkspaceAccess,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
 
 import type { WorkspaceRole } from './_types';
 

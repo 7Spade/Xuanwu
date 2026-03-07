@@ -6,13 +6,14 @@ import { useActionState, useTransition, useRef, useEffect, useCallback, useState
 import { logDomainError } from '@/features/observability';
 import { classifyCostItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
+import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from '@/shadcn-ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
 import { useToast } from '@/shadcn-ui/hooks/use-toast';
 
 
-import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
-import { useWorkspace } from '@/features/workspace.slice/core';
+
 import {
   extractDataFromDocument,
   type ActionState,

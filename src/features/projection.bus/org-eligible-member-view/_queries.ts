@@ -13,11 +13,11 @@
  *   ORG_ELIGIBLE_MEMBER_VIEW -.??getTier 閮?嚗?摮?DB嚗?
  */
 
-import { resolveSkillTier } from '@/shared-kernel';
-import type { SkillTier } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { SkillTier } from '@/shared-kernel';
+import { resolveSkillTier } from '@/shared-kernel';
 
 import type { OrgEligibleMemberEntry } from './_projector';
 

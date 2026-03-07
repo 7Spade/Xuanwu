@@ -7,7 +7,8 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 import { GlobalSearch } from "@/features/global-search.slice";
-import type { Account } from '@/shared-kernel'
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,9 +20,7 @@ import {
 import { Button } from "@/shadcn-ui/button";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
-
-import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
-import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import type { Account } from '@/shared-kernel'
 
 import { NotificationCenter } from "./notification-center";
 

@@ -3,8 +3,6 @@
 import { useEffect, useRef } from "react";
 
 import { handleScheduleProposed } from "@/features/workforce-scheduling.slice";
-import { toast } from "@/shadcn-ui/hooks/use-toast";
-
 import { createIssue } from "@/features/workspace.slice/business.issues";
 import {
   advanceWorkflowToStage,
@@ -12,6 +10,8 @@ import {
   handleIssueResolvedForWorkflow,
   type WorkflowStage,
 } from "@/features/workspace.slice/business.workflow";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+
 import { useWorkspace } from '../_components/workspace-provider';
 
 import { useApp } from './use-app';

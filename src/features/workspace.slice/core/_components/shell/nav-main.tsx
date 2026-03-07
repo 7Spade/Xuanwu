@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   Collapsible,
   CollapsibleContent,
@@ -28,6 +27,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuButton,
 } from "@/shadcn-ui/sidebar";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 
 interface NavMainProps {
   pathname: string;

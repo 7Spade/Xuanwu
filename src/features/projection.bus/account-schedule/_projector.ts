@@ -16,10 +16,10 @@
  */
 
 
-import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { versionGuardAllows } from '@/shared-kernel';
 
 export interface AccountScheduleProjection {
   accountId: string;

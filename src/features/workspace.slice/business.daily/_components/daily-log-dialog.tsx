@@ -15,15 +15,15 @@
 import { CornerUpLeft, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import type { Account } from "@/shared-kernel";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import type { Timestamp } from "@/shared-kernel/ports";
 import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
 import { Button } from "@/shadcn-ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shadcn-ui/dialog";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import { Textarea } from "@/shadcn-ui/textarea";
+import type { Account } from "@/shared-kernel";
+import type { Timestamp } from "@/shared-kernel/ports";
 
 
 import { addDailyLogComment } from "../_actions";

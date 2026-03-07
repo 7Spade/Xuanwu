@@ -21,15 +21,15 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { useApp } from '@/app-runtime/providers/app-provider';
 import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
-import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
-import { useApp } from '@/app-runtime/providers/app-provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
 import { ScrollArea } from '@/shadcn-ui/scroll-area';
-import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
+import type { ScheduleItem } from '@/shared-kernel';
 
 import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 

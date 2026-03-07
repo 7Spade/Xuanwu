@@ -16,14 +16,14 @@
  *   policy record for auditability. Must NOT be regenerated here.
  */
 
+import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
+import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/shared-kernel';
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 // ---------------------------------------------------------------------------
 // TOKEN_REFRESH_SIGNAL helper [S6]

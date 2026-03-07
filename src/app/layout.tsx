@@ -2,10 +2,10 @@
 import type {Metadata} from 'next';
 
 import './globals.css';
-import { I18nProvider } from '@/app-runtime/providers/i18n-provider';
 import { AppProvider } from '@/app-runtime/providers/app-provider';
 import { AuthProvider } from '@/app-runtime/providers/auth-provider';
 import { FirebaseClientProvider } from '@/app-runtime/providers/firebase-provider';
+import { I18nProvider } from '@/app-runtime/providers/i18n-provider';
 import { ThemeProvider } from '@/app-runtime/providers/theme-provider';
 import {Toaster} from '@/shadcn-ui/toaster';
 import { cn } from '@/shadcn-ui/utils/utils';

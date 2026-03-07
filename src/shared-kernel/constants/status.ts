@@ -14,9 +14,9 @@
  *   - NotificationType        (??@/shared-kernel ??Notification.type)
  */
 
-import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/shared-kernel';
 import type { AuditLogType } from '@/features/workspace.slice';
 import type { WorkspaceLifecycleState } from '@/features/workspace.slice';
+import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // ScheduleStatus

@@ -12,17 +12,17 @@
  */
 
 import {
-  type CommandResult,
-  commandSuccess,
-  commandFailureFrom,
-} from "@/shared-kernel";
-import type { Account, ThemeConfig } from "@/shared-kernel";
-import {
   createOrganization as createOrganizationFacade,
   updateOrganizationSettings as updateOrganizationSettingsFacade,
   deleteOrganization as deleteOrganizationFacade,
   createTeam as createTeamFacade,
 } from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from "@/shared-kernel";
+import type { Account, ThemeConfig } from "@/shared-kernel";
 
 export async function createOrganization(
   organizationName: string,

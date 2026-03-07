@@ -25,9 +25,9 @@
  */
 
 import type { TagSlugRef } from '../../centralized-types';
-import { resolveDispatchPolicy } from '../policy-mapper';
 import { dispatchForTag } from '../dispatch-bridge';
 import type { DispatchCommand } from '../dispatch-bridge';
+import { resolveDispatchPolicy } from '../policy-mapper';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

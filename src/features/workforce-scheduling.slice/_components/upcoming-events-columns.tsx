@@ -4,9 +4,6 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { ArrowUpDown } from "lucide-react"
 
-import type { ScheduleItem } from '@/shared-kernel'
-import { type MemberReference } from "@/shared-kernel"
-import { SKILLS } from "@/shared-kernel/constants/skills"
 import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
@@ -16,6 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shadcn-ui/tooltip"
+import { type MemberReference } from "@/shared-kernel"
+import type { ScheduleItem } from '@/shared-kernel'
+import { SKILLS } from "@/shared-kernel/constants/skills"
 
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 

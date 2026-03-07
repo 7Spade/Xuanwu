@@ -21,8 +21,8 @@
  */
 
 import type { NotificationPriority } from '@/shared-kernel';
-import { NOTIFICATION_PRIORITY_ORDER } from './_notification-authority';
 
+import { NOTIFICATION_PRIORITY_ORDER } from './_notification-authority';
 import type {
   TagRoutingRule,
   TagRoutingDecision,

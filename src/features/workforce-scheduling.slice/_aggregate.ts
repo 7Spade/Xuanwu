@@ -5,7 +5,7 @@
  *   draft ??proposed ??confirmed | cancelled
  *
  * Per 00-LogicOverview.md:
- *   WORKSPACE_OUTBOX -> ScheduleProposed（跨層交?��?程�?-> ORGANIZATION_SCHEDULE
+ *   WORKSPACE_OUTBOX -> ScheduleProposed（跨層交?��?程�?-> ORGANIZATION_SCHEDULE
  *   ORGANIZATION_SCHEDULE ??ORGANIZATION_EVENT_BUS ??ACCOUNT_NOTIFICATION_ROUTER (FCM Layer 2+)
  *
  * Aggregate lifecycle (state machine):
@@ -28,10 +28,10 @@
 
 import { publishOrgEvent } from '@/features/organization.slice';
 import { getOrgMemberEligibility } from '@/features/projection.bus';
+import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { resolveSkillTier, tierSatisfies } from '@/shared-kernel';
 import type { WorkspaceScheduleProposedPayload, SkillRequirement } from '@/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
-import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 import {
   type ScheduleApprovalResult,

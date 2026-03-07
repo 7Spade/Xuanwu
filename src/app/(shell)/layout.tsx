@@ -19,9 +19,9 @@
 
 import { Fragment, type ReactNode } from "react";
 
-import { useTokenRefreshListener } from "@/features/identity.slice";
 import { AccountProvider } from "@/app-runtime/providers/account-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useTokenRefreshListener } from "@/features/identity.slice";
 import { SidebarProvider } from "@/shadcn-ui/sidebar";
 
 type ShellLayoutProps = {

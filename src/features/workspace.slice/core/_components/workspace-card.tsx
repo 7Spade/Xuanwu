@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,6 +41,7 @@ import {
 } from "@/shadcn-ui/card";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn-ui/tooltip";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 
 import { deleteWorkspace, updateWorkspaceSettings } from "../_actions";
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";

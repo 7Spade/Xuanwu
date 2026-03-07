@@ -4,6 +4,7 @@
 import { Terminal } from "lucide-react";
 import Link from "next/link";
 
+import type { Workspace } from "@/features/workspace.slice/core/_types";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -14,7 +15,6 @@ import {
   SidebarGroupContent,
 } from "@/shadcn-ui/sidebar";
 
-import type { Workspace } from "@/features/workspace.slice/core/_types";
 
 interface NavWorkspacesProps {
   workspaces: Workspace[];

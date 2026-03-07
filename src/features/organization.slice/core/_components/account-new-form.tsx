@@ -3,8 +3,8 @@
 import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useApp } from "@/app-runtime/providers/app-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";

@@ -29,15 +29,15 @@
  */
 
 import type { TagSlugRef } from '../../centralized-types';
-import { activateTag } from '../tag-lifecycle.workflow';
-import type { OutboxLifecycleEvent } from '../tag-lifecycle.workflow';
+import { dispatchForTag } from '../dispatch-bridge';
+import type { DispatchCommand } from '../dispatch-bridge';
 import {
   registerPolicy,
   type DispatchPolicy,
   type DispatchActionKind,
 } from '../policy-mapper';
-import { dispatchForTag } from '../dispatch-bridge';
-import type { DispatchCommand } from '../dispatch-bridge';
+import { activateTag } from '../tag-lifecycle.workflow';
+import type { OutboxLifecycleEvent } from '../tag-lifecycle.workflow';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

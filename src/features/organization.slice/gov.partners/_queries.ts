@@ -7,18 +7,18 @@
  * onSnapshot on the org account document provides real-time updates.
  *
  * Per 00-LogicOverview.md:
- *   ORGANIZATION_PARTNER["organization-governance.partner?—ï???¿î°ªä¸°éš¡?ç¹??­î??¸è¯???î¢?"]
- *   ORGANIZATION_PARTNER -.->|?­î??¸æ’£???î¼??…î??œå??†î??ˆÂ€?˜îŸ¡?…å???SKILL_TAG_POOL
+ *   ORGANIZATION_PARTNER["organization-governance.partner?ï¿½ï¿½???ï¿½î°ªä¸°éš¡?ï¿½??ï¿½ï¿½??ï¿½è¯???ï¿½?"]
+ *   ORGANIZATION_PARTNER -.->|?ï¿½ï¿½??ï¿½æ’£???ï¿½??ï¿½ï¿½??ï¿½ï¿½??ï¿½ï¿½??ï¿½Â€?ï¿½îŸ¡?ï¿½ï¿½???SKILL_TAG_POOL
  *
  * Boundary constraint:
  *   These queries read ONLY from this org's account document and subcollections.
  *   Skill tag data is referenced by tagSlug ??read from skill-xp.slice.
  */
 
-import type { Account, PartnerInvite, Team } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import { collection, doc, onSnapshot, orderBy, query, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { Account, PartnerInvite, Team } from '@/shared-kernel';
 
 /**
  * Fetches all external partner groups for an organization.

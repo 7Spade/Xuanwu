@@ -5,7 +5,6 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Account } from '@/shared-kernel'
 import { db } from '@/shared-infra/frontend-firebase'
 import {
   collection,
@@ -15,6 +14,7 @@ import {
   where,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils'
+import type { Account } from '@/shared-kernel'
 
 export function subscribeToAccountsForUser(
   userId: string,

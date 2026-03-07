@@ -30,11 +30,11 @@ import type {
   ScheduleProposalCancelledPayload,
   ScheduleAssignRejectedPayload,
 } from '@/features/organization.slice';
+import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 /** Firestore path for a schedule item (single source of truth). */
 function scheduleItemPath(orgId: string, scheduleItemId: string): string {

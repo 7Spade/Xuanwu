@@ -11,8 +11,6 @@
  */
 
 
-import type { ImplementsStalenessContract } from '@/shared-kernel';
-import type { ScheduleItem } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import {
   collection,
@@ -24,6 +22,8 @@ import {
   type QueryDocumentSnapshot,
   type QuerySnapshot,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { ImplementsStalenessContract } from '@/shared-kernel';
+import type { ScheduleItem } from '@/shared-kernel';
 
 /** Demand Board staleness declaration. [S4] */
 export const DEMAND_BOARD_STALENESS: ImplementsStalenessContract = {

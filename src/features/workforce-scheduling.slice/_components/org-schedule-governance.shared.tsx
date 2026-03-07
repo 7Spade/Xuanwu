@@ -8,12 +8,12 @@
 'use client';
 
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
+import { Avatar, AvatarFallback } from '@/shadcn-ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn-ui/tooltip';
 import { tierSatisfies } from '@/shared-kernel';
 import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
 import { findSkill } from '@/shared-kernel/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
-import { Avatar, AvatarFallback } from '@/shadcn-ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn-ui/tooltip';
 
 type TimestampLike = { toDate: () => Date };
 

@@ -20,13 +20,13 @@
  * ZERO infrastructure imports (no Firebase, no React, no I/O).
  */
 
-import type { SemanticRelationType } from '../centralized-types';
 import {
   buildAdjacencyList,
   buildIsAAdjacencyList,
   buildRequiresAdjacencyList,
 } from '../centralized-edges/adjacency-list';
 import { getAllEdges } from '../centralized-edges/semantic-edge-store';
+import type { SemanticRelationType } from '../centralized-types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

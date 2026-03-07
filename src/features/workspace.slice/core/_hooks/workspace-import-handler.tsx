@@ -1,9 +1,6 @@
 import type { MutableRefObject } from 'react';
 
 import { shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
-import { toast } from '@/shadcn-ui/hooks/use-toast';
-import { ToastAction } from '@/shadcn-ui/toast';
-
 import {
   finishParsingImport,
   markParsingIntentFailed,
@@ -13,6 +10,8 @@ import {
 import { createTask, hasTasksForSourceIntent, reconcileIntentTasks } from '@/features/workspace.slice/business.tasks';
 import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
 import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ToastAction } from '@/shadcn-ui/toast';
 
 const PARSING_IMPORT_TERMINAL_STATUSES = new Set([
   'applied',

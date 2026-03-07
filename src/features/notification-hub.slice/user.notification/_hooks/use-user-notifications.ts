@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import type { HubNotification } from '@/features/notification-hub.slice/_contract';
 import { createNotificationListener } from '@/features/notification-hub.slice/_services/notification-listener';
+
 import { markNotificationRead } from '../_queries';
 
 export function useUserNotifications(accountId: string | undefined, maxCount = 20) {

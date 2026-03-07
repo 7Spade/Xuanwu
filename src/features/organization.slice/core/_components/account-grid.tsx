@@ -4,7 +4,6 @@
 import { Globe, MoreVertical, Users, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-import { type Account } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
 import { Button } from "@/shadcn-ui/button"
 import {
@@ -15,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shadcn-ui/card"
+import { type Account } from "@/shared-kernel"
 
 interface AccountGridProps {
     accounts: Account[]

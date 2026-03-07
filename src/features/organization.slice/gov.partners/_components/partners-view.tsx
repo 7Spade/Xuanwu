@@ -4,12 +4,12 @@ import { Handshake, Plus, ArrowRight, Globe, AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
-import { useI18n } from "@/app-runtime/providers/i18n-provider"
-import type { Team } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 import { 
   Dialog, 
   DialogContent, 
@@ -21,7 +21,7 @@ import {
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { Input } from "@/shadcn-ui/input"
 import { Label } from "@/shadcn-ui/label"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import type { Team } from "@/shared-kernel"
 
 import { usePartnerManagement } from "../_hooks/use-partner-management"
 

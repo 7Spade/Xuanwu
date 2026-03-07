@@ -5,6 +5,7 @@ import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, Messag
 import { useMemo, useState } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
@@ -16,7 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shadcn-ui/sheet";
 import { Textarea } from "@/shadcn-ui/textarea";
 
-import { useWorkspace } from '@/features/workspace.slice/core';
 import { type WorkspaceIssue } from "../_types";
 
 

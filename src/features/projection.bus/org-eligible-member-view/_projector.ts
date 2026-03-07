@@ -19,10 +19,10 @@
  */
 
 
-import { versionGuardAllows } from '@/shared-kernel';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { versionGuardAllows } from '@/shared-kernel';
 
 /**
  * Per-member entry stored in Firestore.

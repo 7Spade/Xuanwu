@@ -3,8 +3,8 @@
 import { ShieldCheck, ShieldAlert, Users, AlertCircle } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 
-import { useAccount } from "@/features/workspace.slice"
 import { useApp } from "@/app-runtime/providers/app-provider"
+import { useAccount } from "@/features/workspace.slice"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn-ui/table"
 
 // DEPRECATED FOR WRITE: This permission matrix visualises mappings between internal teams and

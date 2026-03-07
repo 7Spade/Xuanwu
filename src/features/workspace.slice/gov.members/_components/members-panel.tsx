@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 import { useState, useMemo } from "react";
 
-import { type Team, type MemberReference } from "@/shared-kernel";
 import { useApp } from '@/app-runtime/providers/app-provider';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { type WorkspaceRole } from "@/features/workspace.slice/gov.role/_types";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shadcn-ui/card";
@@ -24,9 +25,7 @@ import { Label } from "@/shadcn-ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import { cn } from "@/shadcn-ui/utils/utils";
-
-import { useWorkspace } from '@/features/workspace.slice/core';
-import { type WorkspaceRole } from "@/features/workspace.slice/gov.role/_types";
+import { type Team, type MemberReference } from "@/shared-kernel";
 
 
 const getErrorMessage = (error: unknown, fallback: string) =>

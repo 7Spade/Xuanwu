@@ -7,13 +7,13 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
+import { setScheduleItemDateRange } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
   type CommandResult,
   commandFailureFrom,
   commandSuccess,
 } from '@/shared-kernel';
-import { setScheduleItemDateRange } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 export async function updateTimelineItemDateRange(
   accountId: string,

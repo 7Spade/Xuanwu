@@ -5,9 +5,9 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { CheckCircle, XCircle, ArrowUpDown } from "lucide-react"
 
-import type { ScheduleItem } from '@/shared-kernel'
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
+import type { ScheduleItem } from '@/shared-kernel'
 
 export type DecisionHistoryItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'status' | 'updatedAt'>
 

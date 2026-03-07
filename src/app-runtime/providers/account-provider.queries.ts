@@ -5,8 +5,9 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { ScheduleItem } from '@/shared-kernel'
-import type { PartnerInvite } from '@/shared-kernel'
+import type { DailyLog } from '@/features/workspace.slice/business.daily/_types'
+import type { Workspace } from '@/features/workspace.slice/core/_types'
+import type { AuditLog } from '@/features/workspace.slice/gov.audit/_types'
 import { db } from '@/shared-infra/frontend-firebase'
 import {
   collection,
@@ -18,9 +19,8 @@ import {
   where,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils'
-import type { DailyLog } from '@/features/workspace.slice/business.daily/_types'
-import type { AuditLog } from '@/features/workspace.slice/gov.audit/_types'
-import type { Workspace } from '@/features/workspace.slice/core/_types'
+import type { ScheduleItem } from '@/shared-kernel'
+import type { PartnerInvite } from '@/shared-kernel'
 
 export function subscribeToDailyLogsForAccount(
   accountId: string,

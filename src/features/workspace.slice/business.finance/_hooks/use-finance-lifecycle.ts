@@ -255,7 +255,7 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
     if (!acceptanceReady) {
       return {
         ok: false as const,
-        message: '[#A15] Acceptance=OK ?��??�送出請款??,
+        message: '[#A15] Acceptance=OK 才能送出請款。',
       };
     }
 
@@ -263,7 +263,7 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
     if (lineItems.length === 0) {
       return {
         ok: false as const,
-        message: '[#A15] Claim Preparation ?�?��?一?�勾?��??��? quantity > 0??,
+        message: '[#A15] Claim Preparation 需至少一筆勾選且 quantity > 0。',
       };
     }
 
@@ -285,11 +285,11 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
 
   const completePayment = useCallback(() => {
     if (stage !== 'payment-term') {
-      throw new Error('[#A16] 禁止跳�??�命?��?步�??�接確�??�款??);
+      throw new Error('[#A16] 禁止跳步直接確認收款。');
     }
 
     if (currentClaimLineItems.length === 0) {
-      throw new Error('[#A16] ?�?��???Claim/Invoice/PaymentTerm 並具?��??��?款�??��?);
+      throw new Error('[#A16] 必須完成 Claim/Invoice/PaymentTerm 並具有有效請款項目。');
     }
 
     const paidAmount = currentClaimLineItems.reduce((sum, line) => sum + line.lineAmount, 0);
@@ -315,7 +315,7 @@ export function useFinanceLifecycle(input: UseFinanceLifecycleInput) {
 
   const closeCycle = useCallback(() => {
     if (stage !== 'payment-received') {
-      throw new Error('[#A16] ?�??Payment Received ?�段?�能?��??�輪請款??);
+      throw new Error('[#A16] 需在 Payment Received 階段才能結束本輪請款。');
     }
 
     const hasOutstanding = financeSnapshot.outstandingClaimableAmount > 0;

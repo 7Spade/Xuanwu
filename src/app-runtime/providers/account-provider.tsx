@@ -9,6 +9,8 @@
 
 import { type ReactNode, useEffect, useReducer } from 'react'
 
+import { type AccountAction, AccountContext, type AccountState } from '../contexts/account-context'
+
 import {
   subscribeToAuditLogsForAccount,
   subscribeToDailyLogsForAccount,
@@ -16,8 +18,6 @@ import {
   subscribeToScheduleItemsForAccount,
   subscribeToWorkspacesForAccount,
 } from './account-provider.queries'
-
-import { type AccountAction, AccountContext, type AccountState } from '../contexts/account-context'
 import { useApp } from './app-provider'
 
 const initialState: AccountState = {

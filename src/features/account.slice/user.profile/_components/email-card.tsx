@@ -3,12 +3,12 @@
 import { Mail, Loader2 } from "lucide-react";
 import { useState } from "react";
 
-import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
+import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter";
 
 interface EmailCardProps {
   currentEmail: string;
@@ -95,7 +95,7 @@ export function EmailCard({ currentEmail }: EmailCardProps) {
           className="ml-auto text-xs font-bold uppercase tracking-widest"
         >
           {isSending ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-          {isSending ? "Sending?? : "Send Verification Email"}
+          {isSending ? "Sending..." : "Send Verification Email"}
         </Button>
       </CardFooter>
     </Card>

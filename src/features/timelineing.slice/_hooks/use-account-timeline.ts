@@ -9,9 +9,9 @@
 
 import { useMemo } from 'react';
 
-import type { ScheduleItem } from '@/shared-kernel';
-import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/app-runtime/providers/app-provider';
+import { useAccount } from '@/features/workspace.slice';
+import type { ScheduleItem } from '@/shared-kernel';
 
 import type { TimelineMember } from '../_types';
 

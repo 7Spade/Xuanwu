@@ -4,13 +4,13 @@ import { Users, Plus, FolderTree, ArrowRight, AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 
+import { useApp } from "@/app-runtime/providers/app-provider"
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { useTeamManagement } from "@/features/organization.slice"
-import type { Team } from "@/shared-kernel"
-import { useApp } from "@/app-runtime/providers/app-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 import { 
   Dialog, 
   DialogContent, 
@@ -21,7 +21,7 @@ import {
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { Input } from "@/shadcn-ui/input"
 import { Label } from "@/shadcn-ui/label"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import type { Team } from "@/shared-kernel"
 
 /**
  * TeamsView - Manages the logical groupings of INTERNAL members within the dimension.

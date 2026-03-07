@@ -9,11 +9,11 @@
  */
 
 
-import { versionGuardAllows } from '@/shared-kernel';
-import type { Account } from '@/shared-kernel';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import type { Account } from '@/shared-kernel';
+import { versionGuardAllows } from '@/shared-kernel';
 
 export interface OrganizationViewRecord {
   orgId: string;

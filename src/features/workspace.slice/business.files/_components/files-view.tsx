@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import {
@@ -51,8 +51,8 @@ import {
   TableRow,
 } from "@/shadcn-ui/table";
 import { cn } from "@/shadcn-ui/utils/utils";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 
-import { useWorkspace } from '@/features/workspace.slice/core';
 import {
   createWorkspaceFile,
   addWorkspaceFileVersion,

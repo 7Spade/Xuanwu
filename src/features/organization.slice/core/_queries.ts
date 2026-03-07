@@ -7,10 +7,10 @@
  * onSnapshot provides real-time updates.
  */
 
-import type { Account } from '@/shared-kernel'
 import { db } from '@/shared-infra/frontend-firebase'
 import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+import type { Account } from '@/shared-kernel'
 
 /**
  * Fetches a single organization account by ID.

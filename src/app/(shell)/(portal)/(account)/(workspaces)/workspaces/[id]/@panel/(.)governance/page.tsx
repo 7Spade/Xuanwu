@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 
 import { GovernanceSidebar , useScheduleActions } from "@/features/workforce-scheduling.slice"
-import type { ScheduleItem } from "@/shared-kernel"
 import { useWorkspace } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shadcn-ui/sheet"
+import type { ScheduleItem } from "@/shared-kernel"
 
 export default function GovernancePanelPage() {
   const router = useRouter()

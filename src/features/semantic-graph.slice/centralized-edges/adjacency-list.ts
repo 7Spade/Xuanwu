@@ -29,6 +29,7 @@
  */
 
 import type { SemanticEdge, SemanticRelationType } from '../centralized-types';
+
 import { getAllEdges } from './semantic-edge-store';
 
 // ─── Types ────────────────────────────────────────────────────────────────────

@@ -22,9 +22,14 @@
 import { BookOpen, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useOptimistic, useState, useTransition } from 'react';
 
-import { addOrgSkillTagAction, removeOrgSkillTagAction } from '@/features/skill-xp.slice';
-import { getOrgSkillTags } from '@/features/skill-xp.slice';
 import { useApp } from '@/app-runtime/providers/app-provider';
+import { getOrgSkillTags } from '@/features/skill-xp.slice';
+import { addOrgSkillTagAction, removeOrgSkillTagAction } from '@/features/skill-xp.slice';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import {
   SKILL_GROUPS,
   SKILL_SUB_CATEGORY_BY_KEY,
@@ -32,11 +37,6 @@ import {
   type SkillGroup,
   type SkillSubCategory,
 } from '@/shared-kernel/constants/skills';
-import { Badge } from '@/shadcn-ui/badge';
-import { Button } from '@/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { toast } from '@/shadcn-ui/hooks/use-toast';
-import { ScrollArea } from '@/shadcn-ui/scroll-area';
 
 // ---------------------------------------------------------------------------
 // Main component

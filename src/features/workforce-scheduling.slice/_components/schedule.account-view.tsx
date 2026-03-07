@@ -21,8 +21,6 @@ import { AlertCircle, UserPlus, Calendar, ListChecks, History, Users, BookOpen, 
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 
-import type { ScheduleItem } from '@/shared-kernel';
-import type { MemberReference } from "@/shared-kernel";
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { Button } from "@/shadcn-ui/button";
 import {
@@ -36,6 +34,8 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import { cn } from "@/shadcn-ui/utils/utils";
+import type { MemberReference } from "@/shared-kernel";
+import type { ScheduleItem } from '@/shared-kernel';
 
 import { useGlobalSchedule } from "../_hooks/use-global-schedule";
 import { useScheduleActions } from "../_hooks/use-schedule-commands";

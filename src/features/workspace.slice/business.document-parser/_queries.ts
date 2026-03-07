@@ -3,13 +3,13 @@
  *
  * Provides a reactive subscription to the `parsingIntents` subcollection so that
  * the DocumentParser view can display a live history of all ParsingIntents
- * (Digital Twin è§???ˆç?) without additional one-shot fetches.
+ * (Digital Twin ï¿½???ï¿½ï¿½?) without additional one-shot fetches.
  *
  * Path: workspaces/{workspaceId}/parsingIntents/{intentId}
  */
 
-import { SUBCOLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
 import { db } from '@/shared-infra/frontend-firebase';
+import { SUBCOLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
 import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 import type { ParsingIntent } from './_types';

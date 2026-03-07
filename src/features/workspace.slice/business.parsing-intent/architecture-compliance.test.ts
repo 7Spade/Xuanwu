@@ -19,15 +19,15 @@ import * as path from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 // ?€?€?€ [#A4] ParsingIntentContract structural shape ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
-import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
-import type { SkillRequirement } from '@/shared-kernel';
-import { tagSlugRef } from '@/shared-kernel';
 import type { ParsingIntentContract } from '@/features/workspace.slice/business.parsing-intent/_contract';
 import { createParsingIntentContract } from '@/features/workspace.slice/business.parsing-intent/_contract';
 import type {
   IntentDeltaProposedPayload,
   WorkspaceTaskAssignedPayload,
 } from '@/features/workspace.slice/core.event-bus/_events';
+import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import { tagSlugRef } from '@/shared-kernel';
 
 import { collectSourceFiles, findDirectFirebaseImports } from './_architecture-test-helpers';
 

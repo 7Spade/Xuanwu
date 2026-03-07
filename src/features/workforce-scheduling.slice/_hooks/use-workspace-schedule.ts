@@ -18,10 +18,10 @@ import { addMonths, subMonths, format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
 
-import type { ScheduleItem } from '@/shared-kernel';
-import { useWorkspace } from "@/features/workspace.slice";
 import { useApp } from "@/app-runtime/providers/app-provider";
+import { useWorkspace } from "@/features/workspace.slice";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
+import type { ScheduleItem } from '@/shared-kernel';
 
 import { subscribeToWorkspaceScheduleItems } from '../_queries';
 

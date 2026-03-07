@@ -12,6 +12,7 @@ import {type ReactNode} from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
 import { authAdapter } from '@/shared-infra/frontend-firebase/auth/auth.adapter';
+
 import { AuthContext, type AuthAction, type AuthState } from '../contexts/auth-context';
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {

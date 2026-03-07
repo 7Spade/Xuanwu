@@ -5,11 +5,8 @@ import { CalendarIcon, ChevronsUpDown, MapPin, Plus, X } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { type DateRange } from "react-day-picker";
 
-import type { SkillRequirement } from "@/shared-kernel";
-import { tagSlugRef } from "@/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { type Location } from "@/features/workspace.slice";
-import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared-kernel/constants/skills";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { Calendar } from "@/shadcn-ui/calendar";
@@ -34,6 +31,9 @@ import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
 import { cn } from "@/shadcn-ui/utils/utils";
+import { tagSlugRef } from "@/shared-kernel";
+import type { SkillRequirement } from "@/shared-kernel";
+import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared-kernel/constants/skills";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;
 

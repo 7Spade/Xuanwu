@@ -2,8 +2,8 @@
 
 import { useCallback } from 'react';
 
-import type { MemberReference } from '@/shared-kernel';
 import { useApp } from '@/app-runtime/providers/app-provider';
+import type { MemberReference } from '@/shared-kernel';
 
 import {
   recruitMember as recruitMemberAction,

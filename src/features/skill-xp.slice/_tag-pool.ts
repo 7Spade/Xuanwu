@@ -4,7 +4,7 @@
  * Skill Tag Pool: organization-scoped view of the global Tag Authority Center.
  *
  * Per 00-LogicOverview.md (VS4):
- *   SKILL_TAG_POOL[("??ï??…î??œæ‘¨ä¿nskill-xp.slice\n= Tag Authority ????œî??????¹æ€ï…±\n?¨ï?ç¥?TagLifecycleEvent ?¡æ€??æ¹”î?")]
+ *   SKILL_TAG_POOL[("??ï¿½ï¿½??ï¿½ï¿½??ï¿½æ‘¨ä¿nskill-xp.slice\n= Tag Authority ????ï¿½ï¿½??????ï¿½æ€ï…±\n?ï¿½ï¿½?ï¿½?TagLifecycleEvent ?ï¿½ï¿½??æ¹”ï¿½?")]
  *
  * v5 Role Change:
  *   - CENTRALIZED_TAG_AGGREGATE (centralized-tag) is now the global semantic dictionary
@@ -20,13 +20,13 @@
  *   only tagSlugs from centralized-tag may be activated here.
  */
 
-import type { TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
   deleteDocument,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import type { TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Types

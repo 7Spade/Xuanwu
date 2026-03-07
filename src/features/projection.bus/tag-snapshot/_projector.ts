@@ -15,10 +15,10 @@
  * Stored at: tagSnapshot/{tagSlug}
  */
 
-import { versionGuardAllows } from '@/shared-kernel';
-import type { TagCreatedPayload, TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { versionGuardAllows } from '@/shared-kernel';
+import type { TagCreatedPayload, TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Types

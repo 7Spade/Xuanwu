@@ -16,12 +16,6 @@
  */
 
 import {
-  type CommandResult,
-  commandSuccess,
-  commandFailureFrom,
-} from '@/shared-kernel';
-import type { Account } from "@/shared-kernel"
-import {
   createWorkspace as createWorkspaceFacade,
   authorizeWorkspaceTeam as authorizeWorkspaceTeamFacade,
   revokeWorkspaceTeam as revokeWorkspaceTeamFacade,
@@ -35,6 +29,12 @@ import {
   updateWorkspaceLocation as updateWorkspaceLocationFacade,
   deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
 } from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
+import type { Account } from "@/shared-kernel"
 
 import type { WorkspaceRole } from "../gov.role/_types"
 
@@ -168,7 +168,7 @@ export async function deleteWorkspace(workspaceId: string): Promise<CommandResul
 
 /**
  * Creates a new sub-location inside a workspace.
- * FR-L1: HR or Workspace OWNER can define sub-locations (zones within ?±î??).
+ * FR-L1: HR or Workspace OWNER can define sub-locations (zones within ?ï¿½ï¿½??).
  */
 export async function createWorkspaceLocation(
   workspaceId: string,

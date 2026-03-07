@@ -9,16 +9,16 @@
  */
 
 import {
+  createUserAccount as createUserAccountFacade,
+  updateUserProfile as updateUserProfileFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
+import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from "@/shared-kernel";
 import type { Account } from "@/shared-kernel";
-import {
-  createUserAccount as createUserAccountFacade,
-  updateUserProfile as updateUserProfileFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
-import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
 
 export async function createUserAccount(
   userId: string,

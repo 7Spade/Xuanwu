@@ -16,14 +16,14 @@
  * Invariant #1: This BC only writes its own aggregate (user account document).
  */
 
+import { db } from '@/shared-infra/frontend-firebase';
+import { collection, doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { runTransaction, serverTimestamp, type Transaction } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from '@/shared-kernel';
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { runTransaction, serverTimestamp, type Transaction } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 
 export interface WalletTransaction {

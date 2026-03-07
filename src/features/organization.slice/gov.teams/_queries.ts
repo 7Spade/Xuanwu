@@ -7,18 +7,18 @@
  * onSnapshot on the org account document provides real-time updates.
  *
  * Per 00-LogicOverview.md:
- *   ORGANIZATION_TEAM["organization-governance.team?—ï????‚æ£??ç¹???˜ï€¸è¯???î¢?"]
- *   ORGANIZATION_TEAM -.->|?¯ï??±æ’£???…î???î«??¬î¡¼??—ï??Œé???—ï? SKILL_TAG_POOL
+ *   ORGANIZATION_TEAM["organization-governance.team?ï¿½ï¿½????ï¿½æ£??ï¿½???ï¿½ï€¸è¯???ï¿½?"]
+ *   ORGANIZATION_TEAM -.->|?ï¿½ï¿½??ï¿½æ’£???ï¿½ï¿½???ï¿½??ï¿½î¡¼??ï¿½ï¿½??ï¿½ï¿½???ï¿½ï¿½? SKILL_TAG_POOL
  *
  * Boundary constraint:
  *   These queries read ONLY from this org's account document.
  *   Skill tag data is referenced by tagSlug ??read from skill-xp.slice.
  */
 
-import type { Account, Team } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
 import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { Account, Team } from '@/shared-kernel';
 
 /**
  * Fetches all internal teams for an organization.

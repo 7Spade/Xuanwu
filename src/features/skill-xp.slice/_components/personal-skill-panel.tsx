@@ -11,11 +11,11 @@
 import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
 import { useApp } from '@/app-runtime/providers/app-provider';
 import { Badge } from '@/shadcn-ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
 import { Progress } from '@/shadcn-ui/progress';
+import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
 
 import type { AccountSkillEntry } from '../_projector';
 import { getAccountSkillView } from '../_queries';

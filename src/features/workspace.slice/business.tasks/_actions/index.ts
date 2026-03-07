@@ -6,17 +6,17 @@
  */
 
 import {
-  type CommandResult,
-  commandSuccess,
-  commandFailureFrom,
-} from '@/shared-kernel';
-import {
   createTask as createTaskFacade,
   updateTask as updateTaskFacade,
   deleteTask as deleteTaskFacade,
   getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
   reconcileTask as reconcileTaskFacade,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
 
 import type { WorkspaceTask } from '../_types';
 

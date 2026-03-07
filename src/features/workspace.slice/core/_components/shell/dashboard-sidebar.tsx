@@ -20,10 +20,17 @@ import { usePathname } from 'next/navigation';
 // ============================================================================
 // UI Components
 // ============================================================================
+import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useUser } from "@/features/account.slice";
 import { useOrganizationManagement } from "@/features/organization.slice";
-import { useAuth } from "@/app-runtime/providers/auth-provider";
+
+// ============================================================================
+// Contexts & Hooks
+// ============================================================================
+
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from "@/features/workspace.slice/core/_hooks/use-visible-workspaces";
 import {
   Sidebar,
   SidebarContent,
@@ -35,13 +42,6 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/shadcn-ui/sidebar";
-
-// ============================================================================
-// Contexts & Hooks
-// ============================================================================
-
-import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
-import { useVisibleWorkspaces } from "@/features/workspace.slice/core/_hooks/use-visible-workspaces";
 
 
 // ============================================================================

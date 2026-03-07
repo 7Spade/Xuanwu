@@ -2,9 +2,9 @@
 
 import { useCallback } from 'react';
 
-import type { ThemeConfig } from '@/shared-kernel';
 import { useApp } from '@/app-runtime/providers/app-provider';
 import { useAuth } from '@/app-runtime/providers/auth-provider';
+import type { ThemeConfig } from '@/shared-kernel';
 
 import {
   createOrganization as createOrganizationAction,

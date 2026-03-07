@@ -5,8 +5,8 @@
  *
  * Per 00-LogicOverview.md:
  *   ORG_SKILL_RECOGNITION["organization-skill-recognition.aggregate
- *     ï¼ˆorganizationId / accountId / skillId / minXpRequired / statusï¼?]
- *   ORG_SKILL_RECOGNITION ?’|SkillRecognitionGranted / SkillRecognitionRevoked| ORGANIZATION_EVENT_BUS
+ *     ï¼ˆorganizationId / accountId / skillId / minXpRequired / statusï¿½?]
+ *   ORG_SKILL_RECOGNITION ?ï¿½|SkillRecognitionGranted / SkillRecognitionRevoked| ORGANIZATION_EVENT_BUS
  *
  * Responsibilities:
  *   - Record that an organization has recognised a member's skill proficiency.
@@ -28,12 +28,12 @@
  */
 
 import { publishOrgEvent } from '@/features/organization.slice';
-import { findSkill } from '@/shared-kernel/constants/skills';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { findSkill } from '@/shared-kernel/constants/skills';
 
 // ---------------------------------------------------------------------------
 // Types

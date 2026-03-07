@@ -21,7 +21,6 @@
  */
 
 import type { TagSlugRef, SkillRequirement, SkillTier } from '@/shared-kernel';
-
 import { getTierRank } from '@/shared-kernel';
 
 // ─── Public types ─────────────────────────────────────────────────────────────

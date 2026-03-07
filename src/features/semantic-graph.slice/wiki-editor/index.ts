@@ -13,6 +13,7 @@
  */
 
 import type { TagSlugRef } from '@/shared-kernel';
+
 import type { SemanticRelationType } from '../centralized-types';
 import {
   type ProposalId,

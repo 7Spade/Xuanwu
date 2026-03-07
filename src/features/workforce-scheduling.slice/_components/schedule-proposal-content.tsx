@@ -5,10 +5,10 @@ import { parseISO } from "date-fns"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMemo } from "react"
 
-import type { SkillRequirement } from "@/shared-kernel"
 import { useWorkspace } from "@/features/workspace.slice"
 import type { Location } from "@/features/workspace.slice"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
+import type { SkillRequirement } from "@/shared-kernel"
 
 import { ProposalDialog } from "./proposal-dialog"
 

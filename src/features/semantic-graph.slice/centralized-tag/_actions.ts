@@ -15,6 +15,12 @@
  * Consumers: import from '@/features/semantic-graph.slice'.
  */
 
+import { Timestamp, getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import {
+  setDocument,
+  updateDocument,
+  deleteDocument,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import {
   commandSuccess,
   commandFailureFrom,
@@ -25,13 +31,8 @@ import {
   type CentralizedTagDeleteRule,
   type CommandResult,
 } from '@/shared-kernel';
+
 import { publishTagEvent } from './_bus';
-import { Timestamp, getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import {
-  setDocument,
-  updateDocument,
-  deleteDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 // ---------------------------------------------------------------------------
 // Outbox helper [Q2][S1][R8]

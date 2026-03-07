@@ -6,8 +6,8 @@ import { Ghost, Loader2 } from "lucide-react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn-ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";

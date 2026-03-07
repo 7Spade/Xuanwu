@@ -2,13 +2,13 @@
 
 import { Check, X } from "lucide-react";
 
-import type { SkillRequirement } from '@/shared-kernel';
-import type { ScheduleItem } from '@/shared-kernel';
-import { SKILLS } from '@/shared-kernel/constants/skills';
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
 import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import type { ScheduleItem } from '@/shared-kernel';
+import type { SkillRequirement } from '@/shared-kernel';
+import { SKILLS } from '@/shared-kernel/constants/skills';
 
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];

@@ -4,7 +4,7 @@
 import { Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 
-import { type Account } from "@/shared-kernel"
+import type { AppAction } from '@/app-runtime/contexts/app-context'
 import { Button } from "@/shadcn-ui/button"
 import {
   Dialog,
@@ -17,8 +17,7 @@ import {
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { Input } from "@/shadcn-ui/input"
 import { Label } from "@/shadcn-ui/label"
-
-import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { type Account } from "@/shared-kernel"
 
 interface AccountCreateDialogProps {
   open: boolean

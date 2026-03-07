@@ -9,10 +9,10 @@
 
 import { useCallback } from 'react';
 
-import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from '@/app-runtime/providers/app-provider';
 import { useAuth } from '@/app-runtime/providers/auth-provider';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
+import type { ScheduleItem } from '@/shared-kernel';
 
 import { updateTimelineItemDateRange } from '../_actions';
 

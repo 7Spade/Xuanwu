@@ -12,14 +12,14 @@
  */
 
 import {
+  createTeam as createTeamFacade,
+  updateTeamMembers as updateTeamMembersFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import {
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
 } from "@/shared-kernel";
-import {
-  createTeam as createTeamFacade,
-  updateTeamMembers as updateTeamMembersFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
 
 export async function createTeam(
   organizationId: string,
