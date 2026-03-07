@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import type { PortalState } from '@/features/portal.slice/core/_types';
+import type { PortalState } from '@/features/portal.slice/_types';
 
 /**
  * usePortalState — Presentation bridge hook for portal domain state.
