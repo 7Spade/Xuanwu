@@ -4,9 +4,9 @@
  * EVENT_FUNNEL_INPUT: unified entry point for the Projection Layer.
  *
  * Per 00-LogicOverview.md (L5 · ProjectionBus Infrastructure):
- *   WORKSPACE_EVENT_BUS  ??|?�?�業?��?件|  EVENT_FUNNEL_INPUT
- *   ORGANIZATION_EVENT_BUS ??|?�?��?織�?件| EVENT_FUNNEL_INPUT
- *   TAG_LIFECYCLE_BUS ??|TagLifecycleEvent| EVENT_FUNNEL_INPUT  (v5 ?��?)
+ *   WORKSPACE_EVENT_BUS -> EVENT_FUNNEL_INPUT
+ *   ORGANIZATION_EVENT_BUS -> EVENT_FUNNEL_INPUT
+ *   TAG_LIFECYCLE_BUS -> EVENT_FUNNEL_INPUT (v5)
  *
  *   EVENT_FUNNEL_INPUT routes to:
  *     ??WORKSPACE_PROJECTION_VIEW
@@ -17,7 +17,7 @@
  *     ??ORGANIZATION_PROJECTION_VIEW
  *     ??ACCOUNT_SKILL_VIEW
  *     ??ORG_ELIGIBLE_MEMBER_VIEW
- *     ??TAG_SNAPSHOT (v5 ?��?)
+ *     -> TAG_SNAPSHOT (v5)
  *     ??PROJECTION_VERSION (updates stream offset)
  *
  *   WORKSPACE_EVENT_STORE -.??EVENT_FUNNEL_INPUT (replay rebuilds all projections)
@@ -61,7 +61,7 @@ export function registerOrganizationFunnel(): () => void {
  *   IER BACKGROUND_LANE ??VS4_TAG_SUBSCRIBER ??SKILL_TAG_POOL
  *
  * Per 00-LogicOverview.md (L5 · ProjectionBus Infrastructure):
- *   IER ==>|"#9 ?��?寫入路�?"| FUNNEL
+ *   IER ==>|"#9 event write path"| FUNNEL
  *   FUNNEL --> TAG_SNAPSHOT
  *
  * Invariant A7: Event Funnel only composes projections; does not enforce cross-BC invariants.

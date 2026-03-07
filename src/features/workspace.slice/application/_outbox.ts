@@ -8,7 +8,7 @@
  * Domain Events are produced only by Aggregates (#4a); Transaction Runner only
  * collects already-produced events and delivers them to the Outbox (#4b).
  *
- * Flow: WORKSPACE_TRANSACTION_RUNNER ??�|彙整事件後寫?¥| WORKSPACE_OUTBOX ??WORKSPACE_EVENT_BUS
+ * Flow: WORKSPACE_TRANSACTION_RUNNER -> WORKSPACE_OUTBOX -> WORKSPACE_EVENT_BUS
  *
  * Firestore Persistence Layer [S1][E5]:
  * Events flagged in WS_OUTBOX_PERSISTED_EVENTS are ALSO written to the
@@ -59,10 +59,10 @@ const WS_OUTBOX_PERSISTED_EVENTS = new Set<WorkspaceEventName>([
   'workspace:parsing-intent:deltaProposed',
 ]);
 
-/** DLQ tier for all ws-outbox entries ??per 00-LogicOverview.md WS_OB annotation. */
+/** DLQ tier for all ws-outbox entries per 00-LogicOverview.md WS_OB annotation. */
 const WS_OUTBOX_DLQ_TIER: DlqTier = 'SAFE_AUTO';
 
-/** IER lane for ws-outbox delivery ??per 00-LogicOverview.md WS_OB [E5]. */
+/** IER lane for ws-outbox delivery per 00-LogicOverview.md WS_OB [E5]. */
 const WS_OUTBOX_IER_LANE = 'STANDARD_LANE' as const;
 
 /** Firestore collection path for the workspace outbox. */
@@ -96,7 +96,7 @@ function extractTraceIdFromPayload(payload: unknown): string | undefined {
  * This enables at-least-once delivery via the OUTBOX_RELAY_WORKER [R1]:
  *   wsOutbox(pending) --[RELAY]--> IER(STANDARD_LANE)
  *
- * Fire-and-forget ??failures are logged via the Observability Layer but do NOT
+ * Fire-and-forget: failures are logged via the Observability Layer but do NOT
  * block the in-process event bus (dual-write best-effort pattern).
  */
 async function persistToWsOutbox(
@@ -142,12 +142,12 @@ async function persistToWsOutbox(
 // =============================================================================
 
 /**
- * Persists an outbox event directly to Firestore ??for use by client-side handlers
+ * Persists an outbox event directly to Firestore for use by client-side handlers
  * (e.g. document-parser-view) that cannot go through `runTransaction` but still
  * need at-least-once delivery semantics [S1][E5].
  *
  * Only persists event types registered in `WS_OUTBOX_PERSISTED_EVENTS`.
- * Fire-and-forget ??the caller is responsible for `.catch()` handling.
+ * Fire-and-forget: the caller is responsible for `.catch()` handling.
  */
 export async function persistWorkspaceOutboxEvent<T extends WorkspaceEventName>(
   workspaceId: string,
@@ -159,7 +159,7 @@ export async function persistWorkspaceOutboxEvent<T extends WorkspaceEventName>(
       occurredAt: new Date().toISOString(),
       traceId: crypto.randomUUID(),
       source: 'workspace-application:persistWorkspaceOutboxEvent',
-      message: `Event type "${type}" is not registered in WS_OUTBOX_PERSISTED_EVENTS ??Firestore persistence skipped. Add it to the set if at-least-once delivery is required.`,
+      message: `Event type "${type}" is not registered in WS_OUTBOX_PERSISTED_EVENTS; Firestore persistence skipped. Add it to the set if at-least-once delivery is required.`,
       detail: undefined,
     });
     return;
