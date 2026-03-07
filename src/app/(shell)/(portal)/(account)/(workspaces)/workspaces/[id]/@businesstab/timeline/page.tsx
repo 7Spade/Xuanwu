@@ -1,7 +1,7 @@
 import {
   WorkspaceTimeline,
   WorkspaceTimelineCapabilityTabs,
-} from "@/features/timelineing.slice";
+} from "@/features/timeline.slice";
 
 /**
  * Module: page.tsx

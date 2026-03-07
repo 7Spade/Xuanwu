@@ -16,6 +16,7 @@
  *   org-eligible-member-view — ORG_ELIGIBLE_MEMBER_VIEW [#14–#16]
  *   organization-view        — ORGANIZATION_PROJECTION_VIEW
  *   tag-snapshot             — TAG_SNAPSHOT [T5]
+ *   schedule-timeline-view   — SCHEDULE_TIMELINE_VIEW [TL_PROJ][L5-Bus]
  *   workspace-scope-guard    — WORKSPACE_SCOPE_READ_MODEL [#A9]
  *   workspace-view           — WORKSPACE_PROJECTION_VIEW
  *
@@ -127,6 +128,17 @@ export {
   applyDemandProposalCancelled,
   applyDemandAssignRejected,
 } from './demand-board';
+
+// =================================================================
+// schedule-timeline-view — SCHEDULE_TIMELINE_VIEW [TL_PROJ][L5-Bus]
+// =================================================================
+export { projectScheduleTimelineView } from './schedule-timeline-view';
+export { getScheduleTimelineView } from './schedule-timeline-view';
+export type {
+  ScheduleTimelineViewRecord,
+  ScheduleTimelineResourceGroup,
+  ScheduleTimelineItem,
+} from './schedule-timeline-view';
 
 // =================================================================
 // workspace-scope-guard — WORKSPACE_SCOPE_READ_MODEL [#A9] CRITICAL ≤500ms

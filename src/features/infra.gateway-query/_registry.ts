@@ -9,6 +9,7 @@
  *   QGWAY_NOTIF  — → projection.account-view             [#6 FCM Token]
  *   QGWAY_SCOPE  — → projection.workspace-scope-guard-view [#A9]
  *   QGWAY_WALLET — → projection.wallet-balance (STRONG_READ 回源 WALLET_AGG [Q8])
+ *   QGWAY_TL     — → projection.schedule-timeline-view [TL_PROJ L5-Bus]
  *
  * Pre-registered routes mirror the v9 GW_QUERY subgraph.
  * Additional routes can be added via registerQuery (open registry).
@@ -143,6 +144,8 @@ export const QUERY_ROUTES = {
   WORKSPACE_SCOPE_GUARD: 'workspace-scope-guard',
   /** [Q8][D5] wallet-balance — STRONG_READ back to WALLET_AGG */
   WALLET_BALANCE: 'wallet-balance',
+  /** [TL_PROJ] schedule-timeline-view — resource-dimension timeline read model [L5-Bus] */
+  SCHEDULE_TIMELINE_VIEW: 'schedule-timeline-view',
 } as const;
 
 export type QueryRouteName = (typeof QUERY_ROUTES)[keyof typeof QUERY_ROUTES];

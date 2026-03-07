@@ -8,6 +8,7 @@
  *   QGWAY_NOTIF  → projection.account-view             [#6 FCM Token]
  *   QGWAY_SCOPE  → projection.workspace-scope-guard    [#A9]
  *   QGWAY_WALLET → projection.wallet-balance (EVENTUAL_READ [Q8][D5])
+ *   QGWAY_TL     → projection.schedule-timeline-view [TL_PROJ][L5-Bus]
  *
  * Call registerAllQueryHandlers() once at app startup, after all projection
  * slices are initialized. Follows the same pattern as registerWorkspaceFunnel().
@@ -17,6 +18,7 @@ import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
 
 import { getAccountView } from './account-view';
 import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
+import { getScheduleTimelineView } from './schedule-timeline-view';
 import { getDisplayWalletBalance } from './wallet-balance';
 import { queryWorkspaceAccess } from './workspace-scope-guard';
 
@@ -56,5 +58,11 @@ export function registerAllQueryHandlers(): Array<() => void> {
     '[Q8][D5] projection.wallet-balance — EVENTUAL_READ display balance'
   );
 
-  return [unregOrgEligible, unregAccountView, unregScopeGuard, unregWallet];
+  const unregTimelineView = registerQuery(
+    QUERY_ROUTES.SCHEDULE_TIMELINE_VIEW,
+    ({ dimensionId }: { dimensionId: string }) => getScheduleTimelineView(dimensionId),
+    '[TL_PROJ][L5-Bus] projection.schedule-timeline-view — resource-dimension timeline read model'
+  );
+
+  return [unregOrgEligible, unregAccountView, unregScopeGuard, unregWallet, unregTimelineView];
 }

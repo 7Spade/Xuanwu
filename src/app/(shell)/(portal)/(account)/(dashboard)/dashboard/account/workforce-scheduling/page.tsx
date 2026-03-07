@@ -9,7 +9,7 @@
 
 import { useState } from "react";
 
-import { AccountTimelineSection } from "@/features/timelineing.slice";
+import { AccountTimelineSection } from "@/features/timeline.slice";
 import { AccountScheduleSection } from "@/features/workforce-scheduling.slice";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 
