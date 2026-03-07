@@ -20,7 +20,7 @@ export function NotificationList({ notifications, onMarkRead }: NotificationList
   if (notifications.length === 0) {
     return (
       <div className="p-4 text-center text-sm text-muted-foreground">
-        ?怎?
+        暫無通知
       </div>
     );
   }

@@ -118,7 +118,7 @@ export const UI = {
 
 export const APP = {
   /** Application name shown in page titles and emails. */
-  NAME: '?郎撌亦???撟喳',
+  NAME: '玄武',
   /** Short English name used in metadata and alt text. */
   NAME_EN: 'Xuanwu',
   /** Support email address. */

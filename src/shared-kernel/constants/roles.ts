@@ -54,7 +54,7 @@ export const ORG_ROLE_META: Record<OrganizationRole, OrgRoleMeta> = {
   },
   Member: {
     role: 'Member',
-    zhLabel: '?�員',
+    zhLabel: '成員',
     enLabel: 'Member',
     rank: 2,
     colorClass: 'bg-green-100 text-green-800',

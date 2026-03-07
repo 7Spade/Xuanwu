@@ -10,8 +10,8 @@
  * same collection ??no separate projection collection required.
  *
  * Status mapping (FR-W0):
- *   PROPOSAL  ??"待�?派�?�? (open / amber) ??drag-sortable for HR prioritisation
- *   OFFICIAL  ??"已�?派�?�? (assigned / green)
+ *   PROPOSAL  = "待指派需求" (open / amber), drag-sortable for HR prioritisation
+ *   OFFICIAL  = "已指派需求" (assigned / green)
  *   REJECTED / COMPLETED ??hidden from board
  */
 
@@ -194,7 +194,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
         <div className="flex items-center gap-2">
           <Select value={selectedMemberId} onValueChange={setSelectedMemberId}>
             <SelectTrigger className="h-8 flex-1 text-xs">
-              <SelectValue placeholder="?��??�派?�員" />
+              <SelectValue placeholder="選擇指派成員" />
             </SelectTrigger>
             <SelectContent>
               {orgMembers.map((m) => (
@@ -210,7 +210,7 @@ function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
             className="size-8 shrink-0 text-emerald-600 hover:text-emerald-700"
             disabled={!selectedMemberId || loading}
             onClick={handleAssign}
-            title="?��??�派"
+            title="確認指派"
           >
             <UserCheck className="size-4" />
           </Button>
@@ -253,12 +253,12 @@ function SortableDemandRow(props: DemandRowProps) {
   return (
     <div ref={setNodeRef} style={style}>
       <div className="flex items-start gap-1">
-        {/* Drag handle ??only activates drag; does not capture clicks */}
+        {/* Drag handle: only activates drag; does not capture clicks. */}
         <button
           {...attributes}
           {...listeners}
           className="mt-5 cursor-grab touch-none text-muted-foreground hover:text-foreground focus:outline-none active:cursor-grabbing"
-          aria-label="?�曳?��?"
+          aria-label="拖曳排序"
           type="button"
         >
           <GripVertical className="size-4" />
@@ -282,7 +282,7 @@ function SortableDemandRow(props: DemandRowProps) {
  * the same collection used by the Calendar tab ??so all three schedule
  * tabs always show consistent data with zero extra subscriptions.
  *
- * "待�?派�?�? cards are drag-sortable so HR can prioritise visually.
+ * "待指派需求" cards are drag-sortable so HR can prioritise visually.
  * The sort order is local-only (no server write required for reordering).
  */
 export function DemandBoard() {
@@ -359,7 +359,7 @@ export function DemandBoard() {
   if (!orgId) {
     return (
       <p className="py-8 text-center text-sm text-muted-foreground">
-        ?�求�??��??��?織帳?��??�用??
+        需使用組織帳號才能使用此功能
       </p>
     );
   }
@@ -370,7 +370,7 @@ export function DemandBoard() {
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-amber-600">
-            待�?派�?�?({openItems.length})
+            待指派需求 ({openItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -387,7 +387,7 @@ export function DemandBoard() {
                 <div className="space-y-3 p-4">
                   {openItems.length === 0 && (
                     <p className="py-6 text-center text-xs italic text-muted-foreground">
-                      ?��??��??�派?�求�?
+                      目前沒有待指派需求
                     </p>
                   )}
                   {openItems.map((item) => (
@@ -409,7 +409,7 @@ export function DemandBoard() {
       <Card>
         <CardHeader className="border-b py-3">
           <CardTitle className="text-sm font-bold uppercase tracking-widest text-emerald-600">
-            已�?派�?�?({assignedItems.length})
+            已指派需求 ({assignedItems.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -417,7 +417,7 @@ export function DemandBoard() {
             <div className="space-y-3 p-4">
               {assignedItems.length === 0 && (
                 <p className="py-6 text-center text-xs italic text-muted-foreground">
-                  ?��??�已?�派?�求�?
+                  目前沒有已指派需求
                 </p>
               )}
               {assignedItems.map((item) => (

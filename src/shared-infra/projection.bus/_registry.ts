@@ -4,8 +4,8 @@
  * Event stream offset + read model version table.
  *
  * Per 00-LogicOverview.md:
- * - EVENT_FUNNEL_INPUT ?�|?�新事件串�??�移?�| PROJECTION_VERSION
- * - PROJECTION_VERSION ?�|?��? read-model 對�??�本| READ_MODEL_REGISTRY
+ * - EVENT_FUNNEL_INPUT updates the latest stream offset in PROJECTION_VERSION
+ * - PROJECTION_VERSION tracks read-model version alignment for READ_MODEL_REGISTRY
  */
 
 import {

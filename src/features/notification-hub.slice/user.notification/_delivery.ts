@@ -6,7 +6,7 @@
  *
  * Per 00-LogicOverview.md:
  *   ACCOUNT_USER_NOTIFICATION ??FCM_GATEWAY ??USER_DEVICE
- *   USER_ACCOUNT_PROFILE -.?�|?��? FCM Token（唯讀?�詢）| ACCOUNT_USER_NOTIFICATION
+ *   USER_ACCOUNT_PROFILE -.->|read FCM token (read-only)| ACCOUNT_USER_NOTIFICATION
  *
  * Architecture:
  *  - Reads FCM token from account-user.profile public API (never writes to profile)
@@ -130,7 +130,7 @@ export async function deliverNotification(
  *
  * @example
  * sanitizeForExternal('Workspace abc12345-... has $1,234.56 balance')
- * // ??'Workspace [ID] has [?��?] balance'
+ * // -> 'Workspace [ID] has [金額] balance'
  *
  * @param message - Raw notification message text
  * @returns Sanitized message safe for external account delivery
@@ -139,5 +139,5 @@ function sanitizeForExternal(message: string): string {
   // Remove patterns like workspace IDs (UUIDs), financial amounts (e.g. $1,234.56)
   return message
     .replace(/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, '[ID]')
-    .replace(/\$[\d,]+(\.\d{1,2})?/g, '[?��?]');
+    .replace(/\$[\d,]+(\.\d{1,2})?/g, '[金額]');
 }

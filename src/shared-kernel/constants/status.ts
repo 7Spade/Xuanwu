@@ -50,7 +50,7 @@ export const SCHEDULE_STATUS_META: Record<ScheduleStatus, ScheduleStatusMeta> = 
   },
   OFFICIAL: {
     status: 'OFFICIAL',
-    zhLabel: '�???�班',
+    zhLabel: '已排班',
     enLabel: 'Official',
     colorClass: 'bg-green-100 text-green-800',
     bgClass: 'bg-green-50',
@@ -137,19 +137,19 @@ export interface AuditLogTypeMeta {
 export const AUDIT_LOG_TYPE_META: Record<AuditLogType, AuditLogTypeMeta> = {
   create: {
     type: 'create',
-    zhLabel: '建�?',
+    zhLabel: '建立',
     enLabel: 'Create',
     colorClass: 'bg-emerald-100 text-emerald-700',
   },
   update: {
     type: 'update',
-    zhLabel: '?�新',
+    zhLabel: '更新',
     enLabel: 'Update',
     colorClass: 'bg-blue-100 text-blue-700',
   },
   delete: {
     type: 'delete',
-    zhLabel: '?�除',
+    zhLabel: '刪除',
     enLabel: 'Delete',
     colorClass: 'bg-red-100 text-red-700',
   },
@@ -222,19 +222,19 @@ export interface PresenceMeta {
 export const PRESENCE_META: Record<Presence, PresenceMeta> = {
   active: {
     presence: 'active',
-    zhLabel: '?��?',
+    zhLabel: '在線',
     enLabel: 'Active',
     dotClass: 'bg-green-500',
   },
   away: {
     presence: 'away',
-    zhLabel: '?��?',
+    zhLabel: '暫離',
     enLabel: 'Away',
     dotClass: 'bg-amber-400',
   },
   offline: {
     presence: 'offline',
-    zhLabel: '?��?',
+    zhLabel: '離線',
     enLabel: 'Offline',
     dotClass: 'bg-gray-300',
   },
@@ -263,7 +263,7 @@ export interface NotificationTypeMeta {
 export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMeta> = {
   info: {
     type: 'info',
-    zhLabel: '資�?',
+    zhLabel: '資訊',
     enLabel: 'Info',
     colorClass: 'bg-blue-100 text-blue-700',
   },
@@ -275,7 +275,7 @@ export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMe
   },
   success: {
     type: 'success',
-    zhLabel: '?��?',
+    zhLabel: '成功',
     enLabel: 'Success',
     colorClass: 'bg-green-100 text-green-700',
   },
