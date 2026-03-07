@@ -113,6 +113,20 @@ All commands must succeed.
 
 ---
 
+# Phase 8 — Generate Xuanwu Skill
+
+Run:
+
+repomix --skill-generate xuanwu-skill --skill-output ./skills --force
+
+Verify `skills/` exists and contains generated files.
+
+Strict rule:
+- Do not edit or rewrite generated output files.
+- Treat generated output under `skills/` as the final skill package.
+
+---
+
 # Final Goal
 
 The environment must be ready for future commands such as:
