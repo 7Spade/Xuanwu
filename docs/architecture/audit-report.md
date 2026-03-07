@@ -702,12 +702,7 @@ cat docs/knowledge-graph.json
 
 ### 🔴 Critical — Immediate (system integrity at risk)
 
-- [ ] **A-01 / E-01** Create `src/features/account.slice/account-event-bus.ts` + `acc-outbox.ts`; wire `gov.role/_actions.ts` and `gov.policy/_actions.ts` to write to `acc-outbox` with `CRITICAL_LANE` / `SECURITY_BLOCK` DLQ tier instead of calling `publishOrgEvent` directly
-- [ ] **A-02 / E-01** Create `src/features/skill-xp.slice/skill-outbox.ts`; replace `publishOrgEvent` calls in `_actions.ts` with outbox write, `STANDARD_LANE` / `SAFE_AUTO`
-- [ ] **A-03 / E-01** Create `src/features/workforce-scheduling.slice/sched-outbox.ts`; replace all `publishOrgEvent(...)` calls in `_aggregate.ts` (lines 196, 229, 272, 323, 381) with outbox writes; `ScheduleAssigned → REVIEW_REQUIRED`, compensating events `→ SAFE_AUTO`
-- [ ] **D-04** Remove direct `import { createScheduleItem } from '@/features/workforce-scheduling.slice'` from `workspace.slice/core/_components/workspace-provider.tsx` (lines 9–11); route command via `infra.gateway-command` CMD_GWAY → VS6 aggregate
-- [ ] **E-02** Rewrite `notification-hub.slice/gov.notification-router/_router.ts` to subscribe to IER STANDARD_LANE (not VS4 `onOrgEvent`); remove `import { onOrgEvent } from '@/features/organization.slice'`
-- [ ] **E-03** Move `traceId = crypto.randomUUID()` from `workspace-provider.tsx:234` to CBG_ENTRY in `infra.gateway-command`; pass `traceId` down through the command pipeline
+- [ ] **A-01 / E-01** Add `src/features/account.slice/account-event-bus.ts` and wire `gov.policy/_actions.ts` through `acc-outbox` (`CRITICAL_LANE` / `SECURITY_BLOCK`) instead of direct `publishOrgEvent`
 - [ ] **F-01** Dissolve `workforce-scheduling.slice/policy-mapper/`; move mapping logic into `semantic-graph.slice/routing/reflex-arc/policy-mapper/` (VS8 authoritative mapper); VS6 calls VS8 via read-only projection
 
 ### 🟠 High — Short-term (architectural coherence)

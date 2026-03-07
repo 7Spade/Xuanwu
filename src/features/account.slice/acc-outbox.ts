@@ -6,6 +6,11 @@
  */
 
 import {
+  publishAccountEvent,
+  type AccountEventKey,
+  type AccountEventPayloadMap,
+} from './account-event-bus';
+import {
   publishOrgEvent,
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
@@ -35,6 +40,18 @@ export async function enqueueAccountOutboxEvent<K extends OrganizationEventKey>(
   routing: AccountOutboxRouting = DEFAULT_ACCOUNT_OUTBOX_ROUTING,
 ): Promise<AccountOutboxAck> {
   await publishOrgEvent(eventKey, payload);
+  return {
+    lane: routing.lane,
+    dlqTier: routing.dlqTier,
+  };
+}
+
+export async function enqueueAccountLifecycleOutboxEvent<K extends AccountEventKey>(
+  eventKey: K,
+  payload: AccountEventPayloadMap[K],
+  routing: AccountOutboxRouting = DEFAULT_ACCOUNT_OUTBOX_ROUTING,
+): Promise<AccountOutboxAck> {
+  await publishAccountEvent(eventKey, payload);
   return {
     lane: routing.lane,
     dlqTier: routing.dlqTier,

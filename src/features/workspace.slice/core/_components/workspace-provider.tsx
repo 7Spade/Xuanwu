@@ -6,8 +6,8 @@ import type React from 'react';
 import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
-  createScheduleItem as createScheduleItemAction,
-} from '@/features/workforce-scheduling.slice'
+  dispatchCreateScheduleItemCommand,
+} from '@/features/infra.gateway-command';
 import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
 import {
   createIssue as createIssueAction,
@@ -26,6 +26,7 @@ import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, reg
 import { writeAuditLog } from '@/features/workspace.slice/gov.audit/_actions';
 import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
 import { firestoreTimestampToISO } from '@/shadcn-ui/utils/utils';
+import type { AuthoritySnapshot } from '@/shared-kernel';
 
 import {
   authorizeWorkspaceTeam as authorizeWorkspaceTeamAction,
@@ -160,6 +161,23 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
     if (!auditLogs || !workspaceId) return [];
     return Object.values(auditLogs).filter(log => log.workspaceId === workspaceId);
   }, [auditLogs, workspaceId]);
+
+  const authoritySnapshot = useMemo<AuthoritySnapshot | null>(() => {
+    if (!activeAccount) return null;
+    const roles = activeAccount.accountType === 'organization' ? ['Manager'] : ['Member'];
+    const permissions = activeAccount.accountType === 'organization'
+      ? ['read', 'write', 'delete', 'manage']
+      : ['read', 'write'];
+    const snapshotAt = new Date().toISOString();
+    return {
+      subjectId: activeAccount.id,
+      roles,
+      permissions,
+      scopes: permissions,
+      snapshotAt,
+      readModelVersion: 1,
+    };
+  }, [activeAccount]);
   
   const logAuditEvent = useCallback(async (action: string, detail: string, type: 'create' | 'update' | 'delete') => {
     if (!activeAccount || activeAccount.accountType !== 'organization') return;
@@ -219,7 +237,11 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
   }, [workspaceId, eventBus]);
 
   const createScheduleItem = useCallback(async (itemData: CreateScheduleItemInput) => {
-    const result = await createScheduleItemAction(itemData);
+    const result = await dispatchCreateScheduleItemCommand(
+      workspaceId,
+      itemData,
+      authoritySnapshot,
+    );
     // Cross-layer Outbox event: WORKSPACE_OUTBOX →|workspace:schedule:proposed| ORGANIZATION_SCHEDULE
     // Per 00-LogicOverview.md: W_B_SCHEDULE publishes this event so scheduling.slice
     // can persist a schedule_item and start the HR governance approval flow.
@@ -247,7 +269,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
       }
     }
     return result;
-  }, [workspaceId, workspace?.dimensionId, activeAccount?.id, eventBus]);
+  }, [workspaceId, workspace?.dimensionId, activeAccount?.id, eventBus, authoritySnapshot]);
 
 
   const workflowBlockersSummary = summarizeWorkflowBlockers(workflowBlockers);

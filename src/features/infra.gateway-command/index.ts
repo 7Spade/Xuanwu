@@ -24,3 +24,4 @@
 
 export { dispatchCommand, registerCommandHandler } from './_gateway';
 export type { GatewayCommand, DispatchOptions } from './_gateway';
+export { dispatchCreateScheduleItemCommand } from './workspace-schedule-command';
