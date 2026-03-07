@@ -45,12 +45,12 @@ This skill contains the following reference files:
 
 ## Statistics
 
-265 files | 5,015 lines
+266 files | 5,020 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
 | TypeScript | 242 | 4,532 |
-| TypeScript (TSX) | 23 | 483 |
+| TypeScript (TSX) | 24 | 488 |
 
 **Largest files:**
 - `src/features/semantic-graph.slice/core/types/index.ts` (139 lines)
@@ -62,4 +62,4 @@ This skill contains the following reference files:
 - `src/features/semantic-graph.slice/_types.ts` (68 lines)
 - `src/shared-infra/external-triggers/_guard.ts` (64 lines)
 - `src/shared-infra/gateway-query/workforce-scheduling-query.ts` (63 lines)
-- `src/features/workforce-scheduling.slice/domain/aggregate/index.ts` (63 lines)
+- `src/shared-kernel/data-contracts/skill-tier/index.ts` (63 lines)

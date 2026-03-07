@@ -101,49 +101,6 @@ export interface SemanticIndexStats {
 }
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/member-assign-popover.tsx
-```typescript
-import { UserPlus, Check } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/shadcn-ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/shadcn-ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
-import { cn } from "@/shadcn-ui/utils/utils";
-import type { MemberReference, ScheduleItem } from "@/shared-kernel";
-interface MemberAssignPopoverProps {
-  item: ScheduleItem;
-  members: MemberReference[];
-  onAssign: (item: ScheduleItem, memberId: string) => void;
-  onUnassign: (item: ScheduleItem, memberId: string) => void;
-}
-⋮----
-onUnassign(item, member.id);
-```
-
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.helpers.ts
-```typescript
-import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
-import type { ScheduleItem, Timestamp } from "@/shared-kernel";
-type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
-type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
-type TimestampLike = { toDate: () => Date };
-function isTimestampLike(value: unknown): value is TimestampLike
-export function toDate(timestamp: CalendarTimestamp): Date | null
-export function escapeHtml(input: string): string
-export function toTimelineClassName(item: ScheduleItem): string
-function isStartOfDayTimestamp(date: Date): boolean
-function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
-export function resolveTimelineInterval(item: ScheduleItem):
-export function resolveInitialWindow(items: Array<
-```
-
 ## File: src/shared-infra/backend-firebase/functions/src/claims/claims-refresh.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -425,6 +382,13 @@ export type DlqTier = "SAFE_AUTO" | "REVIEW_REQUIRED" | "SECURITY_BLOCK";
 export function dlqCollectionName(tier: DlqTier): string
 ```
 
+## File: src/shared-infra/frontend-firebase/analytics/analytics.adapter.ts
+```typescript
+import { logEvent } from 'firebase/analytics';
+import { analytics } from './analytics.client';
+export const logAnalyticsEvent = (eventName: string, eventParams?: Record<string, unknown>) =>
+```
+
 ## File: src/shared-infra/frontend-firebase/analytics/analytics.client.ts
 ```typescript
 import { getAnalytics, type Analytics } from 'firebase/analytics';
@@ -443,10 +407,188 @@ import { getAuth, type Auth } from 'firebase/auth';
 import { app } from '../app.client';
 ```
 
+## File: src/shared-infra/frontend-firebase/auth/auth.types.ts
+```typescript
+import type { User as FirebaseUser, UserCredential } from 'firebase/auth';
+import type { AuthUser } from '@/shared-kernel/ports/i-auth.service';
+⋮----
+export function mapFirebaseUser(user: FirebaseUser): AuthUser
+```
+
+## File: src/shared-infra/frontend-firebase/auth/index.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/config/firebase.config.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/firebase.config.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.adapter.ts
+```typescript
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  setDoc,
+} from 'firebase/firestore';
+import type { FirestoreDoc, IFirestoreRepo, WriteOptions } from '@/shared-kernel/ports';
+import { db } from './firestore.client';
+class FirebaseFirestoreRepo implements IFirestoreRepo
+⋮----
+async getDoc<T>(collectionPath: string, docId: string): Promise<FirestoreDoc<T> | null>
+async getDocs<T>(collectionPath: string): Promise<FirestoreDoc<T>[]>
+async setDoc<T>(collectionPath: string, docId: string, data: T, opts?: WriteOptions): Promise<void>
+async deleteDoc(collectionPath: string, docId: string): Promise<void>
+onSnapshot<T>(
+    collectionPath: string,
+    callback: (docs: FirestoreDoc<T>[]) => void,
+): () => void
+```
+
 ## File: src/shared-infra/frontend-firebase/firestore/firestore.client.ts
 ```typescript
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { app } from '../app.client';
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.converter.ts
+```typescript
+import {
+  type DocumentData,
+  type FirestoreDataConverter,
+  type QueryDocumentSnapshot,
+  type SnapshotOptions,
+  type WithFieldValue,
+} from 'firebase/firestore';
+export const createConverter = <T extends
+⋮----
+toFirestore(modelObject: WithFieldValue<T>): DocumentData
+fromFirestore(
+    snapshot: QueryDocumentSnapshot<DocumentData>,
+    options?: SnapshotOptions
+): T
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.facade.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.read.adapter.ts
+```typescript
+import {
+	collection,
+	collectionGroup,
+	doc,
+	getDoc,
+	getDocs,
+	onSnapshot,
+	query,
+	where,
+	orderBy,
+	limit,
+	Timestamp,
+	type CollectionReference,
+	type DocumentChange,
+	type DocumentData,
+	type DocumentSnapshot,
+	type FieldPath,
+	type OrderByDirection,
+	type Query,
+	type QueryConstraint,
+	type QueryDocumentSnapshot,
+	type QuerySnapshot,
+	type Unsubscribe,
+	type WhereFilterOp,
+	type FirestoreDataConverter,
+} from 'firebase/firestore';
+import { db } from './firestore.client';
+⋮----
+export const getDocument = async <T>(
+	path: string,
+	converter?: FirestoreDataConverter<T>
+): Promise<T | null> =>
+export const getDocuments = async <T>(query: Query<T>): Promise<T[]> =>
+export const createSubscription = <T>(
+	query: Query<T, DocumentData>,
+	onUpdate: (data: T[]) => void
+): Unsubscribe =>
+export const subscribeToDocument = <T extends object>(
+	path: string,
+	onUpdate: (data: (T & { id: string }) | null) => void
+): Unsubscribe =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.types.ts
+```typescript
+import type {
+  DocumentData,
+  QuerySnapshot,
+  DocumentSnapshot,
+  CollectionReference,
+  DocumentReference,
+  Timestamp,
+} from 'firebase/firestore';
+⋮----
+export interface FirestoreTimestampedDoc {
+  readonly createdAt?: Timestamp;
+  readonly updatedAt?: Timestamp;
+}
+export interface VersionedProjectionDoc extends FirestoreTimestampedDoc {
+  readonly lastProcessedVersion: number;
+  readonly traceId?: string;
+}
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.utils.ts
+```typescript
+import type { QuerySnapshot } from "firebase/firestore"
+export function snapshotToRecord<T extends
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/firestore.write.adapter.ts
+```typescript
+import {
+	arrayRemove,
+	arrayUnion,
+	collection,
+	doc,
+	addDoc,
+	setDoc,
+	updateDoc,
+	deleteDoc,
+	runTransaction,
+	serverTimestamp,
+	type FieldValue,
+	type Transaction,
+	type WithFieldValue,
+	type DocumentData,
+	type FirestoreDataConverter,
+} from 'firebase/firestore';
+import { db } from './firestore.client';
+⋮----
+export const addDocument = <T>(
+	path: string,
+	data: WithFieldValue<T>,
+	converter?: FirestoreDataConverter<T>
+) =>
+export const setDocument = <T>(
+	path: string,
+	data: WithFieldValue<T>,
+	converter?: FirestoreDataConverter<T>
+) =>
+export const updateDocument = (path: string, data: DocumentData) =>
+export const deleteDocument = (path: string) =>
 ```
 
 ## File: src/shared-infra/frontend-firebase/firestore/index.ts
@@ -454,9 +596,570 @@ import { app } from '../app.client';
 
 ```
 
+## File: src/shared-infra/frontend-firebase/firestore/repositories/account.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  getDoc,
+  deleteDoc,
+} from 'firebase/firestore'
+import type {
+  Account,
+  MemberReference,
+  Team,
+  ThemeConfig,
+} from '@/shared-kernel'
+import { db } from '../firestore.client'
+import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'
+export const createUserAccount = async (userId: string, name: string, email: string): Promise<void> =>
+export const createOrganization = async (organizationName: string, owner: Account): Promise<string> =>
+export const recruitOrganizationMember = async (organizationId: string, newId: string, name: string, email: string): Promise<void> =>
+export const dismissOrganizationMember = async (organizationId: string, member: MemberReference): Promise<void> =>
+export const createTeam = async (organizationId: string, teamName: string, type: 'internal' | 'external'): Promise<void> =>
+export const updateTeamMembers = async (organizationId: string, teamId: string, memberId: string, action: 'add' | 'remove'): Promise<void> =>
+export const sendPartnerInvite = async (organizationId: string, teamId: string, email: string): Promise<void> =>
+export const dismissPartnerMember = async (organizationId: string, teamId: string, member: MemberReference): Promise<void> =>
+export const updateOrganizationSettings = async (organizationId: string, settings:
+export const deleteOrganization = async (organizationId: string): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/audit.repository.ts
+```typescript
+import {
+  collection,
+  query,
+  orderBy,
+  limit as firestoreLimit,
+  where,
+} from 'firebase/firestore'
+import type { AuditLog } from '@/features/workspace.slice'
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
+export const getAuditLogs = async (
+  accountId: string,
+  workspaceId?: string,
+  limitCount = 50
+): Promise<AuditLog[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/daily.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  increment,
+  collection,
+  query,
+  orderBy,
+  limit as firestoreLimit,
+  runTransaction,
+  writeBatch,
+  type FieldValue,
+} from 'firebase/firestore'
+import type { DailyLog, DailyLogComment } from '@/features/workspace.slice'
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
+export const toggleDailyLogLike = async (
+  organizationId: string,
+  logId: string,
+  userId: string
+): Promise<void> =>
+export const addDailyLogComment = async (
+  organizationId: string,
+  logId: string,
+  author: { uid: string; name: string; avatarUrl?: string },
+  content: string
+): Promise<void> =>
+export const getDailyLogs = async (
+  accountId: string,
+  limitCount = 30
+): Promise<DailyLog[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/index.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/projection.registry.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  doc,
+  getDoc,
+  setDoc,
+  type Timestamp,
+} from 'firebase/firestore';
+import { db } from '../firestore.client';
+export interface ProjectionVersionRecord {
+  projectionName: string;
+  lastEventOffset: number;
+  readModelVersion: string;
+  updatedAt: Timestamp;
+}
+export const getProjectionVersion = async (
+  projectionName: string
+): Promise<ProjectionVersionRecord | null> =>
+export const upsertProjectionVersion = async (
+  projectionName: string,
+  lastEventOffset: number,
+  readModelVersion: string
+): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  where,
+} from 'firebase/firestore'
+import type { ScheduleItem } from '@/shared-kernel'
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
+import { addDocument, updateDocument } from '../firestore.write.adapter'
+export const createScheduleItem = async (
+  itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> =>
+export const updateScheduleItemStatus = async (
+  organizationId: string,
+  itemId: string,
+  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
+): Promise<void> =>
+export const updateScheduleItemDateRange = async (
+  accountId: string,
+  itemId: string,
+  startDate: ScheduleItem['startDate'],
+  endDate: ScheduleItem['endDate']
+): Promise<void> =>
+export const assignMemberAndApprove = async (
+  organizationId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const assignMemberToScheduleItem = async (
+  accountId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const unassignMemberFromScheduleItem = async (
+  accountId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const getScheduleItems = async (
+  accountId: string,
+  workspaceId?: string
+): Promise<ScheduleItem[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/user.repository.ts
+```typescript
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
+import type { Account } from '@/shared-kernel'
+import { db } from '../firestore.client'
+import { setDocument } from '../firestore.write.adapter'
+export const getUserProfile = async (
+  userId: string
+): Promise<Account | null> =>
+export const updateUserProfile = async (
+  userId: string,
+  data: Partial<Account>
+): Promise<void> =>
+export const addBookmark = async (
+  userId: string,
+  logId: string
+): Promise<void> =>
+export const removeBookmark = async (
+  userId: string,
+  logId: string
+): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.document-parser.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  collection,
+  query,
+  orderBy,
+  where,
+  limit,
+} from 'firebase/firestore';
+import type { ParsingIntent } from '@/features/workspace.slice';
+import { SUBCOLLECTIONS } from '../collection-paths';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocument, getDocuments } from '../firestore.read.adapter';
+import {
+  updateDocument,
+  addDocument,
+} from '../firestore.write.adapter';
+export const createParsingIntent = async (
+  workspaceId: string,
+  intentData: Omit<ParsingIntent, 'id' | 'createdAt'>
+): Promise<string> =>
+export const updateParsingIntentStatus = async (
+  workspaceId: string,
+  intentId: string,
+  status: 'importing' | 'imported' | 'failed' | 'superseded'
+): Promise<void> =>
+export const supersedeParsingIntent = async (
+  workspaceId: string,
+  oldIntentId: string,
+  newIntentId: string
+): Promise<void> =>
+export const getParsingIntents = async (
+  workspaceId: string
+): Promise<ParsingIntent[]> =>
+export const getParsingIntentBySourceFileId = async (
+  workspaceId: string,
+  sourceFileId: string
+): Promise<ParsingIntent | null> =>
+export const getParsingIntentById = async (
+  workspaceId: string,
+  intentId: string
+): Promise<ParsingIntent | null> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.files.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  collection,
+  query,
+  orderBy,
+  arrayUnion,
+  type FieldValue,
+} from 'firebase/firestore';
+import type { WorkspaceFile, WorkspaceFileVersion } from '@/features/workspace.slice';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import { updateDocument, addDocument } from '../firestore.write.adapter';
+export const createWorkspaceFile = async (
+  workspaceId: string,
+  fileData: Omit<WorkspaceFile, 'id' | 'updatedAt'> & { updatedAt: FieldValue }
+): Promise<string> =>
+export const addWorkspaceFileVersion = async (
+  workspaceId: string,
+  fileId: string,
+  version: WorkspaceFileVersion,
+  currentVersionId: string
+): Promise<void> =>
+export const restoreWorkspaceFileVersion = async (
+  workspaceId: string,
+  fileId: string,
+  versionId: string
+): Promise<void> =>
+export const getWorkspaceFilesFromSubcollection = async (
+  workspaceId: string
+): Promise<WorkspaceFile[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.issues.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  collection,
+  query,
+  orderBy,
+  type FieldValue,
+} from 'firebase/firestore';
+import type { WorkspaceIssue, IssueComment } from '@/features/workspace.slice';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import {
+  updateDocument,
+  addDocument,
+} from '../firestore.write.adapter';
+export const createIssue = async (
+  workspaceId: string,
+  title: string,
+  type: 'technical' | 'financial',
+  priority: 'high' | 'medium',
+  sourceTaskId?: string
+): Promise<string> =>
+export const addCommentToIssue = async (
+  workspaceId: string,
+  issueId: string,
+  author: string,
+  content: string
+): Promise<void> =>
+export const resolveIssue = async (
+  workspaceId: string,
+  issueId: string
+): Promise<void> =>
+export const getWorkspaceIssues = async (
+  workspaceId: string
+): Promise<WorkspaceIssue[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.parsing-imports.repository.ts
+```typescript
+import { serverTimestamp, doc, getDoc, runTransaction } from 'firebase/firestore';
+import type { ParsingImport, ParsingImportStatus } from '@/features/workspace.slice';
+import { SUBCOLLECTIONS } from '../collection-paths';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { updateDocument } from '../firestore.write.adapter';
+export const createParsingImport = async (
+  workspaceId: string,
+  importData: Omit<ParsingImport, 'id' | 'startedAt'>
+): Promise<string> =>
+export const getParsingImportByIdempotencyKey = async (
+  workspaceId: string,
+  idempotencyKey: string
+): Promise<ParsingImport | null> =>
+⋮----
+const isTerminalParsingImportStatus = (status: ParsingImportStatus): boolean
+export const updateParsingImportStatus = async (
+  workspaceId: string,
+  importId: string,
+  updates: Pick<ParsingImport, 'status' | 'appliedTaskIds'> &
+    Partial<Pick<ParsingImport, 'error'>>
+): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.tasks.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  collection,
+  query,
+  orderBy,
+  where,
+  limit,
+  doc,
+  getDoc,
+} from 'firebase/firestore';
+import type { WorkspaceTask } from '@/features/workspace.slice';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import {
+  updateDocument,
+  addDocument,
+  deleteDocument,
+} from '../firestore.write.adapter';
+export const createTask = async (
+  workspaceId: string,
+  taskData: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> =>
+export const updateTask = async (
+  workspaceId: string,
+  taskId: string,
+  updates: Partial<WorkspaceTask>
+): Promise<void> =>
+export const deleteTask = async (
+  workspaceId: string,
+  taskId: string
+): Promise<void> =>
+export const getWorkspaceTasks = async (
+  workspaceId: string
+): Promise<WorkspaceTask[]> =>
+export const getWorkspaceTask = async (
+  workspaceId: string,
+  taskId: string
+): Promise<WorkspaceTask | null> =>
+export const getTaskBySourceIntentId = async (
+  workspaceId: string,
+  sourceIntentId: string
+): Promise<WorkspaceTask | null> =>
+export const getTasksBySourceIntentId = async (
+  workspaceId: string,
+  sourceIntentId: string
+): Promise<WorkspaceTask[]> =>
+export const reconcileTask = async (
+  workspaceId: string,
+  taskId: string,
+  updates: {
+    name: string
+    quantity: number
+    unitPrice: number
+    discount?: number
+    subtotal: number
+    sourceIntentId: string
+    sourceIntentVersion: number
+  }
+): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.event-store.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  collection,
+  query,
+  orderBy,
+  type Timestamp,
+} from 'firebase/firestore';
+import { db } from '../firestore.client';
+import { createConverter } from '../firestore.converter';
+import { getDocuments } from '../firestore.read.adapter';
+import { addDocument } from '../firestore.write.adapter';
+export interface StoredWorkspaceEvent {
+  id: string;
+  eventType: string;
+  payload: Record<string, unknown>;
+  aggregateId: string;
+  occurredAt: Timestamp;
+  correlationId?: string;
+  causedBy?: string;
+}
+export const appendDomainEvent = async (
+  workspaceId: string,
+  event: Omit<StoredWorkspaceEvent, 'id' | 'occurredAt'>
+): Promise<string> =>
+export const getDomainEvents = async (
+  workspaceId: string
+): Promise<StoredWorkspaceEvent[]> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  getDoc,
+  runTransaction,
+  type FieldValue,
+} from 'firebase/firestore';
+import type { Account } from '@/shared-kernel';
+import type {
+  Workspace,
+  WorkspaceRole,
+  WorkspaceGrant,
+  WorkspaceFile,
+  Capability,
+  WorkspaceLifecycleState,
+  WorkspaceLocation,
+  Address,
+  WorkspacePersonnel,
+} from '@/features/workspace.slice';
+import { db } from '../firestore.client';
+import {
+  updateDocument,
+  addDocument,
+  deleteDocument,
+} from '../firestore.write.adapter';
+export const createWorkspace = async (
+  name: string,
+  account: Account
+): Promise<string> =>
+export const authorizeWorkspaceTeam = async (
+  workspaceId: string,
+  teamId: string
+): Promise<void> =>
+export const revokeWorkspaceTeam = async (
+  workspaceId: string,
+  teamId: string
+): Promise<void> =>
+export const grantIndividualWorkspaceAccess = async (
+  workspaceId: string,
+  userId: string,
+  role: WorkspaceRole,
+  protocol?: string
+): Promise<void> =>
+export const revokeIndividualWorkspaceAccess = async (
+  workspaceId: string,
+  grantId: string
+): Promise<void> =>
+export const mountCapabilities = async (
+  workspaceId: string,
+  capabilities: Capability[]
+): Promise<void> =>
+export const unmountCapability = async (
+  workspaceId: string,
+  capability: Capability
+): Promise<void> =>
+export const updateWorkspaceSettings = async (
+  workspaceId: string,
+  settings: {
+    name: string;
+    visibility: 'visible' | 'hidden';
+    lifecycleState: WorkspaceLifecycleState;
+    address?: Address;
+    personnel?: WorkspacePersonnel;
+  }
+): Promise<void> =>
+export const deleteWorkspace = async (workspaceId: string): Promise<void> =>
+export const getWorkspaceFiles = async (
+  workspaceId: string
+): Promise<WorkspaceFile[]> =>
+export const getWorkspaceGrants = async (
+  workspaceId: string
+): Promise<WorkspaceGrant[]> =>
+export const createWorkspaceLocation = async (
+  workspaceId: string,
+  location: WorkspaceLocation
+): Promise<void> =>
+export const updateWorkspaceLocation = async (
+  workspaceId: string,
+  locationId: string,
+  updates: Partial<Pick<WorkspaceLocation, 'label' | 'description' | 'capacity'>>
+): Promise<void> =>
+export const deleteWorkspaceLocation = async (
+  workspaceId: string,
+  locationId: string
+): Promise<void> =>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/version-guard.middleware.ts
+```typescript
+export type VersionGuardResult = 'allow' | 'discard';
+export function applyFirestoreVersionGuard(
+  eventVersion: number,
+  viewLastProcessedVersion: number
+): VersionGuardResult
+export function allowFirestoreWrite(
+  eventVersion: number,
+  viewLastProcessedVersion: number
+): boolean
+```
+
 ## File: src/shared-infra/frontend-firebase/index.ts
 ```typescript
 
+```
+
+## File: src/shared-infra/frontend-firebase/messaging/index.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/messaging/messaging.adapter.ts
+```typescript
+import { getToken, onMessage } from 'firebase/messaging';
+import type { IMessaging, PushNotificationPayload } from '@/shared-kernel/ports';
+import { messaging } from './messaging.client';
+class FrontendMessagingAdapter implements IMessaging
+⋮----
+async send(
+    _fcmToken: string,
+    _payload: PushNotificationPayload,
+    _traceId: string,
+): Promise<void>
+async getToken(): Promise<string | null>
+onForegroundMessage(callback: (payload: PushNotificationPayload) => void): () => void
 ```
 
 ## File: src/shared-infra/frontend-firebase/messaging/messaging.client.ts
@@ -465,10 +1168,95 @@ import { getMessaging, type Messaging } from 'firebase/messaging';
 import { app } from '../app.client';
 ```
 
+## File: src/shared-infra/frontend-firebase/messaging/messaging.types.ts
+```typescript
+export interface FcmData {
+  readonly [key: string]: string;
+}
+export interface FcmMessage {
+  readonly token: string;
+  readonly notification: {
+    readonly title: string;
+    readonly body: string;
+  };
+  readonly data: FcmData & { readonly traceId: string };
+}
+```
+
+## File: src/shared-infra/frontend-firebase/storage/index.ts
+```typescript
+
+```
+
 ## File: src/shared-infra/frontend-firebase/storage/storage.client.ts
 ```typescript
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { app } from '../app.client';
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage.facade.ts
+```typescript
+import { getFileDownloadURL } from './storage.read.adapter';
+import { uploadFile } from './storage.write.adapter';
+export const uploadDailyPhoto = async (
+  accountId: string,
+  workspaceId: string,
+  file: File
+): Promise<string> =>
+export const uploadTaskAttachment = async (
+  workspaceId: string,
+  file: File
+): Promise<string> =>
+export const uploadProfilePicture = async (
+  userId: string,
+  file: File
+): Promise<string> =>
+export const uploadWorkspaceDocument = async (
+  workspaceId: string,
+  fileId: string,
+  versionId: string,
+  file: File
+): Promise<string> =>
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage.read.adapter.ts
+```typescript
+import { ref, getDownloadURL, listAll, type ListResult } from 'firebase/storage';
+import { storage } from './storage.client';
+export const getFileDownloadURL = (path: string): Promise<string> =>
+export const listFiles = (path: string): Promise<ListResult> =>
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage.types.ts
+```typescript
+import type {
+  StorageReference,
+  UploadMetadata,
+  UploadResult,
+} from 'firebase/storage';
+⋮----
+export interface UploadTaskResult {
+  readonly downloadURL: string;
+  readonly storagePath: string;
+}
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage.write.adapter.ts
+```typescript
+import {
+  ref,
+  uploadBytes,
+  deleteObject,
+  type UploadResult,
+  type UploadMetadata,
+} from 'firebase/storage';
+import { storage } from './storage.client';
+export const uploadFile = (
+  path: string,
+  file: Blob | Uint8Array | ArrayBuffer,
+  metadata?: UploadMetadata
+): Promise<UploadResult> =>
+export const deleteFile = (path: string): Promise<void> =>
 ```
 
 ## File: src/shared-kernel/constants/location-units.ts
@@ -1971,6 +2759,42 @@ import type { ScheduleItem } from '@/shared-kernel'
 export type DecisionHistoryItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'status' | 'updatedAt'>
 ```
 
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/demand-row.tsx
+```typescript
+import { UserCheck, XCircle, Clock, CheckCircle2 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn-ui/select";
+import type { ScheduleItem, SkillRequirement } from "@/shared-kernel";
+import { SKILLS } from "@/shared-kernel/constants/skills";
+import type { Timestamp } from "@/shared-kernel/ports";
+import {
+  approveScheduleItemWithMember,
+  updateScheduleItemStatus,
+} from "../../../application/commands";
+type TimestampLike = { toDate: () => Date };
+function isTimestampLike(value: unknown): value is TimestampLike
+function formatTimestamp(ts: Timestamp | string | undefined): string
+export interface OrgMember {
+  id: string;
+  name: string;
+}
+export interface DemandRowProps {
+  item: ScheduleItem;
+  orgMembers: OrgMember[];
+  orgId: string;
+}
+⋮----
+```
+
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/governance-sidebar.tsx
 ```typescript
 import { Check, X } from "lucide-react";
@@ -1986,6 +2810,32 @@ interface GovernanceSidebarProps {
   onApprove: (item: ScheduleItem) => void;
   onReject: (item: ScheduleItem) => void;
 }
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/member-assign-popover.tsx
+```typescript
+import { UserPlus, Check } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/shadcn-ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shadcn-ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { cn } from "@/shadcn-ui/utils/utils";
+import type { MemberReference, ScheduleItem } from "@/shared-kernel";
+interface MemberAssignPopoverProps {
+  item: ScheduleItem;
+  members: MemberReference[];
+  onAssign: (item: ScheduleItem, memberId: string) => void;
+  onUnassign: (item: ScheduleItem, memberId: string) => void;
+}
+⋮----
+onUnassign(item, member.id);
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.rows.tsx
@@ -2093,13 +2943,6 @@ setSelectedSkillSlug(skill.slug);
 setSkillPickerOpen(false);
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-capability-tabs.tsx
-```typescript
-import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
-export function AccountCapabilityTabs()
-export function WorkspaceCapabilityTabs()
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-data-table.tsx
 ```typescript
 import {
@@ -2165,11 +3008,21 @@ const handleSubmit = async (data: {
 }) =>
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-capability-tabs.tsx
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.helpers.ts
 ```typescript
-import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
-export function AccountTimelineCapabilityTabs()
-export function WorkspaceTimelineCapabilityTabs()
+import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
+type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
+type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
+type TimestampLike = { toDate: () => Date };
+function isTimestampLike(value: unknown): value is TimestampLike
+export function toDate(timestamp: CalendarTimestamp): Date | null
+export function escapeHtml(input: string): string
+export function toTimelineClassName(item: ScheduleItem): string
+function isStartOfDayTimestamp(date: Date): boolean
+function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
+export function resolveTimelineInterval(item: ScheduleItem):
+export function resolveInitialWindow(items: Array<
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/unified-calendar-grid.tsx
@@ -2414,745 +3267,91 @@ async withGuard<T>(
 ): Promise<T | GuardCheckResult>
 ```
 
-## File: src/shared-infra/frontend-firebase/analytics/analytics.adapter.ts
-```typescript
-import { logEvent } from 'firebase/analytics';
-import { analytics } from './analytics.client';
-export const logAnalyticsEvent = (eventName: string, eventParams?: Record<string, unknown>) =>
-```
-
-## File: src/shared-infra/frontend-firebase/auth/auth.types.ts
-```typescript
-import type { User as FirebaseUser, UserCredential } from 'firebase/auth';
-import type { AuthUser } from '@/shared-kernel/ports/i-auth.service';
-⋮----
-export function mapFirebaseUser(user: FirebaseUser): AuthUser
-```
-
-## File: src/shared-infra/frontend-firebase/auth/index.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/config/firebase.config.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/firebase.config.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/firestore.converter.ts
+## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
 ```typescript
 import {
-  type DocumentData,
-  type FirestoreDataConverter,
-  type QueryDocumentSnapshot,
-  type SnapshotOptions,
-  type WithFieldValue,
-} from 'firebase/firestore';
-export const createConverter = <T extends
-⋮----
-toFirestore(modelObject: WithFieldValue<T>): DocumentData
-fromFirestore(
-    snapshot: QueryDocumentSnapshot<DocumentData>,
-    options?: SnapshotOptions
-): T
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInAnonymously,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+  signOut,
+  onAuthStateChanged,
+  type User as FirebaseUser,
+} from 'firebase/auth';
+import { auth } from './auth.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.facade.ts
+## File: src/shared-infra/frontend-firebase/firestore/collection-paths.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.read.adapter.ts
+## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
 ```typescript
-import {
-	collection,
-	collectionGroup,
-	doc,
-	getDoc,
-	getDocs,
-	onSnapshot,
-	query,
-	where,
-	orderBy,
-	limit,
-	Timestamp,
-	type CollectionReference,
-	type DocumentChange,
-	type DocumentData,
-	type DocumentSnapshot,
-	type FieldPath,
-	type OrderByDirection,
-	type Query,
-	type QueryConstraint,
-	type QueryDocumentSnapshot,
-	type QuerySnapshot,
-	type Unsubscribe,
-	type WhereFilterOp,
-	type FirestoreDataConverter,
-} from 'firebase/firestore';
-import { db } from './firestore.client';
-⋮----
-export const getDocument = async <T>(
-	path: string,
-	converter?: FirestoreDataConverter<T>
-): Promise<T | null> =>
-export const getDocuments = async <T>(query: Query<T>): Promise<T[]> =>
-export const createSubscription = <T>(
-	query: Query<T, DocumentData>,
-	onUpdate: (data: T[]) => void
-): Unsubscribe =>
-export const subscribeToDocument = <T extends object>(
-	path: string,
-	onUpdate: (data: (T & { id: string }) | null) => void
-): Unsubscribe =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/firestore.types.ts
-```typescript
-import type {
-  DocumentData,
-  QuerySnapshot,
-  DocumentSnapshot,
-  CollectionReference,
-  DocumentReference,
-  Timestamp,
-} from 'firebase/firestore';
-⋮----
-export interface FirestoreTimestampedDoc {
-  readonly createdAt?: Timestamp;
-  readonly updatedAt?: Timestamp;
-}
-export interface VersionedProjectionDoc extends FirestoreTimestampedDoc {
-  readonly lastProcessedVersion: number;
-  readonly traceId?: string;
-}
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/firestore.utils.ts
-```typescript
-import type { QuerySnapshot } from "firebase/firestore"
-export function snapshotToRecord<T extends
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/firestore.write.adapter.ts
-```typescript
-import {
-	arrayRemove,
-	arrayUnion,
-	collection,
-	doc,
-	addDoc,
-	setDoc,
-	updateDoc,
-	deleteDoc,
-	runTransaction,
-	serverTimestamp,
-	type FieldValue,
-	type Transaction,
-	type WithFieldValue,
-	type DocumentData,
-	type FirestoreDataConverter,
-} from 'firebase/firestore';
-import { db } from './firestore.client';
-⋮----
-export const addDocument = <T>(
-	path: string,
-	data: WithFieldValue<T>,
-	converter?: FirestoreDataConverter<T>
-) =>
-export const setDocument = <T>(
-	path: string,
-	data: WithFieldValue<T>,
-	converter?: FirestoreDataConverter<T>
-) =>
-export const updateDocument = (path: string, data: DocumentData) =>
-export const deleteDocument = (path: string) =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/account.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  getDoc,
-  deleteDoc,
-} from 'firebase/firestore'
-import type {
-  Account,
-  MemberReference,
-  Team,
-  ThemeConfig,
-} from '@/shared-kernel'
-import { db } from '../firestore.client'
-import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'
-export const createUserAccount = async (userId: string, name: string, email: string): Promise<void> =>
-export const createOrganization = async (organizationName: string, owner: Account): Promise<string> =>
-export const recruitOrganizationMember = async (organizationId: string, newId: string, name: string, email: string): Promise<void> =>
-export const dismissOrganizationMember = async (organizationId: string, member: MemberReference): Promise<void> =>
-export const createTeam = async (organizationId: string, teamName: string, type: 'internal' | 'external'): Promise<void> =>
-export const updateTeamMembers = async (organizationId: string, teamId: string, memberId: string, action: 'add' | 'remove'): Promise<void> =>
-export const sendPartnerInvite = async (organizationId: string, teamId: string, email: string): Promise<void> =>
-export const dismissPartnerMember = async (organizationId: string, teamId: string, member: MemberReference): Promise<void> =>
-export const updateOrganizationSettings = async (organizationId: string, settings:
-export const deleteOrganization = async (organizationId: string): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/audit.repository.ts
-```typescript
-import {
-  collection,
-  query,
-  orderBy,
-  limit as firestoreLimit,
-  where,
-} from 'firebase/firestore'
-import type { AuditLog } from '@/features/workspace.slice'
-import { db } from '../firestore.client'
-import { createConverter } from '../firestore.converter'
-import { getDocuments } from '../firestore.read.adapter'
-export const getAuditLogs = async (
-  accountId: string,
-  workspaceId?: string,
-  limitCount = 50
-): Promise<AuditLog[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/daily.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  increment,
-  collection,
-  query,
-  orderBy,
-  limit as firestoreLimit,
-  runTransaction,
-  writeBatch,
-  type FieldValue,
-} from 'firebase/firestore'
-import type { DailyLog, DailyLogComment } from '@/features/workspace.slice'
-import { db } from '../firestore.client'
-import { createConverter } from '../firestore.converter'
-import { getDocuments } from '../firestore.read.adapter'
-export const toggleDailyLogLike = async (
-  organizationId: string,
-  logId: string,
-  userId: string
-): Promise<void> =>
-export const addDailyLogComment = async (
-  organizationId: string,
-  logId: string,
-  author: { uid: string; name: string; avatarUrl?: string },
-  content: string
-): Promise<void> =>
-export const getDailyLogs = async (
-  accountId: string,
-  limitCount = 30
-): Promise<DailyLog[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/index.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/projection.registry.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  doc,
-  getDoc,
-  setDoc,
-  type Timestamp,
-} from 'firebase/firestore';
-import { db } from '../firestore.client';
-export interface ProjectionVersionRecord {
-  projectionName: string;
-  lastEventOffset: number;
-  readModelVersion: string;
-  updatedAt: Timestamp;
-}
-export const getProjectionVersion = async (
-  projectionName: string
-): Promise<ProjectionVersionRecord | null> =>
-export const upsertProjectionVersion = async (
-  projectionName: string,
-  lastEventOffset: number,
-  readModelVersion: string
-): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  where,
-} from 'firebase/firestore'
-import type { ScheduleItem } from '@/shared-kernel'
-import { db } from '../firestore.client'
-import { createConverter } from '../firestore.converter'
-import { getDocuments } from '../firestore.read.adapter'
-import { addDocument, updateDocument } from '../firestore.write.adapter'
-export const createScheduleItem = async (
-  itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>
-): Promise<string> =>
-export const updateScheduleItemStatus = async (
-  organizationId: string,
-  itemId: string,
-  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
-): Promise<void> =>
-export const updateScheduleItemDateRange = async (
-  accountId: string,
-  itemId: string,
-  startDate: ScheduleItem['startDate'],
-  endDate: ScheduleItem['endDate']
-): Promise<void> =>
-export const assignMemberAndApprove = async (
-  organizationId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const assignMemberToScheduleItem = async (
-  accountId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const unassignMemberFromScheduleItem = async (
-  accountId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const getScheduleItems = async (
-  accountId: string,
-  workspaceId?: string
-): Promise<ScheduleItem[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/user.repository.ts
-```typescript
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
-import type { Account } from '@/shared-kernel'
-import { db } from '../firestore.client'
-import { setDocument } from '../firestore.write.adapter'
-export const getUserProfile = async (
-  userId: string
-): Promise<Account | null> =>
-export const updateUserProfile = async (
-  userId: string,
-  data: Partial<Account>
-): Promise<void> =>
-export const addBookmark = async (
-  userId: string,
-  logId: string
-): Promise<void> =>
-export const removeBookmark = async (
-  userId: string,
-  logId: string
-): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.document-parser.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  collection,
-  query,
-  orderBy,
-  where,
-  limit,
-} from 'firebase/firestore';
-import type { ParsingIntent } from '@/features/workspace.slice';
-import { SUBCOLLECTIONS } from '../collection-paths';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { getDocument, getDocuments } from '../firestore.read.adapter';
-import {
-  updateDocument,
-  addDocument,
-} from '../firestore.write.adapter';
-export const createParsingIntent = async (
-  workspaceId: string,
-  intentData: Omit<ParsingIntent, 'id' | 'createdAt'>
-): Promise<string> =>
-export const updateParsingIntentStatus = async (
-  workspaceId: string,
-  intentId: string,
-  status: 'importing' | 'imported' | 'failed' | 'superseded'
-): Promise<void> =>
-export const supersedeParsingIntent = async (
-  workspaceId: string,
-  oldIntentId: string,
-  newIntentId: string
-): Promise<void> =>
-export const getParsingIntents = async (
-  workspaceId: string
-): Promise<ParsingIntent[]> =>
-export const getParsingIntentBySourceFileId = async (
-  workspaceId: string,
-  sourceFileId: string
-): Promise<ParsingIntent | null> =>
-export const getParsingIntentById = async (
-  workspaceId: string,
-  intentId: string
-): Promise<ParsingIntent | null> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.files.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  collection,
-  query,
-  orderBy,
-  arrayUnion,
-  type FieldValue,
-} from 'firebase/firestore';
-import type { WorkspaceFile, WorkspaceFileVersion } from '@/features/workspace.slice';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { getDocuments } from '../firestore.read.adapter';
-import { updateDocument, addDocument } from '../firestore.write.adapter';
-export const createWorkspaceFile = async (
-  workspaceId: string,
-  fileData: Omit<WorkspaceFile, 'id' | 'updatedAt'> & { updatedAt: FieldValue }
-): Promise<string> =>
-export const addWorkspaceFileVersion = async (
-  workspaceId: string,
-  fileId: string,
-  version: WorkspaceFileVersion,
-  currentVersionId: string
-): Promise<void> =>
-export const restoreWorkspaceFileVersion = async (
-  workspaceId: string,
-  fileId: string,
-  versionId: string
-): Promise<void> =>
-export const getWorkspaceFilesFromSubcollection = async (
-  workspaceId: string
-): Promise<WorkspaceFile[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.issues.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  collection,
-  query,
-  orderBy,
-  type FieldValue,
-} from 'firebase/firestore';
-import type { WorkspaceIssue, IssueComment } from '@/features/workspace.slice';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { getDocuments } from '../firestore.read.adapter';
-import {
-  updateDocument,
-  addDocument,
-} from '../firestore.write.adapter';
-export const createIssue = async (
-  workspaceId: string,
-  title: string,
-  type: 'technical' | 'financial',
-  priority: 'high' | 'medium',
-  sourceTaskId?: string
-): Promise<string> =>
-export const addCommentToIssue = async (
-  workspaceId: string,
-  issueId: string,
-  author: string,
-  content: string
-): Promise<void> =>
-export const resolveIssue = async (
-  workspaceId: string,
-  issueId: string
-): Promise<void> =>
-export const getWorkspaceIssues = async (
-  workspaceId: string
-): Promise<WorkspaceIssue[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.parsing-imports.repository.ts
-```typescript
-import { serverTimestamp, doc, getDoc, runTransaction } from 'firebase/firestore';
-import type { ParsingImport, ParsingImportStatus } from '@/features/workspace.slice';
-import { SUBCOLLECTIONS } from '../collection-paths';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { updateDocument } from '../firestore.write.adapter';
-export const createParsingImport = async (
-  workspaceId: string,
-  importData: Omit<ParsingImport, 'id' | 'startedAt'>
-): Promise<string> =>
-export const getParsingImportByIdempotencyKey = async (
-  workspaceId: string,
-  idempotencyKey: string
-): Promise<ParsingImport | null> =>
-⋮----
-const isTerminalParsingImportStatus = (status: ParsingImportStatus): boolean
-export const updateParsingImportStatus = async (
-  workspaceId: string,
-  importId: string,
-  updates: Pick<ParsingImport, 'status' | 'appliedTaskIds'> &
-    Partial<Pick<ParsingImport, 'error'>>
-): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.tasks.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  collection,
-  query,
-  orderBy,
-  where,
-  limit,
-  doc,
-  getDoc,
-} from 'firebase/firestore';
-import type { WorkspaceTask } from '@/features/workspace.slice';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { getDocuments } from '../firestore.read.adapter';
-import {
-  updateDocument,
-  addDocument,
-  deleteDocument,
-} from '../firestore.write.adapter';
-export const createTask = async (
-  workspaceId: string,
-  taskData: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>
-): Promise<string> =>
-export const updateTask = async (
-  workspaceId: string,
-  taskId: string,
-  updates: Partial<WorkspaceTask>
-): Promise<void> =>
-export const deleteTask = async (
-  workspaceId: string,
-  taskId: string
-): Promise<void> =>
-export const getWorkspaceTasks = async (
-  workspaceId: string
-): Promise<WorkspaceTask[]> =>
-export const getWorkspaceTask = async (
-  workspaceId: string,
-  taskId: string
-): Promise<WorkspaceTask | null> =>
-export const getTaskBySourceIntentId = async (
-  workspaceId: string,
-  sourceIntentId: string
-): Promise<WorkspaceTask | null> =>
-export const getTasksBySourceIntentId = async (
-  workspaceId: string,
-  sourceIntentId: string
-): Promise<WorkspaceTask[]> =>
-export const reconcileTask = async (
-  workspaceId: string,
-  taskId: string,
-  updates: {
-    name: string
-    quantity: number
-    unitPrice: number
-    discount?: number
-    subtotal: number
-    sourceIntentId: string
-    sourceIntentVersion: number
-  }
-): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.event-store.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  collection,
-  query,
-  orderBy,
-  type Timestamp,
-} from 'firebase/firestore';
-import { db } from '../firestore.client';
-import { createConverter } from '../firestore.converter';
-import { getDocuments } from '../firestore.read.adapter';
-import { addDocument } from '../firestore.write.adapter';
-export interface StoredWorkspaceEvent {
+import { getDocument } from '../firestore.read.adapter';
+import { setDocument } from '../firestore.write.adapter';
+import { tagSlugRef, type TagSlugRef } from '@/shared-kernel';
+type PersistedCostItemType =
+  | 'EXECUTABLE'
+  | 'MANAGEMENT'
+  | 'RESOURCE'
+  | 'FINANCIAL'
+  | 'PROFIT'
+  | 'ALLOWANCE';
+interface PersistedFinanceDirectiveItem {
   id: string;
-  eventType: string;
-  payload: Record<string, unknown>;
-  aggregateId: string;
-  occurredAt: Timestamp;
-  correlationId?: string;
-  causedBy?: string;
+  name: string;
+  sourceDocument: string;
+  intentId: string;
+  semanticTagSlug: TagSlugRef;
+  costItemType: PersistedCostItemType;
+  unitPrice: number;
+  totalQuantity: number;
+  remainingQuantity: number;
 }
-export const appendDomainEvent = async (
+interface PersistedFinanceClaimLineItem {
+  itemId: string;
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  lineAmount: number;
+}
+export interface PersistedFinanceAggregateState {
+  workspaceId: string;
+  stage: string;
+  cycleIndex: number;
+  receivedAmount: number;
+  directiveItems: PersistedFinanceDirectiveItem[];
+  currentClaimLineItems: PersistedFinanceClaimLineItem[];
+  paymentTermStartAtISO: string | null;
+  paymentReceivedAtISO: string | null;
+  updatedAt: number;
+}
+interface PersistedFinanceDirectiveItemInput
+  extends Omit<PersistedFinanceDirectiveItem, 'semanticTagSlug'> {
+  semanticTagSlug: string;
+}
+interface PersistedFinanceAggregateStateInput
+  extends Omit<PersistedFinanceAggregateState, 'directiveItems'> {
+  directiveItems: PersistedFinanceDirectiveItemInput[];
+}
+const financeAggregatePath = (workspaceId: string) => `financeStates/$
+export async function getFinanceAggregateState(
   workspaceId: string,
-  event: Omit<StoredWorkspaceEvent, 'id' | 'occurredAt'>
-): Promise<string> =>
-export const getDomainEvents = async (
-  workspaceId: string
-): Promise<StoredWorkspaceEvent[]> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  getDoc,
-  runTransaction,
-  type FieldValue,
-} from 'firebase/firestore';
-import type { Account } from '@/shared-kernel';
-import type {
-  Workspace,
-  WorkspaceRole,
-  WorkspaceGrant,
-  WorkspaceFile,
-  Capability,
-  WorkspaceLifecycleState,
-  WorkspaceLocation,
-  Address,
-  WorkspacePersonnel,
-} from '@/features/workspace.slice';
-import { db } from '../firestore.client';
-import {
-  updateDocument,
-  addDocument,
-  deleteDocument,
-} from '../firestore.write.adapter';
-export const createWorkspace = async (
-  name: string,
-  account: Account
-): Promise<string> =>
-export const authorizeWorkspaceTeam = async (
-  workspaceId: string,
-  teamId: string
-): Promise<void> =>
-export const revokeWorkspaceTeam = async (
-  workspaceId: string,
-  teamId: string
-): Promise<void> =>
-export const grantIndividualWorkspaceAccess = async (
-  workspaceId: string,
-  userId: string,
-  role: WorkspaceRole,
-  protocol?: string
-): Promise<void> =>
-export const revokeIndividualWorkspaceAccess = async (
-  workspaceId: string,
-  grantId: string
-): Promise<void> =>
-export const mountCapabilities = async (
-  workspaceId: string,
-  capabilities: Capability[]
-): Promise<void> =>
-export const unmountCapability = async (
-  workspaceId: string,
-  capability: Capability
-): Promise<void> =>
-export const updateWorkspaceSettings = async (
-  workspaceId: string,
-  settings: {
-    name: string;
-    visibility: 'visible' | 'hidden';
-    lifecycleState: WorkspaceLifecycleState;
-    address?: Address;
-    personnel?: WorkspacePersonnel;
-  }
-): Promise<void> =>
-export const deleteWorkspace = async (workspaceId: string): Promise<void> =>
-export const getWorkspaceFiles = async (
-  workspaceId: string
-): Promise<WorkspaceFile[]> =>
-export const getWorkspaceGrants = async (
-  workspaceId: string
-): Promise<WorkspaceGrant[]> =>
-export const createWorkspaceLocation = async (
-  workspaceId: string,
-  location: WorkspaceLocation
-): Promise<void> =>
-export const updateWorkspaceLocation = async (
-  workspaceId: string,
-  locationId: string,
-  updates: Partial<Pick<WorkspaceLocation, 'label' | 'description' | 'capacity'>>
-): Promise<void> =>
-export const deleteWorkspaceLocation = async (
-  workspaceId: string,
-  locationId: string
-): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/version-guard.middleware.ts
-```typescript
-export type VersionGuardResult = 'allow' | 'discard';
-export function applyFirestoreVersionGuard(
-  eventVersion: number,
-  viewLastProcessedVersion: number
-): VersionGuardResult
-export function allowFirestoreWrite(
-  eventVersion: number,
-  viewLastProcessedVersion: number
-): boolean
-```
-
-## File: src/shared-infra/frontend-firebase/messaging/index.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/messaging/messaging.adapter.ts
-```typescript
-import { getToken, onMessage } from 'firebase/messaging';
-import type { IMessaging, PushNotificationPayload } from '@/shared-kernel/ports';
-import { messaging } from './messaging.client';
-class FrontendMessagingAdapter implements IMessaging
-⋮----
-async send(
-    _fcmToken: string,
-    _payload: PushNotificationPayload,
-    _traceId: string,
+): Promise<PersistedFinanceAggregateState | null>
+export async function saveFinanceAggregateState(
+  state: PersistedFinanceAggregateStateInput,
 ): Promise<void>
-async getToken(): Promise<string | null>
-onForegroundMessage(callback: (payload: PushNotificationPayload) => void): () => void
 ```
 
-## File: src/shared-infra/frontend-firebase/messaging/messaging.types.ts
+## File: src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
 ```typescript
-export interface FcmData {
-  readonly [key: string]: string;
-}
-export interface FcmMessage {
-  readonly token: string;
-  readonly notification: {
-    readonly title: string;
-    readonly body: string;
-  };
-  readonly data: FcmData & { readonly traceId: string };
-}
-```
-
-## File: src/shared-infra/frontend-firebase/storage/index.ts
-```typescript
-
+dailyPhoto(accountId: string, workspaceId: string, fileId: string, fileName: string): string
+taskAttachment(workspaceId: string, fileId: string, fileName: string): string
+userAvatar(userId: string): string
+workspaceDocument(workspaceId: string, fileId: string, versionId: string, fileName: string): string
 ```
 
 ## File: src/shared-infra/frontend-firebase/storage/storage.adapter.ts
@@ -3165,71 +3364,6 @@ export class StorageAdapter implements IFileStore
 async upload(path: string, file: File | Blob, options?: UploadOptions): Promise<string>
 async getDownloadURL(path: string): Promise<string>
 async deleteFile(path: string): Promise<void>
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage.facade.ts
-```typescript
-import { getFileDownloadURL } from './storage.read.adapter';
-import { uploadFile } from './storage.write.adapter';
-export const uploadDailyPhoto = async (
-  accountId: string,
-  workspaceId: string,
-  file: File
-): Promise<string> =>
-export const uploadTaskAttachment = async (
-  workspaceId: string,
-  file: File
-): Promise<string> =>
-export const uploadProfilePicture = async (
-  userId: string,
-  file: File
-): Promise<string> =>
-export const uploadWorkspaceDocument = async (
-  workspaceId: string,
-  fileId: string,
-  versionId: string,
-  file: File
-): Promise<string> =>
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage.read.adapter.ts
-```typescript
-import { ref, getDownloadURL, listAll, type ListResult } from 'firebase/storage';
-import { storage } from './storage.client';
-export const getFileDownloadURL = (path: string): Promise<string> =>
-export const listFiles = (path: string): Promise<ListResult> =>
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage.types.ts
-```typescript
-import type {
-  StorageReference,
-  UploadMetadata,
-  UploadResult,
-} from 'firebase/storage';
-⋮----
-export interface UploadTaskResult {
-  readonly downloadURL: string;
-  readonly storagePath: string;
-}
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage.write.adapter.ts
-```typescript
-import {
-  ref,
-  uploadBytes,
-  deleteObject,
-  type UploadResult,
-  type UploadMetadata,
-} from 'firebase/storage';
-import { storage } from './storage.client';
-export const uploadFile = (
-  path: string,
-  file: Blob | Uint8Array | ArrayBuffer,
-  metadata?: UploadMetadata
-): Promise<UploadResult> =>
-export const deleteFile = (path: string): Promise<void> =>
 ```
 
 ## File: src/shared-infra/gateway-command/_gateway.ts
@@ -4203,6 +4337,73 @@ export interface ScheduleItem {
 }
 ```
 
+## File: src/shared-kernel/data-contracts/skill-tier/index.ts
+```typescript
+import type { Timestamp } from '../../ports'
+import type { TagSlugRef } from '../tag-authority'
+export type SkillTier =
+  | 'apprentice'
+  | 'journeyman'
+  | 'expert'
+  | 'artisan'
+  | 'grandmaster'
+  | 'legendary'
+  | 'titan';
+export interface TierDefinition {
+  tier: SkillTier;
+  rank: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  label: string;
+  minXp: number;
+  maxXp: number;
+  color: string;
+  cssVar: string;
+}
+export interface SkillRequirement {
+  tagSlug: TagSlugRef;
+  tagId?: string;
+  minXp?: number;
+  minimumTier: SkillTier;
+  quantity: number;
+}
+⋮----
+export function getTierDefinition(tier: SkillTier): TierDefinition
+export function getTier(xp: number): SkillTier
+⋮----
+export function getTierRank(tier: SkillTier): number
+export function tierSatisfies(grantedTier: SkillTier, minimumTier: SkillTier): boolean
+export interface SkillTag {
+  slug: string;
+  name: string;
+  category?: string;
+  description?: string;
+}
+export interface SkillGrant {
+  tagSlug: TagSlugRef;
+  tagName?: string;
+  tagId?: string;
+  tier: SkillTier;
+  xp: number;
+  earnedInOrgId?: string;
+  grantedAt?: Timestamp;
+}
+export interface WorkspaceScheduleProposedPayload {
+  readonly scheduleItemId: string;
+  readonly workspaceId: string;
+  readonly orgId: string;
+  readonly title: string;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly proposedBy: string;
+  readonly intentId?: string;
+  readonly skillRequirements?: SkillRequirement[];
+  readonly locationId?: string;
+  readonly traceId?: string;
+}
+export interface ImplementsScheduleProposedPayloadContract {
+  readonly implementsScheduleProposedPayload: true;
+}
+```
+
 ## File: src/features/semantic-graph.slice/_queries.ts
 ```typescript
 import { querySemanticIndex, getIndexStats } from './_services';
@@ -4584,64 +4785,6 @@ export interface SchedulingStalenessContractPort {
 }
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/demand-board.tsx
-```typescript
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, UserCheck, XCircle, Clock, CheckCircle2 } from 'lucide-react';
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useApp } from '@/app-runtime/providers/app-provider';
-import { useAccount } from '@/features/workspace.slice';
-import { Badge } from '@/shadcn-ui/badge';
-import { Button } from '@/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { toast } from '@/shadcn-ui/hooks/use-toast';
-import { ScrollArea } from '@/shadcn-ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shadcn-ui/select';
-import type { ScheduleItem } from '@/shared-kernel';
-import type { SkillRequirement } from '@/shared-kernel';
-import { SKILLS } from '@/shared-kernel/constants/skills';
-import type { Timestamp } from '@/shared-kernel/ports';
-import {
-  approveScheduleItemWithMember,
-  updateScheduleItemStatus,
-} from '../../../application/commands';
-type TimestampLike = { toDate: () => Date };
-function isTimestampLike(value: unknown): value is TimestampLike
-function formatTimestamp(ts: Timestamp | string | undefined): string
-interface OrgMember {
-  id: string;
-  name: string;
-}
-interface DemandRowProps {
-  item: ScheduleItem;
-  orgMembers: OrgMember[];
-  orgId: string;
-}
-⋮----
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.confirmed-row.tsx
 ```typescript
 import { Flag } from 'lucide-react';
@@ -4722,50 +4865,18 @@ export function computeSkillMatch(
 ): [number, number]
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.tsx
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-capability-tabs.tsx
 ```typescript
-import { useEffect, useMemo, useRef } from "react";
-import { DataSet } from "vis-data";
-import {
-  Timeline,
-  type DataGroup,
-  type DataItem,
-  type TimelineItem,
-  type TimelineOptions,
-} from "vis-timeline/standalone";
-⋮----
-import { cn } from "@/shadcn-ui/utils/utils";
-import type { ScheduleItem } from "@/shared-kernel";
-import type { TimelineMember } from '../../types/timeline.types';
-import {
-  escapeHtml,
-  resolveInitialWindow,
-  resolveTimelineInterval,
-  toTimelineClassName,
-} from "./timeline-canvas.helpers";
-interface TimelineCanvasProps {
-  items: ScheduleItem[];
-  members: TimelineMember[];
-  enableDrag?: boolean;
-  groupMode?: "none" | "workspace";
-  onMoveItem?: (params: {
-    itemId: string;
-    start: Date;
-    end: Date;
-    groupId?: string;
-  }) => Promise<boolean>;
-  className?: string;
-}
-export function TimelineCanvas({
-  items,
-  members,
-  enableDrag = false,
-  groupMode = "none",
-  onMoveItem,
-  className,
-}: TimelineCanvasProps)
-⋮----
-<div className=
+import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
+export function AccountCapabilityTabs()
+export function WorkspaceCapabilityTabs()
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-capability-tabs.tsx
+```typescript
+import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
+export function AccountTimelineCapabilityTabs()
+export function WorkspaceTimelineCapabilityTabs()
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/hooks/runtime/use-account-timeline.ts
@@ -4848,11 +4959,6 @@ import type { TimelineMember } from '../../types/timeline.types';
 export function useWorkspaceTimeline()
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/index.ts
-```typescript
-
-```
-
 ## File: src/shared-infra/event-router/index.ts
 ```typescript
 
@@ -4861,118 +4967,6 @@ export function useWorkspaceTimeline()
 ## File: src/shared-infra/external-triggers/index.ts
 ```typescript
 
-```
-
-## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
-```typescript
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInAnonymously,
-  updateProfile,
-  verifyBeforeUpdateEmail,
-  signOut,
-  onAuthStateChanged,
-  type User as FirebaseUser,
-} from 'firebase/auth';
-import { auth } from './auth.client';
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/collection-paths.ts
-```typescript
-
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/firestore.adapter.ts
-```typescript
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  setDoc,
-} from 'firebase/firestore';
-import type { FirestoreDoc, IFirestoreRepo, WriteOptions } from '@/shared-kernel/ports';
-import { db } from './firestore.client';
-class FirebaseFirestoreRepo implements IFirestoreRepo
-⋮----
-async getDoc<T>(collectionPath: string, docId: string): Promise<FirestoreDoc<T> | null>
-async getDocs<T>(collectionPath: string): Promise<FirestoreDoc<T>[]>
-async setDoc<T>(collectionPath: string, docId: string, data: T, opts?: WriteOptions): Promise<void>
-async deleteDoc(collectionPath: string, docId: string): Promise<void>
-onSnapshot<T>(
-    collectionPath: string,
-    callback: (docs: FirestoreDoc<T>[]) => void,
-): () => void
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
-```typescript
-import { getDocument } from '../firestore.read.adapter';
-import { setDocument } from '../firestore.write.adapter';
-import { tagSlugRef, type TagSlugRef } from '@/shared-kernel';
-type PersistedCostItemType =
-  | 'EXECUTABLE'
-  | 'MANAGEMENT'
-  | 'RESOURCE'
-  | 'FINANCIAL'
-  | 'PROFIT'
-  | 'ALLOWANCE';
-interface PersistedFinanceDirectiveItem {
-  id: string;
-  name: string;
-  sourceDocument: string;
-  intentId: string;
-  semanticTagSlug: TagSlugRef;
-  costItemType: PersistedCostItemType;
-  unitPrice: number;
-  totalQuantity: number;
-  remainingQuantity: number;
-}
-interface PersistedFinanceClaimLineItem {
-  itemId: string;
-  name: string;
-  quantity: number;
-  unitPrice: number;
-  lineAmount: number;
-}
-export interface PersistedFinanceAggregateState {
-  workspaceId: string;
-  stage: string;
-  cycleIndex: number;
-  receivedAmount: number;
-  directiveItems: PersistedFinanceDirectiveItem[];
-  currentClaimLineItems: PersistedFinanceClaimLineItem[];
-  paymentTermStartAtISO: string | null;
-  paymentReceivedAtISO: string | null;
-  updatedAt: number;
-}
-interface PersistedFinanceDirectiveItemInput
-  extends Omit<PersistedFinanceDirectiveItem, 'semanticTagSlug'> {
-  semanticTagSlug: string;
-}
-interface PersistedFinanceAggregateStateInput
-  extends Omit<PersistedFinanceAggregateState, 'directiveItems'> {
-  directiveItems: PersistedFinanceDirectiveItemInput[];
-}
-const financeAggregatePath = (workspaceId: string) => `financeStates/$
-export async function getFinanceAggregateState(
-  workspaceId: string,
-): Promise<PersistedFinanceAggregateState | null>
-export async function saveFinanceAggregateState(
-  state: PersistedFinanceAggregateStateInput,
-): Promise<void>
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
-```typescript
-dailyPhoto(accountId: string, workspaceId: string, fileId: string, fileName: string): string
-taskAttachment(workspaceId: string, fileId: string, fileName: string): string
-userAvatar(userId: string): string
-workspaceDocument(workspaceId: string, fileId: string, versionId: string, fileName: string): string
 ```
 
 ## File: src/shared-infra/projection.bus/_funnel.ts
@@ -5087,73 +5081,6 @@ export interface NotificationTypeMeta {
   zhLabel: string;
   enLabel: string;
   colorClass: string;
-}
-```
-
-## File: src/shared-kernel/data-contracts/skill-tier/index.ts
-```typescript
-import type { Timestamp } from '../../ports'
-import type { TagSlugRef } from '../tag-authority'
-export type SkillTier =
-  | 'apprentice'
-  | 'journeyman'
-  | 'expert'
-  | 'artisan'
-  | 'grandmaster'
-  | 'legendary'
-  | 'titan';
-export interface TierDefinition {
-  tier: SkillTier;
-  rank: 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  label: string;
-  minXp: number;
-  maxXp: number;
-  color: string;
-  cssVar: string;
-}
-export interface SkillRequirement {
-  tagSlug: TagSlugRef;
-  tagId?: string;
-  minXp?: number;
-  minimumTier: SkillTier;
-  quantity: number;
-}
-⋮----
-export function getTierDefinition(tier: SkillTier): TierDefinition
-export function getTier(xp: number): SkillTier
-⋮----
-export function getTierRank(tier: SkillTier): number
-export function tierSatisfies(grantedTier: SkillTier, minimumTier: SkillTier): boolean
-export interface SkillTag {
-  slug: string;
-  name: string;
-  category?: string;
-  description?: string;
-}
-export interface SkillGrant {
-  tagSlug: TagSlugRef;
-  tagName?: string;
-  tagId?: string;
-  tier: SkillTier;
-  xp: number;
-  earnedInOrgId?: string;
-  grantedAt?: Timestamp;
-}
-export interface WorkspaceScheduleProposedPayload {
-  readonly scheduleItemId: string;
-  readonly workspaceId: string;
-  readonly orgId: string;
-  readonly title: string;
-  readonly startDate: string;
-  readonly endDate: string;
-  readonly proposedBy: string;
-  readonly intentId?: string;
-  readonly skillRequirements?: SkillRequirement[];
-  readonly locationId?: string;
-  readonly traceId?: string;
-}
-export interface ImplementsScheduleProposedPayloadContract {
-  readonly implementsScheduleProposedPayload: true;
 }
 ```
 
@@ -5888,6 +5815,83 @@ export function promoteTagToActive(input: TagPromotionInput): TagPromotionResult
 
 ```
 
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/demand-board.tsx
+```typescript
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { GripVertical } from 'lucide-react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useAccount } from '@/features/workspace.slice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import type { ScheduleItem } from '@/shared-kernel';
+import type { DemandRowProps, OrgMember } from './demand-row';
+import { DemandRow } from './demand-row';
+function SortableDemandRow(props: DemandRowProps)
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.tsx
+```typescript
+import { useEffect, useMemo, useRef } from "react";
+import { DataSet } from "vis-data";
+import {
+  Timeline,
+  type DataGroup,
+  type DataItem,
+  type TimelineItem,
+  type TimelineOptions,
+} from "vis-timeline/standalone";
+⋮----
+import { cn } from "@/shadcn-ui/utils/utils";
+import type { ScheduleItem } from "@/shared-kernel";
+import type { TimelineMember } from '../../types/timeline.types';
+import {
+  escapeHtml,
+  resolveInitialWindow,
+  resolveTimelineInterval,
+  toTimelineClassName,
+} from "./timeline-canvas.helpers";
+interface TimelineCanvasProps {
+  items: ScheduleItem[];
+  members: TimelineMember[];
+  enableDrag?: boolean;
+  groupMode?: "none" | "workspace";
+  onMoveItem?: (params: {
+    itemId: string;
+    start: Date;
+    end: Date;
+    groupId?: string;
+  }) => Promise<boolean>;
+  className?: string;
+}
+export function TimelineCanvas({
+  items,
+  members,
+  enableDrag = false,
+  groupMode = "none",
+  onMoveItem,
+  className,
+}: TimelineCanvasProps)
+⋮----
+<div className=
+```
+
 ## File: src/shared-infra/gateway-command/index.ts
 ```typescript
 
@@ -5945,29 +5949,6 @@ import { getEligibleMembersForSchedule, type OrgEligibleMemberView } from '../..
 import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.account-view.tsx
-```typescript
-import { addMonths, subMonths } from "date-fns";
-import { AlertCircle, Calendar, ListChecks, History, Users, BookOpen } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useCallback } from "react";
-import { useApp } from "@/app-runtime/providers/app-provider";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
-import type { ScheduleItem } from '@/shared-kernel';
-import { useGlobalSchedule } from "../../hooks/runtime/use-global-schedule";
-import { useScheduleActions } from "../../hooks/runtime/use-schedule-commands";
-import { decisionHistoryColumns } from "./decision-history-columns";
-import { OrgScheduleGovernance } from "./org-schedule-governance";
-import { OrgSkillPoolManager } from "./org-skill-pool-manager";
-import { MemberAssignPopover } from "./member-assign-popover";
-import { ScheduleDataTable } from "./schedule-data-table";
-import { UnifiedCalendarGrid } from "./unified-calendar-grid";
-import { upcomingEventsColumns } from "./upcoming-events-columns";
-⋮----
-const onItemClick = (item: ScheduleItem) =>
-const handleMonthChange = (direction: 'prev' | 'next') =>
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.workspace-view.tsx
 ```typescript
 import { Shield } from "lucide-react";
@@ -6016,6 +5997,11 @@ export function useWorkspaceSchedule()
 ⋮----
 const handleMonthChange = (direction: "prev" | "next") =>
 const handleOpenAddDialog = (date: Date) =>
+```
+
+## File: src/features/workforce-scheduling.slice/ui/index.ts
+```typescript
+
 ```
 
 ## File: src/shared-infra/outbox-relay/_relay.ts
@@ -6073,4 +6059,27 @@ async function routeToDlq(
   attemptCount: number,
   lastError: string
 ): Promise<void>
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.account-view.tsx
+```typescript
+import { addMonths, subMonths } from "date-fns";
+import { AlertCircle, Calendar, ListChecks, History, Users, BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import type { ScheduleItem } from '@/shared-kernel';
+import { useGlobalSchedule } from "../../hooks/runtime/use-global-schedule";
+import { useScheduleActions } from "../../hooks/runtime/use-schedule-commands";
+import { decisionHistoryColumns } from "./decision-history-columns";
+import { OrgScheduleGovernance } from "./org-schedule-governance";
+import { OrgSkillPoolManager } from "./org-skill-pool-manager";
+import { MemberAssignPopover } from "./member-assign-popover";
+import { ScheduleDataTable } from "./schedule-data-table";
+import { UnifiedCalendarGrid } from "./unified-calendar-grid";
+import { upcomingEventsColumns } from "./upcoming-events-columns";
+⋮----
+const onItemClick = (item: ScheduleItem) =>
+const handleMonthChange = (direction: 'prev' | 'next') =>
 ```
