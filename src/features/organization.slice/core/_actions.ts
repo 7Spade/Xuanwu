@@ -5,7 +5,7 @@
  *
  * Server actions for core organization lifecycle management.
  *
- * Per logic-overview.md [R4] COMMAND_RESULT_CONTRACT:
+ * Per 00-LogicOverview.md [R4] COMMAND_RESULT_CONTRACT:
  *   All mutations return CommandResult discriminated union.
  *
  * Invariant #1: This BC only writes its own aggregate.

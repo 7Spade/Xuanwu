@@ -3,7 +3,7 @@
  *
  * Read queries for account policy management.
  *
- * Per logic-overview.md: ACCOUNT_POLICY → CUSTOM_CLAIMS
+ * Per 00-LogicOverview.md: ACCOUNT_POLICY → CUSTOM_CLAIMS
  * Policies are read to determine effective permissions for an account.
  */
 

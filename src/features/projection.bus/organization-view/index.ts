@@ -4,7 +4,7 @@
  * Organization projection read model.
  * Fed by EVENT_FUNNEL_INPUT from organization events.
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   EVENT_FUNNEL_INPUT → ORGANIZATION_PROJECTION_VIEW
  */
 

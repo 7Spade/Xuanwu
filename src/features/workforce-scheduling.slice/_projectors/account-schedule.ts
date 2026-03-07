@@ -3,7 +3,7 @@
  *
  * Type definitions for the account schedule projection read model.
  * Projection write logic has been migrated to projection.bus/account-schedule/_projector.ts
- * per logic-overview.md (ACC_SCHED_V is a PROJ_BUS Standard Projection).
+ * per 00-LogicOverview.md (ACC_SCHED_V is a PROJ_BUS Standard Projection).
  *
  * These type exports are retained here so that workforce-scheduling.slice/_queries.ts
  * can type its read functions without introducing a cross-slice dependency

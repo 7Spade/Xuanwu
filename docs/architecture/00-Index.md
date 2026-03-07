@@ -1,7 +1,7 @@
 ﻿# [索引 ID: @MAP] 00 - Index (SSOT 總綱)
 
 本文件庫為專案的 **Single Source of Truth (SSOT)**。
-基於 logic-overview.md 的設計原則與約定進行拆分與管理，以減輕開發時的上下文負擔。
+基於 00-LogicOverview.md 的設計原則與約定進行拆分與管理，以減輕開發時的上下文負擔。
 
 ## 系統宏觀模型
 

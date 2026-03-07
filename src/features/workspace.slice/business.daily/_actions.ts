@@ -4,7 +4,7 @@
  * on daily log entries. These functions can be called from React hooks, context,
  * or future Server Actions without any React dependencies.
  *
- * Per logic-overview.md [R4] COMMAND_RESULT_CONTRACT:
+ * Per 00-LogicOverview.md [R4] COMMAND_RESULT_CONTRACT:
  *   All mutations return CommandResult discriminated union.
  */
 

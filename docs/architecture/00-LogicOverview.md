@@ -9,7 +9,7 @@
 %%  ║    ⑥ Everything as a Tag：所有領域概念以語義標籤建模，由 VS8 統一治理      ║
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  SSOT Mapping:
-%%    Architecture rules       → docs/logic-overview.md  ← THIS FILE
+%%    Architecture rules       → docs/00-LogicOverview.md  ← THIS FILE
 %%    Semantic relations       → docs/knowledge-graph.json
 %%    VS8 complete-body guide  → docs/development/semantic-graph.slice-guide.md  (companion spec)
 %%  ╠══════════════════════════════════════════════════════════════════════════╣

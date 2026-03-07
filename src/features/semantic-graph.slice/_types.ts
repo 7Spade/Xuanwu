@@ -5,7 +5,7 @@
  * The Brain ??manages tag taxonomy, temporal conflict detection,
  * and semantic indexing for cross-domain queries.
  *
- * Per logic-overview.md (VS8):
+ * Per 00-LogicOverview.md (VS8):
  *   SemanticGraph = 隤儔??撘? / The Brain
  *   ??Everything as a Tag: all domain concepts modelled as semantic tags,
  *      governed by VS8.

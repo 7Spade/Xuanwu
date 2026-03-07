@@ -3,7 +3,7 @@
  *
  * DOMAIN_METRICS node — in-process domain event counter. [R8]
  *
- * Per logic-overview.md (OBSERVABILITY_LAYER):
+ * Per 00-LogicOverview.md (OBSERVABILITY_LAYER):
  *   WORKSPACE_EVENT_BUS --> DOMAIN_METRICS
  *
  * Tracks published event counts per event type.

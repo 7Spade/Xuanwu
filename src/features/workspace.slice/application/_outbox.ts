@@ -4,7 +4,7 @@
  * In-process transaction outbox: collects domain events during a transaction,
  * then flushes them to the workspace event bus after commit.
  *
- * Per logic-overview.md invariants #4a / #4b:
+ * Per 00-LogicOverview.md invariants #4a / #4b:
  * Domain Events are produced only by Aggregates (#4a); Transaction Runner only
  * collects already-produced events and delivers them to the Outbox (#4b).
  *
@@ -15,7 +15,7 @@
  * `wsOutbox/{id}` Firestore collection so the OUTBOX_RELAY_WORKER [R1] can
  * deliver them to IER via STANDARD_LANE with at-least-once semantics.
  *
- * Per logic-overview.md WS_OB [SK_OUTBOX: SAFE_AUTO][E5]:
+ * Per 00-LogicOverview.md WS_OB [SK_OUTBOX: SAFE_AUTO][E5]:
  *   WS_TX_R -->|"pending events [E5]"| WS_OB
  *   WS_OB -->|"STANDARD_LANE [E5]"| IER
  */
@@ -49,20 +49,20 @@ export interface Outbox {
 /**
  * Events that require Firestore Outbox persistence for at-least-once delivery [S1].
  *
- * Per logic-overview.md WS_OB [E5]: ws-outbox is the sole IER delivery path.
+ * Per 00-LogicOverview.md WS_OB [E5]: ws-outbox is the sole IER delivery path.
  * Add new event types here when they require cross-process at-least-once semantics.
  *
  * All workspace outbox entries use SAFE_AUTO tier and STANDARD_LANE.
- * [logic-overview.md: WS_OB["ws-outbox [SK_OUTBOX: SAFE_AUTO]"]]
+ * [00-LogicOverview.md: WS_OB["ws-outbox [SK_OUTBOX: SAFE_AUTO]"]]
  */
 const WS_OUTBOX_PERSISTED_EVENTS = new Set<WorkspaceEventName>([
   'workspace:parsing-intent:deltaProposed',
 ]);
 
-/** DLQ tier for all ws-outbox entries ??per logic-overview.md WS_OB annotation. */
+/** DLQ tier for all ws-outbox entries ??per 00-LogicOverview.md WS_OB annotation. */
 const WS_OUTBOX_DLQ_TIER: DlqTier = 'SAFE_AUTO';
 
-/** IER lane for ws-outbox delivery ??per logic-overview.md WS_OB [E5]. */
+/** IER lane for ws-outbox delivery ??per 00-LogicOverview.md WS_OB [E5]. */
 const WS_OUTBOX_IER_LANE = 'STANDARD_LANE' as const;
 
 /** Firestore collection path for the workspace outbox. */

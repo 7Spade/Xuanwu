@@ -6,7 +6,7 @@
  *
  * Stored at: scheduleProjection/{accountId}
  *
- * Per logic-overview.md (PROJ_BUS STD_PROJ):
+ * Per 00-LogicOverview.md (PROJ_BUS STD_PROJ):
  *   ACC_SCHED_V["projection.account-schedule"]
  *   EVENT_FUNNEL_INPUT ??ACCOUNT_PROJECTION_SCHEDULE
  *   ORG_SCH -.??ACCOUNT_PROJECTION_SCHEDULE (?蕪?舐撣唾?)

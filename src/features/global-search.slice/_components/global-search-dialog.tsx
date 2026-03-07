@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority: the system's sole Cmd+K search portal. [D26][A12]
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   GLOBAL_SEARCH["Cmd+K 為全域唯一入口，相關能力由 _actions.ts / _services.ts 管理 [D26]"]
  *
  * This component is the SOLE owner of the Cmd+K shortcut UI.

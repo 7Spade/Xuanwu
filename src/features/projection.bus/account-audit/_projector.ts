@@ -4,7 +4,7 @@
  * Maintains the account audit projection.
  * Stored at: auditProjection/{accountId}/entries/{entryId}
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   EVENT_FUNNEL_INPUT → ACCOUNT_PROJECTION_AUDIT
  *
  * [S2] Append-Only Idempotency Model:

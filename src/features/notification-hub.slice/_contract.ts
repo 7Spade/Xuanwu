@@ -3,7 +3,7 @@
  *
  * Data contracts for the notification-hub slice. [D19]
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   [D19] ?甇詨惇 ??domain contracts belong in the owning slice.
  *   [D15] EVENTUAL consistency ??notifications are delivered with eventual consistency.
  *   [D21-D23] Semantic labels ??NotificationSemanticType maps to VS8 semantic nodes.

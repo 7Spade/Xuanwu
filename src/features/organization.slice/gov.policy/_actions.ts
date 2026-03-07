@@ -5,11 +5,11 @@
  *
  * Server actions for organization-level policy management.
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   ORGANIZATION_EVENT_BUS ?’|?¿ç?變更事件| WORKSPACE_ORG_POLICY_CACHE
  *   Policy changes flow through the org event bus to update workspace's local org-policy cache.
  *
- * Per logic-overview.md [R4] COMMAND_RESULT_CONTRACT:
+ * Per 00-LogicOverview.md [R4] COMMAND_RESULT_CONTRACT:
  *   All mutations return CommandResult discriminated union.
  *
  * Invariant #1: This BC only writes its own aggregate.

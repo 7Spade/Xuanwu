@@ -5,7 +5,7 @@
  *
  * Org Skill Pool Manager tab for Organization Schedule.
  *
- * Per logic-overview.md (VS4 / T2):
+ * Per 00-LogicOverview.md (VS4 / T2):
  *   SKILL_TAG_POOL is the org-scoped activation view of the global Tag Authority.
  *   Org admins explicitly activate tags they want to use; passively syncs with TagLifecycleEvents.
  *

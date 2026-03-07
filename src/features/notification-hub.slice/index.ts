@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority: the system's sole side-effect outlet. [D26]
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   notification-hub = 反應中樞 (Reaction Hub)
  *   VS7 enhanced — sole side-effect outlet with tag-aware routing via VS8
  *

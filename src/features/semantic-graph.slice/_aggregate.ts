@@ -5,7 +5,7 @@
  *   - Temporal Conflict Detection (scheduling-aware tag overlap)
  *   - Taxonomy Validation (hierarchical tag classification)
  *
- * Per logic-overview.md (VS8):
+ * Per 00-LogicOverview.md (VS8):
  *   ??Everything as a Tag ??conflict detection ensures tag assignments
  *      do not violate temporal or taxonomic constraints.
  *
