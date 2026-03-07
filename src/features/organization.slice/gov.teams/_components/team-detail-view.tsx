@@ -13,7 +13,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast"
 import type { MemberReference, Team } from "@/shared-kernel"
 
 /**
- * TeamDetailView - ?瑁痊嚗恣?摰??????(Team Member 皜)
+ * TeamDetailView - ?瑁痊嚗恣?摰??????(Team Member 皜)
  */
 export function TeamDetailView() {
   const { id } = useParams()
