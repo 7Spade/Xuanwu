@@ -7,13 +7,14 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { type User as FirebaseUser } from "firebase/auth";
 import {type ReactNode} from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
 import { authAdapter } from '@/shared-infra/frontend-firebase/auth/auth.adapter';
 
 import { AuthContext, type AuthAction, type AuthState } from '../contexts/auth-context';
+
+type FirebaseUser = NonNullable<ReturnType<typeof authAdapter.getCurrentUser>>;
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {

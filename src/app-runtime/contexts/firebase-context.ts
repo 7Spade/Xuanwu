@@ -7,17 +7,15 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { type FirebaseApp } from 'firebase/app'
-import { type Auth } from 'firebase/auth'
-import { type Firestore } from 'firebase/firestore'
-import { type FirebaseStorage } from 'firebase/storage'
 import { createContext } from 'react'
 
+import { app, auth, db, storage } from '@/shared-infra/frontend-firebase'
+
 export interface FirebaseContextType {
-  app: FirebaseApp
-  db: Firestore
-  auth: Auth
-  storage: FirebaseStorage
+  app: typeof app
+  db: typeof db
+  auth: typeof auth
+  storage: typeof storage
 }
 
 export const FirebaseContext = createContext<FirebaseContextType | null>(null)
