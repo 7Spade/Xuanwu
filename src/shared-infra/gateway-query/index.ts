@@ -11,12 +11,12 @@
  *   QGWAY_WALLET → projection.wallet-balance (STRONG_READ [Q8][D5])
  *
  * Usage (Server Component data fetching):
- *   import { executeQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
+ *   import { executeQuery, QUERY_ROUTES } from '@/shared-infra/gateway-query';
  *
  *   const members = await executeQuery(QUERY_ROUTES.ORG_ELIGIBLE_MEMBERS, { orgId });
  *
  * Usage (projection slice registration):
- *   import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
+ *   import { registerQuery, QUERY_ROUTES } from '@/shared-infra/gateway-query';
  *
  *   registerQuery(QUERY_ROUTES.ACCOUNT_VIEW, getAccountView, '[#6] FCM token');
  */

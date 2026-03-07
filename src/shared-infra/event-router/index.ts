@@ -12,8 +12,8 @@
  *   BACKGROUND_LANE:  TagCreated, TagUpdated, AuditLogged, FCMDelivered
  *
  * Usage (application bootstrap):
- *   import { registerSubscriber, publishToLane } from '@/features/infra.event-router';
- *   import { startOutboxRelay } from '@/features/infra.outbox-relay';
+ *   import { registerSubscriber, publishToLane } from '@/shared-infra/event-router';
+ *   import { startOutboxRelay } from '@/shared-infra/outbox-relay';
  *
  *   registerSubscriber('tag:created', onTagCreated, 'BACKGROUND_LANE');
  *   startOutboxRelay('tagOutbox', publishToLane);

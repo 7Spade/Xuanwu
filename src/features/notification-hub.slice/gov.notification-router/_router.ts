@@ -16,7 +16,7 @@
  * Does NOT generate content — only routes from event source to delivery slice.
  */
 
-import { registerSubscriber } from '@/features/infra.event-router';
+import { registerSubscriber } from '@/shared-infra/event-router';
 
 import { deliverNotification } from '../user.notification';
 

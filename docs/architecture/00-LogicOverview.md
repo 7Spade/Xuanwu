@@ -937,7 +937,7 @@ subgraph GW_IER["🟠 L4 · Integration Event Router（src/shared-infra/event-ro
         BG_LANE["⚪ BACKGROUND_LANE\nSLA < 30s\nTagLifecycleEvent\nAuditEvents"]
     end
 
-    subgraph DLQ_SYS["💀 DLQ 三級分類（src/features/infra.dlq-manager）[R5 S1]"]
+    subgraph DLQ_SYS["💀 DLQ 三級分類（src/shared-infra/dlq-manager）[R5 S1]"]
         DLQ["dead-letter-queue\n失敗 3 次後收容\n分級標記來自 SK_OUTBOX_CONTRACT"]
         DLQ_S["🟢 SAFE_AUTO\n自動 Replay（保留 idempotency-key）"]
         DLQ_R["🟡 REVIEW_REQUIRED\n金融/排班/角色\n人工確認後 Replay"]

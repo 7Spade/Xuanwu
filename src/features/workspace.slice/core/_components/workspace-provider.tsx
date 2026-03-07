@@ -7,7 +7,7 @@ import { createContext, useContext, useMemo, useCallback, useEffect, useRef, use
 
 import {
   dispatchCreateScheduleItemCommand,
-} from '@/features/infra.gateway-command';
+} from '@/shared-infra/gateway-command';
 import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
 import {
   createIssue as createIssueAction,

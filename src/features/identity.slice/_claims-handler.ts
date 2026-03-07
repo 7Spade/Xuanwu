@@ -117,7 +117,7 @@ async function handleClaimsRefreshTrigger(envelope: EventEnvelope): Promise<void
 // ---------------------------------------------------------------------------
 
 /** IER delivery lane ??mirrors infra.event-router IerLane [D1 compliance].
- *  Keep in sync with `IerLane` in @/features/infra.event-router/_router.ts. */
+ *  Keep in sync with `IerLane` in @/shared-infra/event-router/_router.ts. */
 type IerLane = 'CRITICAL_LANE' | 'STANDARD_LANE' | 'BACKGROUND_LANE';
 
 /**
@@ -125,7 +125,7 @@ type IerLane = 'CRITICAL_LANE' | 'STANDARD_LANE' | 'BACKGROUND_LANE';
  * does not import infra.event-router directly [D1].
  *
  * Callers (e.g., app bootstrap or infra.* coordinator) should pass
- * `registerSubscriber` from `@/features/infra.event-router`.
+ * `registerSubscriber` from `@/shared-infra/event-router`.
  */
 export type ClaimsSubscriberRegistrar = (
   eventType: string,
@@ -143,7 +143,7 @@ export type ClaimsSubscriberRegistrar = (
  * caller to avoid a direct infra.event-router import from this domain slice [D1].
  *
  * Example:
- *   import { registerSubscriber } from '@/features/infra.event-router';
+ *   import { registerSubscriber } from '@/shared-infra/event-router';
  *   import { registerClaimsHandler } from '@/features/identity.slice';
  *   const unsub = registerClaimsHandler(registerSubscriber);
  *

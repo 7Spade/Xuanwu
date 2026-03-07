@@ -10,7 +10,7 @@
  *   CBG_ROUTE  — command-router → returns SK_CMD_RESULT [R4]
  *
  * Usage (Server Actions):
- *   import { dispatchCommand, registerCommandHandler } from '@/features/infra.gateway-command';
+ *   import { dispatchCommand, registerCommandHandler } from '@/shared-infra/gateway-command';
  *
  *   // register (slice init):
  *   registerCommandHandler('workspace:task:assign', assignTaskHandler);

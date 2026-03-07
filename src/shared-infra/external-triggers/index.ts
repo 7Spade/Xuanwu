@@ -27,7 +27,7 @@
  * Design Location Summary (mirrors firebase-structure.md):
  * ┌────────────────────────────────────────────────────────────────────────────┐
  * │ EXT_CLIENT  (app-layer resilience guard)                                   │
- * │   → src/features/infra.external-triggers/  (this module)                  │
+ * │   → src/shared-infra/external-triggers/  (this module)                  │
  * │                                                                            │
  * │ EXT_AUTH    (FIREBASE_ACL boundary)                                        │
  * │   → src/shared/infra/auth/auth.adapter.ts                                  │
@@ -37,7 +37,7 @@
  * └────────────────────────────────────────────────────────────────────────────┘
  *
  * Usage (in any _actions.ts):
- *   import { createExternalTriggerGuard } from '@/features/infra.external-triggers';
+ *   import { createExternalTriggerGuard } from '@/shared-infra/external-triggers';
  *
  *   const guard = createExternalTriggerGuard('workspace-application');
  *

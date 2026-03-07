@@ -13,7 +13,7 @@
  * slices are initialized. Follows the same pattern as registerWorkspaceFunnel().
  */
 
-import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
+import { registerQuery, QUERY_ROUTES } from '@/shared-infra/gateway-query';
 
 import { getAccountView } from './account-view';
 import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';

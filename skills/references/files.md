@@ -653,7 +653,7 @@ export function AuthBackground()
 
 ```
 
-## File: src/features/infra.external-triggers/_guard.ts
+## File: src/shared-infra/external-triggers/_guard.ts
 ```typescript
 import type {
   RateLimitConfig,
@@ -721,7 +721,7 @@ async withGuard<T>(
 ): Promise<T | GuardCheckResult>
 ```
 
-## File: src/features/infra.external-triggers/index.ts
+## File: src/shared-infra/external-triggers/index.ts
 ```typescript
 
 ```
@@ -3120,7 +3120,7 @@ export interface SearchResponse {
 
 ```
 
-## File: src/features/infra.dlq-manager/_dlq.ts
+## File: src/shared-infra/dlq-manager/_dlq.ts
 ```typescript
 export type DlqLevel = 'SAFE_AUTO' | 'REVIEW_REQUIRED' | 'SECURITY_BLOCK';
 export interface DlqEntry {
@@ -3136,12 +3136,12 @@ export interface DlqEntry {
 export function getDlqLevel(eventType: string): DlqLevel
 ```
 
-## File: src/features/infra.dlq-manager/index.ts
+## File: src/shared-infra/dlq-manager/index.ts
 ```typescript
 
 ```
 
-## File: src/features/infra.event-router/_router.ts
+## File: src/shared-infra/event-router/_router.ts
 ```typescript
 import type { EventEnvelope } from '@/shared-kernel';
 export type IerLane = 'CRITICAL_LANE' | 'STANDARD_LANE' | 'BACKGROUND_LANE';
@@ -3164,12 +3164,12 @@ export async function publishToLane(
 ): Promise<void>
 ```
 
-## File: src/features/infra.event-router/index.ts
+## File: src/shared-infra/event-router/index.ts
 ```typescript
 
 ```
 
-## File: src/features/infra.gateway-command/_gateway.ts
+## File: src/shared-infra/gateway-command/_gateway.ts
 ```typescript
 import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
 import { commandFailureFrom } from '@/shared-kernel';
@@ -3205,7 +3205,7 @@ export async function dispatchCommand<TCmd extends GatewayCommand>(
 ): Promise<CommandResult>
 ```
 
-## File: src/features/infra.gateway-command/workspace-schedule-command.ts
+## File: src/shared-infra/gateway-command/workspace-schedule-command.ts
 ```typescript
 import { createScheduleItem } from '@/features/workforce-scheduling.slice';
 import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
@@ -3230,7 +3230,7 @@ export async function dispatchCreateScheduleItemCommand(
 ): Promise<CommandResult>
 ```
 
-## File: src/features/infra.gateway-query/_registry.ts
+## File: src/shared-infra/gateway-query/_registry.ts
 ```typescript
 type QueryHandler<TParams = unknown, TResult = unknown> = (
   params: TParams
@@ -3254,12 +3254,12 @@ export function listRegisteredQueries(): ReadonlyArray<
 export type QueryRouteName = (typeof QUERY_ROUTES)[keyof typeof QUERY_ROUTES];
 ```
 
-## File: src/features/infra.gateway-query/index.ts
+## File: src/shared-infra/gateway-query/index.ts
 ```typescript
 
 ```
 
-## File: src/features/infra.outbox-relay/index.ts
+## File: src/shared-infra/outbox-relay/index.ts
 ```typescript
 
 ```
@@ -3549,7 +3549,7 @@ export function useTeamManagement()
 
 ## File: src/features/projection.bus/_query-registration.ts
 ```typescript
-import { registerQuery, QUERY_ROUTES } from '@/features/infra.gateway-query';
+import { registerQuery, QUERY_ROUTES } from '@/shared-infra/gateway-query';
 import { getAccountView } from './account-view';
 import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
 import { getDisplayWalletBalance } from './wallet-balance';
@@ -4778,7 +4778,7 @@ export async function getFinanceAggregateState(
 
 ## File: src/features/workspace.slice/business.finance/_services/finance-aggregate-query-gateway.ts
 ```typescript
-import { executeQuery, registerQuery } from '@/features/infra.gateway-query';
+import { executeQuery, registerQuery } from '@/shared-infra/gateway-query';
 import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
 import type { FinanceStrongReadSnapshot } from '../_types';
 ⋮----
@@ -7694,7 +7694,7 @@ export async function completeRegistration(
 ): Promise<CommandResult>
 ```
 
-## File: src/features/infra.gateway-command/index.ts
+## File: src/shared-infra/gateway-command/index.ts
 ```typescript
 
 ```
@@ -7773,7 +7773,7 @@ export interface NotificationHubStats {
 
 ## File: src/features/notification-hub.slice/gov.notification-router/_router.ts
 ```typescript
-import { registerSubscriber } from '@/features/infra.event-router';
+import { registerSubscriber } from '@/shared-infra/event-router';
 import { deliverNotification } from '../user.notification';
 export interface RouterRegistration {
   unsubscribe: () => void;
@@ -10264,9 +10264,9 @@ interface ResetPasswordFormProps {
 const handleSend = async () =>
 ```
 
-## File: src/features/infra.outbox-relay/_relay.ts
+## File: src/shared-infra/outbox-relay/_relay.ts
 ```typescript
-import { getDlqLevel, type DlqEntry } from '@/features/infra.dlq-manager';
+import { getDlqLevel, type DlqEntry } from '@/shared-infra/dlq-manager';
 import { logDomainError } from '@/features/observability';
 import { db } from '@/shared-infra/frontend-firebase';
 import {
@@ -13799,7 +13799,7 @@ import type React from 'react';
 import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   dispatchCreateScheduleItemCommand,
-} from '@/features/infra.gateway-command';
+} from '@/shared-infra/gateway-command';
 import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
 import {
   createIssue as createIssueAction,

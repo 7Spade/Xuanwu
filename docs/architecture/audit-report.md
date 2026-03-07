@@ -80,7 +80,7 @@ Completed sequential phases from the requested prompt:
 	 - Current status: relay implementation now aligns to shared contract value `relayed`.
 	 - Files aligned:
 		 - `src/shared-kernel/infra-contracts/outbox-contract/index.ts`
-		 - `src/features/infra.outbox-relay/_relay.ts`
+		 - `src/shared-infra/outbox-relay/_relay.ts`
 	 - Rule reference: `S1` (OUTBOX contract single source).
 
 ### F. Responsibility Violations
