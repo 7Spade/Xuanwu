@@ -225,6 +225,10 @@ export function TimelineCanvas({
 
   const membersMap = useMemo(() => new Map(members.map((member) => [member.id, member.name])), [members]);
   const skillNameBySlug = useMemo(() => new Map(SKILLS.map((skill) => [skill.slug, skill.name])), []);
+  const workspaceIdByItemId = useMemo(
+    () => new Map(items.map((item) => [item.id, item.workspaceId])),
+    [items]
+  );
 
   const timelineItems = useMemo(() => {
     return items
@@ -285,7 +289,7 @@ export function TimelineCanvas({
       verticalScroll: true,
       selectable: true,
       moveable: enableDrag,
-      editable: enableDrag ? { updateTime: true, updateGroup: groupMode === "workspace" } : false,
+      editable: enableDrag ? { updateTime: true, updateGroup: false } : false,
       start: initialWindow.start,
       end: initialWindow.end,
       zoomMin: 1000 * 60 * 15,
@@ -307,6 +311,17 @@ export function TimelineCanvas({
       onMove: (movedItem: TimelineItem, callback) => {
         const startDate = new Date(movedItem.start);
         const endDate = movedItem.end ? new Date(movedItem.end) : new Date(startDate);
+
+        if (groupMode === "workspace") {
+          const sourceWorkspaceId = workspaceIdByItemId.get(String(movedItem.id));
+          const targetWorkspaceId = movedItem.group != null ? String(movedItem.group) : undefined;
+          if (sourceWorkspaceId && targetWorkspaceId && sourceWorkspaceId !== targetWorkspaceId) {
+            if (isEffectActive) {
+              callback(null);
+            }
+            return;
+          }
+        }
 
         const moveHandler = onMoveItemRef.current;
 
@@ -417,7 +432,7 @@ export function TimelineCanvas({
       timeline.destroy();
       timelineRef.current = null;
     };
-  }, [enableDrag, groupMode, initialWindow.end, initialWindow.start, timelineGroups, timelineItems]);
+  }, [enableDrag, groupMode, initialWindow.end, initialWindow.start, timelineGroups, timelineItems, workspaceIdByItemId]);
 
   return (
     <div className={cn("relative min-h-[520px] rounded-xl border bg-card p-3", className)}>
