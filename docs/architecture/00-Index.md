@@ -42,17 +42,17 @@
 - `docs/architecture/06-DecisionLogic/FinanceCycle.md`
   - `#A15 / #A16` 財務階段與多輪請款循環。
 
-## 3.5 Guidelines
+## 4. Guidelines
 
 - `docs/architecture/05-Guidelines/`
   - 架構治理與工程落地準則（非硬不變量）。
 
-## 4. 審查入口
+## 5. 審查入口
 
 - `docs/architecture/99-Checklist.md`
   - PR 審查清單，對齊單向依賴鏈、D24、D26、D27、L/R/A Team Gate。
 
-## 5. Cross-cutting Authorities
+## 6. Cross-cutting Authorities
 
 - Search Exit: `global-search.slice` (`#A12`, `D26`)
 - Side-effect Exit: `notification-hub.slice` (`#A13`, `D26`)
