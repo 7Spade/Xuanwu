@@ -4,7 +4,7 @@
  * Firestore persistence for the Workflow Aggregate State.
  * Stored at: workflowStates/{workspaceId}/workflows/{workflowId}
  *
- * Per logic-overview.md [R6]:
+ * Per 00-LogicOverview.md [R6]:
  *   WorkflowAggregateState is persisted and loaded by the command/event handlers.
  *   blockedBy is an array (Firestore serialization of a Set; no duplicates enforced by domain).
  */

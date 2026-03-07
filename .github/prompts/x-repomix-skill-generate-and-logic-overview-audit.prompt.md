@@ -1,91 +1,39 @@
 ---
-name: repomix-architecture-audit
-description: Setup Node environment, generate Repomix skill, and audit repository architecture against docs/architecture/logic-overview.md
+name: repomix-architecture-audit-and-fix
+description: Generate Repomix context, audit repository architecture against 00-LogicOverview.md, and perform automatic corrections to align the codebase.
 ---
 
-### Copilot Browser Agent 指令
+# Architecture Alignment & Auto-Correction
 
-Set up the environment and generate the Repomix skill for this repository, then analyze architectural alignment.
+You are an expert software architect and automated coding agent. Your task is to analyze the current state of the repository using the compressed Repomix context, compare it with the core architectural rules, and **actively apply corrections** to ensure the codebase perfectly aligns with the design.
 
-Steps must be executed sequentially.
+Execute the following phases sequentially:
 
-1. Verify that **Node.js LTS and npm are installed**.
+## Phase 1: Preparation & Context Generation
+1. **Run Repomix:** Execute the repomix configuration to generate/update the compressed context file.
+   ```bash
+   npx repomix --config repomix.config.ts
+   ```
+2. **Verify Output:** Ensure `docs/ai/repomix-output.context.md` is successfully generated and up-to-date.
 
-   * If Node.js is missing, install the latest **LTS version**.
-   * Confirm both `node` and `npm` commands are available.
+## Phase 2: Architecture Consistency Audit
+1. **Read Source of Truth:** Carefully read and absorb the core rules, invariants, and domain logic defined in `docs/architecture/00-LogicOverview.md`.
+2. **Read Project Context:** Read the codebase overview and structure from `docs/ai/repomix-output.context.md`.
+3. **Contrast & Analyze:** Cross-reference the two documents and identify all gaps:
+   - **Missing Elements:** Missing feature slices, modules, or necessary layers.
+   - **Misplaced Elements:** Files located outside their correct domain boundaries.
+   - **Violations:** Improper imports, naming anomalies, or code acting outside of its designated layer as per `00-LogicOverview.md`.
+4. **Formulate Action Plan:** Output a detailed, step-by-step checklist of specific refactoring actions needed to close these gaps.
 
-2. Install the CLI tool **repomix** globally.
+## Phase 3: Iterative Correction (Auto-Fix)
+Once the Action Plan is finalized, **proceed to directly fix the codebase**:
+1. **Scaffold Missing Structures:** Create any missing folders and initial boilerplate files dictated by the architecture document.
+2. **Relocate & Rename:** Move, rename, or re-export misplaced files so they reside in their correct domain boundaries.
+3. **Refactor Code:** Update incorrect imports, fix dependency directions, and adjust logic to resolve any architectural invariants violations.
+4. **Iterative Flow:** Apply these changes incrementally. Verify that each modification strictly aligns with the design rules before moving to the next.
 
-Command to run:
-
-```
-npm install -g repomix
-```
-
-3. Run Repomix using the repository configuration.
-
-Command to run:
-
-```
-npx repomix --config repomix.config.ts
-```
-
-4. Generate the Repomix skill.
-
-Command to run:
-
-```
-repomix --skill-generate xuanwu-skill --skill-output ./skills --force
-```
-
-Requirements:
-
-* Output directory must be `./skills`
-* Existing files should be overwritten
-* Ensure the command finishes successfully
-
-5. After skill generation completes, perform an **architecture consistency analysis**.
-
-Use the following file as the **source of truth**:
-
-```
-docs/architecture/logic-overview.md
-```
-
-Compare the current repository implementation with the design described in that document.
-
-Specifically analyze:
-
-* Feature slices
-* Domain boundaries
-* Event flows
-* Module structure
-* Folder layout
-
-6. Produce a report describing **what must change in the current repository to align with the architecture**.
-
-The report must include:
-
-* Missing modules or folders
-* Misplaced modules
-* Naming inconsistencies
-* Violations of the architecture defined in `logic-overview.md`
-* Suggested refactoring actions
-
-Output the analysis as a structured report.
-
----
-
-### 給 Copilot Agent 的額外保險（建議加上）
-
-這段會讓 Copilot **更穩定完成任務**：
-
-Add the following constraints while performing the analysis:
-
-* Treat `docs/architecture/logic-overview.md` as the **authoritative design document**
-* Do not modify files automatically
-* Only produce an analysis report
-* Prefer deterministic reasoning over assumptions
-* If required files are missing, report them explicitly
-
----
+## Constraints & Execution Rules (Strict)
+- **Source of Truth:** Treat `docs/architecture/00-LogicOverview.md` as the absolute law. Any deviation in the current codebase is a bug that you MUST fix.
+- **Data-Driven Analysis:** Rely purely on the contents of `docs/ai/repomix-output.context.md` to understand the present state of the software. Do not guess the project structure.
+- **Safe Modifications:** Apply precise edits. When moving files or changing boundaries, Ensure all dependent files and imports are updated in tandem to prevent broken builds.
+- **Progress Tracking:** Maintain clear communication of the Action Plan state (e.g., [x] Fixed X, [ ] Pending Y), ensuring the output report continues to reflect real-time progress.

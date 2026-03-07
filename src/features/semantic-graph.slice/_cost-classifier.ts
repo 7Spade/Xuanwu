@@ -1,7 +1,7 @@
 /**
  * @fileoverview _cost-classifier.ts — Layer-2 Semantic Classification for cost line items.
  *
- * Architecture (per logic-overview.md):
+ * Architecture (per 00-LogicOverview.md):
  *   Layer 1: Document parsing → raw ParsedLineItem[]
  *   Layer 2: Semantic Classification (this module, VS8) → each item tagged with CostItemType
  *   Layer 3: Semantic Router → routes items to the correct domain model (tasks vs. finance etc.)

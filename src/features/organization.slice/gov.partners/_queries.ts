@@ -6,7 +6,7 @@
  * Partners are stored as `accounts/{orgId}.teams[]` (type === 'external').
  * onSnapshot on the org account document provides real-time updates.
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   ORGANIZATION_PARTNER["organization-governance.partner嚗?雿丰隡?繚 憭蝯???"]
  *   ORGANIZATION_PARTNER -.->|憭撣唾???璅惜嚗霈撘嚗 SKILL_TAG_POOL
  *

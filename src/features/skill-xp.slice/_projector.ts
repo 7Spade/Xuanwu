@@ -3,7 +3,7 @@
  *
  * Account skill read model: tracks accountId ??skillId ??xp.
  *
- * Per logic-overview.md invariants:
+ * Per 00-LogicOverview.md invariants:
  *   #12 ??Tier is NEVER stored; always computed via resolveSkillTier(xp).
  *   #14 ??Schedule reads this projection; never queries Account aggregate directly.
  *

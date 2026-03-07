@@ -3,7 +3,7 @@
 > 🎯 本專案所有**事實依據（Single Source of Truth）**統一來自：
 >
 > * `docs/knowledge-graph.json`
-> * `docs/architecture/logic-overview.md`
+> * `docs/architecture/00-LogicOverview.md`
 > * `docs/ai/repomix-output.context.md`
 >
 > ❗ 任何推論、流程、任務拆解、AI 判斷
@@ -15,7 +15,7 @@
 
 ```rules
 IF 任務涉及業務邏輯
-  THEN 先讀 docs/architecture/logic-overview.md
+  THEN 先讀 docs/architecture/00-LogicOverview.md
 
 IF 任務涉及實體關係
   THEN 查 docs/knowledge-graph.json
@@ -40,7 +40,7 @@ IF 涉及專案分析
 # 🧠 核心事實來源規則（強制）
 
 ```rules
-1. 所有業務邏輯以 docs/architecture/logic-overview.md 為流程定義依據。
+1. 所有業務邏輯以 docs/architecture/00-LogicOverview.md 為流程定義依據。
 2. 所有實體關係與知識結構以 docs/knowledge-graph.json 為語義依據。
 3. 所有 AI 判斷與任務拆解以 docs/ai/repomix-output.context.md 為依據。
 4. 不允許跳過文件直接生成邏輯。
@@ -144,7 +144,7 @@ flowchart TD
 
 A[接收任務] --> B{是否屬於既有邏輯?}
 
-B -- 是 --> C[查詢 docs/architecture/logic-overview.md]
+B -- 是 --> C[查詢 docs/architecture/00-LogicOverview.md]
 C --> D[查詢 docs/knowledge-graph.json]
 D --> E[必要時使用 memory MCP]
 E --> F[產出解決方案]

@@ -3,7 +3,7 @@
  *
  * [GW] Command Bus Gateway — unified write entry point. [E4][R4][R8][Q4][Q7]
  *
- * Per logic-overview.md GW_CMD:
+ * Per 00-LogicOverview.md GW_CMD:
  *   CBG_ENTRY  — TraceID injection [E4][R8]
  *   CBG_AUTH   — universal-authority-interceptor (AuthoritySnapshot [Q4];
  *               ACTIVE_CTX wins over Claims on conflict)

@@ -6,7 +6,7 @@
  * Queries semantic-graph.slice (VS8) semantic index for cross-domain
  * (Workspace / Member / Schedule / Tag) search results.
  *
- * Per logic-overview.md [D26]:
+ * Per 00-LogicOverview.md [D26]:
  *   global-search.slice is the sole search authority.
  *   Queries VS8 semantic index; does NOT access Firestore directly.
  *

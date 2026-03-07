@@ -3,7 +3,7 @@
  *
  * [VS6] 頝函?蝜??剖?雿?Saga ?矽??
  *
- * Per logic-overview.md VS6:
+ * Per 00-LogicOverview.md VS6:
  *   WorkspaceScheduleProposed ??OrgEligibilityCheck ??ScheduleAssigned
  *
  * State machine:

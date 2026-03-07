@@ -8,7 +8,7 @@
  * [D24] Infra imports (firestore.read/write.adapter) are allowed in feature slices.
  * [R4]  All exported command functions return CommandResult (SK_CMD_RESULT).
  *
- * Per logic-overview.md (VS8 + VS0):
+ * Per 00-LogicOverview.md (VS8 + VS0):
  *   The centralized-tag CONTRACT (types, event bus) lives in shared-kernel.
  *   The centralized-tag IMPLEMENTATION (Firestore reads/writes) lives here.
  *

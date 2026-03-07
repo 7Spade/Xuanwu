@@ -3,7 +3,7 @@
  *
  * DOMAIN_ERROR_LOG node — structured domain error logger. [R8]
  *
- * Per logic-overview.md (OBSERVABILITY_LAYER):
+ * Per 00-LogicOverview.md (OBSERVABILITY_LAYER):
  *   WORKSPACE_TRANSACTION_RUNNER --> DOMAIN_ERROR_LOG
  *
  * Provides a structured error-logging interface for domain/application errors.

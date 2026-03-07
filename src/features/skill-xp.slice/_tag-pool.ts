@@ -3,7 +3,7 @@
  *
  * Skill Tag Pool: organization-scoped view of the global Tag Authority Center.
  *
- * Per logic-overview.md (VS4):
+ * Per 00-LogicOverview.md (VS4):
  *   SKILL_TAG_POOL[("?瑁璅惜摨俞nskill-xp.slice\n= Tag Authority ??蝜??典?敹怎\n瘨祥 TagLifecycleEvent 鋡怠??湔")]
  *
  * v5 Role Change:

@@ -6,7 +6,7 @@
  *       through those modules and never imports firebase/storage directly).
  * [D25] Implements IFileStore Port so feature slices never import firebase/storage directly.
  *
- * Architecture ref: FIREBASE_ACL → STORE_ADP (logic-overview.md)
+ * Architecture ref: FIREBASE_ACL → STORE_ADP (00-LogicOverview.md)
  *   STORE_ADP = Storage Adapter — implements IFileStore, handles path resolution and URL
  *   signing. All firebase/storage SDK calls are confined to the write/read adapter modules.
  *

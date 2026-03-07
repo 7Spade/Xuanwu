@@ -3,7 +3,7 @@
  *
  * TRACE_IDENTIFIER node — correlation/trace ID generation and propagation. [R8]
  *
- * Per logic-overview.md (OBSERVABILITY_LAYER):
+ * Per 00-LogicOverview.md (OBSERVABILITY_LAYER):
  *   WORKSPACE_COMMAND_HANDLER --> TRACE_IDENTIFIER
  *   WORKSPACE_TRANSACTION_RUNNER --> TRACE_IDENTIFIER
  *   WORKSPACE_EVENT_BUS --> TRACE_IDENTIFIER

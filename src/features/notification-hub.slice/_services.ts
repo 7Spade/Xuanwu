@@ -7,7 +7,7 @@
  * evaluates tag-based routing rules via VS8 semantics, and triggers
  * delivery channels accordingly.
  *
- * Per logic-overview.md (VS7 enhanced):
+ * Per 00-LogicOverview.md (VS7 enhanced):
  *   Notification Hub = 反應中樞 (Reaction Hub)
  *   - Monitors projection.bus for tag lifecycle events
  *   - Routes via VS8 tag semantics to appropriate channels
@@ -198,7 +198,7 @@ const busListeners = new Map<string, ProjectionBusListener[]>();
  * Subscribe to a projection.bus event key.
  * Returns an unsubscribe function.
  *
- * Per logic-overview.md (VS7):
+ * Per 00-LogicOverview.md (VS7):
  *   Notification Hub monitors projection.bus for tag lifecycle events
  *   and evaluates tag-aware routing to decide delivery channels.
  */

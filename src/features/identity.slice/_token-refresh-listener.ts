@@ -5,7 +5,7 @@
  *
  * Frontend Party [S6] ??Client Token Refresh Listener
  *
- * Per logic-overview.md [S6] three-way Claims refresh handshake:
+ * Per 00-LogicOverview.md [S6] three-way Claims refresh handshake:
  *   Party 1 (VS1) ??CLAIMS_HANDLER emits TOKEN_REFRESH_SIGNAL to `tokenRefreshSignals/{accountId}`
  *   Party 2 (IER) ??routes RoleChanged / PolicyChanged via CRITICAL_LANE to CLAIMS_HANDLER
  *   Party 3 (Frontend ??this file) ??listens for TOKEN_REFRESH_SIGNAL and force-refreshes token

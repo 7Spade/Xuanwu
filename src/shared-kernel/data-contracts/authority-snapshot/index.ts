@@ -3,7 +3,7 @@
  *
  * VS0 Shared Kernel: Authority snapshot contract.
  *
- * Per logic-overview.md:
+ * Per 00-LogicOverview.md:
  *   SK_AUTH_SNAP["authority-snapshot\nclaims / roles / scopes\nTTL = Token 有效期"]
  *
  * The AuthoritySnapshot is a point-in-time capture of an account's effective

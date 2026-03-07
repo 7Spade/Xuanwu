@@ -3,7 +3,7 @@
  *
  * User personal wallet — balance management with strong consistency.
  *
- * Per logic-overview.md (A1): USER_WALLET_AGGREGATE — strong-consistency balance invariant.
+ * Per 00-LogicOverview.md (A1): USER_WALLET_AGGREGATE — strong-consistency balance invariant.
  * Balance is stored inline on accounts/{userId}.wallet; transactions in sub-collection.
  */
 

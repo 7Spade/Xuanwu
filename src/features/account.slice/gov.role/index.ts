@@ -3,7 +3,7 @@
  *
  * Account-level role management. Role changes trigger CUSTOM_CLAIMS refresh.
  *
- * Per logic-overview.md: ACCOUNT_ROLE → CUSTOM_CLAIMS
+ * Per 00-LogicOverview.md: ACCOUNT_ROLE → CUSTOM_CLAIMS
  */
 
 export { assignAccountRole, revokeAccountRole } from './_actions';

@@ -3,7 +3,7 @@
  *
  * [GW] Query Gateway — unified read entry point. [Q8][P4][R7]
  *
- * Per logic-overview.md GW_QUERY:
+ * Per 00-LogicOverview.md GW_QUERY:
  *   read-model-registry: version comparison / snapshot routing
  *   QGWAY_SCHED  → projection.org-eligible-member-view  [#14][#15][#16][P4][R7]
  *   QGWAY_NOTIF  → projection.account-view             [#6 FCM Token]

@@ -3,7 +3,7 @@
  *
  * VS0 Shared Kernel: Universal domain event envelope contract.
  *
- * Per logic-overview.md [R8][R7]:
+ * Per 00-LogicOverview.md [R8][R7]:
  *   ① traceId is injected ONCE at CBG_ENTRY (unified-command-gateway) and
  *      MUST NOT be overwritten by any downstream node (IER, FUNNEL, FCM).
  *   ② Every domain event on every in-process bus MUST satisfy EventEnvelope<T>.
