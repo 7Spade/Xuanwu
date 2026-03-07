@@ -3,7 +3,7 @@
  *
  * Provides a reactive subscription to the `parsingIntents` subcollection so that
  * the DocumentParser view can display a live history of all ParsingIntents
- * (Digital Twin �???��?) without additional one-shot fetches.
+ * (Digital Twin) without additional one-shot fetches.
  *
  * Path: workspaces/{workspaceId}/parsingIntents/{intentId}
  */
@@ -18,7 +18,7 @@ import type { ParsingIntent } from './_types';
  * Opens a real-time listener on the workspace parsingIntents subcollection.
  * @param workspaceId The workspace whose intents to subscribe to.
  * @param onUpdate    Callback receiving the latest intent array on every update.
- * @returns An unsubscribe function ??call it on component unmount.
+ * @returns An unsubscribe function; call it on component unmount.
  */
 export function subscribeToParsingIntents(
   workspaceId: string,
