@@ -1,5 +1,149 @@
 # Files
 
+## File: src/features/semantic-graph.slice/_cost-classifier.ts
+```typescript
+export type CostItemType = (typeof CostItemType)[keyof typeof CostItemType]
+⋮----
+export type SemanticTagSlug = (typeof COST_ITEM_TAG_SLUG)[CostItemType]
+export interface CostItemSemanticClassification {
+  costItemType: CostItemType
+  semanticTagSlug: SemanticTagSlug
+}
+⋮----
+function classifyCostItemType(name: string): CostItemType
+function toSemanticTagSlug(costItemType: CostItemType): SemanticTagSlug
+export function classifyCostItem(name: string): CostItemType
+export function classifyCostItem(
+export function classifyCostItem(
+  name: string,
+  options?: { includeSemanticTagSlug?: boolean }
+): CostItemType | CostItemSemanticClassification
+export function classifyCostItemWithSemanticTag(
+  name: string
+): CostItemSemanticClassification
+export function shouldMaterializeAsTask(costItemType: CostItemType): boolean
+```
+
+## File: src/features/semantic-graph.slice/_semantic-authority.ts
+```typescript
+import type { SearchDomain, TaxonomyDimension } from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
+```
+
+## File: src/features/semantic-graph.slice/_types.ts
+```typescript
+import type {
+  TaxonomyDimension,
+  TaxonomyNode,
+  SemanticSearchHit,
+  TagSlugRef,
+} from '@/shared-kernel';
+export interface TemporalTagAssignment {
+  readonly tagSlug: TagSlugRef;
+  readonly entityId: string;
+  readonly entityType: 'member' | 'workspace' | 'schedule';
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly locationId?: string;
+}
+export interface TemporalConflict {
+  readonly tagSlug: TagSlugRef;
+  readonly entityId: string;
+  readonly existingAssignment: TemporalTagAssignment;
+  readonly conflictingAssignment: TemporalTagAssignment;
+  readonly overlapStartDate: string;
+  readonly overlapEndDate: string;
+}
+export interface TemporalConflictCheckInput {
+  readonly candidate: TemporalTagAssignment;
+  readonly existingAssignments: readonly TemporalTagAssignment[];
+}
+export interface TemporalConflictCheckResult {
+  readonly hasConflict: boolean;
+  readonly conflicts: readonly TemporalConflict[];
+}
+export interface TaxonomyTree {
+  readonly dimension: TaxonomyDimension;
+  readonly roots: readonly TaxonomyNode[];
+  readonly nodes?: readonly TaxonomyNode[];
+  readonly nodeCount: number;
+}
+export interface TaxonomyValidationResult {
+  readonly valid: boolean;
+  readonly errors: readonly TaxonomyValidationError[];
+}
+export interface TaxonomyValidationError {
+  readonly code: TaxonomyErrorCode;
+  readonly message: string;
+  readonly tagSlug: TagSlugRef;
+  readonly dimension?: TaxonomyDimension;
+}
+export type TaxonomyErrorCode =
+  | 'UNKNOWN_DIMENSION'
+  | 'INVALID_PARENT'
+  | 'CIRCULAR_REFERENCE'
+  | 'DUPLICATE_SLUG'
+  | 'DEPTH_EXCEEDED'
+  | 'DEPRECATED_TAG';
+export interface SemanticIndexEntry {
+  readonly id: string;
+  readonly domain: string;
+  readonly title: string;
+  readonly subtitle?: string;
+  readonly tags: readonly string[];
+  readonly searchableText: string;
+  readonly href?: string;
+  readonly updatedAt: string;
+}
+export interface SemanticIndexStats {
+  readonly totalEntries: number;
+  readonly entriesByDomain: Record<string, number>;
+  readonly lastUpdatedAt: string;
+}
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/member-assign-popover.tsx
+```typescript
+import { UserPlus, Check } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/shadcn-ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shadcn-ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { cn } from "@/shadcn-ui/utils/utils";
+import type { MemberReference, ScheduleItem } from "@/shared-kernel";
+interface MemberAssignPopoverProps {
+  item: ScheduleItem;
+  members: MemberReference[];
+  onAssign: (item: ScheduleItem, memberId: string) => void;
+  onUnassign: (item: ScheduleItem, memberId: string) => void;
+}
+⋮----
+onUnassign(item, member.id);
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.helpers.ts
+```typescript
+import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
+type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
+type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
+type TimestampLike = { toDate: () => Date };
+function isTimestampLike(value: unknown): value is TimestampLike
+export function toDate(timestamp: CalendarTimestamp): Date | null
+export function escapeHtml(input: string): string
+export function toTimelineClassName(item: ScheduleItem): string
+function isStartOfDayTimestamp(date: Date): boolean
+function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
+export function resolveTimelineInterval(item: ScheduleItem):
+export function resolveInitialWindow(items: Array<
+```
+
 ## File: src/shared-infra/backend-firebase/functions/src/claims/claims-refresh.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -977,6 +1121,469 @@ onForegroundMessage(
 
 ```
 
+## File: src/features/semantic-graph.slice/_actions.ts
+```typescript
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
+import type { CommandResult, TagSlugRef } from '@/shared-kernel';
+import type { TaxonomyNode } from '@/shared-kernel';
+import { detectTemporalConflicts, validateTaxonomyAssignment } from './_aggregate';
+import { indexEntity, removeFromIndex } from './_services';
+import type {
+  TemporalTagAssignment,
+  SemanticIndexEntry,
+} from './_types';
+import {
+  addEdge,
+  removeEdge,
+} from './graph/edges/semantic-edge-store';
+import type { SemanticRelationType, TagLifecycleState } from './core/types';
+import {
+  registerTagDraft,
+  activateTag,
+  transitionTagState,
+} from './routing/workflows/tag-lifecycle.workflow';
+import type { OutboxLifecycleEvent } from './routing/workflows/tag-lifecycle.workflow';
+export async function upsertTagWithConflictCheck(
+  node: TaxonomyNode,
+  temporalAssignment: TemporalTagAssignment | null,
+  existingNodes: readonly TaxonomyNode[],
+  existingAssignments: readonly TemporalTagAssignment[]
+): Promise<CommandResult>
+export async function removeTag(tagSlug: string): Promise<CommandResult>
+export async function assignSemanticTag(
+  node: TaxonomyNode,
+  temporalAssignment: TemporalTagAssignment | null,
+  existingNodes: readonly TaxonomyNode[],
+  existingAssignments: readonly TemporalTagAssignment[]
+): Promise<CommandResult>
+export async function addSemanticEdge(
+  fromTagSlug: string,
+  toTagSlug: string,
+  relationType: SemanticRelationType
+): Promise<CommandResult>
+export async function removeSemanticEdge(
+  fromTagSlug: string,
+  toTagSlug: string,
+  relationType: SemanticRelationType
+): Promise<CommandResult>
+export async function registerTagLifecycle(
+  tagSlug: TagSlugRef,
+  triggeredBy: string,
+  aggregateVersion: number
+): Promise<CommandResult &
+export async function activateTagLifecycle(
+  tagSlug: TagSlugRef,
+  triggeredBy: string,
+  nextVersion: number
+): Promise<CommandResult &
+export async function transitionTagLifecycle(
+  tagSlug: TagSlugRef,
+  toState: TagLifecycleState,
+  triggeredBy: string,
+  nextVersion: number
+): Promise<CommandResult &
+```
+
+## File: src/features/semantic-graph.slice/_aggregate.ts
+```typescript
+import { tagSlugRef } from '@/shared-kernel';
+import type { TaxonomyDimension, TaxonomyNode, TagSlugRef } from '@/shared-kernel';
+import { TAXONOMY_DIMENSIONS } from './_semantic-authority';
+import type {
+  TemporalTagAssignment,
+  TemporalConflict,
+  TemporalConflictCheckInput,
+  TemporalConflictCheckResult,
+  TaxonomyTree,
+  TaxonomyValidationResult,
+  TaxonomyValidationError,
+  TaxonomyErrorCode,
+} from './_types';
+⋮----
+export function detectTemporalConflicts(
+  input: TemporalConflictCheckInput
+): TemporalConflictCheckResult
+function isOverlapping(a: TemporalTagAssignment, b: TemporalTagAssignment): boolean
+export function validateTaxonomyAssignment(
+  node: TaxonomyNode,
+  existingNodes: readonly TaxonomyNode[],
+  validDimensions: readonly TaxonomyDimension[] = TAXONOMY_DIMENSIONS
+): TaxonomyValidationResult
+function hasCircularReference(
+  nodeSlug: string,
+  parentSlug: string,
+  existingNodes: readonly TaxonomyNode[]
+): boolean
+export function checkTemporalConflict(
+  newAssignment: TemporalTagAssignment,
+  existingAssignments: readonly TemporalTagAssignment[]
+): TemporalConflictCheckResult
+export function validateTaxonomyPath(
+  path: readonly string[],
+  tree: TaxonomyTree
+): TaxonomyValidationResult
+function buildNodeMap(tree: TaxonomyTree): Map<string, TaxonomyNode>
+function makeError(
+  code: TaxonomyErrorCode,
+  tagSlug: TagSlugRef,
+  message: string,
+  dimension?: TaxonomyDimension
+): TaxonomyValidationError
+```
+
+## File: src/features/semantic-graph.slice/_services.ts
+```typescript
+import type { SearchDomain, SemanticSearchHit } from '@/shared-kernel';
+import { SEARCH_DOMAINS } from './_semantic-authority';
+import type { SemanticIndexEntry, SemanticIndexStats } from './_types';
+⋮----
+export function indexEntity(entry: SemanticIndexEntry): void
+export function removeFromIndex(domain: string, id: string): void
+export function querySemanticIndex(
+  query: string,
+  options?: {
+    domains?: readonly string[];
+    tagFilters?: readonly string[];
+    limit?: number;
+  }
+): SemanticSearchHit[]
+export function getIndexStats(): SemanticIndexStats
+function isValidSearchDomain(domain: string): domain is SearchDomain
+function computeRelevanceScore(entry: SemanticIndexEntry, terms: string[]): number
+```
+
+## File: src/features/semantic-graph.slice/core/embeddings/vector-store.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+export interface VectorStoreEntry {
+  readonly slug: TagSlugRef;
+  readonly vector: readonly number[];
+  readonly storedAt: string;
+}
+export class VectorStore
+⋮----
+storeEmbedding(slug: TagSlugRef, vector: readonly number[]): void
+getEmbedding(slug: TagSlugRef): readonly number[] | null
+hasEmbedding(slug: TagSlugRef): boolean
+computeCosineSimilarity(a: TagSlugRef, b: TagSlugRef): number
+getAll(): readonly VectorStoreEntry[]
+deleteEmbedding(slug: TagSlugRef): void
+clear(): void
+```
+
+## File: src/features/semantic-graph.slice/core/nodes/hierarchy-manager.ts
+```typescript
+import { tagSlugRef } from '@/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
+⋮----
+export function mountToParent(childSlug: TagSlugRef, parentSlug: TagSlugRef): void
+export function validateNotIsolated(slug: TagSlugRef): boolean
+export function getParent(slug: TagSlugRef): TagSlugRef | null
+export function _clearHierarchyForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/core/tags/_actions.ts
+```typescript
+import { Timestamp, getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import {
+  setDocument,
+  updateDocument,
+  deleteDocument,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import {
+  commandSuccess,
+  commandFailureFrom,
+  buildIdempotencyKey,
+  type DlqTier,
+  type TagCategory,
+  type CentralizedTagEntry,
+  type CentralizedTagDeleteRule,
+  type CommandResult,
+} from '@/shared-kernel';
+import { publishTagEvent } from './_bus';
+async function writeTagOutbox(
+  eventType: string,
+  tagSlug: string,
+  payload: unknown,
+  traceId?: string
+): Promise<void>
+export async function createTag(
+  tagSlug: string,
+  label: string,
+  category: TagCategory,
+  createdBy: string,
+  deleteRule: CentralizedTagDeleteRule = 'block-if-referenced',
+  traceId?: string
+): Promise<CommandResult>
+export async function updateTag(
+  tagSlug: string,
+  updates: { label?: string; category?: TagCategory },
+  updatedBy: string,
+  traceId?: string
+): Promise<CommandResult>
+export async function deprecateTag(
+  tagSlug: string,
+  deprecatedBy: string,
+  replacedByTagSlug?: string,
+  traceId?: string
+): Promise<CommandResult>
+export async function deleteTag(
+  tagSlug: string,
+  deletedBy: string,
+  traceId?: string
+): Promise<CommandResult>
+export async function getTag(tagSlug: string): Promise<CentralizedTagEntry | null>
+```
+
+## File: src/features/semantic-graph.slice/core/tags/_bus.ts
+```typescript
+import type { ImplementsEventEnvelopeContract } from '@/shared-kernel';
+import type { TagLifecycleEventPayloadMap, TagLifecycleEventKey } from './_events';
+type TagEventHandler<K extends TagLifecycleEventKey> = (
+  payload: TagLifecycleEventPayloadMap[K]
+) => void | Promise<void>;
+type TagEventHandlerMap = {
+  [K in TagLifecycleEventKey]?: Array<TagEventHandler<K>>;
+};
+⋮----
+export function onTagEvent<K extends TagLifecycleEventKey>(
+  eventKey: K,
+  handler: TagEventHandler<K>
+): () => void
+export function publishTagEvent<K extends TagLifecycleEventKey>(
+  eventKey: K,
+  payload: TagLifecycleEventPayloadMap[K]
+): void
+```
+
+## File: src/features/semantic-graph.slice/core/tags/_events.ts
+```typescript
+import type {
+  TagCreatedPayload,
+  TagUpdatedPayload,
+  TagDeprecatedPayload,
+  TagDeletedPayload,
+  TagLifecycleEventPayloadMap,
+  TagLifecycleEventKey,
+} from '@/shared-kernel/data-contracts/tag-authority';
+```
+
+## File: src/features/semantic-graph.slice/core/tags/index.ts
+```typescript
+
+```
+
+## File: src/features/semantic-graph.slice/core/types/index.ts
+```typescript
+import type { TagSlugRef, TagCategory } from '@/shared-kernel';
+⋮----
+export interface TE1_SkillTagEntity {
+  readonly _teVariant: 'TE1_skill';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'skill';
+  readonly semanticUri: `tag::skill/${string}`;
+  readonly aggregateVersion: number;
+}
+export interface TE2_SkillTierTagEntity {
+  readonly _teVariant: 'TE2_skill_tier';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'skill_tier';
+  readonly semanticUri: `tag::skill_tier/${string}`;
+  readonly aggregateVersion: number;
+}
+export interface TE3_UserLevelTagEntity {
+  readonly _teVariant: 'TE3_user_level';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'user_level';
+  readonly semanticUri: `tag::user_level/${string}`;
+  readonly aggregateVersion: number;
+}
+export interface TE4_RoleTagEntity {
+  readonly _teVariant: 'TE4_role';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'role';
+  readonly semanticUri: `tag::role/${string}`;
+  readonly aggregateVersion: number;
+}
+export interface TE5_TeamTagEntity {
+  readonly _teVariant: 'TE5_team';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'team';
+  readonly semanticUri: `tag::team/${string}`;
+  readonly aggregateVersion: number;
+}
+export interface TE6_PartnerTagEntity {
+  readonly _teVariant: 'TE6_partner';
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: 'partner';
+  readonly semanticUri: `tag::partner/${string}`;
+  readonly aggregateVersion: number;
+}
+export type TagEntity =
+  | TE1_SkillTagEntity
+  | TE2_SkillTierTagEntity
+  | TE3_UserLevelTagEntity
+  | TE4_RoleTagEntity
+  | TE5_TeamTagEntity
+  | TE6_PartnerTagEntity;
+export type SemanticRelationType = 'IS_A' | 'REQUIRES';
+export interface SemanticEdge {
+  readonly edgeId: string;
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly createdAt: string;
+}
+export interface TagEmbedding {
+  readonly tagSlug: TagSlugRef;
+  readonly vector: readonly number[];
+  readonly model: string;
+  readonly generatedAt: string;
+}
+export type TagLifecycleState = 'Draft' | 'Active' | 'Stale' | 'Deprecated';
+export type TagLifecycleEventType =
+  | 'TAG_CREATED'
+  | 'TAG_ACTIVATED'
+  | 'TAG_DEPRECATED'
+  | 'TAG_STALE_FLAGGED'
+  | 'TAG_DELETED';
+export interface TagLifecycleEvent {
+  readonly eventId: string;
+  readonly tagSlug: TagSlugRef;
+  readonly eventType: TagLifecycleEventType;
+  readonly fromState: TagLifecycleState;
+  readonly toState: TagLifecycleState;
+  readonly transitionedAt: string;
+  readonly triggeredBy: string;
+  readonly aggregateVersion: number;
+}
+export interface StaleTagWarning {
+  readonly tagSlug: TagSlugRef;
+  readonly stalenessMs: number;
+  readonly detectedAt: string;
+}
+export interface TagLifecycleRecord {
+  readonly tagSlug: TagSlugRef;
+  readonly state: TagLifecycleState;
+  readonly aggregateVersion: number;
+  readonly lastTransitionedAt: string;
+  readonly createdAt: string;
+}
+export interface EligibleTagsQuery {
+  readonly category?: TagCategory;
+  readonly state?: TagLifecycleState;
+  readonly limit?: number;
+}
+export interface EligibleTagResult {
+  readonly tagSlug: TagSlugRef;
+  readonly label: string;
+  readonly category: TagCategory;
+  readonly semanticUri: string;
+  readonly state: TagLifecycleState;
+  readonly aggregateVersion: number;
+}
+export interface SemanticDistanceEntry {
+  readonly fromSlug: string;
+  readonly toSlug: string;
+  readonly hopCount: number;
+  readonly weightedDistance: number;
+}
+export type CausalityReason = 'IS_A_CHILD' | 'REQUIRES_DEPENDENCY' | 'TRANSITIVE';
+export interface AffectedNode {
+  readonly tagSlug: TagSlugRef;
+  readonly reason: CausalityReason;
+  readonly hopCount: number;
+  readonly semanticWeight: number;
+}
+export interface DownstreamEvent {
+  readonly targetTagSlug: TagSlugRef;
+  readonly suggestedTransition: TagLifecycleState;
+  readonly reason: string;
+  readonly priority: 'immediate' | 'deferred';
+}
+export interface CausalityChain {
+  readonly sourceEvent: TagLifecycleEvent;
+  readonly affectedNodes: readonly AffectedNode[];
+  readonly downstreamEvents: readonly DownstreamEvent[];
+  readonly computedAt: string;
+}
+```
+
+## File: src/features/semantic-graph.slice/graph/edges/context-attention.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+⋮----
+function _workspacePrefix(workspaceId: string): string
+function _isGlobalSlug(slug: string): boolean
+function _belongsToWorkspace(slug: string, workspaceId: string): boolean
+export function filterTagsByWorkspaceContext(
+  allSlugs: readonly TagSlugRef[],
+  workspaceId: string
+): TagSlugRef[]
+```
+
+## File: src/features/semantic-graph.slice/index.ts
+```typescript
+
+```
+
+## File: src/features/semantic-graph.slice/learning/learning-engine.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+export interface WeightDeltaEvent {
+  readonly fromSlug: TagSlugRef;
+  readonly toSlug: TagSlugRef;
+  readonly delta: number;
+  readonly triggeredBy: 'ACCOUNT_CREATED' | 'SKILL_XP_CHANGED';
+  readonly triggeredAt: string;
+}
+export interface LearningResult {
+  readonly fromSlug: TagSlugRef;
+  readonly toSlug: TagSlugRef;
+  readonly previousWeight: number;
+  readonly newWeight: number;
+}
+⋮----
+function _edgeKey(from: TagSlugRef, to: TagSlugRef): string
+export function _applyWeightDelta(fromSlug: TagSlugRef, toSlug: TagSlugRef, delta: number): LearningResult
+export function onAccountCreated(fromSlug: TagSlugRef, toSlug: TagSlugRef): LearningResult
+export function onSkillXpChanged(fromSlug: TagSlugRef, toSlug: TagSlugRef, xpDelta: number): LearningResult
+export function getCachedWeight(fromSlug: TagSlugRef, toSlug: TagSlugRef): number
+export function _clearLearningCacheForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/output/projections/context-selectors.ts
+```typescript
+
+```
+
+## File: src/features/semantic-graph.slice/output/projections/tag-snapshot.slice.ts
+```typescript
+import { getTagSnapshot } from '@/shared-infra/projection.bus';
+export type TagSnapshotColorToken = 'neutral' | 'warning' | 'info' | 'success';
+export type TagSnapshotIconToken = 'hammer' | 'briefcase' | 'shield' | 'coins';
+export interface TagSnapshotPresentation {
+  readonly tagSlug: string;
+  readonly label: string;
+  readonly category: string;
+  readonly iconToken: TagSnapshotIconToken;
+  readonly colorToken: TagSnapshotColorToken;
+}
+⋮----
+function resolvePresentationByCategory(category: string): Pick<TagSnapshotPresentation, 'iconToken' | 'colorToken'>
+export async function getTagSnapshotPresentation(tagSlug: string): Promise<TagSnapshotPresentation | null>
+export async function getTagSnapshotPresentationMap(
+  tagSlugs: readonly string[],
+): Promise<Record<string, TagSnapshotPresentation>>
+```
+
 ## File: src/features/workforce-scheduling.slice/application/commands/actions/index.ts
 ```typescript
 
@@ -1488,14 +2095,9 @@ setSkillPickerOpen(false);
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-capability-tabs.tsx
 ```typescript
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
-type CapabilityTabValue = "schedule" | "timeline";
-function toCapabilityValue(pathname: string): CapabilityTabValue
+import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
 export function AccountCapabilityTabs()
 export function WorkspaceCapabilityTabs()
-⋮----
-value=
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-data-table.tsx
@@ -1565,14 +2167,9 @@ const handleSubmit = async (data: {
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-capability-tabs.tsx
 ```typescript
-import { useParams, usePathname, useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
-type CapabilityTabValue = 'schedule' | 'timeline';
-function toCapabilityValue(pathname: string): CapabilityTabValue
+import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
 export function AccountTimelineCapabilityTabs()
 export function WorkspaceTimelineCapabilityTabs()
-⋮----
-value=
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/unified-calendar-grid.tsx
@@ -1665,6 +2262,17 @@ import { type MemberReference } from "@/shared-kernel"
 import type { ScheduleItem } from '@/shared-kernel'
 import { SKILLS } from "@/shared-kernel/constants/skills"
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/workspace-schedule-timeline-tabs.tsx
+```typescript
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { Tabs, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+type CapabilityTabValue = "schedule" | "timeline";
+function toCapabilityValue(pathname: string): CapabilityTabValue
+export function WorkspaceScheduleTimelineTabs()
+⋮----
+value=
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/hooks/runtime/index.ts
@@ -3595,6 +4203,30 @@ export interface ScheduleItem {
 }
 ```
 
+## File: src/features/semantic-graph.slice/_queries.ts
+```typescript
+import { querySemanticIndex, getIndexStats } from './_services';
+import {
+  traceAffectedNodes,
+  rankAffectedNodes,
+  buildDownstreamEvents,
+  buildCausalityChain,
+} from './reasoning/causality/causality-tracer';
+import { getEdgesByType } from './graph/edges/semantic-edge-store';
+import {
+  computeSemanticDistance,
+  computeSemanticDistanceMatrix,
+  findIsolatedNodes,
+} from './graph/neural-net/neural-network';
+import type { SemanticEdge, StaleTagWarning } from './core/types';
+import { detectStaleTagWarnings } from './routing/workflows/tag-lifecycle.workflow';
+import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './output/projections/graph-selectors';
+⋮----
+export function getIsAEdges(): readonly SemanticEdge[]
+export function getRequiresEdges(): readonly SemanticEdge[]
+export function queryStaleTagWarnings(): readonly StaleTagWarning[]
+```
+
 ## File: src/features/workforce-scheduling.slice/application/commands/actions/governance.ts
 ```typescript
 import {
@@ -4092,7 +4724,6 @@ export function computeSkillMatch(
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.tsx
 ```typescript
-import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
 import { useEffect, useMemo, useRef } from "react";
 import { DataSet } from "vis-data";
 import {
@@ -4104,10 +4735,14 @@ import {
 } from "vis-timeline/standalone";
 ⋮----
 import { cn } from "@/shadcn-ui/utils/utils";
-import type { ScheduleItem, Timestamp } from "@/shared-kernel";
+import type { ScheduleItem } from "@/shared-kernel";
 import type { TimelineMember } from '../../types/timeline.types';
-type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
-type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
+import {
+  escapeHtml,
+  resolveInitialWindow,
+  resolveTimelineInterval,
+  toTimelineClassName,
+} from "./timeline-canvas.helpers";
 interface TimelineCanvasProps {
   items: ScheduleItem[];
   members: TimelineMember[];
@@ -4121,13 +4756,6 @@ interface TimelineCanvasProps {
   }) => Promise<boolean>;
   className?: string;
 }
-function toDate(timestamp: CalendarTimestamp): Date | null
-function escapeHtml(input: string): string
-function toTimelineClassName(item: ScheduleItem): string
-function isStartOfDay(date: Date): boolean
-function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
-function resolveTimelineInterval(item: ScheduleItem):
-function resolveInitialWindow(items: DataItem[]):
 export function TimelineCanvas({
   items,
   members,
@@ -4580,6 +5208,681 @@ createTraceContext(source?: string): TraceContext;
 
 ```
 
+## File: src/features/semantic-graph.slice/core/embeddings/embedding-port.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { TagEmbedding } from '../types';
+export interface IEmbeddingPort {
+  embed(text: string): Promise<readonly number[]>;
+  embedBatch(texts: readonly string[]): Promise<readonly (readonly number[])[]>;
+}
+⋮----
+embed(text: string): Promise<readonly number[]>;
+embedBatch(texts: readonly string[]): Promise<readonly (readonly number[])[]>;
+⋮----
+export function injectEmbeddingPort(port: IEmbeddingPort): void
+export function getEmbeddingPort(): IEmbeddingPort
+export async function buildTagEmbedding(
+  tagSlug: TagSlugRef,
+  category: string,
+  label: string,
+  model = 'default'
+): Promise<TagEmbedding>
+export async function buildTagEmbeddingsBatch(
+  tags: ReadonlyArray<{ tagSlug: TagSlugRef; category: string; label: string }>,
+  model = 'default'
+): Promise<readonly TagEmbedding[]>
+```
+
+## File: src/features/semantic-graph.slice/core/nodes/tag-entity.factory.ts
+```typescript
+import { tagSlugRef, type TagCategory } from '@/shared-kernel';
+import type {
+  TagEntity,
+  TE1_SkillTagEntity,
+  TE2_SkillTierTagEntity,
+  TE3_UserLevelTagEntity,
+  TE4_RoleTagEntity,
+  TE5_TeamTagEntity,
+  TE6_PartnerTagEntity,
+} from '../types';
+export interface TagEntityFactoryInput {
+  readonly tagSlug: string;
+  readonly label: string;
+  readonly category: TagCategory;
+  readonly aggregateVersion: number;
+}
+function buildTE1(input: TagEntityFactoryInput): TE1_SkillTagEntity
+function buildTE2(input: TagEntityFactoryInput): TE2_SkillTierTagEntity
+function buildTE3(input: TagEntityFactoryInput): TE3_UserLevelTagEntity
+function buildTE4(input: TagEntityFactoryInput): TE4_RoleTagEntity
+function buildTE5(input: TagEntityFactoryInput): TE5_TeamTagEntity
+function buildTE6(input: TagEntityFactoryInput): TE6_PartnerTagEntity
+export function buildTagEntity(input: TagEntityFactoryInput): TagEntity
+```
+
+## File: src/features/semantic-graph.slice/core/utils/semantic-utils.ts
+```typescript
+import type { TagEntity } from '../types';
+export function buildSemanticUri(category: string, tagSlug: string): string
+export function parseSemanticUri(
+  uri: string
+):
+export function tagEntityToText(entity: TagEntity): string
+export function sortTagEntities(entities: readonly TagEntity[]): TagEntity[]
+export function computeStalenessMs(isoTimestamp: string): number
+export function isStale(isoTimestamp: string, thresholdMs: number): boolean
+⋮----
+export function deriveTierFromXp(xp: number): string
+```
+
+## File: src/features/semantic-graph.slice/governance/consensus-engine/index.ts
+```typescript
+import type { RelationshipProposal } from '../proposal-stream';
+export type ConsensusDecision = 'PASS' | 'REJECTED';
+export type ConsensusRejectionCode =
+  | 'DUPLICATE_PENDING'
+  | 'CONTRADICTORY_PROPOSAL'
+  | 'GOVERNANCE_CONFLICT'
+  | 'INCOMPLETE_PROPOSAL';
+export interface ConsensusResult {
+  readonly decision: ConsensusDecision;
+  readonly rejectionCode?: ConsensusRejectionCode;
+  readonly reason?: string;
+}
+function _isSameTuple(
+  a: RelationshipProposal,
+  b: RelationshipProposal,
+): boolean
+function _isContradictoryPair(
+  incoming: RelationshipProposal,
+  existing: RelationshipProposal,
+): boolean
+function _hasOpposingRelation(
+  incoming: RelationshipProposal,
+  existing: RelationshipProposal,
+): boolean
+export function validateConsensus(
+  incoming: RelationshipProposal,
+  activeProposals: readonly RelationshipProposal[],
+): ConsensusResult
+```
+
+## File: src/features/semantic-graph.slice/governance/guards/invariant-guard.ts
+```typescript
+import { getAllEdges } from '../../graph/edges/semantic-edge-store';
+import type { SemanticEdge, SemanticRelationType } from '../../core/types';
+export interface EdgeProposal {
+  readonly fromTagSlug: string;
+  readonly toTagSlug: string;
+  readonly relationType: SemanticRelationType;
+  readonly weight?: number;
+}
+export type SemanticGuardRejectionCode =
+  | 'SELF_LOOP'
+  | 'INVALID_WEIGHT'
+  | 'DUPLICATE_EDGE'
+  | 'IS_A_CYCLE'
+  | 'SELF_REQUIRES';
+export type SemanticGuardDecision = 'APPROVED' | 'REJECTED';
+export interface SemanticGuardResult {
+  readonly decision: SemanticGuardDecision;
+  readonly rejectionCode?: SemanticGuardRejectionCode;
+  readonly reason?: string;
+}
+function _buildIsAGraph(edges: readonly SemanticEdge[]): Map<string, Set<string>>
+function _canReach(start: string, target: string, graph: Map<string, Set<string>>): boolean
+function _wouldCreateIsACycle(
+  fromSlug: string,
+  toSlug: string,
+  graph: Map<string, Set<string>>
+): boolean
+function _isDuplicateEdge(
+  fromSlug: string,
+  toSlug: string,
+  relationType: SemanticRelationType,
+  edges: readonly SemanticEdge[]
+): boolean
+export function validateEdgeProposal(proposal: EdgeProposal): SemanticGuardResult
+```
+
+## File: src/features/semantic-graph.slice/governance/guards/semantic-guard.ts
+```typescript
+import { getAllEdges } from '../../graph/edges/semantic-edge-store';
+import type { SemanticEdge, SemanticRelationType } from '../../core/types';
+export interface EdgeProposal {
+  readonly fromTagSlug: string;
+  readonly toTagSlug: string;
+  readonly relationType: SemanticRelationType;
+  readonly weight?: number;
+}
+export type SemanticGuardRejectionCode =
+  | 'SELF_LOOP'
+  | 'INVALID_WEIGHT'
+  | 'DUPLICATE_EDGE'
+  | 'IS_A_CYCLE'
+  | 'SELF_REQUIRES';
+export type SemanticGuardDecision = 'APPROVED' | 'REJECTED';
+export interface SemanticGuardResult {
+  readonly decision: SemanticGuardDecision;
+  readonly rejectionCode?: SemanticGuardRejectionCode;
+  readonly reason?: string;
+}
+function _buildIsAGraph(edges: readonly SemanticEdge[]): Map<string, Set<string>>
+function _canReach(start: string, target: string, graph: Map<string, Set<string>>): boolean
+function _wouldCreateIsACycle(
+  fromSlug: string,
+  toSlug: string,
+  graph: Map<string, Set<string>>
+): boolean
+function _isDuplicateEdge(
+  fromSlug: string,
+  toSlug: string,
+  relationType: SemanticRelationType,
+  edges: readonly SemanticEdge[]
+): boolean
+export function validateEdgeProposal(proposal: EdgeProposal): SemanticGuardResult
+```
+
+## File: src/features/semantic-graph.slice/governance/guards/staleness-monitor.ts
+```typescript
+import { StalenessMs } from '@/shared-kernel';
+import type { StaleTagWarning, TagLifecycleRecord } from '../../core/types';
+⋮----
+export function upsertLifecycleRecord(record: TagLifecycleRecord): void
+export function removeLifecycleRecord(tagSlug: string): boolean
+export function detectStaleTagWarnings(
+  now: number = Date.now(),
+  thresholdMs: number = DEFAULT_STALENESS_THRESHOLD_MS
+): readonly StaleTagWarning[]
+export function getAllLifecycleRecords(): readonly TagLifecycleRecord[]
+export function _clearLifecycleRecordsForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/governance/proposal-stream/index.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { SemanticRelationType } from '../../core/types';
+export type ProposalId = string & { readonly _brand: 'ProposalId' };
+export type ProposalStatus = 'pending' | 'approved' | 'rejected';
+export interface RelationshipProposal {
+  readonly proposalId: ProposalId;
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly proposedBy: string;
+  readonly proposedAt: string;
+  status: ProposalStatus;
+  rejectionReason?: string;
+  resolvedAt?: string;
+}
+⋮----
+function _newId(): ProposalId
+export function enqueueProposal(
+  proposal: Omit<RelationshipProposal, 'proposalId' | 'status'>,
+): ProposalId
+export function approveProposal(proposalId: ProposalId): void
+export function rejectProposal(proposalId: ProposalId, reason: string): void
+export function listPendingProposals(): readonly RelationshipProposal[]
+export function listAllProposals(): readonly RelationshipProposal[]
+export function _clearProposalsForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/governance/relationship-visualizer/index.ts
+```typescript
+import {
+  buildAdjacencyList,
+  buildIsAAdjacencyList,
+  buildRequiresAdjacencyList,
+} from '../../graph/edges/adjacency-list';
+import { getAllEdges } from '../../graph/edges/semantic-edge-store';
+import type { SemanticRelationType } from '../../core/types';
+export interface VisNode {
+  readonly id: string;
+  readonly label: string;
+  readonly category: 'tag' | 'workspace-tag' | 'global-tag';
+}
+export interface VisEdge {
+  readonly source: string;
+  readonly target: string;
+  readonly relationType: SemanticRelationType;
+}
+export interface GraphSnapshot {
+  readonly nodes: readonly VisNode[];
+  readonly edges: readonly VisEdge[];
+  readonly generatedAt: string;
+}
+function _slugToCategory(slug: string): VisNode['category']
+function _slugToLabel(slug: string): string
+function _buildNodes(adjacency: ReturnType<typeof buildAdjacencyList>): VisNode[]
+// ??? Public API ???????????????????????????????????????????????????????????????
+/**
+ * Build a full graph snapshot (all relation types) from the current edge store.
+ * [D21-I] globally observable.
+ */
+export function buildFullGraphSnapshot(): GraphSnapshot
+/**
+ * Build an IS_A hierarchy snapshot for subsumption tree rendering.
+ */
+export function buildIsAHierarchySnapshot(): GraphSnapshot
+export function buildRequiresDependencySnapshot(): GraphSnapshot
+```
+
+## File: src/features/semantic-graph.slice/governance/wiki-editor/index.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { SemanticRelationType } from '../../core/types';
+import {
+  type ProposalId,
+  type RelationshipProposal,
+  enqueueProposal,
+  listAllProposals,
+} from '../proposal-stream';
+export interface ProposalSubmission {
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly submittedBy: string;
+}
+function _validateSubmission(
+  submission: ProposalSubmission,
+  existing: readonly RelationshipProposal[],
+): void
+export function submitProposal(submission: ProposalSubmission): ProposalId
+export function getProposalHistory(tagSlug: TagSlugRef): readonly RelationshipProposal[]
+```
+
+## File: src/features/semantic-graph.slice/graph/edges/adjacency-list.ts
+```typescript
+import type { SemanticEdge, SemanticRelationType } from '../../core/types';
+import { getAllEdges } from './semantic-edge-store';
+export type AdjacencyList = Map<string, Set<string>>;
+function _buildFromEdges(
+  edges: readonly SemanticEdge[],
+  filterType?: SemanticRelationType
+): AdjacencyList
+export function buildAdjacencyList(): AdjacencyList
+export function buildIsAAdjacencyList(): AdjacencyList
+export function buildRequiresAdjacencyList(): AdjacencyList
+export function getReachableNodes(sourceSlug: string, graph: AdjacencyList): ReadonlySet<string>
+export function getTopologicalOrder(graph: AdjacencyList): readonly string[] | null
+```
+
+## File: src/features/semantic-graph.slice/graph/edges/semantic-edge-store.ts
+```typescript
+import { tagSlugRef } from '@/shared-kernel';
+import type { SemanticEdge, SemanticRelationType } from '../../core/types';
+⋮----
+function _makeEdgeId(fromSlug: string, toSlug: string, relationType: SemanticRelationType): string
+export function addEdge(
+  fromTagSlug: string,
+  toTagSlug: string,
+  relationType: SemanticRelationType,
+  weight = 1.0
+): SemanticEdge
+export function removeEdge(
+  fromTagSlug: string,
+  toTagSlug: string,
+  relationType: SemanticRelationType
+): boolean
+export function getEdgesByType(relationType: SemanticRelationType): readonly SemanticEdge[]
+export function getEdgesFrom(fromTagSlug: string): readonly SemanticEdge[]
+export function getEdgesTo(toTagSlug: string): readonly SemanticEdge[]
+export function isSupersetOf(candidateSlug: string, requiredSlug: string): boolean
+export function getTransitiveRequirements(tagSlug: string): readonly string[]
+export function getAllEdges(): readonly SemanticEdge[]
+export function getEdgeWeight(
+  fromTagSlug: string,
+  toTagSlug: string,
+  relationType: SemanticRelationType
+): number
+export function _clearEdgesForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/graph/edges/weight-calculator.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { SemanticRelationType } from '../../core/types';
+⋮----
+function _overrideKey(
+  fromSlug: TagSlugRef,
+  toSlug: TagSlugRef,
+  relationType: SemanticRelationType
+): string
+export function calculateSimilarityWeight(
+  fromSlug: TagSlugRef,
+  toSlug: TagSlugRef,
+  relationType: SemanticRelationType
+): number
+export function adjustWeight(
+  fromSlug: TagSlugRef,
+  toSlug: TagSlugRef,
+  relationType: SemanticRelationType,
+  newWeight: number
+): void
+export function _clearWeightOverridesForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/graph/neural-net/neural-network.ts
+```typescript
+import {
+  getAllEdges,
+  getEdgesFrom,
+  getEdgesTo,
+} from '../edges/semantic-edge-store';
+import type { SemanticDistanceEntry } from '../../core/types';
+⋮----
+interface _QueueEntry {
+  slug: string;
+  distance: number;
+  hopCount: number;
+}
+function _dijkstra(
+  fromSlug: string,
+  maxHops: number
+): Map<string,
+export function computeSemanticDistance(
+  fromSlug: string,
+  toSlug: string,
+  maxHops = 10
+): SemanticDistanceEntry | null
+export function computeSemanticDistanceMatrix(
+  slugs: readonly string[],
+  maxHops = 10
+): readonly SemanticDistanceEntry[]
+export function isIsolatedNode(tagSlug: string): boolean
+export function findIsolatedNodes(allTagSlugs: readonly string[]): readonly string[]
+export function computeRelationWeight(fromSlug: string, toSlug: string): number
+export function getAllGraphNodes(): readonly string[]
+```
+
+## File: src/features/semantic-graph.slice/learning/decay-service.ts
+```typescript
+import type { SemanticEdge } from '../core/types';
+⋮----
+export interface DecayResult {
+  readonly edgeId: string;
+  readonly previousWeight: number;
+  readonly newWeight: number;
+  readonly decayedAt: string;
+}
+export function computeDecayedWeight(currentWeight: number): number
+export function applyDecay(edge: SemanticEdge): DecayResult
+export function scheduleDecayRun(edges: readonly SemanticEdge[]): readonly DecayResult[]
+```
+
+## File: src/features/semantic-graph.slice/output/outbox/tag-outbox.ts
+```typescript
+import type { TagLifecycleEvent, SemanticEdge } from '../../core/types';
+export type OutboxEventKind =
+  | 'TAG_LIFECYCLE'
+  | 'TOPOLOGY_CHANGED'
+  | 'WEIGHT_UPDATED';
+export interface OutboxEntry {
+  readonly eventId: string;
+  readonly kind: OutboxEventKind;
+  readonly payload: TagLifecycleEvent | TopologyChangedPayload | WeightUpdatedPayload;
+  readonly enqueuedAt: string;
+  delivered: boolean;
+}
+export interface TopologyChangedPayload {
+  readonly edge: SemanticEdge;
+  readonly mutation: 'ADDED' | 'REMOVED';
+}
+export interface WeightUpdatedPayload {
+  readonly edgeId: string;
+  readonly previousWeight: number;
+  readonly newWeight: number;
+}
+⋮----
+function _nextId(): string
+export function emitTagLifecycleEvent(event: TagLifecycleEvent): void
+export function emitSemanticTopologyChanged(payload: TopologyChangedPayload): void
+export function emitNeuralWeightUpdated(payload: WeightUpdatedPayload): void
+export function drainPendingEntries(): OutboxEntry[]
+export function _clearOutboxForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/output/projections/graph-selectors.ts
+```typescript
+import type { TagCategory } from '@/shared-kernel';
+import { isSupersetOf } from '../../graph/edges/semantic-edge-store';
+import type {
+  EligibleTagsQuery,
+  EligibleTagResult,
+  TagLifecycleRecord,
+  TagEntity,
+} from '../../core/types';
+import { getAllLifecycleRecords } from '../../routing/workflows/tag-lifecycle.workflow';
+export function getEligibleTags(
+  tagEntities: readonly TagEntity[],
+  query: EligibleTagsQuery = {}
+): readonly EligibleTagResult[]
+export function satisfiesSemanticRequirement(
+  candidateTagSlug: string,
+  requiredTagSlug: string
+): boolean
+export function getActiveTagsByCategory(
+  tagEntities: readonly TagEntity[],
+  category: TagCategory
+): readonly EligibleTagResult[]
+export function buildEligibilityMatrix(
+  candidateSlugs: readonly string[],
+  requiredSlugs: readonly string[]
+): Readonly<Record<string, readonly string[]>>
+function _buildLifecycleMap(): Map<string, TagLifecycleRecord>
+```
+
+## File: src/features/semantic-graph.slice/output/subscribers/lifecycle-subscriber.ts
+```typescript
+import type { TagLifecycleEvent } from '../../core/types';
+import { emitTagLifecycleEvent } from '../outbox/tag-outbox';
+export type Unsubscribe = () => void;
+export type LifecycleEventSource = (handler: (event: TagLifecycleEvent) => void) => Unsubscribe;
+⋮----
+export function createLifecycleSubscriber(source: LifecycleEventSource): Unsubscribe
+export function onLifecycleEvent(handler: (event: TagLifecycleEvent) => void): Unsubscribe
+export function _clearHandlersForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/reasoning/causality/causality-tracer.ts
+```typescript
+import { tagSlugRef } from '@/shared-kernel';
+import { getEdgesFrom, getEdgesTo } from '../../graph/edges/semantic-edge-store';
+import { computeRelationWeight } from '../../graph/neural-net/neural-network';
+import type {
+  AffectedNode,
+  CausalityChain,
+  CausalityReason,
+  DownstreamEvent,
+  TagLifecycleEvent,
+  TagLifecycleState,
+} from '../../core/types';
+interface _TraversalEntry {
+  slug: string;
+  hopCount: number;
+  directReason: CausalityReason;
+}
+function _bfsAffected(
+  sourceSlug: string,
+  candidateSlugs: ReadonlySet<string>,
+  maxHops: number
+): Map<string, _TraversalEntry>
+function _suggestDownstreamEvent(
+  targetSlug: string,
+  reason: CausalityReason,
+  sourceEventType: TagLifecycleEvent['eventType']
+): DownstreamEvent | null
+export function traceAffectedNodes(
+  event: TagLifecycleEvent,
+  candidateSlugs: readonly string[],
+  maxHops = 5
+): readonly AffectedNode[]
+export function rankAffectedNodes(nodes: readonly AffectedNode[]): readonly AffectedNode[]
+export function buildDownstreamEvents(
+  event: TagLifecycleEvent,
+  affectedNodes: readonly AffectedNode[]
+): readonly DownstreamEvent[]
+export function buildCausalityChain(
+  event: TagLifecycleEvent,
+  candidateSlugs: readonly string[],
+  maxHops = 5
+): CausalityChain
+```
+
+## File: src/features/semantic-graph.slice/routing/workflows/dispatch-bridge/index.ts
+```typescript
+import type { TagSlugRef } from '../../../core/types';
+import { resolveDispatchPolicy } from '../policy-mapper';
+import type { DispatchPolicy } from '../policy-mapper';
+export interface DispatchCommand {
+  readonly commandId: string;
+  readonly tagSlug: TagSlugRef;
+  readonly policy: DispatchPolicy;
+  readonly createdAt: string;
+  readonly lane: DispatchLane;
+}
+export type DispatchLane =
+  | 'IMMEDIATE'
+  | 'FOREGROUND'
+  | 'BACKGROUND';
+export type DispatchResult =
+  | { readonly success: true; readonly command: DispatchCommand }
+  | { readonly success: false; readonly reason: string };
+⋮----
+function _generateCommandId(tagSlug: TagSlugRef): string
+function _determineLane(priority: number): DispatchLane
+export function dispatchForTag(tagSlug: TagSlugRef): DispatchResult
+export function dispatchForTags(
+  tagSlugs: readonly TagSlugRef[],
+  strict = false
+): readonly DispatchCommand[]
+export function _resetCommandCounterForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/routing/workflows/tag-lifecycle.workflow.ts
+```typescript
+import { buildIdempotencyKey, StalenessMs } from '@/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
+import type {
+  TagLifecycleRecord,
+  TagLifecycleState,
+  TagLifecycleEvent,
+  TagLifecycleEventType,
+  StaleTagWarning,
+} from '../../core/types';
+⋮----
+export interface OutboxLifecycleEvent {
+  readonly outboxLane: 'BACKGROUND_LANE';
+  readonly idempotencyKey: string;
+  readonly payload: TagLifecycleEvent;
+}
+type TransitionMap = Partial<Record<TagLifecycleState, readonly TagLifecycleState[]>>;
+⋮----
+function isAllowed(from: TagLifecycleState, to: TagLifecycleState): boolean
+export function registerTagDraft(
+  tagSlug: TagSlugRef,
+  triggeredBy: string,
+  aggregateVersion: number
+): OutboxLifecycleEvent
+export function transitionTagState(
+  tagSlug: TagSlugRef,
+  toState: TagLifecycleState,
+  triggeredBy: string,
+  nextVersion: number
+): OutboxLifecycleEvent
+export function activateTag(
+  tagSlug: TagSlugRef,
+  triggeredBy: string,
+  nextVersion: number
+): OutboxLifecycleEvent
+export function detectStaleTagWarnings(): readonly StaleTagWarning[]
+export function getLifecycleRecord(tagSlug: TagSlugRef): TagLifecycleRecord | undefined
+export function getAllLifecycleRecords(): readonly TagLifecycleRecord[]
+export function _clearLifecycleRecordsForTest(): void
+function _buildEvent(
+  tagSlug: TagSlugRef,
+  fromState: TagLifecycleState,
+  toState: TagLifecycleState,
+  triggeredBy: string,
+  aggregateVersion: number,
+  transitionedAt: string
+): TagLifecycleEvent
+function _wrapOutbox(payload: TagLifecycleEvent): OutboxLifecycleEvent
+```
+
+## File: src/features/semantic-graph.slice/routing/workflows/workflows/alert-routing-flow.ts
+```typescript
+import type { TagSlugRef } from '../../../core/types';
+import { dispatchForTag } from '../dispatch-bridge';
+import type { DispatchCommand } from '../dispatch-bridge';
+import { resolveDispatchPolicy } from '../policy-mapper';
+export type AlertKind = 'STALE_TAG' | 'INVARIANT_FAIL' | 'CAUSALITY_WARN';
+export interface SemanticGraphAlert {
+  readonly alertId: string;
+  readonly kind: AlertKind;
+  readonly tagSlug?: TagSlugRef;
+  readonly message: string;
+  readonly detectedAt: string;
+  readonly severity: number;
+}
+export interface AlertRoutingResult {
+  readonly alert: SemanticGraphAlert;
+  readonly dispatchCommand: DispatchCommand | null;
+  readonly policyFound: boolean;
+  readonly skipReason?: string;
+}
+⋮----
+export function _resetAlertCounterForTest(): void
+function _generateAlertId(kind: AlertKind): string
+export function routeAlert(alert: SemanticGraphAlert): AlertRoutingResult
+export function routeStaleTagAlert(
+  tagSlug: TagSlugRef,
+  staleAgeMs: number
+): AlertRoutingResult
+export function routeInvariantFailAlert(
+  tagSlug: TagSlugRef | undefined,
+  rejectionReason: string
+): AlertRoutingResult
+export function routeCausalityWarnAlert(
+  tagSlug: TagSlugRef,
+  warningMessage: string
+): AlertRoutingResult
+```
+
+## File: src/features/semantic-graph.slice/routing/workflows/workflows/tag-promotion-flow.ts
+```typescript
+import type { TagSlugRef } from '../../../core/types';
+import { dispatchForTag } from '../dispatch-bridge';
+import type { DispatchCommand } from '../dispatch-bridge';
+import {
+  registerPolicy,
+  type DispatchPolicy,
+  type DispatchActionKind,
+} from '../policy-mapper';
+import { activateTag } from '../tag-lifecycle.workflow';
+import type { OutboxLifecycleEvent } from '../tag-lifecycle.workflow';
+export interface TagPromotionInput {
+  readonly tagSlug: TagSlugRef;
+  readonly triggeredBy: string;
+  readonly nextVersion: number;
+  readonly dispatchConfig: {
+    readonly actionKind: DispatchActionKind;
+    readonly priority: number;
+    readonly label: string;
+    readonly metadata?: Readonly<Record<string, unknown>>;
+  };
+}
+export interface TagPromotionResult {
+  readonly outboxEvent: OutboxLifecycleEvent;
+  readonly dispatchCommand: DispatchCommand | null;
+  readonly registeredPolicy: DispatchPolicy;
+}
+export function promoteTagToActive(input: TagPromotionInput): TagPromotionResult
+```
+
 ## File: src/features/workforce-scheduling.slice/application/index.ts
 ```typescript
 
@@ -4593,6 +5896,34 @@ createTraceContext(source?: string): TraceContext;
 ## File: src/shared-infra/gateway-query/index.ts
 ```typescript
 
+```
+
+## File: src/features/semantic-graph.slice/routing/workflows/policy-mapper/index.ts
+```typescript
+import type { TagSlugRef } from '../../../core/types';
+export type DispatchActionKind =
+  | 'NOTIFY_RESPONSIBLE_PARTY'
+  | 'ASSIGN_TO_WORKER'
+  | 'ESCALATE'
+  | 'ARCHIVE'
+  | 'PROMOTE_TAG'
+  | 'ALERT_ROUTING';
+export interface DispatchPolicy {
+  readonly tagSlug: TagSlugRef;
+  readonly actionKind: DispatchActionKind;
+  readonly priority: number;
+  readonly label: string;
+  readonly metadata?: Readonly<Record<string, unknown>>;
+}
+export type PolicyResolutionResult =
+  | { readonly found: true; readonly policy: DispatchPolicy }
+  | { readonly found: false; readonly reason: string };
+⋮----
+export function registerPolicy(policy: DispatchPolicy): void
+export function unregisterPolicy(tagSlug: TagSlugRef): boolean
+export function resolveDispatchPolicy(tagSlug: TagSlugRef): PolicyResolutionResult
+export function getAllPolicies(): readonly DispatchPolicy[]
+export function _clearPoliciesForTest(): void
 ```
 
 ## File: src/features/workforce-scheduling.slice/index.ts
@@ -4617,40 +5948,21 @@ import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.account-view.tsx
 ```typescript
 import { addMonths, subMonths } from "date-fns";
-import { AlertCircle, UserPlus, Calendar, ListChecks, History, Users, BookOpen, Check } from "lucide-react";
+import { AlertCircle, Calendar, ListChecks, History, Users, BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { Button } from "@/shadcn-ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/shadcn-ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
-import { cn } from "@/shadcn-ui/utils/utils";
-import type { MemberReference } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
 import { useGlobalSchedule } from "../../hooks/runtime/use-global-schedule";
 import { useScheduleActions } from "../../hooks/runtime/use-schedule-commands";
 import { decisionHistoryColumns } from "./decision-history-columns";
 import { OrgScheduleGovernance } from "./org-schedule-governance";
 import { OrgSkillPoolManager } from "./org-skill-pool-manager";
+import { MemberAssignPopover } from "./member-assign-popover";
 import { ScheduleDataTable } from "./schedule-data-table";
 import { UnifiedCalendarGrid } from "./unified-calendar-grid";
 import { upcomingEventsColumns } from "./upcoming-events-columns";
-interface MemberAssignPopoverProps {
-  item: ScheduleItem;
-  members: MemberReference[];
-  onAssign: (item: ScheduleItem, memberId: string) => void;
-  onUnassign: (item: ScheduleItem, memberId: string) => void;
-}
-⋮----
-onUnassign(item, member.id);
 ⋮----
 const onItemClick = (item: ScheduleItem) =>
 const handleMonthChange = (direction: 'prev' | 'next') =>

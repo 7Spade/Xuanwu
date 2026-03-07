@@ -25,10 +25,12 @@ export { OrgScheduleGovernance } from './components/runtime/org-schedule-governa
 export { OrgSkillPoolManager } from './components/runtime/org-skill-pool-manager';
 export { WorkspaceSchedule } from './components/runtime/schedule.workspace-view';
 export { GovernanceSidebar } from './components/runtime/governance-sidebar';
+export { MemberAssignPopover } from './components/runtime/member-assign-popover';
 export { ProposalDialog } from './components/runtime/proposal-dialog';
 export { ScheduleProposalContent } from './components/runtime/schedule-proposal-content';
 export { ScheduleDataTable } from './components/runtime/schedule-data-table';
 export { AccountCapabilityTabs, WorkspaceCapabilityTabs } from './components/runtime/schedule-capability-tabs';
+export { WorkspaceScheduleTimelineTabs } from './components/runtime/workspace-schedule-timeline-tabs';
 export { UnifiedCalendarGrid } from './components/runtime/unified-calendar-grid';
 export { DemandBoard } from './components/runtime/demand-board';
 export { TimelineCanvas } from './components/runtime/timeline-canvas';
