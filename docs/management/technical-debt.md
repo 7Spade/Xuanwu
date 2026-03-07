@@ -119,7 +119,7 @@ src/features/semantic-graph.slice/
 ```
 
 目前語義圖的狀態變更是同步且孤立的，不會廣播給任何下游消費者。
-`scheduling.slice` 和 `workspace.slice` 無法透過事件接收語義圖的更新通知。
+`workforce-scheduling.slice` 和 `workspace.slice` 無法透過事件接收語義圖的更新通知。
 
 ### 技術債務
 

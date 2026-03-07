@@ -1,733 +1,3 @@
-This file is a merged representation of a subset of the codebase, containing specifically included files and files not matching ignore patterns, combined into a single document by Repomix.
-The content has been processed where comments have been removed, empty lines have been removed, content has been compressed (code blocks are separated by ⋮---- delimiter).
-
-# File Summary
-
-## Purpose
-This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
-It is designed to be easily consumable by AI systems for analysis, code review,
-or other automated processes.
-
-## File Format
-The content is organized as follows:
-1. This summary section
-2. Repository information
-3. Directory structure
-4. Repository files (if enabled)
-5. Multiple file entries, each consisting of:
-  a. A header with the file path (## File: path/to/file)
-  b. The full contents of the file in a code block
-
-## Usage Guidelines
-- This file should be treated as read-only. Any changes should be made to the
-  original repository files, not this packed version.
-- When processing this file, use the file path to distinguish
-  between different files in the repository.
-- Be aware that this file may contain sensitive information. Handle it with
-  the same level of security as you would the original repository.
-
-- Pay special attention to the Repository Instruction. These contain important context and guidelines specific to this project.
-
-## Notes
-- Some files may have been excluded based on .gitignore rules and Repomix's configuration
-- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Only files matching these patterns are included: src/**/*.ts, src/**/*.tsx, src/shared-kernel/**/*.ts, src/shared-kernel/**/*.tsx
-- Files matching these patterns are excluded: src/app/favicon.ico, src/app/globals.css, **/*.md, **/*.test.ts, **/*.svg, **/types/generated.ts, **/*.md, .codacy/**, .firebase/**, .github/**, .idx/**, .next/**, docs/**, public/**, skills/**, .aiexclude, .firebaserc, .gitattributes, .gitignore, .modified, .prettierrc, apphosting.yaml, components.json, eslint.config.mts, next.config.ts, postcss.config.mjs, README.md, repomix.config.ts, **/node_modules/**, src/shared-infra/backend-firebase/functions/lib/**, src/shared/shadcn-ui/**, tailwind.config.ts, vitest.config.ts, **/dist/**, **/build/**, **/.git/**, package-lock.json, repomix-output.md
-- Files matching patterns in .gitignore are excluded
-- Files matching default ignore patterns are excluded
-- Code comments have been removed from supported file types
-- Empty lines have been removed from all files
-- Content has been compressed - code blocks are separated by ⋮---- delimiter
-- Files are sorted by Git change count (files with more changes are at the bottom)
-
-# Directory Structure
-```
-src/app-runtime/ai/dev.ts
-src/app-runtime/ai/flows/adapt-ui-color-to-account-context.ts
-src/app-runtime/ai/flows/extract-invoice-items.ts
-src/app-runtime/ai/genkit.ts
-src/app-runtime/ai/index.ts
-src/app-runtime/ai/schemas/docu-parse.ts
-src/app-runtime/contexts/account-context.ts
-src/app-runtime/contexts/app-context.ts
-src/app-runtime/contexts/auth-context.ts
-src/app-runtime/contexts/firebase-context.ts
-src/app-runtime/contexts/i18n-context.ts
-src/app-runtime/contexts/index.ts
-src/app-runtime/providers/account-provider.queries.ts
-src/app-runtime/providers/account-provider.tsx
-src/app-runtime/providers/app-provider.queries.ts
-src/app-runtime/providers/app-provider.tsx
-src/app-runtime/providers/auth-provider.tsx
-src/app-runtime/providers/firebase-provider.tsx
-src/app-runtime/providers/i18n-provider.tsx
-src/app-runtime/providers/index.ts
-src/app-runtime/providers/theme-provider.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/@header/default.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/@modal/(.)account/new/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/@modal/default.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/audit/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/daily/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/matrix/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/members/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/new/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/partners/[id]/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/partners/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/settings/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/teams/[id]/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/teams/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/account/workforce-scheduling/page.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/layout.tsx
-src/app/(shell)/(portal)/(account)/(dashboard)/dashboard/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/acceptance/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/audit/loading.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/audit/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/capabilities/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/daily/loading.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/daily/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/default.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/document-parser/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/error.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/files/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/finance/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/issues/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/loading.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/members/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/quality-assurance/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/schedule/loading.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/schedule/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/tasks/loading.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/tasks/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/timeline/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@modal/(.)daily-log/[logId]/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@modal/(.)schedule-proposal/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@modal/(.)settings/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@modal/default.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@panel/(.)governance/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@panel/default.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/daily-log/[logId]/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/governance/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/layout.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/locations/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/schedule-proposal/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/settings/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/@header/default.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/@modal/(.)new/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/@modal/default.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/layout.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/new/page.tsx
-src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/page.tsx
-src/app/(shell)/(portal)/(account)/layout.tsx
-src/app/(shell)/(portal)/layout.tsx
-src/app/(shell)/(portal)/page.tsx
-src/app/(shell)/(public)/@modal/(.)reset-password/page.tsx
-src/app/(shell)/(public)/@modal/default.tsx
-src/app/(shell)/(public)/layout.tsx
-src/app/(shell)/(public)/login/page.tsx
-src/app/(shell)/(public)/reset-password/page.tsx
-src/app/(shell)/@modal/default.tsx
-src/app/(shell)/@sidebar/default.tsx
-src/app/(shell)/layout.tsx
-src/app/layout.tsx
-src/config/i18n/i18n-provider.tsx
-src/config/i18n/i18n-types.ts
-src/config/i18n/i18n.schema.ts
-src/config/i18n/i18n.ts
-src/features/account.slice/_account.rules.ts
-src/features/account.slice/acc-outbox.ts
-src/features/account.slice/account-event-bus.ts
-src/features/account.slice/gov.policy/_actions.ts
-src/features/account.slice/gov.policy/_hooks/use-account-policy.ts
-src/features/account.slice/gov.policy/_queries.ts
-src/features/account.slice/gov.policy/index.ts
-src/features/account.slice/gov.role/_actions.ts
-src/features/account.slice/gov.role/_components/permission-matrix-view.tsx
-src/features/account.slice/gov.role/_components/permission-tree.tsx
-src/features/account.slice/gov.role/_hooks/use-account-role.ts
-src/features/account.slice/gov.role/_queries.ts
-src/features/account.slice/gov.role/index.ts
-src/features/account.slice/index.ts
-src/features/account.slice/user.profile/_actions.ts
-src/features/account.slice/user.profile/_components/account-settings-router.tsx
-src/features/account.slice/user.profile/_components/account-skills-section.tsx
-src/features/account.slice/user.profile/_components/email-card.tsx
-src/features/account.slice/user.profile/_components/preferences-card.tsx
-src/features/account.slice/user.profile/_components/profile-card.tsx
-src/features/account.slice/user.profile/_components/security-card.tsx
-src/features/account.slice/user.profile/_components/user-settings-view.tsx
-src/features/account.slice/user.profile/_components/user-settings.tsx
-src/features/account.slice/user.profile/_hooks/use-user.ts
-src/features/account.slice/user.profile/_queries.ts
-src/features/account.slice/user.profile/index.ts
-src/features/account.slice/user.wallet/_actions.ts
-src/features/account.slice/user.wallet/_hooks/use-wallet.ts
-src/features/account.slice/user.wallet/_queries.ts
-src/features/account.slice/user.wallet/index.ts
-src/features/global-search.slice/_actions.ts
-src/features/global-search.slice/_components/global-search-dialog.tsx
-src/features/global-search.slice/_services.ts
-src/features/global-search.slice/_types.ts
-src/features/global-search.slice/index.ts
-src/features/identity.slice/_actions.ts
-src/features/identity.slice/_claims-handler.ts
-src/features/identity.slice/_components/auth-background.tsx
-src/features/identity.slice/_components/auth-tabs-root.tsx
-src/features/identity.slice/_components/login-form.tsx
-src/features/identity.slice/_components/login-view.tsx
-src/features/identity.slice/_components/register-form.tsx
-src/features/identity.slice/_components/reset-password-dialog.tsx
-src/features/identity.slice/_components/reset-password-form.tsx
-src/features/identity.slice/_token-refresh-listener.ts
-src/features/identity.slice/index.ts
-src/features/notification-hub.slice/_actions.ts
-src/features/notification-hub.slice/_components/notification-bell.tsx
-src/features/notification-hub.slice/_contract.ts
-src/features/notification-hub.slice/_notification-authority.ts
-src/features/notification-hub.slice/_services.ts
-src/features/notification-hub.slice/_services/notification-listener.ts
-src/features/notification-hub.slice/_types.ts
-src/features/notification-hub.slice/gov.notification-router/_router.ts
-src/features/notification-hub.slice/gov.notification-router/index.ts
-src/features/notification-hub.slice/index.ts
-src/features/notification-hub.slice/user.notification/_components/notification-badge.tsx
-src/features/notification-hub.slice/user.notification/_components/notification-list.tsx
-src/features/notification-hub.slice/user.notification/_delivery.ts
-src/features/notification-hub.slice/user.notification/_hooks/use-user-notifications.ts
-src/features/notification-hub.slice/user.notification/_queries.ts
-src/features/notification-hub.slice/user.notification/index.ts
-src/features/organization.slice/core.event-bus/_bus.ts
-src/features/organization.slice/core.event-bus/_events.ts
-src/features/organization.slice/core.event-bus/index.ts
-src/features/organization.slice/core/_actions.ts
-src/features/organization.slice/core/_components/account-grid.tsx
-src/features/organization.slice/core/_components/account-new-form.tsx
-src/features/organization.slice/core/_components/org-settings-view.tsx
-src/features/organization.slice/core/_components/org-settings.tsx
-src/features/organization.slice/core/_hooks/use-organization-management.ts
-src/features/organization.slice/core/_queries.ts
-src/features/organization.slice/core/index.ts
-src/features/organization.slice/gov.members/_actions.ts
-src/features/organization.slice/gov.members/_components/members-view.tsx
-src/features/organization.slice/gov.members/_hooks/use-member-management.ts
-src/features/organization.slice/gov.members/_queries.ts
-src/features/organization.slice/gov.members/index.ts
-src/features/organization.slice/gov.partners/_actions.ts
-src/features/organization.slice/gov.partners/_components/partner-detail-view.tsx
-src/features/organization.slice/gov.partners/_components/partners-view.tsx
-src/features/organization.slice/gov.partners/_hooks/use-partner-management.ts
-src/features/organization.slice/gov.partners/_queries.ts
-src/features/organization.slice/gov.partners/index.ts
-src/features/organization.slice/gov.policy/_actions.ts
-src/features/organization.slice/gov.policy/_hooks/use-org-policy.ts
-src/features/organization.slice/gov.policy/_queries.ts
-src/features/organization.slice/gov.policy/index.ts
-src/features/organization.slice/gov.teams/_actions.ts
-src/features/organization.slice/gov.teams/_components/team-detail-view.tsx
-src/features/organization.slice/gov.teams/_components/teams-view.tsx
-src/features/organization.slice/gov.teams/_hooks/use-team-management.ts
-src/features/organization.slice/gov.teams/_queries.ts
-src/features/organization.slice/gov.teams/index.ts
-src/features/organization.slice/index.ts
-src/features/portal.slice/_types.ts
-src/features/portal.slice/core/_hooks/use-portal-state.ts
-src/features/portal.slice/index.ts
-src/features/semantic-graph.slice/_actions.ts
-src/features/semantic-graph.slice/_aggregate.ts
-src/features/semantic-graph.slice/_cost-classifier.ts
-src/features/semantic-graph.slice/_queries.ts
-src/features/semantic-graph.slice/_semantic-authority.ts
-src/features/semantic-graph.slice/_services.ts
-src/features/semantic-graph.slice/_types.ts
-src/features/semantic-graph.slice/core/embeddings/embedding-port.ts
-src/features/semantic-graph.slice/core/embeddings/vector-store.ts
-src/features/semantic-graph.slice/core/nodes/hierarchy-manager.ts
-src/features/semantic-graph.slice/core/nodes/tag-entity.factory.ts
-src/features/semantic-graph.slice/core/tags/_actions.ts
-src/features/semantic-graph.slice/core/tags/_bus.ts
-src/features/semantic-graph.slice/core/tags/_events.ts
-src/features/semantic-graph.slice/core/tags/index.ts
-src/features/semantic-graph.slice/core/types/index.ts
-src/features/semantic-graph.slice/core/utils/semantic-utils.ts
-src/features/semantic-graph.slice/governance/consensus-engine/index.ts
-src/features/semantic-graph.slice/governance/guards/invariant-guard.ts
-src/features/semantic-graph.slice/governance/guards/semantic-guard.ts
-src/features/semantic-graph.slice/governance/guards/staleness-monitor.ts
-src/features/semantic-graph.slice/governance/proposal-stream/index.ts
-src/features/semantic-graph.slice/governance/relationship-visualizer/index.ts
-src/features/semantic-graph.slice/governance/wiki-editor/index.ts
-src/features/semantic-graph.slice/graph/edges/adjacency-list.ts
-src/features/semantic-graph.slice/graph/edges/context-attention.ts
-src/features/semantic-graph.slice/graph/edges/semantic-edge-store.ts
-src/features/semantic-graph.slice/graph/edges/weight-calculator.ts
-src/features/semantic-graph.slice/graph/neural-net/neural-network.ts
-src/features/semantic-graph.slice/index.ts
-src/features/semantic-graph.slice/learning/decay-service.ts
-src/features/semantic-graph.slice/learning/learning-engine.ts
-src/features/semantic-graph.slice/output/outbox/tag-outbox.ts
-src/features/semantic-graph.slice/output/projections/context-selectors.ts
-src/features/semantic-graph.slice/output/projections/graph-selectors.ts
-src/features/semantic-graph.slice/output/projections/tag-snapshot.slice.ts
-src/features/semantic-graph.slice/output/subscribers/lifecycle-subscriber.ts
-src/features/semantic-graph.slice/reasoning/causality/causality-tracer.ts
-src/features/semantic-graph.slice/routing/workflows/dispatch-bridge/index.ts
-src/features/semantic-graph.slice/routing/workflows/policy-mapper/index.ts
-src/features/semantic-graph.slice/routing/workflows/tag-lifecycle.workflow.ts
-src/features/semantic-graph.slice/routing/workflows/workflows/alert-routing-flow.ts
-src/features/semantic-graph.slice/routing/workflows/workflows/tag-promotion-flow.ts
-src/features/skill-xp.slice/_actions.ts
-src/features/skill-xp.slice/_aggregate.ts
-src/features/skill-xp.slice/_components/personal-skill-panel.tsx
-src/features/skill-xp.slice/_ledger.ts
-src/features/skill-xp.slice/_org-recognition.ts
-src/features/skill-xp.slice/_projector.ts
-src/features/skill-xp.slice/_queries.ts
-src/features/skill-xp.slice/_tag-lifecycle.ts
-src/features/skill-xp.slice/_tag-pool.ts
-src/features/skill-xp.slice/index.ts
-src/features/skill-xp.slice/skill-outbox.ts
-src/features/workforce-scheduling.slice/_actions.ts
-src/features/workforce-scheduling.slice/_actions/governance.ts
-src/features/workforce-scheduling.slice/_actions/index.ts
-src/features/workforce-scheduling.slice/_actions/lifecycle.ts
-src/features/workforce-scheduling.slice/_actions/workspace.ts
-src/features/workforce-scheduling.slice/_aggregate.ts
-src/features/workforce-scheduling.slice/_aggregate.types.ts
-src/features/workforce-scheduling.slice/_components/decision-history-columns.tsx
-src/features/workforce-scheduling.slice/_components/demand-board.tsx
-src/features/workforce-scheduling.slice/_components/governance-sidebar.tsx
-src/features/workforce-scheduling.slice/_components/org-schedule-governance.confirmed-row.tsx
-src/features/workforce-scheduling.slice/_components/org-schedule-governance.proposal-row.tsx
-src/features/workforce-scheduling.slice/_components/org-schedule-governance.rows.tsx
-src/features/workforce-scheduling.slice/_components/org-schedule-governance.shared.tsx
-src/features/workforce-scheduling.slice/_components/org-schedule-governance.tsx
-src/features/workforce-scheduling.slice/_components/org-skill-pool-manager.tsx
-src/features/workforce-scheduling.slice/_components/proposal-dialog.tsx
-src/features/workforce-scheduling.slice/_components/schedule-capability-tabs.tsx
-src/features/workforce-scheduling.slice/_components/schedule-data-table.tsx
-src/features/workforce-scheduling.slice/_components/schedule-proposal-content.tsx
-src/features/workforce-scheduling.slice/_components/schedule.account-view.tsx
-src/features/workforce-scheduling.slice/_components/schedule.workspace-view.tsx
-src/features/workforce-scheduling.slice/_components/unified-calendar-grid.tsx
-src/features/workforce-scheduling.slice/_components/unified-calendar-grid.utils.ts
-src/features/workforce-scheduling.slice/_components/upcoming-events-columns.tsx
-src/features/workforce-scheduling.slice/_eligibility.ts
-src/features/workforce-scheduling.slice/_hooks/index.ts
-src/features/workforce-scheduling.slice/_hooks/use-global-schedule.ts
-src/features/workforce-scheduling.slice/_hooks/use-org-schedule.ts
-src/features/workforce-scheduling.slice/_hooks/use-schedule-commands.ts
-src/features/workforce-scheduling.slice/_hooks/use-schedule-event-handler.ts
-src/features/workforce-scheduling.slice/_hooks/use-workspace-schedule.ts
-src/features/workforce-scheduling.slice/_projectors/account-schedule-queries.ts
-src/features/workforce-scheduling.slice/_projectors/account-schedule.ts
-src/features/workforce-scheduling.slice/_projectors/demand-board-queries.ts
-src/features/workforce-scheduling.slice/_projectors/demand-board.ts
-src/features/workforce-scheduling.slice/_queries.ts
-src/features/workforce-scheduling.slice/_saga.ts
-src/features/workforce-scheduling.slice/_schedule.rules.ts
-src/features/workforce-scheduling.slice/_selectors.ts
-src/features/workforce-scheduling.slice/_write-op.ts
-src/features/workforce-scheduling.slice/index.ts
-src/features/workforce-scheduling.slice/policy-mapper/index.ts
-src/features/workforce-scheduling.slice/sched-outbox.ts
-src/features/workforce-scheduling.slice/timeline/_actions/index.ts
-src/features/workforce-scheduling.slice/timeline/_components/timeline-canvas.tsx
-src/features/workforce-scheduling.slice/timeline/_components/timeline-capability-tabs.tsx
-src/features/workforce-scheduling.slice/timeline/_components/timeline.account-view.tsx
-src/features/workforce-scheduling.slice/timeline/_components/timeline.workspace-view.tsx
-src/features/workforce-scheduling.slice/timeline/_hooks/index.ts
-src/features/workforce-scheduling.slice/timeline/_hooks/use-account-timeline.ts
-src/features/workforce-scheduling.slice/timeline/_hooks/use-timeline-commands.ts
-src/features/workforce-scheduling.slice/timeline/_hooks/use-workspace-timeline.ts
-src/features/workforce-scheduling.slice/timeline/_queries.ts
-src/features/workforce-scheduling.slice/timeline/_types.ts
-src/features/workforce-scheduling.slice/timeline/index.ts
-src/features/workspace.slice/_task.rules.ts
-src/features/workspace.slice/_workspace.rules.ts
-src/features/workspace.slice/application/_command-handler.ts
-src/features/workspace.slice/application/_org-policy-cache.ts
-src/features/workspace.slice/application/_outbox.ts
-src/features/workspace.slice/application/_policy-engine.ts
-src/features/workspace.slice/application/_scope-guard.ts
-src/features/workspace.slice/application/_transaction-runner.ts
-src/features/workspace.slice/application/index.ts
-src/features/workspace.slice/business.acceptance/_components/acceptance-view.tsx
-src/features/workspace.slice/business.acceptance/index.ts
-src/features/workspace.slice/business.daily/_actions.ts
-src/features/workspace.slice/business.daily/_bookmark-actions.ts
-src/features/workspace.slice/business.daily/_components/actions/bookmark-button.tsx
-src/features/workspace.slice/business.daily/_components/actions/comment-button.tsx
-src/features/workspace.slice/business.daily/_components/actions/like-button.tsx
-src/features/workspace.slice/business.daily/_components/actions/share-button.tsx
-src/features/workspace.slice/business.daily/_components/composer.tsx
-src/features/workspace.slice/business.daily/_components/daily-log-card.tsx
-src/features/workspace.slice/business.daily/_components/daily-log-dialog.tsx
-src/features/workspace.slice/business.daily/_components/daily.account-view.tsx
-src/features/workspace.slice/business.daily/_components/daily.view.tsx
-src/features/workspace.slice/business.daily/_components/daily.workspace-view.tsx
-src/features/workspace.slice/business.daily/_components/image-carousel.tsx
-src/features/workspace.slice/business.daily/_hooks/use-aggregated-logs.ts
-src/features/workspace.slice/business.daily/_hooks/use-bookmark-commands.ts
-src/features/workspace.slice/business.daily/_hooks/use-daily-commands.ts
-src/features/workspace.slice/business.daily/_hooks/use-daily-upload.ts
-src/features/workspace.slice/business.daily/_hooks/use-workspace-daily.ts
-src/features/workspace.slice/business.daily/_queries.ts
-src/features/workspace.slice/business.daily/_types.ts
-src/features/workspace.slice/business.daily/index.ts
-src/features/workspace.slice/business.document-parser/_components/document-parser-tables.tsx
-src/features/workspace.slice/business.document-parser/_components/document-parser-view.tsx
-src/features/workspace.slice/business.document-parser/_form-actions.ts
-src/features/workspace.slice/business.document-parser/_intent-actions.ts
-src/features/workspace.slice/business.document-parser/_queries.ts
-src/features/workspace.slice/business.document-parser/_types.ts
-src/features/workspace.slice/business.document-parser/index.ts
-src/features/workspace.slice/business.files/_actions.ts
-src/features/workspace.slice/business.files/_components/files-view.tsx
-src/features/workspace.slice/business.files/_hooks/use-storage.ts
-src/features/workspace.slice/business.files/_hooks/use-workspace-filters.ts
-src/features/workspace.slice/business.files/_queries.ts
-src/features/workspace.slice/business.files/_storage-actions.ts
-src/features/workspace.slice/business.files/_types.ts
-src/features/workspace.slice/business.files/index.ts
-src/features/workspace.slice/business.finance/_actions.ts
-src/features/workspace.slice/business.finance/_components/finance-item-table.tsx
-src/features/workspace.slice/business.finance/_components/finance-lifecycle-tracker.tsx
-src/features/workspace.slice/business.finance/_components/finance-view.tsx
-src/features/workspace.slice/business.finance/_constants.ts
-src/features/workspace.slice/business.finance/_hooks/use-finance-lifecycle.helpers.ts
-src/features/workspace.slice/business.finance/_hooks/use-finance-lifecycle.ts
-src/features/workspace.slice/business.finance/_queries.ts
-src/features/workspace.slice/business.finance/_services/finance-aggregate-query-gateway.ts
-src/features/workspace.slice/business.finance/_services/finance-strong-read.ts
-src/features/workspace.slice/business.finance/_types.ts
-src/features/workspace.slice/business.finance/index.ts
-src/features/workspace.slice/business.issues/_actions.ts
-src/features/workspace.slice/business.issues/_components/issues-view.tsx
-src/features/workspace.slice/business.issues/_types.ts
-src/features/workspace.slice/business.issues/index.ts
-src/features/workspace.slice/business.parsing-intent/_architecture-test-helpers.ts
-src/features/workspace.slice/business.parsing-intent/_contract.ts
-src/features/workspace.slice/business.parsing-intent/index.ts
-src/features/workspace.slice/business.quality-assurance/_components/quality-assurance-view.tsx
-src/features/workspace.slice/business.quality-assurance/index.ts
-src/features/workspace.slice/business.tasks/_actions/helpers.ts
-src/features/workspace.slice/business.tasks/_actions/index.ts
-src/features/workspace.slice/business.tasks/_components/attachments-action.tsx
-src/features/workspace.slice/business.tasks/_components/attachments-dialog.tsx
-src/features/workspace.slice/business.tasks/_components/location-action.tsx
-src/features/workspace.slice/business.tasks/_components/location-dialog.tsx
-src/features/workspace.slice/business.tasks/_components/progress-report-dialog.tsx
-src/features/workspace.slice/business.tasks/_components/task-editor-dialog.tsx
-src/features/workspace.slice/business.tasks/_components/task-tree-node.tsx
-src/features/workspace.slice/business.tasks/_components/tasks-view.tsx
-src/features/workspace.slice/business.tasks/_hooks/index.ts
-src/features/workspace.slice/business.tasks/_hooks/use-attachments-dialog-controller.ts
-src/features/workspace.slice/business.tasks/_hooks/use-location-dialog-controller.ts
-src/features/workspace.slice/business.tasks/_queries.ts
-src/features/workspace.slice/business.tasks/_types.ts
-src/features/workspace.slice/business.tasks/index.ts
-src/features/workspace.slice/business.workflow/_aggregate.ts
-src/features/workspace.slice/business.workflow/_issue-handler.ts
-src/features/workspace.slice/business.workflow/_persistence.ts
-src/features/workspace.slice/business.workflow/_stage-transition.ts
-src/features/workspace.slice/business.workflow/_workflow.constants.ts
-src/features/workspace.slice/business.workflow/index.ts
-src/features/workspace.slice/core.event-bus/_bus.ts
-src/features/workspace.slice/core.event-bus/_context.ts
-src/features/workspace.slice/core.event-bus/_event-funnel.ts
-src/features/workspace.slice/core.event-bus/_events.ts
-src/features/workspace.slice/core.event-bus/_hooks/_context.ts
-src/features/workspace.slice/core.event-bus/index.ts
-src/features/workspace.slice/core.event-store/_store.ts
-src/features/workspace.slice/core.event-store/index.ts
-src/features/workspace.slice/core/_actions.ts
-src/features/workspace.slice/core/_components/create-workspace-dialog.tsx
-src/features/workspace.slice/core/_components/dashboard-view.tsx
-src/features/workspace.slice/core/_components/shell/account-create-dialog.tsx
-src/features/workspace.slice/core/_components/shell/account-switcher.tsx
-src/features/workspace.slice/core/_components/shell/dashboard-sidebar.tsx
-src/features/workspace.slice/core/_components/shell/header.tsx
-src/features/workspace.slice/core/_components/shell/index.ts
-src/features/workspace.slice/core/_components/shell/nav-main.tsx
-src/features/workspace.slice/core/_components/shell/nav-user.tsx
-src/features/workspace.slice/core/_components/shell/nav-workspaces.tsx
-src/features/workspace.slice/core/_components/shell/notification-center.tsx
-src/features/workspace.slice/core/_components/shell/theme-adapter.tsx
-src/features/workspace.slice/core/_components/stat-cards.tsx
-src/features/workspace.slice/core/_components/workflow-blockers-state.ts
-src/features/workspace.slice/core/_components/workspace-capabilities.tsx
-src/features/workspace.slice/core/_components/workspace-card.tsx
-src/features/workspace.slice/core/_components/workspace-context.types.ts
-src/features/workspace.slice/core/_components/workspace-grid-view.tsx
-src/features/workspace.slice/core/_components/workspace-list-header.tsx
-src/features/workspace.slice/core/_components/workspace-list.tsx
-src/features/workspace.slice/core/_components/workspace-locations-panel.tsx
-src/features/workspace.slice/core/_components/workspace-nav-tabs.tsx
-src/features/workspace.slice/core/_components/workspace-provider.tsx
-src/features/workspace.slice/core/_components/workspace-settings.tsx
-src/features/workspace.slice/core/_components/workspace-status-bar.tsx
-src/features/workspace.slice/core/_components/workspace-table-view.tsx
-src/features/workspace.slice/core/_components/workspaces-view.tsx
-src/features/workspace.slice/core/_hooks/use-account.ts
-src/features/workspace.slice/core/_hooks/use-app.ts
-src/features/workspace.slice/core/_hooks/use-visible-workspaces.ts
-src/features/workspace.slice/core/_hooks/use-workspace-commands.ts
-src/features/workspace.slice/core/_hooks/use-workspace-event-handler.tsx
-src/features/workspace.slice/core/_hooks/workspace-import-handler.tsx
-src/features/workspace.slice/core/_queries.ts
-src/features/workspace.slice/core/_types.ts
-src/features/workspace.slice/core/_use-cases.ts
-src/features/workspace.slice/core/index.ts
-src/features/workspace.slice/gov.audit-convergence/_bridge.ts
-src/features/workspace.slice/gov.audit-convergence/index.ts
-src/features/workspace.slice/gov.audit/_actions.ts
-src/features/workspace.slice/gov.audit/_components/audit-detail-sheet.tsx
-src/features/workspace.slice/gov.audit/_components/audit-event-item.tsx
-src/features/workspace.slice/gov.audit/_components/audit-timeline.tsx
-src/features/workspace.slice/gov.audit/_components/audit-type-icon.tsx
-src/features/workspace.slice/gov.audit/_components/audit.account-view.tsx
-src/features/workspace.slice/gov.audit/_components/audit.view.tsx
-src/features/workspace.slice/gov.audit/_components/audit.workspace-view.tsx
-src/features/workspace.slice/gov.audit/_hooks/use-account-audit.ts
-src/features/workspace.slice/gov.audit/_hooks/use-logger.ts
-src/features/workspace.slice/gov.audit/_hooks/use-workspace-audit.ts
-src/features/workspace.slice/gov.audit/_queries.ts
-src/features/workspace.slice/gov.audit/_types.ts
-src/features/workspace.slice/gov.audit/index.ts
-src/features/workspace.slice/gov.members/_components/members-panel.tsx
-src/features/workspace.slice/gov.members/_queries.ts
-src/features/workspace.slice/gov.members/index.ts
-src/features/workspace.slice/gov.partners/index.ts
-src/features/workspace.slice/gov.role/_actions.ts
-src/features/workspace.slice/gov.role/_hooks/use-workspace-role.ts
-src/features/workspace.slice/gov.role/_queries.ts
-src/features/workspace.slice/gov.role/_types.ts
-src/features/workspace.slice/gov.role/index.ts
-src/features/workspace.slice/gov.teams/index.ts
-src/features/workspace.slice/index.ts
-src/portal/index.ts
-src/portal/portal-layout.tsx
-src/shadcn-ui/accordion.tsx
-src/shadcn-ui/alert-dialog.tsx
-src/shadcn-ui/alert.tsx
-src/shadcn-ui/aspect-ratio.tsx
-src/shadcn-ui/avatar.tsx
-src/shadcn-ui/badge.tsx
-src/shadcn-ui/breadcrumb.tsx
-src/shadcn-ui/button-group.tsx
-src/shadcn-ui/button.tsx
-src/shadcn-ui/calendar.tsx
-src/shadcn-ui/card.tsx
-src/shadcn-ui/carousel.tsx
-src/shadcn-ui/chart.tsx
-src/shadcn-ui/checkbox.tsx
-src/shadcn-ui/collapsible.tsx
-src/shadcn-ui/command.tsx
-src/shadcn-ui/context-menu.tsx
-src/shadcn-ui/custom-ui/language-switcher.tsx
-src/shadcn-ui/custom-ui/page-header.tsx
-src/shadcn-ui/dialog.tsx
-src/shadcn-ui/drawer.tsx
-src/shadcn-ui/dropdown-menu.tsx
-src/shadcn-ui/empty.tsx
-src/shadcn-ui/field.tsx
-src/shadcn-ui/form.tsx
-src/shadcn-ui/hooks/use-mobile.tsx
-src/shadcn-ui/hooks/use-toast.ts
-src/shadcn-ui/hover-card.tsx
-src/shadcn-ui/input-group.tsx
-src/shadcn-ui/input-otp.tsx
-src/shadcn-ui/input.tsx
-src/shadcn-ui/item.tsx
-src/shadcn-ui/kbd.tsx
-src/shadcn-ui/label.tsx
-src/shadcn-ui/lib/utils.ts
-src/shadcn-ui/menubar.tsx
-src/shadcn-ui/navigation-menu.tsx
-src/shadcn-ui/pagination.tsx
-src/shadcn-ui/popover.tsx
-src/shadcn-ui/progress.tsx
-src/shadcn-ui/radio-group.tsx
-src/shadcn-ui/scroll-area.tsx
-src/shadcn-ui/select.tsx
-src/shadcn-ui/separator.tsx
-src/shadcn-ui/sheet.tsx
-src/shadcn-ui/sidebar.tsx
-src/shadcn-ui/skeleton.tsx
-src/shadcn-ui/slider.tsx
-src/shadcn-ui/sonner.tsx
-src/shadcn-ui/spinner.tsx
-src/shadcn-ui/switch.tsx
-src/shadcn-ui/table.tsx
-src/shadcn-ui/tabs.tsx
-src/shadcn-ui/textarea.tsx
-src/shadcn-ui/timeline.tsx
-src/shadcn-ui/toast.tsx
-src/shadcn-ui/toaster.tsx
-src/shadcn-ui/toggle-group.tsx
-src/shadcn-ui/toggle.tsx
-src/shadcn-ui/tooltip.tsx
-src/shadcn-ui/utils/utils.ts
-src/shared-infra/backend-firebase/functions/src/claims/claims-refresh.fn.ts
-src/shared-infra/backend-firebase/functions/src/dlq/dlq-block.fn.ts
-src/shared-infra/backend-firebase/functions/src/dlq/dlq-review.fn.ts
-src/shared-infra/backend-firebase/functions/src/dlq/dlq-safe.fn.ts
-src/shared-infra/backend-firebase/functions/src/gateway/command-gateway.fn.ts
-src/shared-infra/backend-firebase/functions/src/gateway/webhook.fn.ts
-src/shared-infra/backend-firebase/functions/src/ier/background.lane.fn.ts
-src/shared-infra/backend-firebase/functions/src/ier/critical.lane.fn.ts
-src/shared-infra/backend-firebase/functions/src/ier/ier.fn.ts
-src/shared-infra/backend-firebase/functions/src/ier/standard.lane.fn.ts
-src/shared-infra/backend-firebase/functions/src/index.ts
-src/shared-infra/backend-firebase/functions/src/observability/domain-errors.fn.ts
-src/shared-infra/backend-firebase/functions/src/observability/domain-metrics.fn.ts
-src/shared-infra/backend-firebase/functions/src/projection/critical-proj.fn.ts
-src/shared-infra/backend-firebase/functions/src/projection/event-funnel.fn.ts
-src/shared-infra/backend-firebase/functions/src/projection/standard-proj.fn.ts
-src/shared-infra/backend-firebase/functions/src/relay/outbox-relay.fn.ts
-src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
-src/shared-infra/backend-firebase/functions/src/types.ts
-src/shared-infra/dlq-manager/_dlq.ts
-src/shared-infra/dlq-manager/index.ts
-src/shared-infra/event-router/_router.ts
-src/shared-infra/event-router/index.ts
-src/shared-infra/external-triggers/_guard.ts
-src/shared-infra/external-triggers/index.ts
-src/shared-infra/frontend-firebase/analytics/analytics.adapter.ts
-src/shared-infra/frontend-firebase/analytics/analytics.client.ts
-src/shared-infra/frontend-firebase/app.client.ts
-src/shared-infra/frontend-firebase/auth/auth.adapter.ts
-src/shared-infra/frontend-firebase/auth/auth.client.ts
-src/shared-infra/frontend-firebase/auth/auth.types.ts
-src/shared-infra/frontend-firebase/auth/index.ts
-src/shared-infra/frontend-firebase/config/firebase.config.ts
-src/shared-infra/frontend-firebase/firebase.config.ts
-src/shared-infra/frontend-firebase/firestore/collection-paths.ts
-src/shared-infra/frontend-firebase/firestore/firestore.adapter.ts
-src/shared-infra/frontend-firebase/firestore/firestore.client.ts
-src/shared-infra/frontend-firebase/firestore/firestore.converter.ts
-src/shared-infra/frontend-firebase/firestore/firestore.facade.ts
-src/shared-infra/frontend-firebase/firestore/firestore.read.adapter.ts
-src/shared-infra/frontend-firebase/firestore/firestore.types.ts
-src/shared-infra/frontend-firebase/firestore/firestore.utils.ts
-src/shared-infra/frontend-firebase/firestore/firestore.write.adapter.ts
-src/shared-infra/frontend-firebase/firestore/index.ts
-src/shared-infra/frontend-firebase/firestore/repositories/account.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/audit.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/daily.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/index.ts
-src/shared-infra/frontend-firebase/firestore/repositories/projection.registry.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/user.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.document-parser.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.files.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.issues.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.parsing-imports.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.tasks.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.event-store.repository.ts
-src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts
-src/shared-infra/frontend-firebase/firestore/version-guard.middleware.ts
-src/shared-infra/frontend-firebase/index.ts
-src/shared-infra/frontend-firebase/messaging/index.ts
-src/shared-infra/frontend-firebase/messaging/messaging.adapter.ts
-src/shared-infra/frontend-firebase/messaging/messaging.client.ts
-src/shared-infra/frontend-firebase/messaging/messaging.types.ts
-src/shared-infra/frontend-firebase/storage/index.ts
-src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
-src/shared-infra/frontend-firebase/storage/storage.adapter.ts
-src/shared-infra/frontend-firebase/storage/storage.client.ts
-src/shared-infra/frontend-firebase/storage/storage.facade.ts
-src/shared-infra/frontend-firebase/storage/storage.read.adapter.ts
-src/shared-infra/frontend-firebase/storage/storage.types.ts
-src/shared-infra/frontend-firebase/storage/storage.write.adapter.ts
-src/shared-infra/gateway-command/_gateway.ts
-src/shared-infra/gateway-command/index.ts
-src/shared-infra/gateway-command/workspace-schedule-command.ts
-src/shared-infra/gateway-query/_registry.ts
-src/shared-infra/gateway-query/index.ts
-src/shared-infra/observability/_error-logger.ts
-src/shared-infra/observability/_metrics-recorder.ts
-src/shared-infra/observability/_trace-provider.ts
-src/shared-infra/observability/index.ts
-src/shared-infra/outbox-relay/_relay.ts
-src/shared-infra/outbox-relay/index.ts
-src/shared-infra/projection.bus/_funnel.shared.ts
-src/shared-infra/projection.bus/_funnel.ts
-src/shared-infra/projection.bus/_organization-funnel.ts
-src/shared-infra/projection.bus/_query-registration.ts
-src/shared-infra/projection.bus/_registry.ts
-src/shared-infra/projection.bus/_tag-funnel.ts
-src/shared-infra/projection.bus/_workspace-funnel.ts
-src/shared-infra/projection.bus/account-audit/_projector.ts
-src/shared-infra/projection.bus/account-audit/_queries.ts
-src/shared-infra/projection.bus/account-audit/index.ts
-src/shared-infra/projection.bus/account-schedule/_projector.ts
-src/shared-infra/projection.bus/account-schedule/_queries.ts
-src/shared-infra/projection.bus/account-schedule/index.ts
-src/shared-infra/projection.bus/account-view/_projector.ts
-src/shared-infra/projection.bus/account-view/_queries.ts
-src/shared-infra/projection.bus/account-view/index.ts
-src/shared-infra/projection.bus/demand-board/_projector.ts
-src/shared-infra/projection.bus/demand-board/index.ts
-src/shared-infra/projection.bus/global-audit-view/_projector.ts
-src/shared-infra/projection.bus/global-audit-view/_queries.ts
-src/shared-infra/projection.bus/global-audit-view/index.ts
-src/shared-infra/projection.bus/index.ts
-src/shared-infra/projection.bus/org-eligible-member-view/_projector.ts
-src/shared-infra/projection.bus/org-eligible-member-view/_queries.ts
-src/shared-infra/projection.bus/org-eligible-member-view/index.ts
-src/shared-infra/projection.bus/organization-view/_projector.ts
-src/shared-infra/projection.bus/organization-view/_queries.ts
-src/shared-infra/projection.bus/organization-view/index.ts
-src/shared-infra/projection.bus/tag-snapshot/_projector.ts
-src/shared-infra/projection.bus/tag-snapshot/_queries.ts
-src/shared-infra/projection.bus/tag-snapshot/index.ts
-src/shared-infra/projection.bus/wallet-balance/_projector.ts
-src/shared-infra/projection.bus/wallet-balance/_queries.ts
-src/shared-infra/projection.bus/wallet-balance/index.ts
-src/shared-infra/projection.bus/workspace-scope-guard/_projector.ts
-src/shared-infra/projection.bus/workspace-scope-guard/_queries.ts
-src/shared-infra/projection.bus/workspace-scope-guard/_read-model.ts
-src/shared-infra/projection.bus/workspace-scope-guard/index.ts
-src/shared-infra/projection.bus/workspace-view/_projector.ts
-src/shared-infra/projection.bus/workspace-view/_queries.ts
-src/shared-infra/projection.bus/workspace-view/index.ts
-src/shared-kernel/constants/location-units.ts
-src/shared-kernel/constants/roles.ts
-src/shared-kernel/constants/routes.ts
-src/shared-kernel/constants/settings.ts
-src/shared-kernel/constants/skills.ts
-src/shared-kernel/constants/status.ts
-src/shared-kernel/constants/taiwan-address.ts
-src/shared-kernel/data-contracts/account/account-contract.ts
-src/shared-kernel/data-contracts/account/skill-grant-contract.ts
-src/shared-kernel/data-contracts/authority-snapshot/index.ts
-src/shared-kernel/data-contracts/command-result-contract/index.ts
-src/shared-kernel/data-contracts/event-envelope/index.ts
-src/shared-kernel/data-contracts/scheduling/schedule-contract.ts
-src/shared-kernel/data-contracts/scheduling/workspace-schedule-proposed.contract.ts
-src/shared-kernel/data-contracts/semantic/semantic-contracts.ts
-src/shared-kernel/data-contracts/skill-tier/index.ts
-src/shared-kernel/data-contracts/tag-authority/index.ts
-src/shared-kernel/index.ts
-src/shared-kernel/infra-contracts/outbox-contract/index.ts
-src/shared-kernel/infra-contracts/read-consistency/index.ts
-src/shared-kernel/infra-contracts/resilience-contract/index.ts
-src/shared-kernel/infra-contracts/staleness-contract/index.ts
-src/shared-kernel/infra-contracts/token-refresh-contract/index.ts
-src/shared-kernel/infra-contracts/version-guard/index.ts
-src/shared-kernel/observability/_error-log.ts
-src/shared-kernel/observability/_metrics.ts
-src/shared-kernel/observability/_trace.ts
-src/shared-kernel/observability/index.ts
-src/shared-kernel/ports/i-auth.service.ts
-src/shared-kernel/ports/i-file-store.ts
-src/shared-kernel/ports/i-firestore.repo.ts
-src/shared-kernel/ports/i-messaging.ts
-src/shared-kernel/ports/index.ts
-```
-
 # Files
 
 ## File: src/app-runtime/ai/dev.ts
@@ -2399,11 +1669,6 @@ export interface SemanticIndexStats {
 
 ```
 
-## File: src/features/workforce-scheduling.slice/_actions.ts
-```typescript
-
-```
-
 ## File: src/features/workforce-scheduling.slice/_actions/governance.ts
 ```typescript
 import {
@@ -2448,11 +1713,6 @@ export async function completeOrgScheduleAction(
   completedBy: string,
   traceId?: string
 ): Promise<CommandResult>
-```
-
-## File: src/features/workforce-scheduling.slice/_actions/index.ts
-```typescript
-
 ```
 
 ## File: src/features/workforce-scheduling.slice/_aggregate.types.ts
@@ -2606,11 +1866,6 @@ export function normalizeScheduleRange(item: ScheduleItem):
 export function buildCardsByDate(items: ScheduleItem[]): Map<string, ScheduleItem[]>
 export function buildSpanSegmentsByDate(items: ScheduleItem[]): Map<string, SpanSegment[]>
 export function sortSegments(segments: SpanSegment[]): SpanSegment[]
-```
-
-## File: src/features/workforce-scheduling.slice/_hooks/index.ts
-```typescript
-
 ```
 
 ## File: src/features/workforce-scheduling.slice/_hooks/use-org-schedule.ts
@@ -5141,12 +4396,6 @@ import { onRequest } from "firebase-functions/v2/https";
 import type { EventEnvelope } from "../types.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/index.ts
-```typescript
-import { initializeApp, getApps } from "firebase-admin/app";
-import { setGlobalOptions } from "firebase-functions/v2";
-```
-
 ## File: src/shared-infra/backend-firebase/functions/src/observability/domain-errors.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -6797,30 +6046,6 @@ function makeError(
 ): TaxonomyValidationError
 ```
 
-## File: src/features/semantic-graph.slice/_queries.ts
-```typescript
-import { querySemanticIndex, getIndexStats } from './_services';
-import {
-  traceAffectedNodes,
-  rankAffectedNodes,
-  buildDownstreamEvents,
-  buildCausalityChain,
-} from './reasoning/causality/causality-tracer';
-import { getEdgesByType } from './graph/edges/semantic-edge-store';
-import {
-  computeSemanticDistance,
-  computeSemanticDistanceMatrix,
-  findIsolatedNodes,
-} from './graph/neural-net/neural-network';
-import type { SemanticEdge, StaleTagWarning } from './core/types';
-import { detectStaleTagWarnings } from './routing/workflows/tag-lifecycle.workflow';
-import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './output/projections/graph-selectors';
-⋮----
-export function getIsAEdges(): readonly SemanticEdge[]
-export function getRequiresEdges(): readonly SemanticEdge[]
-export function queryStaleTagWarnings(): readonly StaleTagWarning[]
-```
-
 ## File: src/features/semantic-graph.slice/_services.ts
 ```typescript
 import type { SearchDomain, SemanticSearchHit } from '@/shared-kernel';
@@ -7272,6 +6497,33 @@ export async function enqueueSkillOutboxEvent<K extends OrganizationEventKey>(
 ): Promise<SkillOutboxAck>
 ```
 
+## File: src/features/workforce-scheduling.slice/_actions.ts
+```typescript
+
+```
+
+## File: src/features/workforce-scheduling.slice/_actions/index.ts
+```typescript
+
+```
+
+## File: src/features/workforce-scheduling.slice/_actions/timeline.ts
+```typescript
+import { setScheduleItemDateRange } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import {
+  type CommandResult,
+  commandFailureFrom,
+  commandSuccess,
+} from '@/shared-kernel';
+export async function updateTimelineItemDateRange(
+  accountId: string,
+  itemId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<CommandResult>
+```
+
 ## File: src/features/workforce-scheduling.slice/_components/decision-history-columns.tsx
 ```typescript
 import { type ColumnDef } from "@tanstack/react-table"
@@ -7525,6 +6777,89 @@ const onItemClick = (item: ScheduleItem) =>
 const handleMonthChange = (direction: 'prev' | 'next') =>
 ```
 
+## File: src/features/workforce-scheduling.slice/_components/timeline-canvas.tsx
+```typescript
+import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
+import { useEffect, useMemo, useRef } from "react";
+import { DataSet } from "vis-data";
+import {
+  Timeline,
+  type DataGroup,
+  type DataItem,
+  type TimelineItem,
+  type TimelineOptions,
+} from "vis-timeline/standalone";
+⋮----
+import { cn } from "@/shadcn-ui/utils/utils";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
+import type { TimelineMember } from '../_timeline.types';
+type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
+type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
+interface TimelineCanvasProps {
+  items: ScheduleItem[];
+  members: TimelineMember[];
+  enableDrag?: boolean;
+  groupMode?: "none" | "workspace";
+  onMoveItem?: (params: {
+    itemId: string;
+    start: Date;
+    end: Date;
+    groupId?: string;
+  }) => Promise<boolean>;
+  className?: string;
+}
+function toDate(timestamp: CalendarTimestamp): Date | null
+function escapeHtml(input: string): string
+function toTimelineClassName(item: ScheduleItem): string
+function isStartOfDay(date: Date): boolean
+function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
+function resolveTimelineInterval(item: ScheduleItem):
+function resolveInitialWindow(items: DataItem[]):
+export function TimelineCanvas({
+  items,
+  members,
+  enableDrag = false,
+  groupMode = "none",
+  onMoveItem,
+  className,
+}: TimelineCanvasProps)
+⋮----
+<div className=
+```
+
+## File: src/features/workforce-scheduling.slice/_components/timeline-capability-tabs.tsx
+```typescript
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
+type CapabilityTabValue = 'schedule' | 'timeline';
+function toCapabilityValue(pathname: string): CapabilityTabValue
+export function AccountTimelineCapabilityTabs()
+export function WorkspaceTimelineCapabilityTabs()
+⋮----
+value=
+```
+
+## File: src/features/workforce-scheduling.slice/_components/timeline.account-view.tsx
+```typescript
+import { AlertCircle, Clock3 } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import type { ScheduleItem } from "@/shared-kernel";
+import { useAccountTimeline, useTimelineCommands } from "../_hooks";
+import { TimelineCanvas } from "./timeline-canvas";
+export function AccountTimelineSection()
+```
+
+## File: src/features/workforce-scheduling.slice/_components/timeline.workspace-view.tsx
+```typescript
+import { Clock3 } from "lucide-react";
+import { useCallback, useMemo } from "react";
+import type { ScheduleItem } from "@/shared-kernel";
+import { useTimelineCommands, useWorkspaceTimeline } from "../_hooks";
+import { TimelineCanvas } from "./timeline-canvas";
+export function WorkspaceTimeline()
+```
+
 ## File: src/features/workforce-scheduling.slice/_components/unified-calendar-grid.tsx
 ```typescript
 import { format, isWeekend, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday } from "date-fns";
@@ -7617,6 +6952,21 @@ export function findEligibleCandidatesForRequirements(
 ): CandidateAssignment[] | undefined
 ```
 
+## File: src/features/workforce-scheduling.slice/_hooks/index.ts
+```typescript
+
+```
+
+## File: src/features/workforce-scheduling.slice/_hooks/use-account-timeline.ts
+```typescript
+import { useMemo } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useAccount } from '@/features/workspace.slice';
+import type { ScheduleItem } from '@/shared-kernel';
+import type { TimelineMember } from '../_timeline.types';
+export function useAccountTimeline()
+```
+
 ## File: src/features/workforce-scheduling.slice/_hooks/use-global-schedule.ts
 ```typescript
 import { useMemo } from "react";
@@ -7630,6 +6980,17 @@ import {
   selectPresentEvents,
 } from '../_selectors';
 export function useGlobalSchedule()
+```
+
+## File: src/features/workforce-scheduling.slice/_hooks/use-timeline-commands.ts
+```typescript
+import { useCallback } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useAuth } from '@/app-runtime/providers/auth-provider';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import type { ScheduleItem } from '@/shared-kernel';
+import { updateTimelineItemDateRange } from '../_actions';
+export function useTimelineCommands()
 ```
 
 ## File: src/features/workforce-scheduling.slice/_hooks/use-workspace-schedule.ts
@@ -7646,6 +7007,17 @@ export function useWorkspaceSchedule()
 ⋮----
 const handleMonthChange = (direction: "prev" | "next") =>
 const handleOpenAddDialog = (date: Date) =>
+```
+
+## File: src/features/workforce-scheduling.slice/_hooks/use-workspace-timeline.ts
+```typescript
+import { useEffect, useMemo, useState } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useWorkspace } from '@/features/workspace.slice';
+import type { ScheduleItem } from '@/shared-kernel';
+import { subscribeToWorkspaceTimelineItems } from '../_timeline.queries';
+import type { TimelineMember } from '../_timeline.types';
+export function useWorkspaceTimeline()
 ```
 
 ## File: src/features/workforce-scheduling.slice/_projectors/account-schedule.ts
@@ -7672,6 +7044,36 @@ export interface AccountScheduleAssignment {
 ## File: src/features/workforce-scheduling.slice/_projectors/demand-board.ts
 ```typescript
 
+```
+
+## File: src/features/workforce-scheduling.slice/_timeline.queries.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  type QueryDocumentSnapshot,
+  type Unsubscribe,
+  where,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { ScheduleItem } from '@/shared-kernel';
+function toScheduleItemSnapshot(doc: QueryDocumentSnapshot): ScheduleItem
+export function subscribeToWorkspaceTimelineItems(
+  accountId: string,
+  workspaceId: string,
+  onUpdate: (items: ScheduleItem[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe
+```
+
+## File: src/features/workforce-scheduling.slice/_timeline.types.ts
+```typescript
+export interface TimelineMember {
+  id: string;
+  name: string;
+}
 ```
 
 ## File: src/features/workforce-scheduling.slice/_write-op.ts
@@ -7742,129 +7144,6 @@ export async function enqueueSchedulingOutboxEvent<K extends OrganizationEventKe
   payload: OrganizationEventPayloadMap[K],
   routing: SchedulingOutboxRouting = DEFAULT_SCHEDULING_OUTBOX_ROUTING,
 ): Promise<SchedulingOutboxAck>
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_components/timeline-canvas.tsx
-```typescript
-import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
-import { useEffect, useMemo, useRef } from "react";
-import { DataSet } from "vis-data";
-import {
-  Timeline,
-  type DataGroup,
-  type DataItem,
-  type TimelineItem,
-  type TimelineOptions,
-} from "vis-timeline/standalone";
-⋮----
-import { cn } from "@/shadcn-ui/utils/utils";
-import type { ScheduleItem, Timestamp } from "@/shared-kernel";
-import type { TimelineMember } from "../_types";
-type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
-type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
-interface TimelineCanvasProps {
-  items: ScheduleItem[];
-  members: TimelineMember[];
-  enableDrag?: boolean;
-  groupMode?: "none" | "workspace";
-  onMoveItem?: (params: {
-    itemId: string;
-    start: Date;
-    end: Date;
-    groupId?: string;
-  }) => Promise<boolean>;
-  className?: string;
-}
-function toDate(timestamp: CalendarTimestamp): Date | null
-function escapeHtml(input: string): string
-function toTimelineClassName(item: ScheduleItem): string
-function isStartOfDay(date: Date): boolean
-function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
-function resolveTimelineInterval(item: ScheduleItem):
-function resolveInitialWindow(items: DataItem[]):
-export function TimelineCanvas({
-  items,
-  members,
-  enableDrag = false,
-  groupMode = "none",
-  onMoveItem,
-  className,
-}: TimelineCanvasProps)
-⋮----
-<div className=
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_components/timeline-capability-tabs.tsx
-```typescript
-import { useParams, usePathname, useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
-type CapabilityTabValue = 'schedule' | 'timeline';
-function toCapabilityValue(pathname: string): CapabilityTabValue
-export function AccountTimelineCapabilityTabs()
-export function WorkspaceTimelineCapabilityTabs()
-⋮----
-value=
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_components/timeline.account-view.tsx
-```typescript
-import { AlertCircle, Clock3 } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import { useApp } from "@/app-runtime/providers/app-provider";
-import type { ScheduleItem } from "@/shared-kernel";
-import { useAccountTimeline, useTimelineCommands } from "../_hooks";
-import { TimelineCanvas } from "./timeline-canvas";
-export function AccountTimelineSection()
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_components/timeline.workspace-view.tsx
-```typescript
-import { Clock3 } from "lucide-react";
-import { useCallback, useMemo } from "react";
-import type { ScheduleItem } from "@/shared-kernel";
-import { useTimelineCommands, useWorkspaceTimeline } from "../_hooks";
-import { TimelineCanvas } from "./timeline-canvas";
-export function WorkspaceTimeline()
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_hooks/use-account-timeline.ts
-```typescript
-import { useMemo } from 'react';
-import { useApp } from '@/app-runtime/providers/app-provider';
-import { useAccount } from '@/features/workspace.slice';
-import type { ScheduleItem } from '@/shared-kernel';
-import type { TimelineMember } from '../_types';
-export function useAccountTimeline()
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_hooks/use-timeline-commands.ts
-```typescript
-import { useCallback } from 'react';
-import { useApp } from '@/app-runtime/providers/app-provider';
-import { useAuth } from '@/app-runtime/providers/auth-provider';
-import { toast } from '@/shadcn-ui/hooks/use-toast';
-import type { ScheduleItem } from '@/shared-kernel';
-import { updateTimelineItemDateRange } from '../_actions';
-export function useTimelineCommands()
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_hooks/use-workspace-timeline.ts
-```typescript
-import { useEffect, useMemo, useState } from 'react';
-import { useApp } from '@/app-runtime/providers/app-provider';
-import { useWorkspace } from '@/features/workspace.slice';
-import type { ScheduleItem } from '@/shared-kernel';
-import { subscribeToWorkspaceTimelineItems } from '../_queries';
-import type { TimelineMember } from '../_types';
-export function useWorkspaceTimeline()
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_types.ts
-```typescript
-export interface TimelineMember {
-  id: string;
-  name: string;
-}
 ```
 
 ## File: src/features/workspace.slice/application/_org-policy-cache.ts
@@ -9502,6 +8781,12 @@ import { cn } from "@/shadcn-ui/utils/utils"
 import { cn } from "@/shadcn-ui/utils/utils"
 ⋮----
 className=
+```
+
+## File: src/shared-infra/backend-firebase/functions/src/index.ts
+```typescript
+import { initializeApp, getApps } from "firebase-admin/app";
+import { setGlobalOptions } from "firebase-functions/v2";
 ```
 
 ## File: src/shared-infra/dlq-manager/_dlq.ts
@@ -11644,6 +10929,30 @@ export async function updateTeamMembers(
 ): Promise<CommandResult>
 ```
 
+## File: src/features/semantic-graph.slice/_queries.ts
+```typescript
+import { querySemanticIndex, getIndexStats } from './_services';
+import {
+  traceAffectedNodes,
+  rankAffectedNodes,
+  buildDownstreamEvents,
+  buildCausalityChain,
+} from './reasoning/causality/causality-tracer';
+import { getEdgesByType } from './graph/edges/semantic-edge-store';
+import {
+  computeSemanticDistance,
+  computeSemanticDistanceMatrix,
+  findIsolatedNodes,
+} from './graph/neural-net/neural-network';
+import type { SemanticEdge, StaleTagWarning } from './core/types';
+import { detectStaleTagWarnings } from './routing/workflows/tag-lifecycle.workflow';
+import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './output/projections/graph-selectors';
+⋮----
+export function getIsAEdges(): readonly SemanticEdge[]
+export function getRequiresEdges(): readonly SemanticEdge[]
+export function queryStaleTagWarnings(): readonly StaleTagWarning[]
+```
+
 ## File: src/features/semantic-graph.slice/learning/decay-service.ts
 ```typescript
 import type { SemanticEdge } from '../core/types';
@@ -11879,60 +11188,6 @@ import {
 import { getAccountActiveAssignments } from "../_queries";
 import { canTransitionScheduleStatus } from "../_schedule.rules";
 export function useScheduleActions()
-```
-
-## File: src/features/workforce-scheduling.slice/index.ts
-```typescript
-
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_actions/index.ts
-```typescript
-import { setScheduleItemDateRange } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import {
-  type CommandResult,
-  commandFailureFrom,
-  commandSuccess,
-} from '@/shared-kernel';
-export async function updateTimelineItemDateRange(
-  accountId: string,
-  itemId: string,
-  startDate: Date,
-  endDate: Date
-): Promise<CommandResult>
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_hooks/index.ts
-```typescript
-
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/_queries.ts
-```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  type QueryDocumentSnapshot,
-  type Unsubscribe,
-  where,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import type { ScheduleItem } from '@/shared-kernel';
-function toScheduleItemSnapshot(doc: QueryDocumentSnapshot): ScheduleItem
-export function subscribeToWorkspaceTimelineItems(
-  accountId: string,
-  workspaceId: string,
-  onUpdate: (items: ScheduleItem[]) => void,
-  onError?: (error: Error) => void
-): Unsubscribe
-```
-
-## File: src/features/workforce-scheduling.slice/timeline/index.ts
-```typescript
-
 ```
 
 ## File: src/features/workspace.slice/application/_command-handler.ts
@@ -14101,6 +13356,11 @@ export async function startSchedulingSaga(
 ): Promise<SagaState>
 ```
 
+## File: src/features/workforce-scheduling.slice/index.ts
+```typescript
+
+```
+
 ## File: src/features/workspace.slice/business.document-parser/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
@@ -14680,130 +13940,3 @@ export type ClaimsSubscriberRegistrar = (
 ) => () => void;
 export function registerClaimsHandler(registerFn: ClaimsSubscriberRegistrar): () => void
 ```
-
-
-
-
-# Instruction
-# Xuanwu — AI Assistant Instructions
-
-> This file is automatically embedded into the repomix output by `repomix.config.ts`.
-> When reading the packed codebase, follow these guidelines to produce accurate, architecture-compliant code.
-
----
-
-## 1. Single Source of Truth
-
-| Artefact | Purpose |
-|---|---|
-| `docs/architecture/00-LogicOverview.md` | Architecture SSOT — layer definitions, dependency rules, invariants |
-| `docs/knowledge-graph.json` | Semantic entity relationships |
-| `eslint.config.mts` | Enforces D1–D26 rules as ESLint errors |
-
-**Always read `docs/architecture/00-LogicOverview.md` before proposing any structural change.**
-
----
-
-## 2. Layer Map (L0 – L9)
-
-```
-L0  External Triggers      src/app/             Next.js pages, route handlers, middleware
-L1  Shared Kernel          src/features/shared-kernel/   Contracts, ports, pure types (VS0)
-L2  Command Gateway        src/features/*/core/_actions.ts
-L3  Domain Slices          src/features/{slice}/   VS1–VS8 business verticals
-L4  IER (Event Router)     src/features/*/core.event-bus/
-L5  Projection Bus         src/features/projection.bus/
-L6  Query Gateway          src/features/*/core/_queries.ts
-L7  Firebase ACL           src/shared/infra/{auth,firestore,messaging,storage}/
-L8  Firebase Infra         src/shared-infra/backend-firebase/
-L9  Observability          src/app-runtime/ + logging adapters
-```
-
----
-
-## 3. Vertical Slices (VS)
-
-| ID | Slice | Directory |
-|---|---|---|
-| VS0 | SharedKernel | `src/features/shared-kernel/` |
-| VS1 | Identity | `src/features/identity.slice/` |
-| VS2 | Account | `src/features/account.slice/` |
-| VS3 | Skill XP | `src/features/skill-xp.slice/` |
-| VS4 | Organization | `src/features/organization.slice/` |
-| VS5 | Workspace | `src/features/workspace.slice/` |
-| VS6 | Workforce-Scheduling | `src/features/workforce-scheduling.slice/` |
-| VS7 | Notification | `src/features/notification-hub.slice/` |
-| VS8 | Semantic Graph | `src/features/semantic-graph.slice/` |
-
-Cross-cutting authorities (not VS-numbered):
-- `global-search.slice` — sole cross-domain search gateway [D26 #A12]
-- `notification-hub` — sole side-effect outlet [D26 #A13]
-
----
-
-## 4. Hard Invariants — Never Violate
-
-| Rule | Description |
-|---|---|
-| **D7** | Cross-slice reference only through `{slice}/index.ts` public API |
-| **D21** | New tag categories defined only in VS8 (Semantic Graph) |
-| **D24** | Feature slices must NOT `import firebase/*` directly; use SK_PORTS |
-| **D26** | Feature slices must NOT build their own search or send push/SMS directly |
-| **S2** | All Projection writes must call `applyVersionGuard()` first |
-| **S4** | Staleness values must reference `SK_STALENESS_CONTRACT` constants |
-| **R8** | `traceId` injected once at CBG_ENTRY, read-only across the full chain |
-| **A8** | One command = one aggregate |
-
----
-
-## 5. Dependency Rule (direction of allowed imports)
-
-```
-L0 → L1 → L2 → L3 → L4 → L5 → L6 → L7 → L8
-                 ↕ (no upward import, no cross-slice without index.ts)
-```
-
-- **Forbidden**: BC_X directly writes BC_Y aggregate (must use IER Domain Event)
-- **Forbidden**: TX Runner emits Domain Events (only Aggregates may)
-- **Forbidden**: B-track calls back into A-track (use Domain Event only)
-
----
-
-## 6. Naming Conventions
-
-| Pattern | Meaning |
-|---|---|
-| `_actions.ts` | Server Actions / Command Gateway entry points |
-| `_queries.ts` | Query Gateway (read-only) |
-| `_types.ts` | Local type definitions |
-| `_contract.ts` | Public interface exported via `index.ts` |
-| `_events.ts` | Domain / IER event definitions |
-| `_hooks/` | React hooks (client components only) |
-| `_components/` | React UI components |
-| `index.ts` | Slice public API surface [D7] |
-
----
-
-## 7. Bootstrap & Validation Commands
-
-```bash
-npm install                  # MANDATORY first — sandbox has no node_modules
-npm run lint                 # ESLint D1–D26 checks (0 errors expected)
-npm run typecheck            # tsc --noEmit (errors in firebase/functions/** are unrelated)
-npm run check                # lint + typecheck in one pass
-npm run dev                  # Dev server on http://localhost:9002
-```
-
-Known baseline after `npm install`:
-- `npm run lint` → 0 errors, ~1,390 warnings (D24 tracked debt, not regressions)
-- `npm run typecheck` → 67 errors all in `firebase/functions/**` (separate package)
-
----
-
-## 8. Key Files to Read Before Making Changes
-
-1. `docs/architecture/00-LogicOverview.md` — architecture & invariants SSOT
-2. `eslint.config.mts` — enforced rules
-3. `src/features/shared-kernel/` — shared contracts & ports
-4. Relevant `{slice}/index.ts` — slice public API
-5. `docs/development/` — feature-specific guides (e.g. `workspace.slice-guide.md`)

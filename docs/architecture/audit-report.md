@@ -35,11 +35,11 @@ Completed sequential phases from the requested prompt:
 
 1. Read-side projector logic is partially implemented inside VS6 slice instead of L5 projection bus:
 	 - Current: `src/features/workforce-scheduling.slice/_projectors/*`
-	 - Expected: L5 ownership under `src/features/projection.bus/*`
+	 - Expected: L5 ownership under `src/shared-infra/projection.bus/*`
 	 - Evidence: `docs/ai/repomix-output.context.md:391`, `docs/ai/repomix-output.context.md:392`, `docs/ai/repomix-output.context.md:393`
 	 - Rule reference: `L5-Bus`, `P5`, `S2`, `#9`
 	 - Suggested target:
-		 - Move projection materialization to `src/features/projection.bus/workforce-scheduling-*`
+		 - Move projection materialization to `src/shared-infra/projection.bus/workforce-scheduling-*`
 		 - Keep VS6 focused on command/domain decisions.
 
 2. Timeline module consolidation completed:
@@ -61,7 +61,7 @@ Completed sequential phases from the requested prompt:
 		 - `src/features/account.slice/gov.policy/_queries.ts` via `docs/ai/repomix-output.context.md:10766`-`docs/ai/repomix-output.context.md:10768`
 		 - `src/features/account.slice/user.profile/_actions.ts` via `docs/ai/repomix-output.context.md:10794`-`docs/ai/repomix-output.context.md:10795`
 		 - `src/features/organization.slice/gov.policy/_actions.ts` via `docs/ai/repomix-output.context.md:11315`-`docs/ai/repomix-output.context.md:11316`
-		 - `src/features/projection.bus/account-audit/_projector.ts` via `docs/ai/repomix-output.context.md:11440`-`docs/ai/repomix-output.context.md:11443`
+		 - `src/shared-infra/projection.bus/account-audit/_projector.ts` via `docs/ai/repomix-output.context.md:11440`-`docs/ai/repomix-output.context.md:11443`
 	 - Rule reference: `D24` + explicit FORBIDDEN clause (feature slices must not import `@/shared-infra/*` directly).
 	 - Impact:
 		 - Tight coupling to infrastructure implementation,
