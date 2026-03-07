@@ -5,7 +5,7 @@
  *   draft ??proposed ??confirmed | cancelled
  *
  * Per logic-overview.md:
- *   WORKSPACE_OUTBOX ?’|ScheduleProposed（跨層ä?ä»?· saga）| ORGANIZATION_SCHEDULE
+ *   WORKSPACE_OUTBOX -> ScheduleProposed（跨層交易流程）-> ORGANIZATION_SCHEDULE
  *   ORGANIZATION_SCHEDULE ??ORGANIZATION_EVENT_BUS ??ACCOUNT_NOTIFICATION_ROUTER (FCM Layer 2+)
  *
  * Aggregate lifecycle (state machine):
