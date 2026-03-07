@@ -5,6 +5,8 @@
  * Constraints: Client component context only ('use client' on the component using this hook).
  */
 
+'use client';
+
 import { useEffect, useState } from 'react';
 
 import { subscribeToOrgSkillGraph } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
