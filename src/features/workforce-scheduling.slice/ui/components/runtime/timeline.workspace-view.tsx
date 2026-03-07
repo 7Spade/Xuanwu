@@ -7,7 +7,7 @@
 
 "use client";
 
-import { Clock3, GripVertical, Plus, X } from "lucide-react";
+import { GripVertical, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
@@ -179,14 +179,6 @@ export function WorkspaceTimeline() {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-1">
-        <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
-        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock3 className="size-4" />
-          Review workspace timeline details and detect scheduling conflicts for {workspace.name}.
-        </p>
-      </div>
-
       <TimelineCanvas
         items={items}
         members={organizationMembers}

@@ -9,9 +9,14 @@ import { WorkspaceSchedule, WorkspaceTimeline } from "@/features/workforce-sched
 
 export default function ScheduleCapabilityPage() {
   return (
-    <div className="space-y-6">
-      <WorkspaceSchedule />
-      <WorkspaceTimeline />
+    <div className="space-y-8">
+      <section className="overflow-hidden rounded-2xl border bg-card/20 p-4 md:p-5">
+        <WorkspaceSchedule />
+      </section>
+
+      <section className="overflow-hidden rounded-2xl border bg-card/20 p-4 md:p-5">
+        <WorkspaceTimeline />
+      </section>
     </div>
   )
 }
