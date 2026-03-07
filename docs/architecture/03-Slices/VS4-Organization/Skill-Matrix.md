@@ -11,7 +11,10 @@ VS4 只管理「技能需求與門檻」，不管理 XP 寫入。
 
 ## Recognition Rules
 
-- `org-skill-recognition.aggregate` 管理最小能力門檻與啟用狀態。
+- `org-skill-recognition.aggregate` 管理「技能認可門檻」與啟用狀態。
+  - **權力歸屬**：門檻值由 VS4 依組織治理授權設定（VS4 擁有決策權；VS3 只負責 XP 寫入 [#11]）。
+  - **層級與依賴規則**：VS4 ≠ VS3，兩者各屬獨立 BC，不可跨層操作。
+  - **邊界與上下文**：組織政策屬 VS4 內部狀態，外部不得直接讀寫。
 - recognition 變更需事件化輸出，供其他 slice 訂閱。
 
 ## Snapshot & Freshness

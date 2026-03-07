@@ -21,7 +21,7 @@
 
 如何使用（簡短）：
 
-1. 若需某項專長，呼叫 `runSubagent` 或對應的 prompt（例如 `chrome-devtools`）並提供最小必要上下文。
+1. 若需某項專長，呼叫 `runSubagent` 或對應的 prompt（例如 `chrome-devtools`）並依「通訊與協調機制」與「邊界與上下文」原則提供必要的呼叫資訊。
 2. 在自動化流程中，請將 skill 名稱與版本（若有）寫入任務的 metadata 以便追蹤與審計。
 3. 若要新增 skill，新增 `SKILL.md` 到此資料夾，並在本檔新增索引說明。
 
