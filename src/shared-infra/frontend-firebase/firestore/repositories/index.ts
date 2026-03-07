@@ -17,4 +17,3 @@ export * from './projection.registry.repository'               // getProjectionV
 export * from './schedule.repository'                          // createScheduleItem, updateScheduleItemStatus, updateScheduleItemDateRange, assignMemberToScheduleItem, assignMemberAndApprove, unassignMemberFromScheduleItem, getScheduleItems
 export * from './daily.repository'                             // toggleDailyLogLike, addDailyLogComment, getDailyLogs
 export * from './audit.repository'                             // getAuditLogs
-export * from './org-skill-graph.repository'                   // getOrgSkillGraph, subscribeToOrgSkillGraph, upsertOrgSkillNode, deleteOrgSkillNode, upsertOrgSkillEdge, deleteOrgSkillEdge

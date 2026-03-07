@@ -9,6 +9,12 @@
 
 import type { CommandResult, SkillRequirement } from '@/shared-kernel';
 import { commandFailureFrom, commandSuccess } from '@/shared-kernel';
+import {
+  suggestSkillTypeDraftFromAI,
+  suggestTaskTypeDraftFromAI,
+  type SuggestSkillTypeDraftOutput,
+  type SuggestTaskTypeDraftOutput,
+} from '@/app-runtime/ai';
 
 import {
   addOrgSkillType,
@@ -18,6 +24,11 @@ import {
   updateOrgSkillType,
   updateOrgTaskType,
 } from './_registry';
+import { getOrgSkillTypes, getOrgTaskTypes } from './_queries';
+
+export type OrgSemanticAssistantResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
 
 export async function addOrgTaskTypeAction(
   orgId: string,
@@ -120,5 +131,48 @@ export async function removeOrgSkillTypeAction(
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return commandFailureFrom('REMOVE_ORG_SKILL_TYPE_FAILED', message);
+  }
+}
+
+export async function suggestOrgTaskTypeDraftAction(
+  orgId: string,
+  userPrompt: string
+): Promise<OrgSemanticAssistantResult<SuggestTaskTypeDraftOutput>> {
+  try {
+    const [taskTypes, skillTypes] = await Promise.all([
+      getOrgTaskTypes(orgId),
+      getOrgSkillTypes(orgId),
+    ]);
+
+    const data = await suggestTaskTypeDraftFromAI({
+      orgId,
+      userPrompt,
+      existingTaskTypeSlugs: taskTypes.map((entry) => entry.slug),
+      existingSkillTypeSlugs: skillTypes.map((entry) => entry.slug),
+    });
+    return { success: true, data };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
+  }
+}
+
+export async function suggestOrgSkillTypeDraftAction(
+  orgId: string,
+  userPrompt: string
+): Promise<OrgSemanticAssistantResult<SuggestSkillTypeDraftOutput>> {
+  try {
+    const skillTypes = await getOrgSkillTypes(orgId);
+
+    const data = await suggestSkillTypeDraftFromAI({
+      orgId,
+      userPrompt,
+      existingTaskTypeSlugs: [],
+      existingSkillTypeSlugs: skillTypes.map((entry) => entry.slug),
+    });
+    return { success: true, data };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
   }
 }

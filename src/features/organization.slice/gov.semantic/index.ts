@@ -38,4 +38,9 @@ export {
   addOrgSkillTypeAction,
   updateOrgSkillTypeAction,
   removeOrgSkillTypeAction,
+  suggestOrgTaskTypeDraftAction,
+  suggestOrgSkillTypeDraftAction,
 } from './_actions';
+export type { OrgSemanticAssistantResult } from './_actions';
+
+export { OrgSemanticDictionaryPanel } from './_components/org-semantic-dictionary-panel';

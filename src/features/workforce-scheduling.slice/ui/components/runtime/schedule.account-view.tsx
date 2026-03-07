@@ -17,12 +17,12 @@
 "use client";
 
 import { addMonths, subMonths } from "date-fns";
-import { AlertCircle, Calendar, ListChecks, History, Users, BookOpen } from "lucide-react";
+import { AlertCircle, Calendar, ListChecks, History, Users, Library } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { OrgSkillGraphEditor } from "@/features/organization.slice";
+import { OrgSemanticDictionaryPanel } from "@/features/organization.slice";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import type { ScheduleItem } from '@/shared-kernel';
 
@@ -95,9 +95,9 @@ export function AccountScheduleSection() {
             <Users className="size-4" />
             Workforce
           </TabsTrigger>
-          <TabsTrigger value="skill-pool" className="gap-2">
-            <BookOpen className="size-4" />
-            Skill Pool
+          <TabsTrigger value="semantic-dictionary" className="gap-2">
+            <Library className="size-4" />
+            Semantic Dictionary
           </TabsTrigger>
         </TabsList>
 
@@ -148,10 +148,8 @@ export function AccountScheduleSection() {
           <OrgScheduleGovernance />
         </TabsContent>
 
-        {/* Tab 3: Org-governed skill graph — each organization defines its own skill nodes
-            and relationships using vis-network, replacing the global skills.ts dictionary. */}
-        <TabsContent value="skill-pool" className="flex-1">
-          <OrgSkillGraphEditor />
+        <TabsContent value="semantic-dictionary" className="flex-1">
+          <OrgSemanticDictionaryPanel />
         </TabsContent>
       </Tabs>
     </div>

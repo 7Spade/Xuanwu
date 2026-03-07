@@ -19,9 +19,11 @@ src/app-runtime/ai/
 ├── dev.ts
 ├── flows/
 │   ├── adapt-ui-color-to-account-context.ts
-│   └── extract-invoice-items.ts
+│   ├── extract-invoice-items.ts
+│   └── suggest-semantic-dictionary-entry.ts
 └── schemas/
-		└── docu-parse.ts
+		├── docu-parse.ts
+		└── semantic-dictionary-assistant.ts
 ```
 
 ## Core Files
@@ -36,12 +38,14 @@ src/app-runtime/ai/
 	- 載入並註冊 flows：
 		- `adapt-ui-color-to-account-context`
 		- `extract-invoice-items`
+		- `suggest-semantic-dictionary-entry`
 
 - `index.ts`
 	- 目前對外匯出：
 		- flow：`extractInvoiceItems`
 		- flow：`adaptUIColorToAccountContext`（含 I/O 型別 `AdaptUIColorToAccountContextInput`、`AdaptUIColorToAccountContextOutput`）
-		- schemas：`docu-parse.ts` 全部匯出
+		- flow：`suggestTaskTypeDraftFromAI`、`suggestSkillTypeDraftFromAI`
+		- schemas：`docu-parse.ts`、`semantic-dictionary-assistant.ts` 全部匯出
 
 ## Flows
 
@@ -55,6 +59,10 @@ src/app-runtime/ai/
 	- 功能：根據帳號語境生成 UI 色彩建議
 	- 輸出：`primaryColor`、`backgroundColor`、`accentColor`
 
+- `suggest-semantic-dictionary-entry.ts`
+	- 功能：根據使用者描述生成 `task-type` / `skill-type` 草稿
+	- 輸出：標準化後的 `slug`、`name`、`aliases`、`description`，以及 task 的 `requiredSkills`
+
 ## Schemas
 
 - `schemas/docu-parse.ts`
@@ -62,6 +70,12 @@ src/app-runtime/ai/
 	- `ExtractInvoiceItemsInputSchema`
 	- `ExtractInvoiceItemsOutputSchema`
 	- 另提供 `WorkItem` 型別別名
+
+- `schemas/semantic-dictionary-assistant.ts`
+	- `SuggestSemanticDraftInputSchema`
+	- `SuggestTaskTypeDraftOutputSchema`
+	- `SuggestSkillTypeDraftOutputSchema`
+	- 另提供對應 draft 輸出型別
 
 ## Dependency Boundaries
 
