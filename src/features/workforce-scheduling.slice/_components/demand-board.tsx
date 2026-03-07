@@ -38,7 +38,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import type { SkillRequirement } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 import { SKILLS } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
 import { Badge } from '@/shared/shadcn-ui/badge';

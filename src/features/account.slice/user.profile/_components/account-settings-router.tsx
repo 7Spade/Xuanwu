@@ -1,7 +1,7 @@
 "use client";
 
 import { OrgSettingsView } from "@/features/organization.slice";
-import { useApp } from "@/shared/app-providers/app-context";
+import { useApp } from "@/shared/app-providers/app-provider";
 
 import { UserSettingsView } from "./user-settings-view";
 

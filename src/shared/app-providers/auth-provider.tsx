@@ -1,23 +1,20 @@
 "use client";
 
+/**
+ * Module: auth-provider.tsx
+ * Purpose: host auth provider lifecycle and consumer hook
+ * Responsibilities: sync firebase auth state, expose logout and useAuth
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 import { type User as FirebaseUser } from "firebase/auth";
-import type React from 'react';
 import {type ReactNode} from 'react';
-import { createContext, useReducer, useContext, useEffect } from 'react';
+import { useReducer, useContext, useEffect } from 'react';
 
-import { type Account } from '@/shared-kernel';
 import { authAdapter } from '@/shared/infra/auth/auth.adapter';
+import { AuthContext, type AuthAction, type AuthState } from './auth-context';
 
-interface AuthState {
-  user: Account | null;
-  authInitialized: boolean;
-}
-
-type Action =
-  | { type: 'SET_AUTH_STATE'; payload: { user: Account | null, initialized: boolean } }
-  | { type: 'UPDATE_USER_PROFILE'; payload: Partial<Account> };
-
-const authReducer = (state: AuthState, action: Action): AuthState => {
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'SET_AUTH_STATE':
       return { ...state, user: action.payload.user, authInitialized: action.payload.initialized };
@@ -38,12 +35,6 @@ const initialState: AuthState = {
   user: null,
   authInitialized: false,
 };
-
-const AuthContext = createContext<{ 
-  state: AuthState; 
-  dispatch: React.Dispatch<Action>;
-  logout: () => Promise<void>;
-} | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);

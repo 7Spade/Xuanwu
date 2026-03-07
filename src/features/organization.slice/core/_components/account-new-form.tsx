@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { useApp } from "@/shared/app-providers/app-context";
+import { useApp } from "@/shared/app-providers/app-provider";
 import { Button } from "@/shared/shadcn-ui/button";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shared/shadcn-ui/input";

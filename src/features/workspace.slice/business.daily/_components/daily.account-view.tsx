@@ -14,7 +14,7 @@
 import { AlertCircle, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
-import { useApp } from "@/shared/app-providers/app-context";
+import { useApp } from "@/shared/app-providers/app-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 
 

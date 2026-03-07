@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 
 import type { TimelineMember } from '../_types';
 

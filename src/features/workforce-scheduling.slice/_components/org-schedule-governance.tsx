@@ -25,7 +25,7 @@ import { getOrgEligibleMembersWithTier } from '@/features/projection.bus';
 import type { OrgEligibleMemberView } from '@/features/projection.bus';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/shadcn-ui/empty';
 import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';

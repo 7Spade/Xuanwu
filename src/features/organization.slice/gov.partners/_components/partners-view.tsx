@@ -6,7 +6,7 @@ import { useState, useEffect, useMemo } from "react"
 
 import { useI18n } from "@/config/i18n/i18n-provider"
 import type { Team } from "@/shared-kernel"
-import { useApp } from "@/shared/app-providers/app-context"
+import { useApp } from "@/shared/app-providers/app-provider"
 import { Badge } from "@/shared/shadcn-ui/badge"
 import { Button } from "@/shared/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"

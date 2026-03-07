@@ -20,7 +20,7 @@ import { useState, useEffect, useMemo } from "react";
 
 import type { ScheduleItem } from '@/shared-kernel';
 import { useWorkspace } from "@/features/workspace.slice";
-import { useApp } from "@/shared/app-providers/app-context";
+import { useApp } from "@/shared/app-providers/app-provider";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 
 import { subscribeToWorkspaceScheduleItems } from '../_queries';

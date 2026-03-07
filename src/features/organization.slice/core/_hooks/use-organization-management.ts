@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import type { ThemeConfig } from '@/shared-kernel';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 import { useAuth } from '@/shared/app-providers/auth-provider';
 
 import {

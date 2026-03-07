@@ -24,7 +24,7 @@ import { useCallback, useEffect, useMemo, useOptimistic, useState, useTransition
 
 import { addOrgSkillTagAction, removeOrgSkillTagAction } from '@/features/skill-xp.slice';
 import { getOrgSkillTags } from '@/features/skill-xp.slice';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 import {
   SKILL_GROUPS,
   SKILL_SUB_CATEGORY_BY_KEY,

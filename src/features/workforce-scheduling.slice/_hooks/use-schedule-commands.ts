@@ -13,7 +13,7 @@ import { useCallback } from "react";
 import { getOrgMemberEligibilityWithTier } from "@/features/projection.bus";
 import { tierSatisfies } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
-import { useApp } from "@/shared/app-providers/app-context";
+import { useApp } from "@/shared/app-providers/app-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
 

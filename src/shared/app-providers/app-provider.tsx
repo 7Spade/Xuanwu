@@ -1,7 +1,10 @@
 "use client"
 
 /**
- * shared/app-providers/app-context.tsx
+ * Module: app-provider.tsx
+ * Purpose: host app-level provider lifecycle and consumer hook
+ * Responsibilities: subscribe account stream, own reducer lifecycle, expose useApp
+ * Constraints: deterministic logic, respect module boundaries
  *
  * Active Account Context ??cross-cutting identity state.
  *
@@ -18,37 +21,13 @@
  * workspace context and must be accessible to Subject Center slices.
  */
 
-import type React from 'react'
-import { type ReactNode, createContext, useReducer, useEffect } from 'react'
+import { type ReactNode, useReducer, useEffect } from 'react'
 import { useContext } from 'react'
 
-import { type Account, type Notification } from '@/shared-kernel';
-import type { CapabilitySpec } from '@/features/workspace.slice';
+import { AppContext, type AppAction, type AppState } from './app-context'
 
 import { subscribeToAccountsForUser } from './_queries'
 import { useAuth } from './auth-provider'
-
-// ---------------------------------------------------------------------------
-// State shape
-// ---------------------------------------------------------------------------
-
-export interface AppState {
-  accounts: Record<string, Account>
-  activeAccount: Account | null
-  notifications: Notification[]
-  capabilitySpecs: CapabilitySpec[]
-  scheduleTaskRequest: { taskName: string; workspaceId: string } | null
-}
-
-export type AppAction =
-  | { type: 'SET_ACCOUNTS'; payload: { accounts: Record<string, Account>; user: Account } }
-  | { type: 'SET_ACTIVE_ACCOUNT'; payload: Account | null }
-  | { type: 'RESET_STATE' }
-  | { type: 'ADD_NOTIFICATION'; payload: Omit<Notification, 'id' | 'timestamp' | 'read'> }
-  | { type: 'MARK_NOTIFICATION_READ'; payload: string }
-  | { type: 'CLEAR_NOTIFICATIONS' }
-  | { type: 'REQUEST_SCHEDULE_TASK'; payload: { taskName: string; workspaceId: string } }
-  | { type: 'CLEAR_SCHEDULE_TASK_REQUEST' }
 
 // ---------------------------------------------------------------------------
 // Initial state
@@ -127,12 +106,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return state
   }
 }
-
-// ---------------------------------------------------------------------------
-// Context + Provider
-// ---------------------------------------------------------------------------
-
-export const AppContext = createContext<{ state: AppState; dispatch: React.Dispatch<AppAction> } | null>(null)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { state: authState } = useAuth()

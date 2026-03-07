@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { ScheduleItem } from '@/shared-kernel';
 import { useWorkspace } from '@/features/workspace.slice';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 
 import { subscribeToWorkspaceTimelineItems } from '../_queries';
 import type { TimelineMember } from '../_types';

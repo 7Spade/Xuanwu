@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import type { MemberReference } from '@/shared-kernel';
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 
 import {
   createPartnerGroup as createPartnerGroupAction,

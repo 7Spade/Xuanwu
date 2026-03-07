@@ -13,7 +13,7 @@ import {
 import { useState, useMemo } from "react";
 
 import { type Team, type MemberReference } from "@/shared-kernel";
-import { useApp } from '@/shared/app-providers/app-context';
+import { useApp } from '@/shared/app-providers/app-provider';
 import { Badge } from "@/shared/shadcn-ui/badge";
 import { Button } from "@/shared/shadcn-ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/shadcn-ui/card";
