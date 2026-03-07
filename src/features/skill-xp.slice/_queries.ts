@@ -7,7 +7,7 @@
  *   3. Org Skill Recognition (orgSkillRecognition)
  *
  * Per 00-LogicOverview.md:
- *   W_B_SCHEDULE -.??ACCOUNT_SKILL_VIEW (読み?��? only ??via ORG_ELIGIBLE_MEMBER_VIEW)
+ *   W_B_SCHEDULE -.??ACCOUNT_SKILL_VIEW (読み?��? only ??via ORG_ELIGIBLE_MEMBER_VIEW)
  *   SKILL_TAG_POOL_AGGREGATE ??SKILL_TAG_POOL (read model)
  *   ORG_SKILL_RECOGNITION["...organizationId / accountId / skillId / minXpRequired / status"]
  *
