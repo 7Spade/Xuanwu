@@ -13,7 +13,7 @@ import {
   query,
   type Unsubscribe,
   where,
-} from '@/shared/infra/firestore/firestore.read.adapter'
+} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils'
 
 export function subscribeToAccountsForUser(

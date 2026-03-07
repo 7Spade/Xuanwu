@@ -4,7 +4,7 @@
  * Read-side queries for the organization projection view.
  */
 
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 import type { OrganizationViewRecord } from './_projector';
 

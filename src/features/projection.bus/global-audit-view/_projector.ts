@@ -4,8 +4,8 @@
 
 import type { EventEnvelope } from '@/shared-kernel';
 import { db } from '@/shared-infra/frontend-firebase';
-import { doc } from '@/shared/infra/firestore/firestore.read.adapter';
-import { setDoc, serverTimestamp } from '@/shared/infra/firestore/firestore.write.adapter';
+import { doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { setDoc, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 export interface GlobalAuditRecord {
   readonly auditEventId: string;

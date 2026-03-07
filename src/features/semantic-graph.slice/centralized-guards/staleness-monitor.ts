@@ -23,12 +23,14 @@
  * ZERO infrastructure imports (no Firebase, no React, no I/O).
  */
 
+import { StalenessMs } from '@/shared-kernel';
+
 import type { StaleTagWarning, TagLifecycleRecord } from '../centralized-types';
 
 // ─── Threshold ────────────────────────────────────────────────────────────────
 
-/** Default staleness window: 90 days in milliseconds. */
-export const DEFAULT_STALENESS_THRESHOLD_MS = 90 * 24 * 60 * 60 * 1000;
+/** Default staleness window from SK_STALENESS_CONTRACT [S4]. */
+export const DEFAULT_STALENESS_THRESHOLD_MS = StalenessMs.TAG_MAX_STALENESS;
 
 // ─── Internal registry ────────────────────────────────────────────────────────
 
@@ -76,10 +78,8 @@ export function detectStaleTagWarnings(
     if (ageMs > thresholdMs) {
       warnings.push({
         tagSlug: record.tagSlug,
-        currentState: record.currentState,
-        lastTransitionedAt: record.lastTransitionedAt,
-        staleAgeMs: ageMs,
-        warningMessage: `Tag "${record.tagSlug}" has been in state "${record.currentState}" for ${Math.floor(ageMs / (24 * 60 * 60 * 1000))} days without a transition.`,
+        stalenessMs: ageMs,
+        detectedAt: new Date(now).toISOString(),
       });
     }
   }

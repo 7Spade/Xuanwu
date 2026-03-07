@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { arrayUnion, updateDocument } from '@/shared/infra/firestore/firestore.write.adapter';
+import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 
 /**
  * Execute a WriteOp returned by an aggregate function. [D3]

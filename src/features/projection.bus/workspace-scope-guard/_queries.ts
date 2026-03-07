@@ -6,7 +6,7 @@
  */
 
 import type { AuthoritySnapshot } from '@/shared-kernel';
-import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 import type { WorkspaceScopeGuardView } from './_read-model';
 import { buildAuthoritySnapshot } from './_read-model';

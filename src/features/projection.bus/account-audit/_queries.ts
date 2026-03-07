@@ -7,8 +7,8 @@
 
 import { db } from '@/shared-infra/frontend-firebase';
 import { createConverter } from '@/shared/infra/firestore/firestore.converter';
-import { collection, query, orderBy, limit } from '@/shared/infra/firestore/firestore.read.adapter';
-import { getDocuments } from '@/shared/infra/firestore/firestore.read.adapter';
+import { collection, query, orderBy, limit } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocuments } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 
 import type { AuditProjectionEntry } from './_projector';
 

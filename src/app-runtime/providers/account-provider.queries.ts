@@ -16,7 +16,7 @@ import {
   query,
   type Unsubscribe,
   where,
-} from '@/shared/infra/firestore/firestore.read.adapter'
+} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
 import { snapshotToRecord } from '@/shared/infra/firestore/firestore.utils'
 import type { DailyLog } from '@/features/workspace.slice/business.daily/_types'
 import type { AuditLog } from '@/features/workspace.slice/gov.audit/_types'

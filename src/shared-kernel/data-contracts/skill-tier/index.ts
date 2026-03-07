@@ -21,7 +21,7 @@
  * [D19] Canonical type definitions live here. Import from `@/shared-kernel`.
  */
 
-import type { Timestamp } from '@/shared/ports'
+import type { Timestamp } from '../../ports'
 
 import type { TagSlugRef } from '../tag-authority'
 
