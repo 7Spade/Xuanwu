@@ -571,8 +571,8 @@ Use this skill when:
    - Understand what the code does
    - Plan the refactoring
 
-3. REFACTOR (small steps)
-   - Make one small change
+3. REFACTOR (coherent slices)
+   - Make one architecture-coherent change set (respect layer/boundary/ownership)
    - Run tests
    - Commit if tests pass
    - Repeat

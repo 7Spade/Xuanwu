@@ -30,7 +30,7 @@ Once the Action Plan is finalized, **proceed to directly fix the codebase**:
 1. **Scaffold Missing Structures:** Create any missing folders and initial boilerplate files dictated by the architecture document.
 2. **Relocate & Rename:** Move, rename, or re-export misplaced files so they reside in their correct domain boundaries.
 3. **Refactor Code:** Update incorrect imports, fix dependency directions, and adjust logic to resolve any architectural invariants violations.
-4. **Iterative Flow:** Apply these changes incrementally. Verify that each modification strictly aligns with the design rules before moving to the next.
+4. **Closure Flow:** Apply each architecture-coherent change set to closure (implementation + verification + docs sync). Verify alignment with layer, boundary, coordination, side-effect, ownership, and rate-of-change rules before moving to the next set.
 
 ## Constraints & Execution Rules (Strict)
 - **Source of Truth:** Treat `docs/architecture/00-LogicOverview.md` as the absolute law. Any deviation in the current codebase is a bug that you MUST fix.

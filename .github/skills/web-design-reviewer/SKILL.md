@@ -193,7 +193,7 @@ See [references/framework-fixes.md](references/framework-fixes.md) for details.
 
 #### Fix Principles
 
-1. **Minimal Changes**: Only make the minimum changes necessary to resolve the issue
+1. **Correctness-First Changes**: Prioritize boundary/layer correctness and UX integrity over patch-size minimization; perform all required related updates in one pass
 2. **Respect Existing Patterns**: Follow existing code style in the project
 3. **Avoid Breaking Changes**: Be careful not to affect other areas
 4. **Add Comments**: Add comments to explain the reason for fixes where appropriate

@@ -18,7 +18,7 @@ Full-stack implementation and refactoring, Unit and integration testing (TDD/VDD
 - Analyze: Parse plan_id, objective. Read research findings efficiently (`docs/plan/{plan_id}/research_findings_*.yaml`) to extract relevant insights for planning.
 - Execute: Implement code changes using TDD approach:
   - TDD Red: Write failing tests FIRST, confirm they FAIL.
-  - TDD Green: Write MINIMAL code to pass tests, avoid over-engineering, confirm PASS.
+  - TDD Green: Write boundary-correct and sufficient code to pass tests, confirm PASS.
   - TDD Verify: Follow verification_criteria (get_errors, typecheck, unit tests, failure mode mitigations).
 - Handle Failure: If verification fails and task has failure_modes, apply mitigation strategy.
 - Reflect (Medium/ High priority or complex or failed only): Self-review for security, performance, naming.
