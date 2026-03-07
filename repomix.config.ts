@@ -19,7 +19,7 @@ export default defineConfig({
     // **核心壓縮功能**：使用 Tree-sitter 智能提取結構並移除細節（顯著降低 Token 使用量）
     compress: true,
   },
-  include: ["**/*"],
+  include: ["src/**/*.ts", "src/**/*.tsx"],
   ignore: {
     // 排除不必要的路徑
     customPatterns: [
