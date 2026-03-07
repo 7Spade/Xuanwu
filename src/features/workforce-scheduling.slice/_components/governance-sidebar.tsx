@@ -27,7 +27,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
     <Card className="flex h-full flex-col rounded-none border-none shadow-none">
       <CardHeader className="border-b">
         <CardTitle className="text-sm font-bold uppercase tracking-widest">
-          待審?æ? ({proposals.length})
+          待審提案 ({proposals.length})
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
@@ -45,7 +45,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
                           const skillName = SKILLS.find((s) => s.slug === req.tagSlug)?.name ?? req.tagSlug;
                           return (
                             <Badge key={req.tagSlug} variant="secondary" className="text-[9px]">
-                              {skillName} ??{req.minimumTier} ? {req.quantity}
+                              {skillName} Tier {req.minimumTier} × {req.quantity}
                             </Badge>
                           );
                         })}
@@ -65,7 +65,7 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
             ))}
             {proposals.length === 0 && (
               <div className="py-12 text-center text-xs italic text-muted-foreground">
-                ?®å??¡å?審æ?案ã€?
+                目前沒有待審提案。
               </div>
             )}
           </div>

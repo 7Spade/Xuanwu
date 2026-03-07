@@ -1,4 +1,4 @@
-// [?·責] Business ???®ä? Workspace ?’ç??æ??‡ç??‹é?è¼?
+// [職責] Business Hook：管理 Workspace 排程資料與操作流程
 /**
  * @fileoverview useWorkspaceSchedule - Hook for workspace-scoped schedule state and actions.
  * @description Encapsulates data derivation, state management, side effects, and

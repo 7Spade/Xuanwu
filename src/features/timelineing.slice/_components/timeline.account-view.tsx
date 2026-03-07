@@ -40,7 +40,7 @@ export function AccountTimelineSection() {
         <AlertCircle className="size-10 text-muted-foreground" />
         <h3 className="font-bold">Timeline Not Available</h3>
         <p className="text-sm text-muted-foreground">
-          組ç?層ç???Timeline ?…在 organization 維度?¯使?¨ã€?
+          組織層級的 Timeline 僅支援 organization 維度使用。
         </p>
       </div>
     );
@@ -52,7 +52,7 @@ export function AccountTimelineSection() {
         <h1 className="font-headline text-4xl font-bold tracking-tight">Organization Timeline</h1>
         <p className="flex items-center gap-2 text-muted-foreground">
           <Clock3 className="size-4" />
-          使用 vis timeline ?ˆ現?¨ç?織æ?程æ?序ã€?
+          使用 vis timeline 呈現組織排程時序。
         </p>
       </div>
 

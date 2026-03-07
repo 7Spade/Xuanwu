@@ -4,7 +4,7 @@
  * Cross-cutting Authority ??Domain Types for the system's sole side-effect outlet.
  *
  * Per logic-overview.md [D26]:
- *   notification-hub = ?æ?中æ? (Reaction Hub)
+ *   notification-hub = 反應中樞 (Reaction Hub)
  *   VS7 enhanced ??sole side-effect outlet with tag-aware routing via VS8.
  *
  * Architecture:

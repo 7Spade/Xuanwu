@@ -8,7 +8,7 @@
  * delivery channels accordingly.
  *
  * Per logic-overview.md (VS7 enhanced):
- *   Notification Hub = ?æ?中æ?
+ *   Notification Hub = 反應中樞 (Reaction Hub)
  *   - Monitors projection.bus for tag lifecycle events
  *   - Routes via VS8 tag semantics to appropriate channels
  *   - Sole side-effect outlet [D26]

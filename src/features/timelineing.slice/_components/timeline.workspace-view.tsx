@@ -37,7 +37,7 @@ export function WorkspaceTimeline() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock3 className="size-4" />
-          以æ?序方式檢è¦?{workspace.name} ?„æ?程é??®ã€?
+          以時間序方式檢視 {workspace.name} 的排程與衝突。
         </p>
       </div>
 
