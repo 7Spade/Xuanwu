@@ -79,6 +79,9 @@
 %%    [A17] VS8 僅提供 semanticTagSlug / policy lookup；XP ledger 寫入權限只在 VS3
 %%  ── RULESET-MUST · Layering Rules（層級通訊規則）──
 %%    External → L2 CMD_GWAY（寫） / L6 QGWAY（讀）
+%%    單向依賴鏈（寫鏈）= L0 → L2 → L3 → L4 → L5（禁止回跳）
+%%    單向依賴鏈（讀鏈）= L0/UI → L6 → L5（Read Model）
+%%    基礎設施依賴鏈 = L3/L5/L6 → L1(SK_PORTS/Contracts) → L7(FIREBASE_ACL) → L8(Firebase)
 %%    L3 Slice ↔ L3 Slice = 禁止直接 mutate；僅可透過 L4 IER 事件協作 [#2 D9]
 %%    L3 → L5 Projection 寫入 = 禁止直寫；必須經 event-funnel [#9 S2]
 %%    L3 讀取語義 = 僅可經 VS8 projection.tag-snapshot [D21-7 T5]
@@ -182,8 +185,11 @@
 %%    SECURITY_BLOCK DLQ → 禁止自動 Replay，必須人工審查
 %%    B-track 禁止回呼 A-track → 只能透過 Domain Event 溝通
 %%    Feature slice 禁止直接 import firebase/* [D24]
+%%    Feature slice 禁止直接 import @/shared-infra/*；僅可依賴 SK_PORTS / Query Gateway / slice public API
 %%    Feature slice 禁止自建搜尋邏輯，必須透過 Global Search [D26 #A12]
 %%    Feature slice 禁止直接 call sendEmail/push/SMS，必須透過 Notification Hub [D26 #A13]
+%%    禁止 L6 Query Gateway 反向驅動 L2 Command Gateway（讀寫鏈不得形成回饋環）
+%%    禁止 VS8 直接下命令至 VS5/VS6；僅可透過 L4 事件或 L5/L6 投影互動
 %%    VS5 document-parser 禁止自行實作成本語義邏輯，必須呼叫 VS8 classifyCostItem() [D27 #A14]
 %%    Layer-3 Semantic Router 禁止繞過 costItemType 直接物化非 EXECUTABLE 項目為 tasks [D27]
 %%    Workflow 禁止在 Acceptance 未達 OK 前進入 Finance [#A15]
@@ -919,7 +925,7 @@ WALLET_V -.-> QGWAY_WALLET
 TAG_SNAP -.-> QGWAY_SEARCH
 SEM_GOV_V -.-> QGWAY_SEM_GOV
 ACTIVE_CTX -->|"查詢鍵"| QGWAY_SCOPE
-QGWAY_SCOPE --> CBG_AUTH
+SK_AUTH_SNAP -.->|"AuthoritySnapshot 契約 [#A9]"| CBG_AUTH
 
 %% ── Firebase ACL / Infra（下沉後連線整理）──
 AUTH_ADP -.->|"implements"| I_AUTH
@@ -951,8 +957,9 @@ GLOBAL_SEARCH -->|"語義化索引檢索"| QGWAY_SEARCH
 GLOBAL_SEARCH -.->|"queries VS8 semantic index [D26]"| VS8
 
 %% ── VS8 Semantic Graph 跨切片語義提供 ──
-VS8 -.->|"排班組合匹配"| VS6
-VS8 -.->|"任務語義標籤"| VS5
+VS8 -.->|"語義投影輸出（唯讀）"| TAG_SNAP
+VS5 -.->|"語義讀取僅經 L6 [D21-7 T5]"| QGWAY_SEARCH
+VS6 -.->|"語義讀取僅經 L6 [D21-7 T5]"| QGWAY_SEARCH
 COST_CLASSIFIER -.->|"classifyCostItem() [Layer-2 D27 #A14]"| W_PARSER
 
 %% ═══════════════════════════════════════════════════════════════
@@ -1230,6 +1237,8 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D24 feature slice / shared/types / app 層禁止直接 import firebase/*
 %%      所有 Firebase SDK 呼叫必須透過 FIREBASE_ACL 對應 Adapter
 %%      Adapter 路徑：src/shared/infra/{auth|firestore|messaging|storage}
+%%      Feature slice 禁止直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
+%%      Feature slice 必須只依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
 %%  D25 新增 Firebase 功能必須在 FIREBASE_ACL 新增 Adapter 實作對應 SK_PORTS Port
 %%  ── Cross-cutting Authority 守則（D26）──
 %%  D26 Cross-cutting Authority 治理：
