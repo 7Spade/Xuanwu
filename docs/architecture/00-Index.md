@@ -13,7 +13,7 @@
   - 架構唯一真相來源 (SSOT)，包含 D/S/R/A/# 全規則、flowchart、FORBIDDEN。
 - `docs/architecture/01-SharedKernel.md`
   - L1 契約中心：SK_DATA、S1~S6、SK_PORTS。
-- `docs/architecture/02-LayeringRules.md`
+- `docs/architecture/02-Layers/00-LayeringRules.md`
   - L0~L9 層級通訊與單向依賴鏈。
 
 ## 2. Slice 文件
@@ -37,10 +37,15 @@
   - S 系列：一致性、冪等、SLA、韌性。
 - `docs/architecture/04-Invariants/A-Authority.md`
   - A / #A 系列：權威出口、原子性、決策權限。
-- `docs/architecture/05-DecisionLogic/CostClassifier.md`
+- `docs/architecture/06-DecisionLogic/CostClassifier.md`
   - `#A14 / D27` 成本語義分類與任務物化閘門。
-- `docs/architecture/05-DecisionLogic/FinanceCycle.md`
+- `docs/architecture/06-DecisionLogic/FinanceCycle.md`
   - `#A15 / #A16` 財務階段與多輪請款循環。
+
+## 3.5 Guidelines
+
+- `docs/architecture/05-Guidelines/`
+  - 架構治理與工程落地準則（非硬不變量）。
 
 ## 4. 審查入口
 

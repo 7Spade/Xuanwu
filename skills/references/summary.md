@@ -45,12 +45,12 @@ This skill contains the following reference files:
 
 ## Statistics
 
-676 files | 11,015 lines
+680 files | 11,171 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 429 | 7,585 |
-| TypeScript (TSX) | 247 | 3,430 |
+| TypeScript | 433 | 7,740 |
+| TypeScript (TSX) | 247 | 3,431 |
 
 **Largest files:**
 - `src/features/workspace.slice/core/_components/workspace-settings.tsx` (340 lines)
