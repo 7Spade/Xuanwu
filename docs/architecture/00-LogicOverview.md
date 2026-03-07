@@ -649,7 +649,7 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
     subgraph VS8_OUTPUT_LAYER["④ 📤 Semantic Output Layer（src/features/semantic-graph.slice/{projections,subscribers,outbox,decision}）"]
         direction TB
 
-        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/projections）[D21-7 T5]"]
+        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/output/projections）[D21-7 T5]"]
             direction LR
             TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5】\n[D21-7] 讀取必須經 projection.tag-snapshot\nT1 新切片訂閱事件即可擴展"]
             GRAPH_SEL["projections/graph-selectors.ts\n圖結構唯讀查詢"]

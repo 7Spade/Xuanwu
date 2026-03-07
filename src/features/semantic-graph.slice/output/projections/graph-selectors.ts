@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Module: semantic-graph.slice/projections ??[L7 VS8_PROJ] Graph Selectors
  *
  * Exposes read-only query functions for use by:
@@ -16,14 +16,14 @@
 
 import type { TagCategory } from '@/shared-kernel';
 
-import { isSupersetOf } from '../graph/edges/semantic-edge-store';
+import { isSupersetOf } from '../../graph/edges/semantic-edge-store';
 import type {
   EligibleTagsQuery,
   EligibleTagResult,
   TagLifecycleRecord,
   TagEntity,
-} from '../core/types';
-import { getAllLifecycleRecords } from '../routing/workflows/tag-lifecycle.workflow';
+} from '../../core/types';
+import { getAllLifecycleRecords } from '../../routing/workflows/tag-lifecycle.workflow';
 
 // ?????? Eligible tags query [VS6 / VS4] ??????????????????????????????????????????????????????????????????????????????????
 
@@ -124,3 +124,4 @@ function _buildLifecycleMap(): Map<string, TagLifecycleRecord> {
   }
   return map;
 }
+

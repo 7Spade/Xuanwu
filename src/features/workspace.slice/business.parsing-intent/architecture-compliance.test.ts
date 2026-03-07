@@ -415,9 +415,9 @@ describe('[Architecture] VS5?VS6 integration compliance', () => {
       expect(content).not.toMatch(/^async function/m);
     });
 
-    it('semantic-graph.slice/centralized-tag/_bus.ts publishTagEvent is synchronous [D8]', () => {
+    it('semantic-graph.slice/core/tags/_bus.ts publishTagEvent is synchronous [D8]', () => {
       const busPath = path.join(
-        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_bus.ts'
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'core', 'tags', '_bus.ts'
       );
       const content = fs.readFileSync(busPath, 'utf8');
       // Must not be `async function publishTagEvent`
@@ -434,9 +434,9 @@ describe('[Architecture] VS5?VS6 integration compliance', () => {
       expect(violations).toHaveLength(0);
     });
 
-    it('CTA Firestore operations live in semantic-graph.slice/centralized-tag/_actions.ts [D3+D8]', () => {
+    it('CTA Firestore operations live in semantic-graph.slice/core/tags/_actions.ts [D3+D8]', () => {
       const actionsPath = path.join(
-        SRC_ROOT, 'features', 'semantic-graph.slice', 'centralized-tag', '_actions.ts'
+        SRC_ROOT, 'features', 'semantic-graph.slice', 'core', 'tags', '_actions.ts'
       );
       expect(fs.existsSync(actionsPath)).toBe(true);
       const content = fs.readFileSync(actionsPath, 'utf8');
