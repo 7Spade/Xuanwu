@@ -1,5 +1,12 @@
 "use client"
 
+/**
+ * Module: team-detail-view
+ * Purpose: Render team detail and manage team-member assignment actions.
+ * Responsibilities: show current members, list available internal members, and call team membership mutations.
+ * Constraints: UI-only; no direct infrastructure access.
+ */
+
 import { ArrowLeft, UserPlus, Trash2, Users } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
@@ -13,7 +20,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast"
 import type { MemberReference, Team } from "@/shared-kernel"
 
 /**
- * TeamDetailView - ?瑁痊嚗恣?摰??????(Team Member 皜)
+ * TeamDetailView - Internal team member management page.
  */
 export function TeamDetailView() {
   const { id } = useParams()

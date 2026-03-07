@@ -1,6 +1,6 @@
 ﻿/**
  * Module: policy-mapper
- * Purpose: VS8_ROUT ??Semantic tag ??dispatch strategy mapping [D27-A]
+ * Purpose: VS8_ROUT semantic tag -> dispatch strategy mapping [D27-A].
  * Responsibilities: Translate semantic tag slugs into dispatch strategies so
  *   that routing logic never uses hard-coded business IDs
  * Constraints: deterministic logic, ZERO infrastructure imports, no ID hard-coding
@@ -12,8 +12,9 @@
  * system MUST call `resolveDispatchPolicy()` instead of hard-coding business IDs
  * directly into routing rules.
  *
- * Rule [D27-A] ??Semantic-Aware Routing:
- *   ?/??蝳迫?箸璆剖? ID 蝖祉楊蝣潸楝?梧?敹?韏?policy-mapper/ 隤儔??
+ * Rule [D27-A] Semantic-Aware Routing:
+ *   Notification and scheduling dispatch are forbidden from hard-coding business IDs;
+ *   all routing must go through the semantic policy mapper.
  *   (Notification/scheduling dispatch is forbidden from hard-coding business IDs;
  *    all routing must go through the semantic policy mapper.)
  *
@@ -27,7 +28,9 @@
 
 import type { TagSlugRef } from '../../../core/types';
 
-// ??? Types ????????????????????????????????????????????????????????????????????
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 /** The kind of dispatch action to perform. */
 export type DispatchActionKind =
@@ -57,18 +60,22 @@ export type PolicyResolutionResult =
   | { readonly found: true; readonly policy: DispatchPolicy }
   | { readonly found: false; readonly reason: string };
 
-// ??? Internal registry ????????????????????????????????????????????????????????
+// ---------------------------------------------------------------------------
+// Internal registry
+// ---------------------------------------------------------------------------
 
 const _policyRegistry = new Map<string, DispatchPolicy>();
 
-// ??? Mutation API ?????????????????????????????????????????????????????????????
+// ---------------------------------------------------------------------------
+// Mutation API
+// ---------------------------------------------------------------------------
 
 /**
  * Register a dispatch policy for a semantic tag slug.
  * Overwrites any previously registered policy for the same slug.
  *
  * Called at domain slice startup, NOT in hot paths.
- * [D27-A] ??all dispatch strategies must be registered here.
+ * [D27-A] All dispatch strategies must be registered here.
  */
 export function registerPolicy(policy: DispatchPolicy): void {
   _policyRegistry.set(policy.tagSlug as string, policy);
@@ -81,7 +88,9 @@ export function unregisterPolicy(tagSlug: TagSlugRef): boolean {
   return _policyRegistry.delete(tagSlug as string);
 }
 
-// ??? Query API ????????????????????????????????????????????????????????????????
+// ---------------------------------------------------------------------------
+// Query API
+// ---------------------------------------------------------------------------
 
 /**
  * Resolve the dispatch policy for the given semantic tag slug.
