@@ -13,7 +13,6 @@ export type {
 
 export type {
   SchedulingQueryPort,
-  SchedulingStalenessContractPort,
   QueryUnsubscribe,
   OrgEligibleMemberView,
   OrgMemberSkillWithTier,

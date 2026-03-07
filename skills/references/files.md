@@ -401,6 +401,22 @@ import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { firebaseConfig } from './config/firebase.config';
 ```
 
+## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
+```typescript
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInAnonymously,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+  signOut,
+  onAuthStateChanged,
+  type User as FirebaseUser,
+} from 'firebase/auth';
+import { auth } from './auth.client';
+```
+
 ## File: src/shared-infra/frontend-firebase/auth/auth.client.ts
 ```typescript
 import { getAuth, type Auth } from 'firebase/auth';
@@ -426,6 +442,11 @@ export function mapFirebaseUser(user: FirebaseUser): AuthUser
 ```
 
 ## File: src/shared-infra/frontend-firebase/firebase.config.ts
+```typescript
+
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/collection-paths.ts
 ```typescript
 
 ```
@@ -1186,6 +1207,26 @@ export interface FcmMessage {
 ## File: src/shared-infra/frontend-firebase/storage/index.ts
 ```typescript
 
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
+```typescript
+dailyPhoto(accountId: string, workspaceId: string, fileId: string, fileName: string): string
+taskAttachment(workspaceId: string, fileId: string, fileName: string): string
+userAvatar(userId: string): string
+workspaceDocument(workspaceId: string, fileId: string, versionId: string, fileName: string): string
+```
+
+## File: src/shared-infra/frontend-firebase/storage/storage.adapter.ts
+```typescript
+import type { IFileStore, UploadOptions } from '@/shared-kernel/ports/i-file-store';
+import { getFileDownloadURL } from './storage.read.adapter';
+import { deleteFile, uploadFile } from './storage.write.adapter';
+export class StorageAdapter implements IFileStore
+⋮----
+async upload(path: string, file: File | Blob, options?: UploadOptions): Promise<string>
+async getDownloadURL(path: string): Promise<string>
+async deleteFile(path: string): Promise<void>
 ```
 
 ## File: src/shared-infra/frontend-firebase/storage/storage.client.ts
@@ -2759,42 +2800,6 @@ import type { ScheduleItem } from '@/shared-kernel'
 export type DecisionHistoryItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'status' | 'updatedAt'>
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/demand-row.tsx
-```typescript
-import { UserCheck, XCircle, Clock, CheckCircle2 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { Badge } from "@/shadcn-ui/badge";
-import { Button } from "@/shadcn-ui/button";
-import { toast } from "@/shadcn-ui/hooks/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shadcn-ui/select";
-import type { ScheduleItem, SkillRequirement } from "@/shared-kernel";
-import { SKILLS } from "@/shared-kernel/constants/skills";
-import type { Timestamp } from "@/shared-kernel/ports";
-import {
-  approveScheduleItemWithMember,
-  updateScheduleItemStatus,
-} from "../../../application/commands";
-type TimestampLike = { toDate: () => Date };
-function isTimestampLike(value: unknown): value is TimestampLike
-function formatTimestamp(ts: Timestamp | string | undefined): string
-export interface OrgMember {
-  id: string;
-  name: string;
-}
-export interface DemandRowProps {
-  item: ScheduleItem;
-  orgMembers: OrgMember[];
-  orgId: string;
-}
-⋮----
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/governance-sidebar.tsx
 ```typescript
 import { Check, X } from "lucide-react";
@@ -2836,11 +2841,6 @@ interface MemberAssignPopoverProps {
 }
 ⋮----
 onUnassign(item, member.id);
-```
-
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.rows.tsx
-```typescript
-
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-skill-pool-manager.tsx
@@ -3008,74 +3008,6 @@ const handleSubmit = async (data: {
 }) =>
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.helpers.ts
-```typescript
-import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
-import type { ScheduleItem, Timestamp } from "@/shared-kernel";
-type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
-type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
-type TimestampLike = { toDate: () => Date };
-function isTimestampLike(value: unknown): value is TimestampLike
-export function toDate(timestamp: CalendarTimestamp): Date | null
-export function escapeHtml(input: string): string
-export function toTimelineClassName(item: ScheduleItem): string
-function isStartOfDayTimestamp(date: Date): boolean
-function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
-export function resolveTimelineInterval(item: ScheduleItem):
-export function resolveInitialWindow(items: Array<
-```
-
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/unified-calendar-grid.tsx
-```typescript
-import { format, isWeekend, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday } from "date-fns";
-import { Plus, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
-import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
-import { Badge } from "@/shadcn-ui/badge";
-import { Button } from "@/shadcn-ui/button";
-import { ScrollArea } from "@/shadcn-ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shadcn-ui/tooltip";
-import { cn } from "@/shadcn-ui/utils/utils";
-import { type MemberReference } from "@/shared-kernel";
-import type { ScheduleItem } from "@/shared-kernel";
-import { findSkill } from "@/shared-kernel/constants/skills";
-import {
-  buildCardsByDate,
-  buildSpanSegmentsByDate,
-  sortSegments,
-  toCalendarDate,
-} from "./unified-calendar-grid.utils";
-⋮----
-interface UnifiedCalendarGridProps {
-  items: ScheduleItem[];
-  members: MemberReference[];
-  viewMode: 'workspace' | 'organization';
-  currentDate: Date;
-  onMonthChange: (direction: 'prev' | 'next') => void;
-  onItemClick?: (item: ScheduleItem) => void;
-  onAddClick?: (date: Date) => void;
-  onApproveProposal?: (item: ScheduleItem) => void;
-  onRejectProposal?: (item: ScheduleItem) => void;
-  renderItemActions?: (item: ScheduleItem) => React.ReactNode;
-}
-⋮----
-<div className=
-⋮----
-className=
-⋮----
-e.stopPropagation();
-⋮----
-<Button size="icon" variant="ghost" className="size-6 p-0 text-destructive" onClick=
-⋮----
-<Button size="icon" variant="ghost" className="size-6 p-0 text-green-600" onClick=
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/unified-calendar-grid.utils.ts
 ```typescript
 import { eachDayOfInterval, format, isBefore } from "date-fns";
@@ -3095,37 +3027,6 @@ export function normalizeScheduleRange(item: ScheduleItem):
 export function buildCardsByDate(items: ScheduleItem[]): Map<string, ScheduleItem[]>
 export function buildSpanSegmentsByDate(items: ScheduleItem[]): Map<string, SpanSegment[]>
 export function sortSegments(segments: SpanSegment[]): SpanSegment[]
-```
-
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/upcoming-events-columns.tsx
-```typescript
-import { type ColumnDef } from "@tanstack/react-table"
-import { format } from "date-fns"
-import { ArrowUpDown } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
-import { Badge } from "@/shadcn-ui/badge"
-import { Button } from "@/shadcn-ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/shadcn-ui/tooltip"
-import { type MemberReference } from "@/shared-kernel"
-import type { ScheduleItem } from '@/shared-kernel'
-import { SKILLS } from "@/shared-kernel/constants/skills"
-export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
-```
-
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/workspace-schedule-timeline-tabs.tsx
-```typescript
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
-type CapabilityTabValue = "schedule" | "timeline";
-function toCapabilityValue(pathname: string): CapabilityTabValue
-export function WorkspaceScheduleTimelineTabs()
-⋮----
-value=
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/hooks/runtime/index.ts
@@ -3267,27 +3168,6 @@ async withGuard<T>(
 ): Promise<T | GuardCheckResult>
 ```
 
-## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
-```typescript
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signInAnonymously,
-  updateProfile,
-  verifyBeforeUpdateEmail,
-  signOut,
-  onAuthStateChanged,
-  type User as FirebaseUser,
-} from 'firebase/auth';
-import { auth } from './auth.client';
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/collection-paths.ts
-```typescript
-
-```
-
 ## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
 ```typescript
 import { getDocument } from '../firestore.read.adapter';
@@ -3344,26 +3224,6 @@ export async function getFinanceAggregateState(
 export async function saveFinanceAggregateState(
   state: PersistedFinanceAggregateStateInput,
 ): Promise<void>
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
-```typescript
-dailyPhoto(accountId: string, workspaceId: string, fileId: string, fileName: string): string
-taskAttachment(workspaceId: string, fileId: string, fileName: string): string
-userAvatar(userId: string): string
-workspaceDocument(workspaceId: string, fileId: string, versionId: string, fileName: string): string
-```
-
-## File: src/shared-infra/frontend-firebase/storage/storage.adapter.ts
-```typescript
-import type { IFileStore, UploadOptions } from '@/shared-kernel/ports/i-file-store';
-import { getFileDownloadURL } from './storage.read.adapter';
-import { deleteFile, uploadFile } from './storage.write.adapter';
-export class StorageAdapter implements IFileStore
-⋮----
-async upload(path: string, file: File | Blob, options?: UploadOptions): Promise<string>
-async getDownloadURL(path: string): Promise<string>
-async deleteFile(path: string): Promise<void>
 ```
 
 ## File: src/shared-infra/gateway-command/_gateway.ts
@@ -4486,11 +4346,6 @@ import type { WriteOp } from '../../domain/aggregate';
 export async function executeWriteOp(op: WriteOp): Promise<void>
 ```
 
-## File: src/features/workforce-scheduling.slice/application/projectors/runtime/account-schedule-queries.ts
-```typescript
-
-```
-
 ## File: src/features/workforce-scheduling.slice/application/queries/index.ts
 ```typescript
 import {
@@ -4785,6 +4640,42 @@ export interface SchedulingStalenessContractPort {
 }
 ```
 
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/demand-row.tsx
+```typescript
+import { UserCheck, XCircle, Clock, CheckCircle2 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn-ui/select";
+import type { ScheduleItem, SkillRequirement } from "@/shared-kernel";
+import { SKILLS } from "@/shared-kernel/constants/skills";
+import type { Timestamp } from "@/shared-kernel/ports";
+import {
+  approveScheduleItemWithMember,
+  updateScheduleItemStatus,
+} from "../../../application/commands";
+type TimestampLike = { toDate: () => Date };
+function isTimestampLike(value: unknown): value is TimestampLike
+function formatTimestamp(ts: Timestamp | string | undefined): string
+export interface OrgMember {
+  id: string;
+  name: string;
+}
+export interface DemandRowProps {
+  item: ScheduleItem;
+  orgMembers: OrgMember[];
+  orgId: string;
+}
+⋮----
+```
+
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.confirmed-row.tsx
 ```typescript
 import { Flag } from 'lucide-react';
@@ -4865,18 +4756,95 @@ export function computeSkillMatch(
 ): [number, number]
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule-capability-tabs.tsx
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-canvas.helpers.ts
 ```typescript
-import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
-export function AccountCapabilityTabs()
-export function WorkspaceCapabilityTabs()
+import { addDays, addMinutes, isSameDay, startOfDay } from "date-fns";
+import type { ScheduleItem, Timestamp } from "@/shared-kernel";
+type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
+type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
+type TimestampLike = { toDate: () => Date };
+function isTimestampLike(value: unknown): value is TimestampLike
+function hasSecondsField(value: unknown): value is
+export function toDate(timestamp: CalendarTimestamp): Date | null
+export function escapeHtml(input: string): string
+export function toTimelineClassName(item: ScheduleItem): string
+function isStartOfDayTimestamp(date: Date): boolean
+function inferTemporalKind(start: Date, end?: Date, explicitKind?: ScheduleItem["temporalKind"]): ResolvedTemporalKind
+export function resolveTimelineInterval(item: ScheduleItem):
+export function resolveInitialWindow(items: Array<
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/timeline-capability-tabs.tsx
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/unified-calendar-grid.tsx
 ```typescript
-import { WorkspaceScheduleTimelineTabs } from "./workspace-schedule-timeline-tabs";
-export function AccountTimelineCapabilityTabs()
-export function WorkspaceTimelineCapabilityTabs()
+import { format, isWeekend, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isToday } from "date-fns";
+import { Plus, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/shadcn-ui/tooltip";
+import { cn } from "@/shadcn-ui/utils/utils";
+import { type MemberReference } from "@/shared-kernel";
+import type { ScheduleItem } from "@/shared-kernel";
+import { findSkill } from "@/shared-kernel/constants/skills";
+import {
+  buildCardsByDate,
+  buildSpanSegmentsByDate,
+  sortSegments,
+  toCalendarDate,
+} from "./unified-calendar-grid.utils";
+⋮----
+function isMemberReference(value: MemberReference | undefined): value is MemberReference
+interface UnifiedCalendarGridProps {
+  items: ScheduleItem[];
+  members: MemberReference[];
+  viewMode: 'workspace' | 'organization';
+  currentDate: Date;
+  onMonthChange: (direction: 'prev' | 'next') => void;
+  onItemClick?: (item: ScheduleItem) => void;
+  onAddClick?: (date: Date) => void;
+  onApproveProposal?: (item: ScheduleItem) => void;
+  onRejectProposal?: (item: ScheduleItem) => void;
+  renderItemActions?: (item: ScheduleItem) => React.ReactNode;
+}
+⋮----
+<div className=
+⋮----
+className=
+⋮----
+e.stopPropagation();
+⋮----
+<Button size="icon" variant="ghost" className="size-6 p-0 text-destructive" onClick=
+⋮----
+<Button size="icon" variant="ghost" className="size-6 p-0 text-green-600" onClick=
+```
+
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/upcoming-events-columns.tsx
+```typescript
+import { type ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
+import { ArrowUpDown } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/shadcn-ui/tooltip"
+import { type MemberReference } from "@/shared-kernel"
+import type { ScheduleItem } from '@/shared-kernel'
+import { SKILLS } from "@/shared-kernel/constants/skills"
+function isMemberReference(value: MemberReference | undefined): value is MemberReference
+export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 ```
 
 ## File: src/features/workforce-scheduling.slice/ui/hooks/runtime/use-account-timeline.ts
@@ -5935,20 +5903,6 @@ export function _clearPoliciesForTest(): void
 
 ```
 
-## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.tsx
-```typescript
-import { useEffect, useMemo, useState } from 'react';
-import { useApp } from '@/app-runtime/providers/app-provider';
-import { useAccount } from '@/features/workspace.slice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
-import { ScrollArea } from '@/shadcn-ui/scroll-area';
-import type { ScheduleItem } from '@/shared-kernel';
-import { getEligibleMembersForSchedule, type OrgEligibleMemberView } from '../../../application/queries';
-import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
-```
-
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.workspace-view.tsx
 ```typescript
 import { Shield } from "lucide-react";
@@ -5997,11 +5951,6 @@ export function useWorkspaceSchedule()
 ⋮----
 const handleMonthChange = (direction: "prev" | "next") =>
 const handleOpenAddDialog = (date: Date) =>
-```
-
-## File: src/features/workforce-scheduling.slice/ui/index.ts
-```typescript
-
 ```
 
 ## File: src/shared-infra/outbox-relay/_relay.ts
@@ -6061,6 +6010,21 @@ async function routeToDlq(
 ): Promise<void>
 ```
 
+## File: src/features/workforce-scheduling.slice/ui/components/runtime/org-schedule-governance.tsx
+```typescript
+import { useEffect, useMemo, useState } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useAccount } from '@/features/workspace.slice';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import type { ScheduleItem } from '@/shared-kernel';
+import { getEligibleMembersForSchedule, type OrgEligibleMemberView } from '../../../application/queries';
+import { ConfirmedRow } from './org-schedule-governance.confirmed-row';
+import { ProposalRow } from './org-schedule-governance.proposal-row';
+```
+
 ## File: src/features/workforce-scheduling.slice/ui/components/runtime/schedule.account-view.tsx
 ```typescript
 import { addMonths, subMonths } from "date-fns";
@@ -6082,4 +6046,10 @@ import { upcomingEventsColumns } from "./upcoming-events-columns";
 ⋮----
 const onItemClick = (item: ScheduleItem) =>
 const handleMonthChange = (direction: 'prev' | 'next') =>
+```
+
+## File: src/features/workforce-scheduling.slice/ui/index.ts
+```typescript
+export function AccountCapabilityTabs()
+export function AccountTimelineCapabilityTabs()
 ```

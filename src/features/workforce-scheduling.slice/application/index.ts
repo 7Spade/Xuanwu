@@ -17,7 +17,7 @@ export {
   manualAssignScheduleMember,
   cancelScheduleProposalAction,
   completeOrgScheduleAction,
-} from './commands';
+} from './commands/index';
 
 export {
   getScheduleItems,
@@ -26,17 +26,13 @@ export {
   subscribeToOrgScheduleProposals,
   subscribeToPendingProposals,
   subscribeToConfirmedProposals,
-  getActiveDemands,
-  subscribeToDemandBoard,
-  getAllDemands,
   getAccountScheduleProjection,
   getAccountActiveAssignments,
   subscribeToWorkspaceScheduleItems,
   getEligibleMemberForSchedule,
   getEligibleMembersForSchedule,
-  DEMAND_BOARD_STALENESS,
-} from './queries';
-export type { OrgEligibleMemberView, OrgMemberSkillWithTier } from './queries';
+} from './queries/index';
+export type { OrgEligibleMemberView, OrgMemberSkillWithTier } from './queries/index';
 
 export {
   selectAllScheduleItems,
@@ -44,11 +40,11 @@ export {
   selectDecisionHistory,
   selectUpcomingEvents,
   selectPresentEvents,
-} from './selectors';
-export type { ScheduleItemWithWorkspace, ScheduleItemWithMembers } from './selectors';
+} from './selectors/index';
+export type { ScheduleItemWithWorkspace, ScheduleItemWithMembers } from './selectors/index';
 
-export { startSchedulingSaga, getSagaState } from './sagas';
-export type { SagaState, SagaStep, SagaStatus } from './sagas';
+export { startSchedulingSaga, getSagaState } from './sagas/index';
+export type { SagaState, SagaStep, SagaStatus } from './sagas/index';
 
 // Legacy compatibility: projector handlers are implemented in VS0 projection bus.
 export type {

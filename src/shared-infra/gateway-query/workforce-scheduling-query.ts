@@ -18,11 +18,8 @@ import {
   where,
   orderBy,
   limit,
-  getDocs,
   onSnapshot,
   type Unsubscribe,
-  type QueryDocumentSnapshot,
-  type QuerySnapshot,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
@@ -58,30 +55,6 @@ export function subscribeToOrgScheduleProposalsFromGateway(
   return onSnapshot(q, (snap) => {
     onUpdate(snap.docs.map((d) => ({ ...d.data(), id: d.id } as ScheduleItem)));
   });
-}
-
-export async function getActiveDemandsFromGateway(orgId: string): Promise<ScheduleItem[]> {
-  const col = collection(db, `accounts/${orgId}/schedule_items`);
-  const q = query(col, where('status', 'in', ['PROPOSAL', 'OFFICIAL']));
-  const snap = await getDocs(q);
-  return snap.docs.map((d: QueryDocumentSnapshot) => ({ ...d.data(), id: d.id } as ScheduleItem));
-}
-
-export function subscribeToDemandBoardFromGateway(
-  orgId: string,
-  onChange: (items: ScheduleItem[]) => void,
-): Unsubscribe {
-  const col = collection(db, `accounts/${orgId}/schedule_items`);
-  const q = query(col, where('status', 'in', ['PROPOSAL', 'OFFICIAL']));
-  return onSnapshot(q, (snap: QuerySnapshot) => {
-    onChange(snap.docs.map((d: QueryDocumentSnapshot) => ({ ...d.data(), id: d.id } as ScheduleItem)));
-  });
-}
-
-export async function getAllDemandsFromGateway(orgId: string): Promise<ScheduleItem[]> {
-  const col = collection(db, `accounts/${orgId}/schedule_items`);
-  const snap = await getDocs(col);
-  return snap.docs.map((d: QueryDocumentSnapshot) => ({ ...d.data(), id: d.id } as ScheduleItem));
 }
 
 export async function getAccountScheduleProjectionRawFromGateway(

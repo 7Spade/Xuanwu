@@ -45,12 +45,12 @@ This skill contains the following reference files:
 
 ## Statistics
 
-266 files | 5,020 lines
+261 files | 5,010 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 242 | 4,532 |
-| TypeScript (TSX) | 24 | 488 |
+| TypeScript | 241 | 4,533 |
+| TypeScript (TSX) | 20 | 477 |
 
 **Largest files:**
 - `src/features/semantic-graph.slice/core/types/index.ts` (139 lines)

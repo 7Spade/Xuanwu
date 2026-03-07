@@ -6,7 +6,6 @@
  */
 
 import type {
-  ImplementsStalenessContract,
   ScheduleItem,
   ScheduleStatus,
 } from '@/shared-kernel';
@@ -29,9 +28,6 @@ export interface SchedulingQueryPort {
   ): QueryUnsubscribe;
   subscribeToPendingProposals(orgId: string, onUpdate: (items: ScheduleItem[]) => void): QueryUnsubscribe;
   subscribeToConfirmedProposals(orgId: string, onUpdate: (items: ScheduleItem[]) => void): QueryUnsubscribe;
-  getActiveDemands(orgId: string): Promise<ScheduleItem[]>;
-  subscribeToDemandBoard(orgId: string, onChange: (items: ScheduleItem[]) => void): QueryUnsubscribe;
-  getAllDemands(orgId: string): Promise<ScheduleItem[]>;
   getAccountScheduleProjection(accountId: string): Promise<AccountScheduleProjection | null>;
   getAccountActiveAssignments(accountId: string): Promise<AccountScheduleAssignment[]>;
   subscribeToWorkspaceScheduleItems(
@@ -42,10 +38,6 @@ export interface SchedulingQueryPort {
   ): QueryUnsubscribe;
   getEligibleMemberForSchedule(orgId: string, accountId: string): Promise<OrgEligibleMemberView | null>;
   getEligibleMembersForSchedule(orgId: string): Promise<OrgEligibleMemberView[]>;
-}
-
-export interface SchedulingStalenessContractPort {
-  DEMAND_BOARD_STALENESS: ImplementsStalenessContract;
 }
 
 export type { OrgEligibleMemberView, OrgMemberSkillWithTier };

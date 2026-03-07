@@ -14,9 +14,6 @@ import {
   getScheduleItemsFromGateway,
   getOrgScheduleItemFromGateway,
   subscribeToOrgScheduleProposalsFromGateway,
-  getActiveDemandsFromGateway,
-  subscribeToDemandBoardFromGateway,
-  getAllDemandsFromGateway,
   getAccountScheduleProjectionRawFromGateway,
   getEligibleMemberForScheduleFromGateway,
   getEligibleMembersForScheduleFromGateway,
@@ -27,7 +24,6 @@ import type {
   OrgMemberSkillWithTier,
 } from '@/shared-infra/projection.bus';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
-import type { ImplementsStalenessContract } from '@/shared-kernel';
 
 import type {
   AccountScheduleProjection,
@@ -35,14 +31,6 @@ import type {
 } from '../projectors/runtime/account-schedule';
 
 type Unsubscribe = () => void;
-
-// =================================================================
-// Staleness declarations [S4]
-// =================================================================
-
-export const DEMAND_BOARD_STALENESS: ImplementsStalenessContract = {
-  stalenessTier: 'DEMAND_BOARD',
-} as const;
 
 // =================================================================
 // Workspace-scoped queries
@@ -102,34 +90,6 @@ export function subscribeToConfirmedProposals(
   onUpdate: (items: ScheduleItem[]) => void
 ): Unsubscribe {
   return subscribeToOrgScheduleProposals(orgId, onUpdate, { status: 'OFFICIAL' });
-}
-
-// =================================================================
-// Demand Board queries (FR-W0)
-// =================================================================
-
-/**
- * Fetches all visible (PROPOSAL + OFFICIAL) schedule items for a given org.
- */
-export async function getActiveDemands(orgId: string): Promise<ScheduleItem[]> {
-  return getActiveDemandsFromGateway(orgId);
-}
-
-/**
- * Real-time subscription for the Demand Board (PROPOSAL + OFFICIAL only).
- */
-export function subscribeToDemandBoard(
-  orgId: string,
-  onChange: (items: ScheduleItem[]) => void
-): Unsubscribe {
-  return subscribeToDemandBoardFromGateway(orgId, onChange);
-}
-
-/**
- * Fetches all schedule items for an org (including REJECTED/COMPLETED), for audit/history.
- */
-export async function getAllDemands(orgId: string): Promise<ScheduleItem[]> {
-  return getAllDemandsFromGateway(orgId);
 }
 
 // =================================================================
