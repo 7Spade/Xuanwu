@@ -96,6 +96,7 @@ Completed sequential phases from the requested prompt:
 
 ## 3. Actionable Refactoring Checklist
 
+- [x] Establish folder-placement gate and phased D24 migration checklist in `docs/architecture/99-Checklist.md`.
 - [ ] Replace direct `@/shared-infra/*` imports in feature slices with SK_PORTS interfaces (`D24`).
 - [ ] Move `workforce-scheduling.slice/_projectors/*` into `projection.bus` and keep VS6 command/domain focused (`L5-Bus`, `S2`, `P5`).
 - [x] Normalize `timelineing.slice` naming by consolidating into `workforce-scheduling.slice/timeline`.

@@ -52,3 +52,28 @@
 - [ ] `npm run lint`
 - [ ] `npm run typecheck`
 - [ ] 若變更跨切片規則或 ACL，附上本檔勾選結果與例外說明。
+
+## 9. Folder Placement Gate（新增檔案必答）
+- [ ] 此檔案是否「純函式/純型別/純常數」且無 I/O？若是，放在 `src/shared-kernel/*`（L1）。
+- [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/frontend-firebase/*`（L7 Adapter）。
+- [ ] 此檔案是否屬切片核心業務規則（aggregate/policy/invariant）？若是，放在 `src/features/{slice}.slice/*`（L3）。
+- [ ] 此檔案是否屬協調與管線層（L2/L4/L5/L6/L9）而非 L3 業務規則？
+- [ ] 此檔案是否為跨切片權威出口？若是，只能在 `global-search.slice` 或 `notification-hub.slice`。
+
+## 10. D24 Execution Checklist（分批遷移）
+
+### 10.1 Batch-0 Baseline
+- [ ] 先用 `rg "@/shared-infra/|from ['\"]firebase/" src/features` 建立現況快照。
+- [ ] 依目錄分群：`account.slice`、`organization.slice`、`workspace.slice`、`workforce-scheduling.slice`、`skill-xp.slice`、`identity.slice`。
+- [ ] 標記「可直接替換」與「需先補 SK_PORTS 契約」兩類。
+
+### 10.2 Batch-1 Pilot（單一切片）
+- [ ] 選一個切片先遷移（建議 `account.slice` 或 `organization.slice`）。
+- [ ] 目標：切片內移除 direct `@/shared-infra/*`，改走 L1 契約或 L6 讀入口。
+- [ ] 驗證：`npm run typecheck` + 受影響測試 + 對應查詢/寫入 smoke check。
+- [ ] 更新 `docs/architecture/audit-report.md`，清除已完成項。
+
+### 10.3 Batch-2+ Rollout（逐批收斂）
+- [ ] 每批只處理 1 個切片，避免跨域大爆改。
+- [ ] 每批 PR 必附：變更檔案清單、替換策略、回歸結果、殘留清單。
+- [ ] 每批合併後重跑 D24 掃描，確認違規數單調下降。
