@@ -1,120 +1,96 @@
-# src/app-runtime — Runtime Isolation Layer
+# src/app-runtime — Runtime Wiring Layer
 
 ## Architecture Role
 
-`src/app-runtime` is the **runtime wiring layer** that sits between the route entry (`src/app`) and the business domain (`src/features`). It initializes all React context providers, connects environment configuration to the application tree, and manages client-side lifecycle hooks.
+`src/app-runtime` 是應用程式的執行期接線層，負責：
+- React Provider 組裝
+- Context 型別與容器
+- AI Runtime（Genkit flow）入口
+
+此層重點是「接線與初始化」，不承載領域規則或業務決策。
 
 ```
-src/app              (route declarations)
-  └─> src/app-runtime  ← THIS LAYER
-        ├── providers/     (React Context wiring)
-        ├── contexts/      (global runtime state)
-        └── ai/            (Genkit AI runtime)
-              └─> src/features / src/shared / src/config
+src/app (route / layout)
+  └─> src/app-runtime (providers + contexts + ai)
+        └─> src/shared | src/config | src/features (public API)
 ```
 
-**No business logic belongs here.** This layer only wires infrastructure together.
-
----
-
-## Directory Structure
+## Current Structure
 
 ```
 src/app-runtime/
 ├── README.md
 ├── providers/
-│   └── README.md          # Provider composition root
+│   ├── README.md
+│   ├── index.ts
+│   ├── theme-provider.tsx
+│   ├── i18n-provider.tsx
+│   ├── firebase-provider.tsx
+│   ├── auth-provider.tsx
+│   ├── app-provider.tsx
+│   ├── app-provider.queries.ts
+│   ├── account-provider.tsx
+│   └── account-provider.queries.ts
 ├── contexts/
-│   └── README.MD          # Runtime React context definitions
+│   ├── README.md
+│   ├── index.ts
+│   ├── app-context.ts
+│   ├── account-context.ts
+│   ├── auth-context.ts
+│   ├── firebase-context.ts
+│   └── i18n-context.ts
 └── ai/
-    ├── genkit.ts           # Genkit AI client initialization
-    ├── dev.ts              # Development-only AI tooling
     ├── index.ts
-    ├── flows/              # AI flow definitions (server-side)
-    └── schemas/            # Zod schemas for AI input/output contracts
+    ├── genkit.ts
+    ├── dev.ts
+    ├── flows/
+    │   ├── adapt-ui-color-to-account-context.ts
+    │   └── extract-invoice-items.ts
+    └── schemas/
+        └── docu-parse.ts
 ```
 
----
+## Runtime Provider Chain (Current)
 
-## Provider Injection Order
-
-Providers in `src/app-runtime/providers/` must be composed **from outermost to innermost** according to their dependency order. The canonical composition is:
+`src/app/layout.tsx` 目前的 Provider 包裝順序（外到內）：
 
 ```
-<FirebaseProvider>           ← src/shared/app-providers/firebase-provider.tsx
-  <AuthProvider>             ← src/shared/app-providers/auth-provider.tsx
-    <ThemeProvider>          ← src/shared/app-providers/theme-provider.tsx
-      <AppContext>           ← src/app-runtime/contexts/
-        {children}
-      </AppContext>
-    </ThemeProvider>
-  </AuthProvider>
-</FirebaseProvider>
+<ThemeProvider>
+  <I18nProvider>
+    <FirebaseClientProvider>
+      <AuthProvider>
+        <AppProvider>  // imported from @/features/workspace.slice
+          {children}
+          <Toaster />
+        </AppProvider>
+      </AuthProvider>
+    </FirebaseClientProvider>
+  </I18nProvider>
+</ThemeProvider>
 ```
 
-**Invariant:** A provider must never depend on a provider that appears below it in the tree.
-
----
-
-## Global State Initialization
-
-| Context / State | Location | Initialized From |
-|-----------------|----------|-----------------|
-| Firebase app instance | `src/shared/app-providers/firebase-provider.tsx` | `src/config/i18n` + `src/shared-infra/firebase` |
-| Auth session | `src/shared/app-providers/auth-provider.tsx` | `IAuthService` port (`SK_PORTS`) |
-| Theme | `src/shared/app-providers/theme-provider.tsx` | `localStorage` / system preference |
-| AI runtime (Genkit) | `src/app-runtime/ai/genkit.ts` | Environment variables [D24] |
-
----
+`AppProvider` 雖由 `workspace.slice` 對外匯出，但底層仍是 app-runtime 對應的 provider 能力，依賴方向必須維持單向。
 
 ## AI Runtime (`ai/`)
 
-The `ai/` subtree initializes [Genkit](https://firebase.google.com/docs/genkit) for server-side AI flows. It is isolated here so that AI model configuration never leaks into domain slices.
+`ai/genkit.ts` 建立 Genkit instance，`ai/flows/*` 定義 server flow，`ai/schemas/*` 提供輸入輸出契約。
 
-| File | Purpose |
-|------|---------|
-| `genkit.ts` | Configures Genkit instance with plugins and model defaults |
-| `dev.ts` | Development server entry (runs flows locally) |
-| `flows/` | Named Genkit flows — each flow is a pure async function |
-| `schemas/` | Zod input/output schemas for type-safe flow contracts |
+目前已註冊的 flow：
+- `extractInvoiceItems`
+- `adaptUIColorToAccountContext`
 
-**Rule:** AI flows must not call Firebase SDK directly — they must use `SK_PORTS` adapters. [D24]
+## Dependency Boundaries
 
----
+- ✅ 允許：`src/app-runtime` → `src/config`
+- ✅ 允許：`src/app-runtime` → `src/shared`
+- ✅ 允許：`src/app-runtime` → `src/shared/infra/*`
+- ✅ 允許：`src/app-runtime` 透過 `src/features/*` 公開 API 進行組裝
+- ❌ 禁止：其他層直接依賴 `src/app-runtime`（`src/app` 例外）
+- ❌ 禁止：在此層新增領域商業規則或聚合邏輯
+- ❌ 禁止：在此層直接散落 `firebase/*` SDK 呼叫（需走既有基礎設施邊界）
 
-## Lifecycle Hooks
+## Maintenance Notes
 
-Runtime lifecycle is managed at this layer, not in individual features:
-
-| Lifecycle Event | Handler Location | Action |
-|-----------------|-----------------|--------|
-| App mount | `providers/` composition root | Initialize Firebase, Auth, Theme |
-| Auth state change | `auth-provider.tsx` | Update `active-account-context` (VS1) |
-| Token refresh | `_token-refresh-listener.ts` in VS1 | Emit `TOKEN_REFRESH_SIGNAL` per [S6] |
-| Organization switch | VS1 `context-lifecycle-manager` | Re-initialize workspace context |
-
----
-
-## Dependency Rules
-
-| Direction | Rule |
-|-----------|------|
-| ✅ Allowed | `src/app-runtime` → `src/config` |
-| ✅ Allowed | `src/app-runtime` → `src/shared` |
-| ✅ Allowed | `src/app-runtime` → `src/shared/infra` (via ports) |
-| ✅ Allowed | `src/app-runtime` → `src/features/{slice}/index.ts` (public API only) |
-| ❌ Forbidden | Any other layer importing **from** `src/app-runtime` (except `src/app`) |
-| ❌ Forbidden | `src/app-runtime` importing directly from `firebase/*` [D24] |
-| ❌ Forbidden | Business logic, domain aggregates, or use-case commands in this layer |
-
----
-
-## Compliance Check
-
-| Rule | Status | Notes |
-|------|--------|-------|
-| No business logic in providers | ✅ | Providers only initialize infrastructure |
-| Firebase access via SK_PORTS | ✅ | `firebase-provider.tsx` wraps `src/shared/infra` |
-| Token refresh delegated to VS1 | ✅ | `_token-refresh-listener.ts` in `identity.slice` |
-| AI flows isolated in `ai/` subtree | ✅ | Not accessible from feature slices directly |
-| Provider injection order documented | ✅ | See above |
+- 若調整 Provider 順序，請同步更新 `src/app/layout.tsx` 與本文件。
+- 若新增 AI flow，請同步更新 `ai/index.ts` 與本文件 flow 清單。
+- `providers/README.md` 與 `contexts/README.md` 保持為子目錄的細部規範來源。
