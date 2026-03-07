@@ -3,8 +3,8 @@
 import { ShieldCheck, Activity, Layers, Zap } from "lucide-react";
 import { useMemo } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { Progress } from "@/shared/shadcn-ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { Progress } from "@/shadcn-ui/progress";
 
 import { useAccount } from "../_hooks/use-account";
 import { useApp } from "../_hooks/use-app";

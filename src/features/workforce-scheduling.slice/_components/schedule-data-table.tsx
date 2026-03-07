@@ -23,14 +23,14 @@ import {
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
 
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import { Input } from "@/shared/shadcn-ui/input"
+} from "@/shadcn-ui/dropdown-menu"
+import { Input } from "@/shadcn-ui/input"
 import {
   Table,
   TableBody,
@@ -38,7 +38,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/shadcn-ui/table"
+} from "@/shadcn-ui/table"
 
 
 interface DataTableProps<TData, TValue> {

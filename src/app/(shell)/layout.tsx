@@ -22,7 +22,7 @@ import { Fragment, type ReactNode } from "react";
 import { useTokenRefreshListener } from "@/features/identity.slice";
 import { AccountProvider } from "@/app-runtime/providers/account-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { SidebarProvider } from "@/shared/shadcn-ui/sidebar";
+import { SidebarProvider } from "@/shadcn-ui/sidebar";
 
 type ShellLayoutProps = {
   children: ReactNode;

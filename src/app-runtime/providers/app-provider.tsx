@@ -27,7 +27,7 @@ import { useContext } from 'react'
 import { AppContext, type AppAction, type AppState } from '../contexts/app-context'
 
 import { subscribeToAccountsForUser } from './app-provider.queries'
-import { useAuth } from '../../shared/app-providers/auth-provider'
+import { useAuth } from './auth-provider'
 
 // ---------------------------------------------------------------------------
 // Initial state

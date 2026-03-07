@@ -8,14 +8,14 @@
 
 import { Share2 } from "lucide-react";
 
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 
 import { useWorkspace } from "../../../core";
 import { type DailyLog } from "../../_types";

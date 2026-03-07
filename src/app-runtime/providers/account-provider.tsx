@@ -18,7 +18,7 @@ import {
 } from './account-provider.queries'
 
 import { type AccountAction, AccountContext, type AccountState } from '../contexts/account-context'
-import { useApp } from '../../shared/app-providers/app-provider'
+import { useApp } from './app-provider'
 
 const initialState: AccountState = {
   workspaces: {},

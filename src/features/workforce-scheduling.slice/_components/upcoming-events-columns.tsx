@@ -7,15 +7,15 @@ import { ArrowUpDown } from "lucide-react"
 import type { ScheduleItem } from '@/shared-kernel'
 import { type MemberReference } from "@/shared-kernel"
 import { SKILLS } from "@/shared/constants/skills"
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/shadcn-ui/tooltip"
+} from "@/shadcn-ui/tooltip"
 
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 

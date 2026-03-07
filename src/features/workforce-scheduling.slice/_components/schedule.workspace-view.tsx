@@ -5,7 +5,7 @@ import { Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useWorkspace } from "@/features/workspace.slice";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 
 import { useWorkspaceSchedule } from "../_hooks/use-workspace-schedule";
 

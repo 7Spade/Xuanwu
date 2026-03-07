@@ -15,8 +15,8 @@ import { useEffect, useState } from "react";
 
 import type { Account } from "@/shared-kernel";
 import type { Timestamp } from "@/shared-kernel/ports";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Card } from "@/shared/shadcn-ui/card";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Card } from "@/shadcn-ui/card";
 
 import { type DailyLog } from "../_types";
 

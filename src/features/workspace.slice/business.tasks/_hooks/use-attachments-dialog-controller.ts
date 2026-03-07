@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 
 import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 

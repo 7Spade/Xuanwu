@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 import { type Account, type MemberReference } from "@/shared-kernel";
 import { type Workspace } from "@/features/workspace.slice";
 import { ROUTES } from "@/shared/constants/routes";
-import { Badge } from "@/shared/shadcn-ui/badge";
+import { Badge } from "@/shadcn-ui/badge";
 import {
   CommandDialog,
   CommandEmpty,
@@ -28,7 +28,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
+} from "@/shadcn-ui/command";
 
 export interface GlobalSearchDialogProps {
   isOpen: boolean;

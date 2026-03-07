@@ -4,9 +4,9 @@ import { ShieldCheck, XCircle, CheckCircle, Search, AlertTriangle } from "lucide
 import { useState, useEffect } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 
 import { type WorkspaceTask } from "../../business.tasks/_types";
 import { useWorkspace } from '../../core';

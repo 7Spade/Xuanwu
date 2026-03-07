@@ -5,10 +5,10 @@ import { Check, X } from "lucide-react";
 import type { SkillRequirement } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 import { SKILLS } from '@/shared/constants/skills';
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];

@@ -4,8 +4,8 @@
 import { format } from "date-fns";
 import { Activity } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 
 import { useWorkspaceAudit } from "../_hooks/use-workspace-audit";
 

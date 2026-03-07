@@ -4,24 +4,24 @@
 import { HardHat, ShieldCheck, User2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/shadcn-ui/select";
-import { Switch } from "@/shared/shadcn-ui/switch";
+} from "@/shadcn-ui/select";
+import { Switch } from "@/shadcn-ui/switch";
 
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
 

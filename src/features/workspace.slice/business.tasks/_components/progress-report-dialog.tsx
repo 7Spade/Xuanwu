@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
@@ -8,10 +8,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
+} from '@/shadcn-ui/dialog';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
 
 import type { TaskWithChildren } from '../_types';
 

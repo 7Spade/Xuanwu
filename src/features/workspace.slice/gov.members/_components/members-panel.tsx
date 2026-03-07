@@ -14,16 +14,16 @@ import { useState, useMemo } from "react";
 
 import { type Team, type MemberReference } from "@/shared-kernel";
 import { useApp } from '@/app-runtime/providers/app-provider';
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/shadcn-ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shadcn-ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 import { useWorkspace } from '../../core';
 import { type WorkspaceRole } from "../../gov.role/_types";

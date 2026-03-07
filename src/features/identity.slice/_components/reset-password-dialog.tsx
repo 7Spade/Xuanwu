@@ -4,10 +4,10 @@
 import { Mail } from "lucide-react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shadcn-ui/dialog";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 
 interface ResetPasswordDialogProps {
   isOpen: boolean;

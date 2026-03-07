@@ -9,7 +9,7 @@
 
 import { useParams, usePathname, useRouter } from "next/navigation";
 
-import { Tabs, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 
 type CapabilityTabValue = "schedule" | "timeline";
 

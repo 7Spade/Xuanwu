@@ -12,7 +12,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/shadcn-ui/dialog"
+} from "@/shadcn-ui/dialog"
 
 export default function AccountNewModalPage() {
   const router = useRouter()

@@ -19,7 +19,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/shared/shadcn-ui/collapsible";
+} from "@/shadcn-ui/collapsible";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -27,7 +27,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarMenuButton,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 
 interface NavMainProps {
   pathname: string;

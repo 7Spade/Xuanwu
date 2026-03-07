@@ -26,10 +26,10 @@ import type { OrgEligibleMemberView } from '@/features/projection.bus';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/app-runtime/providers/app-provider';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/shadcn-ui/empty';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { PageHeader } from '@/shared/shadcn-ui/custom-ui/page-header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
 
 import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 

@@ -10,9 +10,9 @@
 import { Flag } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 
 import { updateScheduleItemStatus } from '../_actions';
 

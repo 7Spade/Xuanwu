@@ -22,12 +22,12 @@
 import { Bell, CheckCheck } from 'lucide-react';
 import { useState } from 'react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { Tabs, TabsList, TabsTrigger } from '@/shared/shadcn-ui/tabs';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn-ui/popover';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
+import { cn } from '@/shadcn-ui/utils/utils';
 
 import type { HubNotification, NotificationCategory } from '../_contract';
 import { useUserNotifications } from '../user.notification/_hooks/use-user-notifications';

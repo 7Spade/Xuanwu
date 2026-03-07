@@ -9,10 +9,10 @@
 
 import { CalendarPlus, ChevronDown, ChevronRight, ClipboardPlus, OctagonX, Plus, Send, Settings2, Trash2 } from 'lucide-react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Progress } from '@/shared/shadcn-ui/progress';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Progress } from '@/shadcn-ui/progress';
+import { cn } from '@/shadcn-ui/utils/utils';
 
 import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 

@@ -10,8 +10,8 @@ import { Heart } from "lucide-react";
 import { useState, useEffect, useCallback } from 'react';
 
 import type { Account } from "@/shared-kernel";
-import { Button } from "@/shared/shadcn-ui/button";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Button } from "@/shadcn-ui/button";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 import { useDailyActions } from '../../_hooks/use-daily-commands';
 import { type DailyLog } from "../../_types";

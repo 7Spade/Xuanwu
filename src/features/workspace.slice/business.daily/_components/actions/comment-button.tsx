@@ -6,7 +6,7 @@
 
 import { MessageCircle } from "lucide-react";
 
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 
 interface CommentButtonProps {
   count?: number;

@@ -1,8 +1,8 @@
 // [職責] 點擊事件後顯示的 JSON Diff 或詳細變更對照
 "use client";
 
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/shared/shadcn-ui/sheet";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/shadcn-ui/sheet";
 
 import { type AuditLog } from "../_types";
 

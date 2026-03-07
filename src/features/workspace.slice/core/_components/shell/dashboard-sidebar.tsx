@@ -34,7 +34,7 @@ import {
   SidebarGroupContent,
   SidebarRail,
   SidebarSeparator,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 
 // ============================================================================
 // Contexts & Hooks

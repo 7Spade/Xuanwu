@@ -134,8 +134,8 @@ Usage convention:
 
 ```ts
 // ✅ Import shadcn/ui components
-import { Button } from '@/shared/shadcn-ui/button'
-import { Dialog, DialogContent } from '@/shared/shadcn-ui/dialog'
+import { Button } from '@/shadcn-ui/button'
+import { Dialog, DialogContent } from '@/shadcn-ui/dialog'
 ```
 
 ---

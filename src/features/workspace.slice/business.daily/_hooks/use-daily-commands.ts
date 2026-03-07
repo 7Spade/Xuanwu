@@ -18,7 +18,7 @@ import { useCallback } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 
 import { toggleLike as toggleLikeAction } from "../_actions";
 

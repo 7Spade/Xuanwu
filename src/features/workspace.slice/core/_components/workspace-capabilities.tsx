@@ -32,14 +32,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shared/shadcn-ui/alert-dialog";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Checkbox } from "@/shared/shadcn-ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shadcn-ui/card";
+import { Checkbox } from "@/shadcn-ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
 
 import { useApp } from '../_hooks/use-app';
 import { type Capability } from "../_types";

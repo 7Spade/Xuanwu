@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { type Account } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/shadcn-ui/card"
+} from "@/shadcn-ui/card"
 
 interface AccountGridProps {
     accounts: Account[]

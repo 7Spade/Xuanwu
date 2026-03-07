@@ -10,11 +10,11 @@
 import { CheckCircle, UserPlus, Users, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/shared/shadcn-ui/command';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/shadcn-ui/command';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn-ui/popover';
 
 import { assignMember, updateScheduleItemStatus } from '../_actions';
 

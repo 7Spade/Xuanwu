@@ -24,7 +24,7 @@ import { useState, useCallback } from "react";
 import type { ScheduleItem } from '@/shared-kernel';
 import type { MemberReference } from "@/shared-kernel";
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Command,
   CommandEmpty,
@@ -32,10 +32,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 import { useGlobalSchedule } from "../_hooks/use-global-schedule";
 import { useScheduleActions } from "../_hooks/use-schedule-commands";

@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Module: firebase-context.ts
  * Purpose: define firebase provider context contract and shared firebase types

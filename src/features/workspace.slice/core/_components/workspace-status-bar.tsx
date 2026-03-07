@@ -3,7 +3,7 @@
 
 import { AlertTriangle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
-import { Badge } from "@/shared/shadcn-ui/badge";
+import { Badge } from "@/shadcn-ui/badge";
 
 import { useWorkspace } from "./workspace-provider";
 

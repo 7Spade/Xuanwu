@@ -1,8 +1,8 @@
 import type { MutableRefObject } from 'react';
 
 import { shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { ToastAction } from '@/shared/shadcn-ui/toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ToastAction } from '@/shadcn-ui/toast';
 
 import {
   finishParsingImport,

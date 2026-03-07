@@ -9,7 +9,7 @@
 
 import { Paperclip } from 'lucide-react';
 
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 
 import { type TaskWithChildren } from '../_types';
 

@@ -9,7 +9,7 @@ import { initTagChangedSubscriber } from '@/features/notification-hub.slice';
 import {
   createScheduleItem as createScheduleItemAction,
 } from '@/features/workforce-scheduling.slice'
-import { firestoreTimestampToISO } from '@/shared/shadcn-ui/utils/utils';
+import { firestoreTimestampToISO } from '@/shadcn-ui/utils/utils';
 
 
 import { registerOrgPolicyCache, runTransaction } from '../../application';

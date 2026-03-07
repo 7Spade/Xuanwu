@@ -3,7 +3,7 @@
 import { AlertCircle } from "lucide-react"
 import { useEffect } from "react"
 
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 
 export default function BusinessTabError({
   error,

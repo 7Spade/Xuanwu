@@ -14,9 +14,9 @@ import { useState, useEffect, useMemo } from "react"
 
 import type { PartnerInvite, MemberReference , Team } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
 import { 
   Dialog, 
   DialogContent, 
@@ -24,12 +24,12 @@ import {
   DialogTitle, 
   DialogDescription, 
   DialogFooter 
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs"
-import { PageHeader } from "@/shared/shadcn-ui/custom-ui/page-header"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs"
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 
 import { usePartnerManagement } from "../_hooks/use-partner-management"
 import { subscribeToOrgPartnerInvites } from "../_queries"

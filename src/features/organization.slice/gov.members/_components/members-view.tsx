@@ -8,11 +8,11 @@ import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"
 import { type MemberReference } from "@/shared-kernel"
 import { useApp } from "@/app-runtime/providers/app-provider"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { PageHeader } from "@/shared/shadcn-ui/custom-ui/page-header"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 
 import { useMemberManagement } from '../_hooks/use-member-management'
 

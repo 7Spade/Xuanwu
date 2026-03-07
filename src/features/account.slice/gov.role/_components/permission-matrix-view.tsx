@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react"
 
 import { useAccount } from "@/features/workspace.slice"
 import { useApp } from "@/app-runtime/providers/app-provider"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/shadcn-ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn-ui/table"
 
 // DEPRECATED FOR WRITE: This permission matrix visualises mappings between internal teams and
 // workspaces. The WorkspaceMembersManagement component handles writes. This is read-only.

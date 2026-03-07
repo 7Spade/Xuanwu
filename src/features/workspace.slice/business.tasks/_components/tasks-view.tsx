@@ -12,14 +12,14 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
+} from '@/shadcn-ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,10 +27,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/shadcn-ui/dropdown-menu';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/shadcn-ui/empty';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { PageHeader } from '@/shared/shadcn-ui/custom-ui/page-header';
+} from '@/shadcn-ui/dropdown-menu';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
 
 import { buildTaskTree } from '../../_task.rules';
 import { useStorage } from '../../business.files';

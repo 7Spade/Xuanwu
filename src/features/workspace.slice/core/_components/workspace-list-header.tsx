@@ -12,9 +12,9 @@ import { useRouter } from "next/navigation";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Input } from "@/shared/shadcn-ui/input";
-import { PageHeader } from "@/shared/shadcn-ui/custom-ui/page-header";
+import { Button } from "@/shadcn-ui/button";
+import { Input } from "@/shadcn-ui/input";
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header";
 
 interface WorkspaceListHeaderProps {
   activeAccountName: string;

@@ -7,7 +7,7 @@ import { useMemo } from "react"
 
 import type { Account } from "@/shared-kernel"
 import { ROUTES } from "@/shared/constants/routes"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +15,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shared/shadcn-ui/sidebar"
+} from "@/shadcn-ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
 
 
 

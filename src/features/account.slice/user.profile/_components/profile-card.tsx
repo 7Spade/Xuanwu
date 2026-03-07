@@ -4,12 +4,12 @@ import { User, Loader2, Upload } from "lucide-react";
 import type React from "react"
 
 import { type Account } from "@/shared-kernel"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shadcn-ui/card";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { Textarea } from "@/shadcn-ui/textarea";
 
 
 interface ProfileCardProps {

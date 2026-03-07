@@ -4,10 +4,10 @@ import { Mail } from "lucide-react";
 import { useState } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 
 import { sendPasswordResetEmail } from "../_actions";
 

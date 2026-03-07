@@ -738,7 +738,7 @@ import { Fragment, useEffect, type ReactNode } from "react";
 import { useTokenRefreshListener } from "@/features/identity.slice";
 import { AccountProvider } from "@/features/workspace.slice";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { SidebarProvider } from "@/shared/shadcn-ui/sidebar";
+import { SidebarProvider } from "@/shadcn-ui/sidebar";
 type ShellLayoutProps = {
   children: ReactNode;
   sidebar: ReactNode;
@@ -1062,7 +1062,7 @@ import { ShieldCheck, ShieldAlert, Users, AlertCircle } from "lucide-react"
 import { useState, useEffect, useMemo } from "react"
 import { useAccount } from "@/features/workspace.slice"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/shadcn-ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shadcn-ui/table"
 ⋮----
 const hasAccess = (teamId: string, workspaceId: string) =>
 ```
@@ -1112,18 +1112,18 @@ export function AccountSettingsRouter()
 ## File: src/features/account.slice/user.profile/_components/preferences-card.tsx
 ```typescript
 import { Bell } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Separator } from "@/shared/shadcn-ui/separator";
-import { Switch } from "@/shared/shadcn-ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { Label } from "@/shadcn-ui/label";
+import { Separator } from "@/shadcn-ui/separator";
+import { Switch } from "@/shadcn-ui/switch";
 export function PreferencesCard()
 ```
 
 ## File: src/features/account.slice/user.profile/_components/security-card.tsx
 ```typescript
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shadcn-ui/card";
 interface SecurityCardProps {
   onWithdraw: () => void;
   t: (key: string) => string;
@@ -1179,9 +1179,9 @@ export function AuthBackground()
 ```typescript
 import { Ghost, Loader2 } from "lucide-react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/shared/shadcn-ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn-ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import { LanguageSwitcher } from "@/shared/ui/language-switcher";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
@@ -1205,9 +1205,9 @@ handleRegister=
 ```typescript
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 interface LoginFormProps {
   email: string;
   setEmail: (value: string) => void;
@@ -1226,7 +1226,7 @@ interface LoginFormProps {
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useI18n } from "@/config/i18n/i18n-provider"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { completeRegistration , signIn, signInAnonymously } from "../_actions"
 import { AuthBackground } from "./auth-background"
 import { AuthTabsRoot } from "./auth-tabs-root"
@@ -1240,9 +1240,9 @@ const handleAnonymous = async () =>
 ```typescript
 import { Mail, User, Lock, Loader2 } from "lucide-react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 interface RegisterFormProps {
   name: string;
   setName: (value: string) => void;
@@ -1263,10 +1263,10 @@ interface RegisterFormProps {
 ```typescript
 import { Mail } from "lucide-react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shadcn-ui/dialog";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 interface ResetPasswordDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -1411,12 +1411,12 @@ async function routeToDlq(
 ```typescript
 import { Bell, CheckCheck } from 'lucide-react';
 import { useState } from 'react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { Tabs, TabsList, TabsTrigger } from '@/shared/shadcn-ui/tabs';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn-ui/popover';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
+import { cn } from '@/shadcn-ui/utils/utils';
 import type { HubNotification, NotificationCategory } from '../_contract';
 import { useUserNotifications } from '../user.notification/_hooks/use-user-notifications';
 type FilterTab = 'all' | NotificationCategory;
@@ -1470,8 +1470,8 @@ export function registerNotificationRouter(): RouterRegistration
 ## File: src/features/notification-hub.slice/user.notification/_components/notification-badge.tsx
 ```typescript
 import { Bell } from 'lucide-react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
 interface NotificationBadgeProps {
   unreadCount: number;
   onClick?: () => void;
@@ -2003,7 +2003,7 @@ export async function getWorkspaceCapabilities(workspaceId: string): Promise<str
 import { Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useWorkspace } from "@/features/workspace.slice";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import { useWorkspaceSchedule } from "../_hooks/use-workspace-schedule";
 import { UnifiedCalendarGrid } from "./unified-calendar-grid";
 export function WorkspaceSchedule()
@@ -2030,7 +2030,7 @@ export function useGlobalSchedule()
 ```typescript
 import { useEffect } from "react";
 import { useWorkspace } from "@/features/workspace.slice";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 export function useScheduleEventHandler()
 ```
 
@@ -2335,7 +2335,7 @@ export async function toggleBookmark(
 ## File: src/features/workspace.slice/business.daily/_components/actions/comment-button.tsx
 ```typescript
 import { MessageCircle } from "lucide-react";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 interface CommentButtonProps {
   count?: number;
   onClick: () => void;
@@ -2346,10 +2346,10 @@ interface CommentButtonProps {
 ```typescript
 import { ImagePlusIcon, Send, Loader2, X } from "lucide-react";
 import Image from "next/image";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card } from "@/shared/shadcn-ui/card";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Button } from "@/shadcn-ui/button";
+import { Card } from "@/shadcn-ui/card";
+import { Input } from "@/shadcn-ui/input";
+import { Textarea } from "@/shadcn-ui/textarea";
 interface DailyLogComposerProps {
   content: string;
   setContent: (content: string) => void;
@@ -2388,14 +2388,14 @@ router.push(
 ## File: src/features/workspace.slice/business.daily/_components/image-carousel.tsx
 ```typescript
 import Image from "next/image";
-import { Card, CardContent } from "@/shared/shadcn-ui/card";
+import { Card, CardContent } from "@/shadcn-ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/shared/shadcn-ui/carousel";
+} from "@/shadcn-ui/carousel";
 interface ImageCarouselProps {
     images: string[];
 }
@@ -2405,7 +2405,7 @@ interface ImageCarouselProps {
 ```typescript
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/app-providers/auth-provider';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { toggleBookmark as toggleBookmarkAction } from '../_bookmark-actions';
 import { subscribeToBookmarks } from '../_queries';
 export function useBookmarkActions()
@@ -2416,7 +2416,7 @@ export function useBookmarkActions()
 import { useCallback } from "react";
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { toggleLike as toggleLikeAction } from "../_actions";
 export function useDailyActions()
 ```
@@ -2710,7 +2710,7 @@ export async function getDomainEvents(
 ```typescript
 import { useState } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
@@ -2718,9 +2718,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 import { useApp } from "../_hooks/use-app";
 import { handleCreateWorkspace } from "../_use-cases";
 interface CreateWorkspaceDialogProps {
@@ -2739,7 +2739,7 @@ import { useI18n } from "@/config/i18n/i18n-provider"
 import { PermissionTree } from "@/features/account.slice"
 import { AccountGrid } from "@/features/organization.slice"
 import { useAuth } from "@/shared/app-providers/auth-provider"
-import { Badge } from "@/shared/shadcn-ui/badge"
+import { Badge } from "@/shadcn-ui/badge"
 import { PageHeader } from "@/shared/ui/page-header"
 import { useApp } from "../_hooks/use-app"
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
@@ -2763,7 +2763,7 @@ import {
   SidebarGroupContent,
   SidebarRail,
   SidebarSeparator,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 import { useApp } from "../../_hooks/use-app";
 import { useVisibleWorkspaces } from "../../_hooks/use-visible-workspaces";
 import { AccountSwitcher } from "./account-switcher";
@@ -2792,7 +2792,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/shared/shadcn-ui/collapsible";
+} from "@/shadcn-ui/collapsible";
 import {
   SidebarMenu,
   SidebarMenuItem,
@@ -2800,7 +2800,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarMenuButton,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 interface NavMainProps {
   pathname: string;
   isOrganizationAccount: boolean;
@@ -2819,8 +2819,8 @@ const isPartiallyActive = (path: string)
 ```typescript
 import { ShieldCheck, Activity, Layers, Zap } from "lucide-react";
 import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { Progress } from "@/shared/shadcn-ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { Progress } from "@/shadcn-ui/progress";
 import { useAccount } from "../_hooks/use-account";
 import { useApp } from "../_hooks/use-app";
 export function StatCards()
@@ -2871,8 +2871,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Input } from "@/shared/shadcn-ui/input";
+import { Button } from "@/shadcn-ui/button";
+import { Input } from "@/shadcn-ui/input";
 import { PageHeader } from "@/shared/ui/page-header";
 interface WorkspaceListHeaderProps {
   activeAccountName: string;
@@ -2892,7 +2892,7 @@ onChange=
 ## File: src/features/workspace.slice/core/_components/workspace-status-bar.tsx
 ```typescript
 import { AlertTriangle, CheckCircle2, Eye, EyeOff } from "lucide-react";
-import { Badge } from "@/shared/shadcn-ui/badge";
+import { Badge } from "@/shadcn-ui/badge";
 import { useWorkspace } from "./workspace-provider";
 ⋮----
 ID:
@@ -2905,7 +2905,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import { useWorkspaceFilters } from "../../business.files/_hooks/use-workspace-filters";
 import { useApp } from "../_hooks/use-app";
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
@@ -2929,7 +2929,7 @@ export const useAccount = () =>
 ## File: src/features/workspace.slice/core/_hooks/use-workspace-commands.ts
 ```typescript
 import { useCallback } from "react";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { deleteWorkspace } from "../_actions";
 export function useWorkspaceCommands()
 ```
@@ -3010,7 +3010,7 @@ export function toAuditProjectionQuery(
 
 ## File: src/features/workspace.slice/gov.audit/_components/audit-timeline.tsx
 ```typescript
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { cn } from "@/shadcn-ui/utils/utils";
 interface AuditTimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
@@ -3053,8 +3053,8 @@ export default function AccountAuditView()
 ```typescript
 import { format } from "date-fns";
 import { Activity } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import { useWorkspaceAudit } from "../_hooks/use-workspace-audit";
 import { AuditDetailSheet } from "./audit-detail-sheet";
 import { AuditTypeIcon } from "./audit-type-icon";
@@ -4294,13 +4294,13 @@ export const deleteFile = (path: string): Promise<void> =>
 import { Globe } from "lucide-react"
 import { useI18n } from "@/config/i18n/i18n-provider"
 import { type Locale } from "@/config/i18n/i18n-types"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
+} from "@/shadcn-ui/dropdown-menu"
 ⋮----
 export function LanguageSwitcher()
 ⋮----
@@ -4345,8 +4345,8 @@ export function AppShell(
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/shared/shadcn-ui": ["./src/shared/shadcn-ui"],
-      "@/shared/shadcn-ui/*": ["./src/shared/shadcn-ui/*"],
+      "@/shadcn-ui": ["./src/shared/shadcn-ui"],
+      "@/shadcn-ui/*": ["./src/shared/shadcn-ui/*"],
       "@/shared/lib/utils": ["./src/shared/lib/utils"],
       "@/shared/hooks": ["./src/shared/hooks"],
       "@/shared/hooks/*": ["./src/shared/hooks/*"]
@@ -4397,7 +4397,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/shared/shadcn-ui/dialog"
+} from "@/shadcn-ui/dialog"
 ⋮----
 <Dialog open onOpenChange=
 ⋮----
@@ -4474,7 +4474,7 @@ export default function AccountTeamsPage()
 ```typescript
 import type { ReactNode } from "react";
 import { ThemeAdapter } from "@/features/workspace.slice";
-import { SidebarInset } from "@/shared/shadcn-ui/sidebar";
+import { SidebarInset } from "@/shadcn-ui/sidebar";
 type DashboardLayoutProps = {
   children: ReactNode;
   header: ReactNode;
@@ -4497,7 +4497,7 @@ export default function AcceptanceCapabilityPage()
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/audit/loading.tsx
 ```typescript
-import { Skeleton } from "@/shared/shadcn-ui/skeleton"
+import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
@@ -4515,7 +4515,7 @@ export default function CapabilitiesPage()
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/daily/loading.tsx
 ```typescript
-import { Skeleton } from "@/shared/shadcn-ui/skeleton"
+import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
@@ -4540,7 +4540,7 @@ export default function DocumentParserCapabilityPage()
 ```typescript
 import { AlertCircle } from "lucide-react"
 import { useEffect } from "react"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 export default function BusinessTabError({
   error,
   reset,
@@ -4570,7 +4570,7 @@ export default function IssuesCapabilityPage()
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/loading.tsx
 ```typescript
-import { Skeleton } from "@/shared/shadcn-ui/skeleton"
+import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
@@ -4588,13 +4588,13 @@ export default function QualityAssuranceCapabilityPage()
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/schedule/loading.tsx
 ```typescript
-import { Skeleton } from "@/shared/shadcn-ui/skeleton"
+import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/tasks/loading.tsx
 ```typescript
-import { Skeleton } from "@/shared/shadcn-ui/skeleton"
+import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
@@ -4660,7 +4660,7 @@ import { use } from "react"
 import { DailyLogDialog } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
 import { useAuth } from "@/shared/app-providers/auth-provider"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 interface PageProps {
   params: Promise<{ id: string; logId: string }>
 }
@@ -4685,7 +4685,7 @@ import { ArrowLeft, ChevronRight, MapPin } from "lucide-react";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { useEffect, useMemo, useRef, use } from "react";
 import { WorkspaceProvider, useWorkspace , useWorkspaceEventHandler , WorkspaceStatusBar , WorkspaceNavTabs , useApp } from "@/features/workspace.slice"
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import { PageHeader } from "@/shared/ui/page-header";
 ```
 
@@ -4695,7 +4695,7 @@ import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace.slice';
 import { WorkspaceLocationsPanel } from '@/features/workspace.slice';
 import { ROUTES } from '@/shared/constants/routes';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 export default function WorkspaceLocationsPage()
 ⋮----
 onClick=
@@ -4758,7 +4758,7 @@ export default function DefaultModal()
 ```typescript
 import type { ReactNode } from "react";
 import { ThemeAdapter } from "@/features/workspace.slice";
-import { SidebarInset } from "@/shared/shadcn-ui/sidebar";
+import { SidebarInset } from "@/shadcn-ui/sidebar";
 type WorkspacesLayoutProps = {
   children: ReactNode;
   header: ReactNode;
@@ -4801,7 +4801,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 ```
 
 ## File: src/app/(shell)/(public)/@modal/(.)reset-password/page.tsx
@@ -4815,7 +4815,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/shared/shadcn-ui/dialog"
+} from "@/shadcn-ui/dialog"
 function ResetPasswordModalContent()
 ⋮----
 <Dialog open onOpenChange=
@@ -4869,8 +4869,8 @@ import { AppProvider } from '@/features/workspace.slice';
 import { AuthProvider } from '@/shared/app-providers/auth-provider';
 import { FirebaseClientProvider } from '@/shared/app-providers/firebase-provider';
 import { ThemeProvider } from '@/shared/app-providers/theme-provider';
-import {Toaster} from '@/shared/shadcn-ui/toaster';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import {Toaster} from '@/shadcn-ui/toaster';
+import { cn } from '@/shadcn-ui/utils/utils';
 ⋮----
 export default function RootLayout({
   children,
@@ -4902,11 +4902,11 @@ title=
 import { Mail, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { authAdapter } from "@/shared/infra/auth/auth.adapter";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 interface EmailCardProps {
   currentEmail: string;
 }
@@ -4920,7 +4920,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { useUser } from "../_hooks/use-user";
 import { EmailCard } from "./email-card";
 import { PreferencesCard } from "./preferences-card";
@@ -5046,10 +5046,10 @@ export function registerClaimsHandler(registerFn: ClaimsSubscriberRegistrar): ()
 import { Mail } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 import { sendPasswordResetEmail } from "../_actions";
 interface ResetPasswordFormProps {
   defaultEmail?: string;
@@ -5247,10 +5247,10 @@ import { Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useApp } from "@/shared/app-providers/app-context";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 import { useOrganizationManagement } from "../_hooks/use-organization-management";
 interface AccountNewFormProps {
   onSuccess: () => void;
@@ -5269,13 +5269,13 @@ import { useEffect, useState } from "react";
 import { useI18n } from "@/config/i18n/i18n-provider";
 import { useApp } from "@/shared/app-providers/app-context";
 import { ROUTES } from "@/shared/constants/routes";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shared/shadcn-ui/alert-dialog";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shadcn-ui/alert-dialog";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { Textarea } from "@/shadcn-ui/textarea";
 import { useOrganizationManagement } from "../_hooks/use-organization-management";
 ⋮----
 const handleSave = async () =>
@@ -5541,17 +5541,17 @@ import {
   type SkillGroup,
   type SkillSubCategory,
 } from '@/shared/constants/skills';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
 ```
 
 ## File: src/features/scheduling.slice/_components/schedule-capability-tabs.tsx
 ```typescript
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 ⋮----
 type CapabilityTabValue = "schedule" | "timeline";
 function toCapabilityValue(pathname: string): CapabilityTabValue
@@ -5580,14 +5580,14 @@ import {
 } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
 import { useState } from "react"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import { Input } from "@/shared/shadcn-ui/input"
+} from "@/shadcn-ui/dropdown-menu"
+import { Input } from "@/shadcn-ui/input"
 import {
   Table,
   TableBody,
@@ -5595,7 +5595,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/shadcn-ui/table"
+} from "@/shadcn-ui/table"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -5869,7 +5869,7 @@ export async function applySkillXpDeducted(
 ## File: src/features/timelineing.slice/_components/timeline-capability-tabs.tsx
 ```typescript
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger } from '@/shared/shadcn-ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
 ⋮----
 type CapabilityTabValue = 'schedule' | 'timeline';
 function toCapabilityValue(pathname: string): CapabilityTabValue
@@ -5900,9 +5900,9 @@ export interface TimelineMember {
 import { Trophy, CheckCircle2, Search, XCircle, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import type { WorkspaceTask } from "../../business.tasks/_types";
 import { useWorkspace } from '../../core';
 const getErrorMessage = (error: unknown, fallback: string)
@@ -5940,8 +5940,8 @@ export async function addDailyLogComment(
 ```typescript
 import { Bookmark, Loader2 } from "lucide-react";
 import { useState, useEffect, useCallback } from 'react';
-import { Button } from "@/shared/shadcn-ui/button";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Button } from "@/shadcn-ui/button";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { useBookmarkActions } from '../../_hooks/use-bookmark-commands';
 interface BookmarkButtonProps {
   logId: string;
@@ -5951,14 +5951,14 @@ interface BookmarkButtonProps {
 ## File: src/features/workspace.slice/business.daily/_components/actions/share-button.tsx
 ```typescript
 import { Share2 } from "lucide-react";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { useWorkspace } from "../../../core";
 import { type DailyLog } from "../../_types";
 interface ShareButtonProps {
@@ -5998,7 +5998,7 @@ export function useAggregatedLogs()
 ```typescript
 import { useState, useMemo } from "react";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { useWorkspace } from "../../core";
 import { useAccount } from "../../core";
 import { useLogger } from "../../gov.audit";
@@ -6121,23 +6121,23 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle
-} from "@/shared/shadcn-ui/sheet";
+} from "@/shadcn-ui/sheet";
 import {
   Table,
   TableBody,
@@ -6145,8 +6145,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/shadcn-ui/table";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/table";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { useWorkspace } from '../../core';
 import {
   createWorkspaceFile,
@@ -6218,8 +6218,8 @@ export async function saveFinanceAggregateState(
 ## File: src/features/workspace.slice/business.finance/_components/finance-lifecycle-tracker.tsx
 ```typescript
 import { useEffect, useMemo, useState } from 'react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
 import { FINANCE_LIFECYCLE_STAGES } from '../_constants';
 import type { FinanceLifecycleStage } from '../_types';
 ⋮----
@@ -6331,16 +6331,16 @@ import { format } from "date-fns";
 import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, MessageSquare, CornerUpLeft, CheckCircle2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shared/shadcn-ui/sheet";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shadcn-ui/sheet";
+import { Textarea } from "@/shadcn-ui/textarea";
 import { useWorkspace } from '../../core';
 import { type WorkspaceIssue } from "../_types";
 const getErrorMessage = (error: unknown, fallback: string)
@@ -6444,9 +6444,9 @@ export function supersedeParsingIntent(
 import { ShieldCheck, XCircle, CheckCircle, Search, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { type WorkspaceTask } from "../../business.tasks/_types";
 import { useWorkspace } from '../../core';
 const getErrorMessage = (error: unknown, fallback: string)
@@ -6493,7 +6493,7 @@ export const buildReconcileCreatePayload = (
 ## File: src/features/workspace.slice/business.tasks/_components/attachments-action.tsx
 ```typescript
 import { Paperclip } from 'lucide-react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import { type TaskWithChildren } from '../_types';
 type AttachmentsActionProps = {
   node: TaskWithChildren;
@@ -6505,7 +6505,7 @@ export function AttachmentsAction(
 ## File: src/features/workspace.slice/business.tasks/_components/location-action.tsx
 ```typescript
 import { MapPin } from 'lucide-react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import { type TaskWithChildren } from '../_types';
 type LocationActionProps = {
   node: TaskWithChildren;
@@ -6517,17 +6517,17 @@ export function LocationAction(
 ## File: src/features/workspace.slice/business.tasks/_components/location-dialog.tsx
 ```typescript
 import { Loader2, MapPin } from 'lucide-react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
-import { Textarea } from '@/shared/shadcn-ui/textarea';
+} from '@/shadcn-ui/dialog';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import { Textarea } from '@/shadcn-ui/textarea';
 import { type Location } from '../_types';
 type LocationDialogProps = {
   isOpen: boolean;
@@ -6552,7 +6552,7 @@ onChange=
 ## File: src/features/workspace.slice/business.tasks/_components/progress-report-dialog.tsx
 ```typescript
 import { useEffect, useState } from 'react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6560,10 +6560,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
+} from '@/shadcn-ui/dialog';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
 import type { TaskWithChildren } from '../_types';
 interface ProgressReportDialogProps {
   task: TaskWithChildren | null;
@@ -6589,7 +6589,7 @@ const handleSubmit = async () =>
 ## File: src/features/workspace.slice/business.tasks/_hooks/use-attachments-dialog-controller.ts
 ```typescript
 import { useState } from 'react';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 type UpdateTask = (taskId: string, updates: Partial<WorkspaceTask>) => Promise<void>;
 type UploadTaskAttachment = (file: File) => Promise<string>;
@@ -6611,7 +6611,7 @@ const saveAttachments = async () =>
 ## File: src/features/workspace.slice/business.tasks/_hooks/use-location-dialog-controller.ts
 ```typescript
 import { useState } from 'react';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { type Location, type TaskWithChildren, type WorkspaceTask } from '../_types';
 type UpdateTask = (taskId: string, updates: Partial<WorkspaceTask>) => Promise<void>;
 type LogAuditEvent = (action: string, target: string, operation: 'create' | 'update' | 'delete') => void;
@@ -6663,7 +6663,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 import type { Workspace } from "../../_types";
 interface NavWorkspacesProps {
   workspaces: Workspace[];
@@ -6675,8 +6675,8 @@ interface NavWorkspacesProps {
 ## File: src/features/workspace.slice/core/_components/shell/theme-adapter.tsx
 ```typescript
 import { useEffect, useState, useRef } from "react";
-import { Skeleton } from "@/shared/shadcn-ui/skeleton";
-import { hexToHsl } from "@/shared/shadcn-ui/utils/utils";
+import { Skeleton } from "@/shadcn-ui/skeleton";
+import { hexToHsl } from "@/shadcn-ui/utils/utils";
 import { useApp } from "../../_hooks/use-app";
 ⋮----
 interface ThemeAdapterProps {
@@ -6719,14 +6719,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shared/shadcn-ui/alert-dialog";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Checkbox } from "@/shared/shadcn-ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shadcn-ui/card";
+import { Checkbox } from "@/shadcn-ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
 import { useApp } from '../_hooks/use-app';
 import { type Capability } from "../_types";
 import { useWorkspace } from './workspace-provider';
@@ -6774,9 +6774,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shared/shadcn-ui/alert-dialog";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import {
   Card,
   CardContent,
@@ -6784,9 +6784,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/shadcn-ui/tooltip";
+} from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn-ui/tooltip";
 import { deleteWorkspace, updateWorkspaceSettings } from "../_actions";
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
 import { WorkspaceSettingsDialog } from "./workspace-settings";
@@ -6825,8 +6825,8 @@ import { Eye, EyeOff, Shield, Trash2, ArrowUpRight, Terminal } from "lucide-reac
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { ROUTES } from "@/shared/constants/routes";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import { type Workspace } from "../_types";
 interface WorkspaceListItemProps {
   workspace: Workspace;
@@ -6842,18 +6842,18 @@ onClick=
 ```typescript
 import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
 import { useState, useCallback } from 'react';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/shared/shadcn-ui/dialog';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
+} from '@/shadcn-ui/dialog';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
 import { createWorkspaceLocation, updateWorkspaceLocation, deleteWorkspaceLocation } from '../_actions';
 import type { WorkspaceLocation } from '../_types';
 interface LocationFormDialogProps {
@@ -6889,24 +6889,24 @@ interface WorkspaceNavTabsProps {
 ```typescript
 import { HardHat, ShieldCheck, User2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shared/shadcn-ui/select";
-import { Switch } from "@/shared/shadcn-ui/switch";
+} from "@/shadcn-ui/select";
+import { Switch } from "@/shadcn-ui/switch";
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
 interface WorkspaceSettingsDialogProps {
   workspace: Workspace;
@@ -7234,8 +7234,8 @@ onValueChange=
 import { Eye, EyeOff, Shield, ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/config/i18n/i18n-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import type { Workspace } from "../_types";
 interface WorkspaceListItemProps {
   workspace: Workspace;
@@ -7258,8 +7258,8 @@ export function useVisibleWorkspaces()
 ```typescript
 import type { MutableRefObject } from 'react';
 import { shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { ToastAction } from '@/shared/shadcn-ui/toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ToastAction } from '@/shadcn-ui/toast';
 import {
   finishParsingImport,
   markParsingIntentFailed,
@@ -7283,8 +7283,8 @@ const importItems = () =>
 
 ## File: src/features/workspace.slice/gov.audit/_components/audit-detail-sheet.tsx
 ```typescript
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/shared/shadcn-ui/sheet";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/shadcn-ui/sheet";
 import { type AuditLog } from "../_types";
 interface AuditDetailSheetProps {
     log: AuditLog | null;
@@ -7297,8 +7297,8 @@ export function AuditDetailSheet(
 ## File: src/features/workspace.slice/gov.audit/_components/audit-event-item.tsx
 ```typescript
 import { format } from "date-fns";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Badge } from "@/shadcn-ui/badge";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { type AuditLog } from "../_types";
 import { AuditEventItemContainer } from "./audit-timeline";
 import { AuditTypeIcon } from "./audit-type-icon";
@@ -8018,7 +8018,7 @@ export interface UploadTaskResult {
 ## File: src/shared/ui/page-header.tsx
 ```typescript
 import type { ReactNode } from "react";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { cn } from "@/shadcn-ui/utils/utils";
 interface PageHeaderProps {
   title: string;
   description?: string;
@@ -8193,7 +8193,7 @@ import { GovernanceSidebar , useScheduleActions } from "@/features/scheduling.sl
 import type { ScheduleItem } from "@/shared-kernel"
 import { useWorkspace } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shared/shadcn-ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/shadcn-ui/sheet"
 export default function GovernancePanelPage()
 ```
 
@@ -8314,8 +8314,8 @@ async function emitTokenRefreshSignal(
 ```typescript
 import { Shield } from "lucide-react";
 import { type OrganizationRole } from "@/shared-kernel";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Card, CardContent } from "@/shared/shadcn-ui/card";
+import { Badge } from "@/shadcn-ui/badge";
+import { Card, CardContent } from "@/shadcn-ui/card";
 interface PermissionTreeProps {
   currentRole: OrganizationRole;
   t: (key: string) => string;
@@ -8358,12 +8358,12 @@ export async function uploadUserAvatar(
 import { User, Loader2, Upload } from "lucide-react";
 import type React from "react"
 import { type Account } from "@/shared-kernel"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/shadcn-ui/card";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shadcn-ui/card";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { Textarea } from "@/shadcn-ui/textarea";
 interface ProfileCardProps {
   account: Account | null
   name: string
@@ -8669,7 +8669,7 @@ import { Globe, MoreVertical, Users, ArrowUpRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { type Account } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   Card,
   CardContent,
@@ -8677,7 +8677,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/shadcn-ui/card"
+} from "@/shadcn-ui/card"
 interface AccountGridProps {
     accounts: Account[]
 }
@@ -8806,9 +8806,9 @@ import { useParams, useRouter } from "next/navigation"
 import { useState, useEffect, useMemo } from "react"
 import type { PartnerInvite, MemberReference , Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
 import {
   Dialog,
   DialogContent,
@@ -8816,11 +8816,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs"
 import { PageHeader } from "@/shared/ui/page-header"
 import { usePartnerManagement } from "../_hooks/use-partner-management"
 import { subscribeToOrgPartnerInvites } from "../_queries"
@@ -8839,9 +8839,9 @@ import { useState, useEffect, useMemo } from "react"
 import { useI18n } from "@/config/i18n/i18n-provider"
 import type { Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
 import {
   Dialog,
   DialogContent,
@@ -8849,10 +8849,10 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
 import { PageHeader } from "@/shared/ui/page-header"
 import { usePartnerManagement } from "../_hooks/use-partner-management"
 ⋮----
@@ -8933,19 +8933,19 @@ import { useI18n } from "@/config/i18n/i18n-provider"
 import { useTeamManagement } from "@/features/organization.slice"
 import type { Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/shadcn-ui/card"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
 import { PageHeader } from "@/shared/ui/page-header"
 ⋮----
 title=
@@ -9342,8 +9342,8 @@ import { type ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { CheckCircle, XCircle, ArrowUpDown } from "lucide-react"
 import type { ScheduleItem } from '@/shared-kernel'
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
 export type DecisionHistoryItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'status' | 'updatedAt'>
 ```
 
@@ -9353,10 +9353,10 @@ import { Check, X } from "lucide-react";
 import type { SkillRequirement } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 import { SKILLS } from '@/shared/constants/skills';
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];
   onApprove: (item: ScheduleItem) => void;
@@ -9368,9 +9368,9 @@ interface GovernanceSidebarProps {
 ```typescript
 import { Flag } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { updateScheduleItemStatus } from '../_actions';
 import {
   AssignedMemberAvatars,
@@ -9388,11 +9388,11 @@ import {
 ```typescript
 import { CheckCircle, UserPlus, Users, XCircle } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/shared/shadcn-ui/command';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/shadcn-ui/popover';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/shadcn-ui/command';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shadcn-ui/popover';
 import { assignMember, updateScheduleItemStatus } from '../_actions';
 import {
   AssignedMemberAvatars,
@@ -10026,9 +10026,9 @@ import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
 import { useApp } from '@/shared/app-providers/app-context';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { Progress } from '@/shared/shadcn-ui/progress';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { Progress } from '@/shadcn-ui/progress';
 import type { AccountSkillEntry } from '../_projector';
 import { getAccountSkillView } from '../_queries';
 interface SkillRow {
@@ -10161,7 +10161,7 @@ import { useCallback } from 'react';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from '@/shared/app-providers/app-context';
 import { useAuth } from '@/shared/app-providers/auth-provider';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { updateTimelineItemDateRange } from '../_actions';
 export function useTimelineCommands()
 ```
@@ -10282,8 +10282,8 @@ drain()
 import { Heart } from "lucide-react";
 import { useState, useEffect, useCallback } from 'react';
 import type { Account } from "@/shared-kernel";
-import { Button } from "@/shared/shadcn-ui/button";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Button } from "@/shadcn-ui/button";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { useDailyActions } from '../../_hooks/use-daily-commands';
 import { type DailyLog } from "../../_types";
 interface LikeButtonProps {
@@ -10307,8 +10307,8 @@ import {
 import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 import { classifyCostItem, shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
 import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
 import type { ParsingIntent } from '../_types';
 ⋮----
 export function WorkItemsTable({
@@ -10453,14 +10453,14 @@ export async function reconcileIntentTasks(
 ```typescript
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
+} from '@/shadcn-ui/dialog';
 type AttachmentsDialogProps = {
   isOpen: boolean;
   attachments: string[];
@@ -10479,24 +10479,24 @@ onClick=
 ## File: src/features/workspace.slice/business.tasks/_components/task-editor-dialog.tsx
 ```typescript
 import { Loader2, Settings2 } from 'lucide-react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
+} from '@/shadcn-ui/dialog';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/shadcn-ui/select';
-import { Textarea } from '@/shared/shadcn-ui/textarea';
+} from '@/shadcn-ui/select';
+import { Textarea } from '@/shadcn-ui/textarea';
 import { type WorkspaceTask } from '../_types';
 interface TaskEditorDialogProps {
   isOpen: boolean;
@@ -10547,10 +10547,10 @@ onValueChange=
 ## File: src/features/workspace.slice/business.tasks/_components/task-tree-node.tsx
 ```typescript
 import { CalendarPlus, ChevronDown, ChevronRight, ClipboardPlus, OctagonX, Plus, Send, Settings2, Trash2 } from 'lucide-react';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Progress } from '@/shared/shadcn-ui/progress';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Progress } from '@/shadcn-ui/progress';
+import { cn } from '@/shadcn-ui/utils/utils';
 import { type TaskWithChildren, type WorkspaceTask } from '../_types';
 import { AttachmentsAction } from './attachments-action';
 import { LocationAction } from './location-action';
@@ -10650,7 +10650,7 @@ export const AccountProvider = (
 import { Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { type Account } from "@/shared-kernel"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   Dialog,
   DialogContent,
@@ -10658,10 +10658,10 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
 import type { AppAction } from '../app-provider'
 interface AccountCreateDialogProps {
   open: boolean
@@ -10691,10 +10691,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/shared/shadcn-ui/breadcrumb";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Separator } from "@/shared/shadcn-ui/separator";
-import { SidebarTrigger } from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 import { useApp } from "../../_hooks/use-app";
 import { useVisibleWorkspaces } from '../../_hooks/use-visible-workspaces';
 import { NotificationCenter } from "./notification-center";
@@ -10714,7 +10714,7 @@ import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import type { Account } from "@/shared-kernel"
 import { ROUTES } from "@/shared/constants/routes"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10722,8 +10722,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shared/shadcn-ui/sidebar"
+} from "@/shadcn-ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
 interface NavUserProps {
   user: Account | null
   accounts: Record<string, Account>
@@ -10742,9 +10742,9 @@ const handleLogout = () =>
 ```typescript
 import { Bell, Trash2, Check } from "lucide-react";
 import { type Notification } from "@/shared-kernel";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Button } from "@/shadcn-ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import type { AppAction } from '../app-provider'
 interface NotificationCenterProps {
   notifications: Notification[];
@@ -10863,7 +10863,7 @@ export interface Workspace {
 ## File: src/features/workspace.slice/core/_use-cases.ts
 ```typescript
 import type { CommandResult, Account } from '@/shared-kernel';
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { createWorkspace, mountCapabilities, updateWorkspaceSettings, deleteWorkspace } from "./_actions";
 import type { Capability, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "./_types";
 export async function createWorkspaceWithCapabilities(
@@ -10938,16 +10938,16 @@ import {
 import { useState, useMemo } from "react";
 import { type Team, type MemberReference } from "@/shared-kernel";
 import { useApp } from '@/shared/app-providers/app-context';
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/shadcn-ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shared/shadcn-ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/shadcn-ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shadcn-ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { useWorkspace } from '../../core';
 import { type WorkspaceRole } from "../../gov.role/_types";
 const getErrorMessage = (error: unknown, fallback: string)
@@ -11423,7 +11423,7 @@ import { useRouter } from "next/navigation";
 import { type Account, type MemberReference } from "@/shared-kernel";
 import { type Workspace } from "@/features/workspace.slice";
 import { ROUTES } from "@/shared/constants/routes";
-import { Badge } from "@/shared/shadcn-ui/badge";
+import { Badge } from "@/shadcn-ui/badge";
 import {
   CommandDialog,
   CommandEmpty,
@@ -11431,7 +11431,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
+} from "@/shadcn-ui/command";
 export interface GlobalSearchDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
@@ -11504,8 +11504,8 @@ function generateDispatchId(): string
 ## File: src/features/notification-hub.slice/user.notification/_components/notification-list.tsx
 ```typescript
 import type { Notification } from '@/shared-kernel';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
-import { cn } from '@/shared/shadcn-ui/utils/utils';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import { cn } from '@/shadcn-ui/utils/utils';
 interface NotificationListProps {
   notifications: Notification[];
   onMarkRead: (id: string) => void;
@@ -11521,10 +11521,10 @@ import { getAllOrgMembersView } from "@/features/projection.bus"
 import type { OrgEligibleMemberView } from "@/features/projection.bus"
 import { type MemberReference } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/shadcn-ui/card"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { PageHeader } from "@/shared/ui/page-header"
 import { useMemberManagement } from '../_hooks/use-member-management'
 ⋮----
@@ -11556,9 +11556,9 @@ import { useState, useEffect, useMemo } from "react"
 import { useTeamManagement } from "@/features/organization.slice"
 import type { MemberReference, Team } from "@/shared-kernel"
 import { useApp } from "@/shared/app-providers/app-context"
-import { Button } from "@/shared/shadcn-ui/button"
-import { Card, CardContent } from "@/shared/shadcn-ui/card"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
+import { Button } from "@/shadcn-ui/button"
+import { Card, CardContent } from "@/shadcn-ui/card"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { PageHeader } from "@/shared/ui/page-header"
 ⋮----
 const handleMemberToggle = async (memberId: string, action: 'add' | 'remove') =>
@@ -11655,9 +11655,9 @@ import { tagSlugRef } from "@/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { type Location } from "@/features/workspace.slice";
 import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared/constants/skills";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Calendar } from "@/shared/shadcn-ui/calendar";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Calendar } from "@/shadcn-ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -11665,7 +11665,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
+} from "@/shadcn-ui/command";
 import {
   Dialog,
   DialogContent,
@@ -11673,12 +11673,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { cn } from "@/shadcn-ui/utils/utils";
 ⋮----
 interface ProposalDialogProps {
   isOpen: boolean;
@@ -11752,15 +11752,15 @@ import { ArrowUpDown } from "lucide-react"
 import type { ScheduleItem } from '@/shared-kernel'
 import { type MemberReference } from "@/shared-kernel"
 import { SKILLS } from "@/shared/constants/skills"
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar"
-import { Badge } from "@/shared/shadcn-ui/badge"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
+import { Badge } from "@/shadcn-ui/badge"
+import { Button } from "@/shadcn-ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/shadcn-ui/tooltip"
+} from "@/shadcn-ui/tooltip"
 export type UpcomingEventItem = Pick<ScheduleItem, 'id' | 'title' | 'workspaceName' | 'startDate' | 'endDate' | 'assigneeIds' | 'requiredSkills'> & { members: MemberReference[] }
 ```
 
@@ -11772,7 +11772,7 @@ import { tierSatisfies } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from "@/shared/app-providers/app-context";
 import { useAuth } from "@/shared/app-providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import {
     assignMember,
     unassignMember,
@@ -11792,7 +11792,7 @@ import { useState, useEffect, useMemo } from "react";
 import type { ScheduleItem } from '@/shared-kernel';
 import { useWorkspace } from "@/features/workspace.slice";
 import { useApp } from "@/shared/app-providers/app-context";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { subscribeToWorkspaceScheduleItems } from '../_queries';
 export function useWorkspaceSchedule()
 ⋮----
@@ -11995,8 +11995,8 @@ export async function getTagSnapshotPresentationMap(
 import { useEffect, useState } from "react";
 import type { Account } from "@/shared-kernel";
 import type { Timestamp } from "@/shared-kernel/ports";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Card } from "@/shared/shadcn-ui/card";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Card } from "@/shadcn-ui/card";
 import { type DailyLog } from "../_types";
 import { BookmarkButton } from "./actions/bookmark-button";
 import { CommentButton } from "./actions/comment-button";
@@ -12021,12 +12021,12 @@ import { useEffect, useState } from "react";
 import type { Account } from "@/shared-kernel";
 import { useAuth } from "@/shared/app-providers/auth-provider";
 import type { Timestamp } from "@/shared-kernel/ports";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Textarea } from "@/shadcn-ui/textarea";
 import { addDailyLogComment } from "../_actions";
 import { subscribeToDailyLogComments } from '../_queries';
 import { type DailyLog, type DailyLogComment } from "../_types";
@@ -12193,10 +12193,10 @@ export async function markParsingIntentFailed(
 ```typescript
 import { BriefcaseBusiness, Coins, Hammer, type LucideIcon, ShieldCheck } from 'lucide-react';
 import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Checkbox } from '@/shared/shadcn-ui/checkbox';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/shadcn-ui/table';
+import { Badge } from '@/shadcn-ui/badge';
+import { Checkbox } from '@/shadcn-ui/checkbox';
+import { Input } from '@/shadcn-ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn-ui/table';
 import { NON_TASK_COST_ITEM_TYPES } from '../_constants';
 import type { FinanceClaimDraftEntry, FinanceDirectiveItem } from '../_types';
 interface FinanceItemTableProps {
@@ -12645,8 +12645,8 @@ import { tierSatisfies } from '@/shared-kernel';
 import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
 import { findSkill } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
-import { Avatar, AvatarFallback } from '@/shared/shadcn-ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/shadcn-ui/tooltip';
+import { Avatar, AvatarFallback } from '@/shadcn-ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn-ui/tooltip';
 type TimestampLike = { toDate: () => Date };
 function isTimestampLike(value: unknown): value is TimestampLike
 export interface GovernanceMember {
@@ -12681,7 +12681,7 @@ import { useMemo } from "react"
 import type { SkillRequirement } from "@/shared-kernel"
 import { useWorkspace } from "@/features/workspace.slice"
 import type { Location } from "@/features/workspace.slice"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { ProposalDialog } from "./proposal-dialog"
 interface ScheduleProposalContentProps {
   fullPage?: boolean
@@ -12707,7 +12707,7 @@ import { useState, useCallback } from "react";
 import type { ScheduleItem } from '@/shared-kernel';
 import type { MemberReference } from "@/shared-kernel";
 import { useApp } from "@/shared/app-providers/app-context";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Command,
   CommandEmpty,
@@ -12715,10 +12715,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/shadcn-ui/tabs";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import { cn } from "@/shadcn-ui/utils/utils";
 import { useGlobalSchedule } from "../_hooks/use-global-schedule";
 import { useScheduleActions } from "../_hooks/use-schedule-commands";
 import { decisionHistoryColumns } from "./decision-history-columns";
@@ -12906,7 +12906,7 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import type { Account } from "@/shared-kernel"
 import { ROUTES } from "@/shared/constants/routes"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/shadcn-ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12914,14 +12914,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu"
+} from "@/shadcn-ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   useSidebar,
-} from "@/shared/shadcn-ui/sidebar"
-import { cn } from "@/shared/shadcn-ui/utils/utils"
+} from "@/shadcn-ui/sidebar"
+import { cn } from "@/shadcn-ui/utils/utils"
 import type { AppAction } from '../app-provider'
 interface AccountSwitcherProps {
   user: Account | null
@@ -12946,7 +12946,7 @@ import { initTagChangedSubscriber } from '@/features/notification-hub.slice';
 import {
   createScheduleItem as createScheduleItemAction,
 } from '@/features/scheduling.slice'
-import { firestoreTimestampToISO } from '@/shared/shadcn-ui/utils/utils';
+import { firestoreTimestampToISO } from '@/shadcn-ui/utils/utils';
 import { registerOrgPolicyCache, runTransaction } from '../../application';
 import {
   createIssue as createIssueAction,
@@ -13026,18 +13026,18 @@ import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/shared/app-providers/app-context';
 import { SKILLS } from '@/shared/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/shadcn-ui/select';
+} from '@/shadcn-ui/select';
 import {
   approveScheduleItemWithMember,
   updateScheduleItemStatus,
@@ -13244,7 +13244,7 @@ import {
 } from "vis-timeline/standalone";
 ⋮----
 import type { ScheduleItem, Timestamp } from "@/shared-kernel";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+import { cn } from "@/shadcn-ui/utils/utils";
 import type { TimelineMember } from "../_types";
 type CalendarTimestamp = Timestamp | Date | { seconds: number; nanoseconds: number } | null | undefined;
 type ResolvedTemporalKind = NonNullable<ScheduleItem["temporalKind"]>;
@@ -13304,10 +13304,10 @@ import { TimelineCanvas } from "./timeline-canvas";
 import { AlertCircle, CheckCircle2, FileSearch, Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { useWorkspace } from '../../core';
 import { useFinanceLifecycle } from '../_hooks/use-finance-lifecycle';
 import { FinanceItemTable } from './finance-item-table';
@@ -13501,7 +13501,7 @@ export type SubscribeFn = <T extends WorkspaceEventName>(
 ```typescript
 import { useEffect, useRef } from "react";
 import { handleScheduleProposed } from "@/features/scheduling.slice";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { createIssue } from "../../business.issues";
 import {
   advanceWorkflowToStage,
@@ -13635,9 +13635,9 @@ import type { OrgEligibleMemberView } from '@/features/projection.bus';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/shared/app-providers/app-context';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/shadcn-ui/empty';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import { PageHeader } from '@/shared/ui/page-header';
 import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 ```
@@ -13649,9 +13649,9 @@ import { useActionState, useTransition, useRef, useEffect, useCallback, useState
 import { logDomainError } from '@/features/observability';
 import { classifyCostItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/shadcn-ui/card';
-import { useToast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
+import { useToast } from '@/shadcn-ui/hooks/use-toast';
 import { persistWorkspaceOutboxEvent } from '../../application/_outbox';
 import { useWorkspace } from '../../core';
 import {
@@ -13700,17 +13700,17 @@ import { useMemo } from "react";
 import type { ScheduleItem } from "@/shared-kernel";
 import { type MemberReference } from "@/shared-kernel";
 import { findSkill } from "@/shared/constants/skills";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/shadcn-ui/tooltip";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/tooltip";
+import { cn } from "@/shadcn-ui/utils/utils";
 import {
   buildCardsByDate,
   buildSpanSegmentsByDate,
@@ -13759,14 +13759,14 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
+} from '@/shadcn-ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13774,9 +13774,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/shared/shadcn-ui/dropdown-menu';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shared/shadcn-ui/empty';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+} from '@/shadcn-ui/dropdown-menu';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { PageHeader } from '@/shared/ui/page-header';
 import { buildTaskTree } from '../../_task.rules';
 import { useStorage } from '../../business.files';

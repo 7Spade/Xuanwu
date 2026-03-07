@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 
 import { useWorkspaceFilters } from "../../business.files/_hooks/use-workspace-filters";
 import { useApp } from "../_hooks/use-app";

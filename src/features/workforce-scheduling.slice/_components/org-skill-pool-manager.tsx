@@ -32,11 +32,11 @@ import {
   type SkillGroup,
   type SkillSubCategory,
 } from '@/shared/constants/skills';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
-import { ScrollArea } from '@/shared/shadcn-ui/scroll-area';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
 
 // ---------------------------------------------------------------------------
 // Main component

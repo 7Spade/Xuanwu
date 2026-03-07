@@ -4,11 +4,11 @@ import { Mail, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { authAdapter } from "@/shared/infra/auth/auth.adapter";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 
 interface EmailCardProps {
   currentEmail: string;

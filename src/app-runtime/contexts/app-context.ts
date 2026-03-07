@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Module: app-context.ts
  * Purpose: define app provider context contract and shared state/action types

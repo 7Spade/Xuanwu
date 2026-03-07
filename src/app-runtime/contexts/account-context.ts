@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Module: account-context.ts
  * Purpose: define account provider context contract and shared account state types

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 
 import { handleScheduleProposed } from "@/features/workforce-scheduling.slice";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 
 import { createIssue } from "../../business.issues";
 import {

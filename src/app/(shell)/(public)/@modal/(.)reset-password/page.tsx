@@ -12,7 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/shared/shadcn-ui/dialog"
+} from "@/shadcn-ui/dialog"
 
 function ResetPasswordModalContent() {
   const router = useRouter()

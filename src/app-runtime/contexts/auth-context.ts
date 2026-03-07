@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Module: auth-context.ts
  * Purpose: define auth provider context contract and shared auth types

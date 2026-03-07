@@ -20,11 +20,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/shared/shadcn-ui": ["./src/shared/shadcn-ui"],
-      "@/shared/shadcn-ui/*": ["./src/shared/shadcn-ui/*"],
-      "@/shared/lib/utils": ["./src/shared/lib/utils"],
-      "@/shared/hooks": ["./src/shared/hooks"],
-      "@/shared/hooks/*": ["./src/shared/hooks/*"]
+      "@/shadcn-ui": ["./src/shadcn-ui"],
+      "@/shadcn-ui/*": ["./src/shadcn-ui/*"],
+      "@/shadcn-ui/lib/utils": ["./src/lib/utils"],
+      "@/shadcn-ui/hooks": ["./src/hooks"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

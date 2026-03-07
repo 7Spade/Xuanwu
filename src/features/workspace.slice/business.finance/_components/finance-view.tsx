@@ -12,10 +12,10 @@ import { AlertCircle, CheckCircle2, FileSearch, Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { toast } from '@/shared/shadcn-ui/hooks/use-toast';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
 
 import { useWorkspace } from '../../core';
 import { useFinanceLifecycle } from '../_hooks/use-finance-lifecycle';

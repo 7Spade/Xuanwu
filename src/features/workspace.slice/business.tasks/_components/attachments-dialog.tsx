@@ -10,14 +10,14 @@
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
 
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
+} from '@/shadcn-ui/dialog';
 
 type AttachmentsDialogProps = {
   isOpen: boolean;

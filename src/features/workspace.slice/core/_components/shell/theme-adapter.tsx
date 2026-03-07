@@ -3,8 +3,8 @@
 
 import { useEffect, useState, useRef } from "react";
 
-import { Skeleton } from "@/shared/shadcn-ui/skeleton";
-import { hexToHsl } from "@/shared/shadcn-ui/utils/utils";
+import { Skeleton } from "@/shadcn-ui/skeleton";
+import { hexToHsl } from "@/shadcn-ui/utils/utils";
 
 import { useApp } from "../../_hooks/use-app";
 

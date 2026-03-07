@@ -4,7 +4,7 @@
 import { useState } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
 
 import { useApp } from "../_hooks/use-app";
 import { handleCreateWorkspace } from "../_use-cases";

@@ -9,17 +9,17 @@
 
 import { Loader2, MapPin } from 'lucide-react';
 
-import { Button } from '@/shared/shadcn-ui/button';
+import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/shadcn-ui/dialog';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Label } from '@/shared/shadcn-ui/label';
-import { Textarea } from '@/shared/shadcn-ui/textarea';
+} from '@/shadcn-ui/dialog';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import { Textarea } from '@/shadcn-ui/textarea';
 
 import { type Location } from '../_types';
 

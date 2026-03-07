@@ -13,9 +13,9 @@ import { useEffect, useState } from 'react';
 
 import { resolveSkillTier, TIER_DEFINITIONS } from '@/shared-kernel';
 import { useApp } from '@/app-runtime/providers/app-provider';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
-import { Progress } from '@/shared/shadcn-ui/progress';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { Progress } from '@/shadcn-ui/progress';
 
 import type { AccountSkillEntry } from '../_projector';
 import { getAccountSkillView } from '../_queries';

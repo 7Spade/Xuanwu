@@ -1,3 +1,5 @@
+"use client"
+
 /**
  * Module: i18n-context.ts
  * Purpose: define i18n provider context contract and shared i18n types

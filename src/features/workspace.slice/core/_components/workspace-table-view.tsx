@@ -5,8 +5,8 @@ import { Eye, EyeOff, Shield, ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 
 import type { Workspace } from "../_types";
 

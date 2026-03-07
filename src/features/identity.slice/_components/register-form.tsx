@@ -4,9 +4,9 @@
 import { Mail, User, Lock, Loader2 } from "lucide-react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Button } from "@/shared/shadcn-ui/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shared/shadcn-ui/input-group";
-import { Label } from "@/shared/shadcn-ui/label";
+import { Button } from "@/shadcn-ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/shadcn-ui/input-group";
+import { Label } from "@/shadcn-ui/label";
 
 interface RegisterFormProps {
   name: string;

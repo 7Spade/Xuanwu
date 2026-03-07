@@ -15,10 +15,10 @@
 import { ImagePlusIcon, Send, Loader2, X } from "lucide-react";
 import Image from "next/image";
 
-import { Button } from "@/shared/shadcn-ui/button";
-import { Card } from "@/shared/shadcn-ui/card";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Textarea } from "@/shared/shadcn-ui/textarea";
+import { Button } from "@/shadcn-ui/button";
+import { Card } from "@/shadcn-ui/card";
+import { Input } from "@/shadcn-ui/input";
+import { Textarea } from "@/shadcn-ui/textarea";
 
 interface DailyLogComposerProps {
   content: string;

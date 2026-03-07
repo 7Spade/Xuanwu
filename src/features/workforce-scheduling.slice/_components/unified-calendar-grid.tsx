@@ -15,17 +15,17 @@ import { useMemo } from "react";
 import type { ScheduleItem } from "@/shared-kernel";
 import { type MemberReference } from "@/shared-kernel";
 import { findSkill } from "@/shared/constants/skills";
-import { Avatar, AvatarFallback } from "@/shared/shadcn-ui/avatar";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shared/shadcn-ui/tooltip";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/tooltip";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 import {
   buildCardsByDate,

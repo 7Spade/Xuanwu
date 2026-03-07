@@ -25,23 +25,23 @@ import { useState, useRef, useEffect } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { ROUTES } from "@/shared/constants/routes";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shared/shadcn-ui/dropdown-menu";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { ScrollArea } from "@/shared/shadcn-ui/scroll-area";
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import { 
   Sheet, 
   SheetContent, 
   SheetDescription, 
   SheetHeader, 
   SheetTitle 
-} from "@/shared/shadcn-ui/sheet";
+} from "@/shadcn-ui/sheet";
 import {
   Table,
   TableBody,
@@ -49,8 +49,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shared/shadcn-ui/table";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/table";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 import { useWorkspace } from '../../core';
 import {

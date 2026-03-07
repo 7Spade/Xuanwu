@@ -9,8 +9,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/shadcn-ui/card';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
 
 import { FINANCE_LIFECYCLE_STAGES } from '../_constants';
 import type { FinanceLifecycleStage } from '../_types';

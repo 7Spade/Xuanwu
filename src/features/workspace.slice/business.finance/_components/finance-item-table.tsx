@@ -10,10 +10,10 @@
 import { BriefcaseBusiness, Coins, Hammer, type LucideIcon, ShieldCheck } from 'lucide-react';
 
 import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Checkbox } from '@/shared/shadcn-ui/checkbox';
-import { Input } from '@/shared/shadcn-ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/shadcn-ui/table';
+import { Badge } from '@/shadcn-ui/badge';
+import { Checkbox } from '@/shadcn-ui/checkbox';
+import { Input } from '@/shadcn-ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn-ui/table';
 
 import { NON_TASK_COST_ITEM_TYPES } from '../_constants';
 import type { FinanceClaimDraftEntry, FinanceDirectiveItem } from '../_types';

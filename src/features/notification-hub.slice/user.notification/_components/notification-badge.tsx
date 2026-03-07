@@ -9,8 +9,8 @@
 
 import { Bell } from 'lucide-react';
 
-import { Badge } from '@/shared/shadcn-ui/badge';
-import { Button } from '@/shared/shadcn-ui/button';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
 
 interface NotificationBadgeProps {
   unreadCount: number;

@@ -10,9 +10,9 @@ import { tagSlugRef } from "@/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { type Location } from "@/features/workspace.slice";
 import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared/constants/skills";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Calendar } from "@/shared/shadcn-ui/calendar";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Calendar } from "@/shadcn-ui/calendar";
 import {
   Command,
   CommandEmpty,
@@ -20,7 +20,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shared/shadcn-ui/command";
+} from "@/shadcn-ui/command";
 import {
   Dialog,
   DialogContent,
@@ -28,12 +28,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/shared/shadcn-ui/dialog";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shared/shadcn-ui/input";
-import { Label } from "@/shared/shadcn-ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shared/shadcn-ui/popover";
-import { cn } from "@/shared/shadcn-ui/utils/utils";
+} from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { cn } from "@/shadcn-ui/utils/utils";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;
 

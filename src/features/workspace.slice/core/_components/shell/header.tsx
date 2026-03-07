@@ -15,10 +15,10 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/shared/shadcn-ui/breadcrumb";
-import { Button } from "@/shared/shadcn-ui/button";
-import { Separator } from "@/shared/shadcn-ui/separator";
-import { SidebarTrigger } from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 
 import { useApp } from "../../_hooks/use-app";
 import { useVisibleWorkspaces } from '../../_hooks/use-visible-workspaces';

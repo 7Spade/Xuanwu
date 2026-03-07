@@ -15,7 +15,7 @@ import { tierSatisfies } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
 
 import {
     assignMember,

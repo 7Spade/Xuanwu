@@ -12,7 +12,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from "@/shared/shadcn-ui/sidebar";
+} from "@/shadcn-ui/sidebar";
 
 import type { Workspace } from "../../_types";
 

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { Button } from "@/shared/shadcn-ui/button";
+import { Button } from "@/shadcn-ui/button";
 
 /**
  * Home - Responsibility: Serves as the landing page and entry point.

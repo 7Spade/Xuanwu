@@ -29,9 +29,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shared/shadcn-ui/alert-dialog";
-import { Badge } from "@/shared/shadcn-ui/badge";
-import { Button } from "@/shared/shadcn-ui/button";
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
 import {
   Card,
   CardContent,
@@ -39,9 +39,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/shared/shadcn-ui/card";
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/shadcn-ui/tooltip";
+} from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn-ui/tooltip";
 
 import { deleteWorkspace, updateWorkspaceSettings } from "../_actions";
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";

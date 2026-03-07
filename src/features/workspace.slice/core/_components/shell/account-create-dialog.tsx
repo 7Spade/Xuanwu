@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 
 import { type Account } from "@/shared-kernel"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 import {
   Dialog,
   DialogContent,
@@ -13,10 +13,10 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
-} from "@/shared/shadcn-ui/dialog"
-import { toast } from "@/shared/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shared/shadcn-ui/input"
-import { Label } from "@/shared/shadcn-ui/label"
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
 
 import type { AppAction } from '../app-provider'
 

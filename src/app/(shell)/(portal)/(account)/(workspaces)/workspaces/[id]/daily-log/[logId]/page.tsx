@@ -10,7 +10,7 @@ import { use } from "react"
 import { DailyLogDialog } from "@/features/workspace.slice"
 import { useAccount } from "@/features/workspace.slice"
 import { useAuth } from "@/app-runtime/providers/auth-provider"
-import { Button } from "@/shared/shadcn-ui/button"
+import { Button } from "@/shadcn-ui/button"
 
 interface PageProps {
   params: Promise<{ id: string; logId: string }>

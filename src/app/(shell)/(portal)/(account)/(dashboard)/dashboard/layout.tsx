@@ -17,7 +17,7 @@
 import type { ReactNode } from "react";
 
 import { ThemeAdapter } from "@/features/workspace.slice";
-import { SidebarInset } from "@/shared/shadcn-ui/sidebar";
+import { SidebarInset } from "@/shadcn-ui/sidebar";
 
 type DashboardLayoutProps = {
   children: ReactNode;
