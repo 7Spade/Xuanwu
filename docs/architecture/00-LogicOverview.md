@@ -66,8 +66,10 @@
 %%      shared-infra/frontend-firebase/         # VS0-Infra / L7: Firebase ACL adapters only
 %%        auth/
 %%        firestore/
+%%        realtime-database/
 %%        messaging/
 %%        storage/
+%%        analytics/
 %%      shared-infra/external-triggers/         # VS0-Infra / L0: external triggers
 %%      shared-infra/gateway-command/           # VS0-Infra / L2: CBG_ENTRY/CBG_AUTH/CBG_ROUTE orchestration
 %%      shared-infra/event-router/              # VS0-Infra / L4: IER core + lanes
@@ -503,7 +505,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             QGWAY_SCHED["→ .org-eligible-member-view\n[#14 #15 #16]"]
             QGWAY_CAL["→ .schedule-calendar-view\n日期維度（UI 禁止直讀 VS6/Firebase）"]
             QGWAY_TL["→ .schedule-timeline-view\n資源維度（overlap/grouping 已預計算）"]
-            QGWAY_NOTIF["→ .account-view\n[#6] FCM Token"]
+            QGWAY_NOTIF["→ .account-view + notification-feed-view\n[#6] FCM Token + RTDB 通知快照"]
             QGWAY_SCOPE["→ .workspace-scope-guard-view\n[#A9]"]
             QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
             QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
@@ -518,17 +520,23 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             FSTORE_ADP["firestore.facade.ts\nFirestoreAdapter\n實作 IFirestoreRepo\n[S2] aggregateVersion 單調遞增守衛\n[D24] 唯一合法 firebase/firestore 呼叫點"]
 
+            RTDB_ADP["realtime-database.adapter.ts\nRealtimeDatabaseAdapter\n即時通訊/通知低延遲同步（presence/typing/live-feed）\n[D24] 唯一合法 firebase/database 呼叫點"]
+
             FCM_ADP["messaging.adapter.ts\nFCMAdapter\n實作 IMessaging\n[R8] 注入 envelope.traceId → FCM metadata\n禁止在此生成新 traceId\n[D24] 唯一合法 firebase/messaging 呼叫點"]
 
             STORE_ADP["storage.facade.ts\nStorageAdapter\n實作 IFileStore\nPath Resolver / URL 簽發\n[D24] 唯一合法 firebase/storage 呼叫點"]
+
+            ANALYTICS_ADP["analytics.adapter.ts\nAnalyticsAdapter\nGoogle Analytics 事件寫入（logEvent/screen_view）\n僅允許遙測事件，禁止承載領域寫入\n[D24] 唯一合法 firebase/analytics 呼叫點"]
         end
 
         subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；無本地資料夾）"]
             direction LR
             F_AUTH[("Firebase Auth\nfirebase/auth")]
             F_DB[("Firestore\nfirebase/firestore")]
+            F_RTDB[("Realtime Database\nfirebase/database")]
             F_FCM[("Firebase Cloud Messaging\nfirebase/messaging")]
             F_STORE[("Cloud Storage\nfirebase/storage")]
+            F_ANALYTICS[("Google Analytics\nfirebase/analytics")]
         end
 
         subgraph OBS_LAYER["⬜ L9 · Observability（src/shared-infra/observability）"]
@@ -995,7 +1003,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
     NOTIF_HUB_SVC["notification-hub._services.ts\n唯一副作用出口\n標籤感知路由策略\n對接 VS8 語義索引\n#channel:slack → Slack\n#urgency:high → 電話"]
 
     subgraph VS7_DEL["📤 Delivery（src/features/notification-hub.slice）"]
-        USER_NOTIF["account-user.notification\n個人推播"]
+        USER_NOTIF["account-user.notification\n個人推播 + RTDB 即時通知串流"]
         USER_DEV["使用者裝置"]
         USER_NOTIF --> USER_DEV
     end
@@ -1007,6 +1015,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
 end
 
 USER_NOTIF -.->|"uses IMessaging [R8]"| I_MSG
+USER_NOTIF -.->|"low-latency feed via RTDB Adapter"| RTDB_ADP
 NOTIF_HUB_SVC -.->|"標籤感知路由"| VS8
 
 %% 所有 OUTBOX → RELAY
@@ -1064,8 +1073,12 @@ STORE_ADP -.->|"implements"| I_STORE
 SK_INFRA -.->|"S2/R8/S4 規則約束"| FIREBASE_ACL
 AUTH_ADP --> F_AUTH
 FSTORE_ADP --> F_DB
+RTDB_ADP --> F_RTDB
 FCM_ADP --> F_FCM
 STORE_ADP --> F_STORE
+ANALYTICS_ADP --> F_ANALYTICS
+
+EXT_CLIENT -.->|"UI 行為遙測（GA events）"| ANALYTICS_ADP
 
 %% ── Connectivity C: Observability（L2/L4/L5 → L9）──
 CBG_ENTRY --> TRACE_ID
@@ -1204,8 +1217,8 @@ class TAG_SNAP tagSub
 class TIER_FN tierFn
 class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
-class FIREBASE_ACL,AUTH_ADP,FSTORE_ADP,FCM_ADP,STORE_ADP aclAdapter
-class FIREBASE_EXT,F_AUTH,F_DB,F_FCM,F_STORE firebaseExt
+class FIREBASE_ACL,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
+class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
 class GLOBAL_SEARCH crossCutAuth
@@ -1298,7 +1311,7 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D2  跨切片引用：import from '@/features/{slice}/index' only；_*.ts 為私有
 %%  D3  所有 mutation：src/features/{slice}/_actions.ts only
 %%  D4  所有 read：src/features/{slice}/_queries.ts only
-%%  D5  src/app/ 與 UI 元件禁止 import src/shared-infra/frontend-firebase/firestore
+%%  D5  src/app/ 與 UI 元件禁止 import src/shared-infra/frontend-firebase/{firestore|realtime-database|analytics}
 %%  D6  "use client" 只在 _components/ 或 _hooks/ 葉節點；layout/page server components 禁用
 %%  D7  跨切片：import from '@/features/{other-slice}/index'；禁止 _private 引用
 %%  D8  shared-kernel/* 禁止 async functions、Firestore calls、side effects
@@ -1364,10 +1377,10 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
 %%  ── Firebase 隔離守則（D24~D25）──
 %%  D24 MUST: IF 位於 feature slice / shared/types / app THEN 必須禁止直接 import firebase/*
-%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|messaging|storage}）
+%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|realtime-database|messaging|storage|analytics}）
 %%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
 %%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
-%%  D25 MUST: IF 新增 Firebase 功能 THEN 必須在 FIREBASE_ACL 新增 Adapter 以實作對應 SK_PORTS Port
+%%  D25 MUST: IF 新增 Firebase 功能 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
 %%  ── Cross-cutting Authority 守則（D26）──
 %%  D26 MUST: IF 執行跨域搜尋 THEN 必須經 global-search.slice；業務 Slice 不得自建搜尋邏輯
 %%  D26 MUST: IF 執行通知副作用 THEN 必須經 notification-hub.slice（VS7）；業務 Slice 不得直接調用 sendEmail/push/SMS
