@@ -2968,10 +2968,25 @@ import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
 ```
 
+## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/schedule/page.tsx
+```typescript
+import { WorkspaceCapabilityTabs, WorkspaceSchedule } from "@/features/workforce-scheduling.slice"
+export default function ScheduleCapabilityPage()
+```
+
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/tasks/loading.tsx
 ```typescript
 import { Skeleton } from "@/shadcn-ui/skeleton"
 export default function Loading()
+```
+
+## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/timeline/page.tsx
+```typescript
+import {
+  WorkspaceTimeline,
+  WorkspaceTimelineCapabilityTabs,
+} from "@/features/timelineing.slice";
+export default function TimelineCapabilityPage()
 ```
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@modal/(.)daily-log/[logId]/page.tsx
@@ -8548,21 +8563,6 @@ import { AccountTimelineSection } from "@/features/timelineing.slice";
 import { AccountScheduleSection } from "@/features/workforce-scheduling.slice";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 type WorkforceTab = "schedule" | "timeline";
-```
-
-## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/schedule/page.tsx
-```typescript
-import { WorkspaceCapabilityTabs, WorkspaceSchedule } from "@/features/workforce-scheduling.slice"
-export default function ScheduleCapabilityPage()
-```
-
-## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/@businesstab/timeline/page.tsx
-```typescript
-import {
-  WorkspaceTimeline,
-  WorkspaceTimelineCapabilityTabs,
-} from "@/features/timelineing.slice";
-export default function TimelineCapabilityPage()
 ```
 
 ## File: src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/daily-log/[logId]/page.tsx
