@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   Collapsible,
   CollapsibleContent,

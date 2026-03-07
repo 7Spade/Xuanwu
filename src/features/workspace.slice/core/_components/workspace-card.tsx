@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   AlertDialog,
   AlertDialogAction,

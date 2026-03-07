@@ -31,7 +31,7 @@ import {
   SKILLS,
   type SkillGroup,
   type SkillSubCategory,
-} from '@/shared/constants/skills';
+} from '@/shared-kernel/constants/skills';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';

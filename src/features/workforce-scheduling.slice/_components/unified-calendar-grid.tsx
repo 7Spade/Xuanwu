@@ -14,7 +14,7 @@ import { useMemo } from "react";
 
 import type { ScheduleItem } from "@/shared-kernel";
 import { type MemberReference } from "@/shared-kernel";
-import { findSkill } from "@/shared/constants/skills";
+import { findSkill } from "@/shared-kernel/constants/skills";
 import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";

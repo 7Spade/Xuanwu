@@ -4,7 +4,7 @@ import { Eye, EyeOff, Shield, Trash2, ArrowUpRight, Terminal } from "lucide-reac
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 

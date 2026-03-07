@@ -39,7 +39,7 @@ import type { SkillRequirement } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 import { useAccount } from '@/features/workspace.slice';
 import { useApp } from '@/app-runtime/providers/app-provider';
-import { SKILLS } from '@/shared/constants/skills';
+import { SKILLS } from '@/shared-kernel/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';

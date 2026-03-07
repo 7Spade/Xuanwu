@@ -9,7 +9,7 @@ import type { SkillRequirement } from "@/shared-kernel";
 import { tagSlugRef } from "@/shared-kernel";
 import { getOrgSkillTags } from "@/features/skill-xp.slice";
 import { type Location } from "@/features/workspace.slice";
-import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared/constants/skills";
+import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared-kernel/constants/skills";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { Calendar } from "@/shadcn-ui/calendar";

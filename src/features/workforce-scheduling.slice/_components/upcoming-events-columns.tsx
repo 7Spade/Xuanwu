@@ -6,7 +6,7 @@ import { ArrowUpDown } from "lucide-react"
 
 import type { ScheduleItem } from '@/shared-kernel'
 import { type MemberReference } from "@/shared-kernel"
-import { SKILLS } from "@/shared/constants/skills"
+import { SKILLS } from "@/shared-kernel/constants/skills"
 import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"

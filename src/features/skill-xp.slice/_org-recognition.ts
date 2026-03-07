@@ -28,7 +28,7 @@
  */
 
 import { publishOrgEvent } from '@/features/organization.slice';
-import { findSkill } from '@/shared/constants/skills';
+import { findSkill } from '@/shared-kernel/constants/skills';
 import { getDocument } from '@/shared/infra/firestore/firestore.read.adapter';
 import {
   setDocument,

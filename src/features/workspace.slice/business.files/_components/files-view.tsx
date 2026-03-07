@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import {

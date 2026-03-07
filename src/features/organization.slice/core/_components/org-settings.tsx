@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/shadcn-ui/alert-dialog";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shadcn-ui/card";

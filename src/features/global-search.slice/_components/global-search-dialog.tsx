@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 
 import { type Account, type MemberReference } from "@/shared-kernel";
 import { type Workspace } from "@/features/workspace.slice";
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared-kernel/constants/routes";
 import { Badge } from "@/shadcn-ui/badge";
 import {
   CommandDialog,

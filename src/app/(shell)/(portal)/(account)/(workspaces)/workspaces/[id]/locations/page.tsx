@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useWorkspace } from '@/features/workspace.slice';
 import { WorkspaceLocationsPanel } from '@/features/workspace.slice';
-import { ROUTES } from '@/shared/constants/routes';
+import { ROUTES } from '@/shared-kernel/constants/routes';
 import { Button } from '@/shadcn-ui/button';
 
 export default function WorkspaceLocationsPage() {
