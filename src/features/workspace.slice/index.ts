@@ -41,10 +41,6 @@ export {
   WorkspaceListHeader,
   WorkspaceProvider,
   useWorkspace,
-  AppProvider,
-  AppContext,
-  AccountProvider,
-  AccountContext,
   StatCards,
   useAccount,
   ThemeAdapter,
@@ -67,7 +63,6 @@ export {
   deleteWorkspaceLocation,
   WorkspaceLocationsPanel,
 } from './core'
-export type { AppAction } from './core'
 // Core workspace-domain types
 export type {
   Workspace,
