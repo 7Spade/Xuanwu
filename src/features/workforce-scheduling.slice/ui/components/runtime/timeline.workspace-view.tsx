@@ -37,7 +37,7 @@ export function WorkspaceTimeline() {
         <h2 className="font-headline text-2xl font-bold tracking-tight">Workspace Timeline</h2>
         <p className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock3 className="size-4" />
-          以�??��??��?檢�? {workspace.name} ?��?程�?衝�???
+          Review workspace timeline details and detect scheduling conflicts for {workspace.name}.
         </p>
       </div>
 

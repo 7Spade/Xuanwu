@@ -1,4 +1,4 @@
-// [?�責] Business ???��? Workspace ?��??��??�檢�?
+// Business responsibility: workspace schedule overview and navigation
 "use client";
 
 import { Shield } from "lucide-react";

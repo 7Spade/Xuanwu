@@ -1,4 +1,4 @@
-// [?�責] Business Hook：管??Workspace ?��?資�??��?作�?�?
+// Business hook: manage workspace schedule data and view actions.
 /**
  * @fileoverview useWorkspaceSchedule - Hook for workspace-scoped schedule state and actions.
  * @description Encapsulates data derivation, state management, side effects, and

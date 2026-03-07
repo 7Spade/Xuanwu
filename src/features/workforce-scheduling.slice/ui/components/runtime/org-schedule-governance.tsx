@@ -1,22 +1,21 @@
 'use client';
 
 /**
- * workforce-scheduling.slice ??_components/org-schedule-governance.tsx
+ * workforce-scheduling.slice/ui/components/org-schedule-governance.tsx
  *
- * Org HR governance panel for reviewing and acting on schedule items.
+ * Organization HR governance panel for reviewing and acting on schedule items.
  *
  * Single source of truth: accounts/{orgId}/schedule_items.
- * Reads the same collection as the Calendar tab ??all three schedule tabs
- * (Calendar, DemandBoard, HR Governance) are always consistent.
+ * Reads the same collection as the Calendar tab so all schedule tabs stay consistent.
  *
  * Status mapping:
- *   PROPOSAL   ??待核??(pending assignment / amber)
- *   OFFICIAL   ??已確�?(assigned, can be marked complete / green)
- *   COMPLETED  ??hidden (completed)
- *   REJECTED   ??hidden (cancelled/rejected)
+ *   PROPOSAL: pending assignment
+ *   OFFICIAL: assigned, can be marked complete
+ *   COMPLETED: hidden
+ *   REJECTED: hidden
  *
- * FR-S6: Confirmed proposals section ??HR marks confirmed assignments as completed.
- * FR-W2: Skill match indicators ??show per-member skill match against item requirements.
+ * FR-S6: confirmed proposals section; HR marks confirmed assignments as completed.
+ * FR-W2: skill match indicators show per-member skill match against requirements.
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -39,13 +38,13 @@ import { ConfirmedRow, ProposalRow } from './org-schedule-governance.rows';
 /**
  * Org HR governance panel.
  *
- * Reads accounts/{orgId}/schedule_items via useAccount() ??same collection as
- * Calendar and DemandBoard ??so all three tabs are always in sync.
+ * Reads accounts/{orgId}/schedule_items via useAccount(), the same collection as
+ * Calendar and DemandBoard, so all three tabs are always in sync.
  *
  * Shows:
- *   PROPOSAL items  ??assign or cancel (待核??
- *   OFFICIAL items  ??mark complete (已確�? FR-S6)
- *   REJECTED/COMPLETED ??hidden
+ *   PROPOSAL items: assign or cancel (pending)
+ *   OFFICIAL items: mark complete (confirmed, FR-S6)
+ *   REJECTED/COMPLETED: hidden
  */
 export function OrgScheduleGovernance() {
   const { state: appState } = useApp();
@@ -86,8 +85,8 @@ export function OrgScheduleGovernance() {
     return (
       <Empty className="rounded-xl border-muted/40 bg-muted/5 py-12">
         <EmptyHeader>
-          <EmptyTitle>?��?組�?帳�?</EmptyTitle>
-          <EmptyDescription>組�?層�???HR ?��?治�??�在組�?帳�?下可?��?</EmptyDescription>
+          <EmptyTitle>請切換至組織帳號</EmptyTitle>
+          <EmptyDescription>組織層級的 HR 排程治理僅在組織帳號下可使用。</EmptyDescription>
         </EmptyHeader>
       </Empty>
     );
@@ -97,13 +96,13 @@ export function OrgScheduleGovernance() {
     <div className="space-y-4">
       <PageHeader
         size="compact"
-        title="HR ?��?治�?"
-        description={`待核??${pending.length} 筆・已確�?${confirmed.length} 筆`}
+        title="HR 排程治理"
+        description={`待核准 ${pending.length} 筆・已確認 ${confirmed.length} 筆`}
       />
 
       <Card className="flex h-full flex-col">
         <CardHeader className="border-b py-3">
-          <CardTitle className="text-sm font-semibold">?��??��?派�???</CardTitle>
+          <CardTitle className="text-sm font-semibold">待核准排程指派</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 overflow-hidden p-0">
           <ScrollArea className="h-full">
@@ -111,9 +110,9 @@ export function OrgScheduleGovernance() {
               {pending.length === 0 && confirmed.length === 0 && (
                 <Empty className="rounded-xl border-muted/40 bg-muted/5 py-10">
                   <EmptyHeader>
-                    <EmptyMedia variant="icon">??</EmptyMedia>
-                    <EmptyTitle>?��??��??��??��?</EmptyTitle>
-                    <EmptyDescription>?��??��??��??�出?�在?�裡，�? HR ?�派?�核?��?</EmptyDescription>
+                    <EmptyMedia variant="icon">!</EmptyMedia>
+                    <EmptyTitle>目前沒有待處理項目</EmptyTitle>
+                    <EmptyDescription>新提案會顯示在這裡，供 HR 指派與核准。</EmptyDescription>
                   </EmptyHeader>
                 </Empty>
               )}
@@ -127,11 +126,11 @@ export function OrgScheduleGovernance() {
               />
             ))}
 
-            {/* FR-S6 ??Confirmed section */}
+            {/* FR-S6 confirmed section */}
             {confirmed.length > 0 && (
               <div className="border-t pt-3">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  已確認�?�????��?記�???
+                  Confirmed and completed records
                 </p>
                 {confirmed.map((item: ScheduleItem) => (
                   <ConfirmedRow
