@@ -13,7 +13,7 @@ import { useApp } from '@/app-runtime/providers/app-provider';
 import { useAccount } from '@/features/workspace.slice';
 import type { ScheduleItem } from '@/shared-kernel';
 
-import type { TimelineMember } from '../_types';
+import type { TimelineMember } from '../_timeline.types';
 
 export function useAccountTimeline() {
   const { state: appState } = useApp();

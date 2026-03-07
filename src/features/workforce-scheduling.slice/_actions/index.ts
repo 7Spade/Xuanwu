@@ -17,6 +17,8 @@ export {
   updateScheduleItemDateRange,
 } from './lifecycle';
 
+export { updateTimelineItemDateRange } from './timeline';
+
 export {
   manualAssignScheduleMember,
   cancelScheduleProposalAction,

@@ -1,8 +1,8 @@
 'use server';
 
 /**
- * Module: index.ts
- * Purpose: Server actions for timeline module under workforce-scheduling.slice.
+ * Module: timeline.ts
+ * Purpose: Server actions for timeline workflows under workforce-scheduling.slice.
  * Responsibilities: timeline-specific schedule item mutations.
  * Constraints: deterministic logic, respect module boundaries
  */

@@ -102,18 +102,23 @@ export { ScheduleDataTable } from './_components/schedule-data-table';
 export { AccountCapabilityTabs, WorkspaceCapabilityTabs } from './_components/schedule-capability-tabs';
 export { UnifiedCalendarGrid } from './_components/unified-calendar-grid';
 export { DemandBoard } from './_components/demand-board';
-
-// Timeline views and timeline drag actions are now colocated under VS6.
+// Timeline views
+export { TimelineCanvas } from './_components/timeline-canvas';
+export { AccountTimelineSection } from './_components/timeline.account-view';
+export { WorkspaceTimeline } from './_components/timeline.workspace-view';
 export {
-  AccountTimelineSection,
-  WorkspaceTimeline,
   AccountTimelineCapabilityTabs,
   WorkspaceTimelineCapabilityTabs,
-  updateTimelineItemDateRange,
+} from './_components/timeline-capability-tabs';
+
+// Timeline actions and hooks
+export { updateTimelineItemDateRange } from './_actions';
+export {
   useAccountTimeline,
   useWorkspaceTimeline,
   useTimelineCommands,
-} from './timeline';
+} from './_hooks';
+export type { TimelineMember } from './_timeline.types';
 
 // =================================================================
 // Projectors (event handlers — used by projection.event-funnel)
