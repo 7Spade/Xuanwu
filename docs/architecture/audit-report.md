@@ -37,19 +37,14 @@ Completed sequential phases from the requested prompt:
 		 - Move projection materialization to `src/features/projection.bus/workforce-scheduling-*`
 		 - Keep VS6 focused on command/domain decisions.
 
-2. Timeline read behavior split into separate slice likely outside L5 read model boundary:
-	 - Current: `src/features/timelineing.slice/*`
-	 - Evidence: `docs/ai/repomix-output.context.md:347` to `docs/ai/repomix-output.context.md:358`
-	 - Rule reference: `Timeline` invariant and L5 read-side requirement in `00-LogicOverview.md`
-	 - Suggested target:
-		 - Keep timeline rendering in UI/components,
-		 - Move overlap/grouping/read-model shaping to `projection.bus` query model.
+2. Timeline module consolidation completed:
+	 - Previous issue: standalone `timelineing.slice` naming and placement.
+	 - Current status: timeline module moved under `src/features/workforce-scheduling.slice/timeline/*` and consumed via `@/features/workforce-scheduling.slice` public API.
+	 - Remaining recommendation: keep overlap/grouping/read-model shaping in `projection.bus` query model.
 
 ### C. Naming Inconsistencies
 
-1. `timelineing.slice` -> expected `timeline.slice` (or absorbed into `workforce-scheduling.slice` read side)
-	 - Evidence: `docs/ai/repomix-output.context.md:347`
-	 - Rule reference: naming clarity and SSOT folder naming consistency.
+1. Naming issue resolved by consolidation into `workforce-scheduling.slice/timeline`.
 
 2. Removed false-positive naming finding for `shared-infra/frontend-firebase`.
 	 - Current naming is the repository baseline and now aligned with `00-LogicOverview.md`.
@@ -100,7 +95,7 @@ Completed sequential phases from the requested prompt:
 
 - [ ] Replace direct `@/shared-infra/*` imports in feature slices with SK_PORTS interfaces (`D24`).
 - [ ] Move `workforce-scheduling.slice/_projectors/*` into `projection.bus` and keep VS6 command/domain focused (`L5-Bus`, `S2`, `P5`).
-- [ ] Normalize `timelineing.slice` naming and align timeline overlap/grouping to L5 read-side processing.
+- [x] Normalize `timelineing.slice` naming by consolidating into `workforce-scheduling.slice/timeline`.
 - [ ] Unify outbox status enum with shared contract (`relayed` vs `delivered`) across relay, projectors, and monitoring (`S1`).
 - [ ] Replace weak semantic strings with typed semantic refs where applicable (`D22`, `D21-2`).
 - [ ] Run post-migration architecture checks for `D7/D24/D26` and regression tests on gateway-command -> IER -> projection -> query flow.
