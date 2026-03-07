@@ -25,22 +25,25 @@ class FirebaseFirestoreRepo implements IFirestoreRepo {
     if (!snap.exists()) {
       return null;
     }
+    const raw: any = snap.data();
     return {
       id: snap.id,
-      data: snap.data() as T,
+      data: raw,
     };
   }
 
   async getDocs<T>(collectionPath: string): Promise<FirestoreDoc<T>[]> {
     const snap = await getDocs(collection(db, collectionPath));
-    return snap.docs.map((item) => ({
+    const docs: Array<FirestoreDoc<any>> = snap.docs.map((item) => ({
       id: item.id,
-      data: item.data() as T,
+      data: item.data(),
     }));
+    return docs;
   }
 
   async setDoc<T>(collectionPath: string, docId: string, data: T, opts?: WriteOptions): Promise<void> {
-    await setDoc(doc(db, collectionPath, docId), data as Record<string, unknown>, {
+    const payload: any = data;
+    await setDoc(doc(db, collectionPath, docId), payload, {
       merge: opts?.merge ?? false,
     });
   }
@@ -54,11 +57,12 @@ class FirebaseFirestoreRepo implements IFirestoreRepo {
     callback: (docs: FirestoreDoc<T>[]) => void,
   ): () => void {
     return onSnapshot(collection(db, collectionPath), (snap) => {
+      const docs: Array<FirestoreDoc<any>> = snap.docs.map((item) => ({
+        id: item.id,
+        data: item.data(),
+      }));
       callback(
-        snap.docs.map((item) => ({
-          id: item.id,
-          data: item.data() as T,
-        })),
+        docs,
       );
     });
   }

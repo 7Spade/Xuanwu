@@ -13,14 +13,14 @@ import {
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
-  type User as FirebaseUser,
+  type User,
 } from 'firebase/auth';
 
 import type { AuthUser, IAuthService } from '@/shared-kernel/ports';
 
 import { auth } from './auth.client';
 
-function toAuthUser(user: FirebaseUser): AuthUser {
+function toAuthUser(user: User): AuthUser {
   return {
     uid: user.uid,
     email: user.email,

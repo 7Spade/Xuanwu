@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { getToken as getMessagingToken, onMessage } from 'firebase/messaging';
+import { getToken, onMessage } from 'firebase/messaging';
 
 import type { IMessaging, PushNotificationPayload } from '@/shared-kernel/ports';
 
@@ -31,7 +31,7 @@ class FrontendMessagingAdapter implements IMessaging {
     }
 
     try {
-      return await getMessagingToken(messaging, { vapidKey });
+      return await getToken(messaging, { vapidKey });
     } catch {
       return null;
     }
