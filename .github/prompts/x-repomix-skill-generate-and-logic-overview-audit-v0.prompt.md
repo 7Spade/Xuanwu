@@ -1,6 +1,6 @@
 ---
 name: repomix-architecture-audit
-description: Setup Node environment, generate Repomix skill, and audit repository architecture against docs/architecture/logic-overview.md
+description: Setup Node environment, generate Repomix skill, and audit repository architecture against docs/architecture/00-LogicOverview.md
 ---
 
 ### Copilot Browser Agent 指令
@@ -49,7 +49,7 @@ Requirements:
 Use the following file as the **source of truth**:
 
 ```
-docs/architecture/logic-overview.md
+docs/architecture/00-LogicOverview.md
 ```
 
 Compare the current repository implementation with the design described in that document.
@@ -69,7 +69,7 @@ The report must include:
 * Missing modules or folders
 * Misplaced modules
 * Naming inconsistencies
-* Violations of the architecture defined in `logic-overview.md`
+* Violations of the architecture defined in `00-LogicOverview.md`
 * Suggested refactoring actions
 
 Output the analysis as a structured report.
@@ -82,7 +82,7 @@ Output the analysis as a structured report.
 
 Add the following constraints while performing the analysis:
 
-* Treat `docs/architecture/logic-overview.md` as the **authoritative design document**
+* Treat `docs/architecture/00-LogicOverview.md` as the **authoritative design document**
 * Do not modify files automatically
 * Only produce an analysis report
 * Prefer deterministic reasoning over assumptions
