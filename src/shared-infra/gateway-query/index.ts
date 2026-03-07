@@ -35,3 +35,8 @@ export {
 	subscribeToWorkspaceScheduleItemsFromGateway,
 	subscribeToWorkspaceTimelineItemsFromGateway,
 } from './workforce-scheduling-query';
+
+export type {
+  OrgEligibleMemberView,
+  OrgMemberSkillWithTier,
+} from './workforce-scheduling-query';

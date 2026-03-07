@@ -8523,6 +8523,7 @@ import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import {
   handleScheduleProposed,
   approveOrgScheduleProposal,
+  cancelOrgScheduleAssignment,
 } from '../../domain/aggregate';
 import { findEligibleCandidatesForRequirements } from '../../domain/eligibility';
 import { executeWriteOp } from '../commands/write-op';
@@ -8637,21 +8638,29 @@ export async function cancelOrgScheduleAssignment(
 
 ## File: src/features/workforce-scheduling.slice/domain/eligibility/index.ts
 ```typescript
-import type { OrgEligibleMemberView } from '@/shared-infra/projection.bus';
-import type { SkillRequirement } from '@/shared-kernel';
+import type { SkillRequirement, SkillTier } from '@/shared-kernel';
+export interface EligibleMemberSkill {
+  readonly skillId: string;
+  readonly tier: SkillTier;
+}
+export interface EligibleMemberSnapshot {
+  readonly accountId: string;
+  readonly eligible: boolean;
+  readonly skills: EligibleMemberSkill[];
+}
 ⋮----
 export type SagaTier = (typeof SAGA_TIER_ORDER)[number];
 export function sagaTierIndex(tier: string): number
 export function findEligibleCandidate(
-  members: OrgEligibleMemberView[],
+  members: EligibleMemberSnapshot[],
   requirements: SkillRequirement[]
-): OrgEligibleMemberView | undefined
+): EligibleMemberSnapshot | undefined
 export interface CandidateAssignment {
-  candidate: OrgEligibleMemberView;
+  candidate: EligibleMemberSnapshot;
   requirement: SkillRequirement | null;
 }
 export function findEligibleCandidatesForRequirements(
-  members: OrgEligibleMemberView[],
+  members: EligibleMemberSnapshot[],
   requirements: SkillRequirement[]
 ): CandidateAssignment[] | undefined
 ```
@@ -8916,7 +8925,6 @@ export function useConfirmedScheduleProposals(orgId: string | null)
 import { useCallback } from "react";
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { getOrgMemberEligibilityWithTier } from "@/shared-infra/projection.bus";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { tierSatisfies } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
@@ -8926,7 +8934,10 @@ import {
     updateScheduleItemStatus,
   updateScheduleItemDateRange,
 } from "../../../application/commands";
-import { getAccountActiveAssignments } from "../../../application/queries";
+import {
+  getAccountActiveAssignments,
+  getEligibleMemberForSchedule,
+} from "../../../application/queries";
 import { canTransitionScheduleStatus } from "../../../domain/rules/schedule.rules";
 export function useScheduleActions()
 ```
@@ -9097,6 +9108,7 @@ import {
   getOrgMemberEligibilityWithTier,
   getOrgEligibleMembersWithTier,
   type OrgEligibleMemberView,
+  type OrgMemberSkillWithTier,
 } from '@/shared-infra/projection.bus';
 import { db } from '@/shared-infra/frontend-firebase';
 import { fetchScheduleItems } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
@@ -9589,11 +9601,9 @@ import {
   getEligibleMemberForScheduleFromGateway,
   getEligibleMembersForScheduleFromGateway,
   subscribeToWorkspaceScheduleItemsFromGateway,
+  type OrgEligibleMemberView,
+  type OrgMemberSkillWithTier,
 } from '@/shared-infra/gateway-query';
-import type {
-  OrgEligibleMemberView,
-  OrgMemberSkillWithTier,
-} from '@/shared-infra/projection.bus';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 import type {
   AccountScheduleProjection,

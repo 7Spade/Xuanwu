@@ -9,6 +9,7 @@ import {
   getOrgMemberEligibilityWithTier,
   getOrgEligibleMembersWithTier,
   type OrgEligibleMemberView,
+  type OrgMemberSkillWithTier,
 } from '@/shared-infra/projection.bus';
 import { db } from '@/shared-infra/frontend-firebase';
 import { fetchScheduleItems } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
@@ -115,3 +116,5 @@ export function subscribeToWorkspaceTimelineItemsFromGateway(
     (error) => onError?.(error as Error),
   );
 }
+
+export type { OrgEligibleMemberView, OrgMemberSkillWithTier };

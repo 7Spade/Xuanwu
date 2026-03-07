@@ -12,7 +12,6 @@ import { useCallback } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { getOrgMemberEligibilityWithTier } from "@/shared-infra/projection.bus";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { tierSatisfies } from "@/shared-kernel";
 import type { ScheduleItem } from '@/shared-kernel';
@@ -23,7 +22,10 @@ import {
     updateScheduleItemStatus,
   updateScheduleItemDateRange,
 } from "../../../application/commands";
-import { getAccountActiveAssignments } from "../../../application/queries";
+import {
+  getAccountActiveAssignments,
+  getEligibleMemberForSchedule,
+} from "../../../application/queries";
 import { canTransitionScheduleStatus } from "../../../domain/rules/schedule.rules";
 
 
@@ -63,7 +65,7 @@ export function useScheduleActions() {
     // (Invariant #12: tier is derived via resolveSkillTier(xp) ??never stored in DB)
     // Warning-only guard; hard validation happens in approveOrgScheduleProposal.
     if (item.requiredSkills && item.requiredSkills.length > 0) {
-      const memberView = await getOrgMemberEligibilityWithTier(activeAccount.id, memberId).catch(() => null);
+      const memberView = await getEligibleMemberForSchedule(activeAccount.id, memberId).catch(() => null);
       if (memberView) {
         const unmetSkills = item.requiredSkills.filter((req) => {
           const skillEntry = memberView.skills.find((s) => s.skillId === req.tagSlug);

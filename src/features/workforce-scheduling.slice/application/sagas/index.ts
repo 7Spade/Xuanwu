@@ -28,6 +28,7 @@ import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import {
   handleScheduleProposed,
   approveOrgScheduleProposal,
+  cancelOrgScheduleAssignment,
 } from '../../domain/aggregate';
 import { findEligibleCandidatesForRequirements } from '../../domain/eligibility';
 import { executeWriteOp } from '../commands/write-op';
@@ -182,34 +183,42 @@ export async function startSchedulingSaga(
   }
 
   // Approve each candidate sequentially [A5].
-  // NOTE: if an approval fails mid-loop, earlier assignments are NOT rolled back.
-  // This is an accepted saga limitation; partial compensation requires a dedicated
-  // undo command that is out of scope for this fix.
   let compensationReason: string | undefined;
+  const confirmedAssignments: string[] = [];
   for (const { candidate, requirement } of assignments) {
-    // Pass only this candidate's specific requirement so downstream validation
-    // checks them against their assigned skill slot, not all requirements.
-    const approvalResult = await approveOrgScheduleProposal(
-      event.scheduleItemId,
-      candidate.accountId,
-      event.proposedBy,
-      {
-        workspaceId: event.workspaceId,
-        orgId: event.orgId,
-        title: event.title,
-        startDate: event.startDate,
-        endDate: event.endDate,
-        // [R8] Forward traceId from event to the approval step so published events carry the trace.
-        ...(event.traceId ? { traceId: event.traceId } : {}),
-      },
-      requirement ? [requirement] : undefined
-    );
+    try {
+      // Pass only this candidate's specific requirement so downstream validation
+      // checks them against their assigned skill slot, not all requirements.
+      const approvalResult = await approveOrgScheduleProposal(
+        event.scheduleItemId,
+        candidate.accountId,
+        event.proposedBy,
+        {
+          workspaceId: event.workspaceId,
+          orgId: event.orgId,
+          title: event.title,
+          startDate: event.startDate,
+          endDate: event.endDate,
+          // [R8] Forward traceId from event to the approval step so published events carry the trace.
+          ...(event.traceId ? { traceId: event.traceId } : {}),
+        },
+        requirement ? [requirement] : undefined
+      );
 
-    // [D3] Execute the write returned by the aggregate.
-    await executeWriteOp(approvalResult.writeOp);
+      // [D3] Execute the write returned by the aggregate.
+      await executeWriteOp(approvalResult.writeOp);
 
-    if (approvalResult.outcome !== 'confirmed') {
-      compensationReason = approvalResult.reason;
+      if (approvalResult.outcome !== 'confirmed') {
+        compensationReason = approvalResult.reason;
+        break;
+      }
+
+      confirmedAssignments.push(candidate.accountId);
+    } catch (error) {
+      compensationReason =
+        error instanceof Error
+          ? error.message
+          : `Assignment failed for member ${candidate.accountId}`;
       break;
     }
   }
@@ -224,18 +233,42 @@ export async function startSchedulingSaga(
     return { ...initialState, status: 'assigned', currentStep: 'assign', completedAt, updatedAt: completedAt };
   }
 
+  const rollbackFailures: string[] = [];
+  for (const assignedAccountId of confirmedAssignments) {
+    try {
+      const rollbackWriteOp = await cancelOrgScheduleAssignment(
+        event.scheduleItemId,
+        event.orgId,
+        event.workspaceId,
+        assignedAccountId,
+        event.proposedBy,
+        `Saga rollback after partial failure: ${compensationReason}`,
+        event.traceId
+      );
+      await executeWriteOp(rollbackWriteOp);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown rollback failure';
+      rollbackFailures.push(`${assignedAccountId}: ${message}`);
+    }
+  }
+
+  const finalizedCompensationReason =
+    rollbackFailures.length > 0
+      ? `${compensationReason} | rollback failures: ${rollbackFailures.join('; ')}`
+      : compensationReason;
+
   const completedAt = new Date().toISOString();
   await updateSagaStatus(sagaId, {
     status: 'compensated',
     currentStep: 'compensate',
-    compensationReason,
+    compensationReason: finalizedCompensationReason,
     completedAt,
   });
   return {
     ...initialState,
     status: 'compensated',
     currentStep: 'compensate',
-    compensationReason,
+    compensationReason: finalizedCompensationReason,
     completedAt,
     updatedAt: completedAt,
   };

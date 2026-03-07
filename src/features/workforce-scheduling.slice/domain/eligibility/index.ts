@@ -12,8 +12,18 @@
  *   TE_SK ??skill-requirement = tagSlug ? minimumTier.
  */
 
-import type { OrgEligibleMemberView } from '@/shared-infra/projection.bus';
-import type { SkillRequirement } from '@/shared-kernel';
+import type { SkillRequirement, SkillTier } from '@/shared-kernel';
+
+export interface EligibleMemberSkill {
+  readonly skillId: string;
+  readonly tier: SkillTier;
+}
+
+export interface EligibleMemberSnapshot {
+  readonly accountId: string;
+  readonly eligible: boolean;
+  readonly skills: EligibleMemberSkill[];
+}
 
 // ??? Canonical tier ordering ?????????????????????????????????????????????????
 
@@ -57,9 +67,9 @@ export function sagaTierIndex(tier: string): number {
  * @param requirements Skill requirements from WorkspaceScheduleProposedPayload [TE_SK]
  */
 export function findEligibleCandidate(
-  members: OrgEligibleMemberView[],
+  members: EligibleMemberSnapshot[],
   requirements: SkillRequirement[]
-): OrgEligibleMemberView | undefined {
+): EligibleMemberSnapshot | undefined {
   return members.find((member) => {
     if (!member.eligible) return false;
     return requirements.every((req) => {
@@ -78,7 +88,7 @@ export function findEligibleCandidate(
  * applies (empty-requirements case ??any eligible member).
  */
 export interface CandidateAssignment {
-  candidate: OrgEligibleMemberView;
+  candidate: EligibleMemberSnapshot;
   /** The specific requirement this candidate was selected to fulfill. Null when no skill filter applies. */
   requirement: SkillRequirement | null;
 }
@@ -100,7 +110,7 @@ export interface CandidateAssignment {
  * @param requirements Skill requirements from WorkspaceScheduleProposedPayload [TE_SK]
  */
 export function findEligibleCandidatesForRequirements(
-  members: OrgEligibleMemberView[],
+  members: EligibleMemberSnapshot[],
   requirements: SkillRequirement[]
 ): CandidateAssignment[] | undefined {
   // Empty requirements: assign one eligible member (backward-compatible)
