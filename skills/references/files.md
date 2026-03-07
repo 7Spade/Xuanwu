@@ -169,6 +169,3478 @@ export interface SemanticIndexStats {
 }
 ```
 
+## File: src/features/workspace.slice/_task.rules.ts
+```typescript
+import type { WorkspaceTask, TaskWithChildren } from "./business.tasks/_types";
+⋮----
+export const buildTaskTree = (tasks: WorkspaceTask[]): TaskWithChildren[] =>
+⋮----
+const build = (
+    node: TaskWithChildren,
+    parentNo: string,
+    index: number,
+    path: Set<string>
+) =>
+```
+
+## File: src/features/workspace.slice/_workspace.rules.ts
+```typescript
+import { isOwner, getUserTeamIds } from "@/features/account.slice"
+import type { Account } from "@/shared-kernel"
+import type { Workspace } from "./core/_types"
+export function hasWorkspaceAccess(
+  workspace: Workspace,
+  userId: string,
+  userTeamIds: Set<string>
+): boolean
+export function isWorkspaceVisibleToUser(
+  workspace: Workspace,
+  userId: string,
+  userTeamIds: Set<string>
+): boolean
+export function filterVisibleWorkspaces(
+  workspaces: Workspace[],
+  userId: string,
+  activeAccount: Account,
+  allAccounts: Record<string, Account>
+): Workspace[]
+```
+
+## File: src/features/workspace.slice/application/_policy-engine.ts
+```typescript
+export type WorkspaceRole = 'Manager' | 'Contributor' | 'Viewer';
+export interface PolicyDecision {
+  permitted: boolean;
+  reason?: string;
+}
+⋮----
+export function evaluatePolicy(role: WorkspaceRole, action: string): PolicyDecision
+```
+
+## File: src/features/workspace.slice/application/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.acceptance/_components/acceptance-view.tsx
+```typescript
+import { Trophy, CheckCircle2, Search, XCircle, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import type { WorkspaceTask } from "@/features/workspace.slice/business.tasks/_types";
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+const getErrorMessage = (error: unknown, fallback: string)
+export function WorkspaceAcceptance()
+⋮----
+const handleAccept = async (task: WorkspaceTask) =>
+const handleFail = async (task: WorkspaceTask) =>
+```
+
+## File: src/features/workspace.slice/business.acceptance/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.daily/_actions.ts
+```typescript
+import {
+  toggleDailyLogLike,
+  addDailyLogComment as addDailyLogCommentFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from "@/shared-kernel";
+export async function toggleLike(
+  accountId: string,
+  logId: string,
+  userId: string
+): Promise<CommandResult>
+export async function addDailyLogComment(
+  organizationId: string,
+  logId: string,
+  author: { uid: string; name: string; avatarUrl?: string },
+  content: string
+): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/business.daily/_bookmark-actions.ts
+```typescript
+import {
+  addBookmark,
+  removeBookmark,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+export async function toggleBookmark(
+  userId: string,
+  logId: string,
+  shouldBookmark: boolean
+): Promise<void>
+```
+
+## File: src/features/workspace.slice/business.daily/_components/actions/bookmark-button.tsx
+```typescript
+import { Bookmark, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from 'react';
+import { useBookmarkActions } from '@/features/workspace.slice/business.daily/_hooks/use-bookmark-commands';
+import { Button } from "@/shadcn-ui/button";
+import { cn } from "@/shadcn-ui/utils/utils";
+interface BookmarkButtonProps {
+  logId: string;
+}
+```
+
+## File: src/features/workspace.slice/business.daily/_components/actions/comment-button.tsx
+```typescript
+import { MessageCircle } from "lucide-react";
+import { Button } from "@/shadcn-ui/button";
+interface CommentButtonProps {
+  count?: number;
+  onClick: () => void;
+}
+```
+
+## File: src/features/workspace.slice/business.daily/_components/actions/like-button.tsx
+```typescript
+import { Heart } from "lucide-react";
+import { useState, useEffect, useCallback } from 'react';
+import { useDailyActions } from '@/features/workspace.slice/business.daily/_hooks/use-daily-commands';
+import { type DailyLog } from "@/features/workspace.slice/business.daily/_types";
+import { Button } from "@/shadcn-ui/button";
+import { cn } from "@/shadcn-ui/utils/utils";
+import type { Account } from "@/shared-kernel";
+interface LikeButtonProps {
+  log: DailyLog;
+  currentUser: Account | null;
+}
+⋮----
+className=
+```
+
+## File: src/features/workspace.slice/business.daily/_components/actions/share-button.tsx
+```typescript
+import { Share2 } from "lucide-react";
+import { type DailyLog } from "@/features/workspace.slice/business.daily/_types";
+import { useWorkspace } from "@/features/workspace.slice/core";
+import { Button } from "@/shadcn-ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+interface ShareButtonProps {
+  log: DailyLog;
+}
+export function ShareButton(
+⋮----
+const handleForward = (target: "tasks") =>
+⋮----
+<DropdownMenuItem onSelect=
+```
+
+## File: src/features/workspace.slice/business.daily/_components/composer.tsx
+```typescript
+import { ImagePlusIcon, Send, Loader2, X } from "lucide-react";
+import Image from "next/image";
+import { Button } from "@/shadcn-ui/button";
+import { Card } from "@/shadcn-ui/card";
+import { Input } from "@/shadcn-ui/input";
+import { Textarea } from "@/shadcn-ui/textarea";
+interface DailyLogComposerProps {
+  content: string;
+  setContent: (content: string) => void;
+  photos: File[];
+  setPhotos: (photos: File[] | ((prev: File[]) => File[])) => void;
+  onSubmit: () => void;
+  isSubmitting: boolean;
+}
+⋮----
+const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) =>
+const handleRemovePhoto = (index: number) =>
+⋮----
+<Image src=
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/business.daily/_components/daily-log-card.tsx
+```typescript
+import { useEffect, useState } from "react";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Card } from "@/shadcn-ui/card";
+import type { Account } from "@/shared-kernel";
+import type { Timestamp } from "@/shared-kernel/ports";
+import { type DailyLog } from "../_types";
+import { BookmarkButton } from "./actions/bookmark-button";
+import { CommentButton } from "./actions/comment-button";
+import { LikeButton } from "./actions/like-button";
+import { ImageCarousel } from "./image-carousel";
+function WorkspaceAvatar(
+function TimeAgo(
+⋮----
+const update = () =>
+⋮----
+interface DailyLogCardProps {
+  log: DailyLog;
+  currentUser: Account | null;
+  onOpen: () => void;
+}
+```
+
+## File: src/features/workspace.slice/business.daily/_components/daily-log-dialog.tsx
+```typescript
+import { CornerUpLeft, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Textarea } from "@/shadcn-ui/textarea";
+import type { Account } from "@/shared-kernel";
+import type { Timestamp } from "@/shared-kernel/ports";
+import { addDailyLogComment } from "../_actions";
+import { subscribeToDailyLogComments } from '../_queries';
+import { type DailyLog, type DailyLogComment } from "../_types";
+import { BookmarkButton } from "./actions/bookmark-button";
+import { CommentButton } from './actions/comment-button';
+import { LikeButton } from './actions/like-button';
+import { ShareButton } from './actions/share-button';
+import { ImageCarousel } from "./image-carousel";
+interface DailyLogDialogProps {
+  log: DailyLog | null;
+  currentUser: Account | null;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+}
+function WorkspaceAvatar(
+function TimeAgo(
+⋮----
+const update = () =>
+⋮----
+const handlePostComment = async () =>
+```
+
+## File: src/features/workspace.slice/business.daily/_components/daily.account-view.tsx
+```typescript
+import { AlertCircle, MessageSquare } from "lucide-react";
+import { useState } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { WorkspaceProvider } from "@/features/workspace.slice/core";
+import { useAggregatedLogs } from "../_hooks/use-aggregated-logs";
+import type { DailyLog } from "../_types";
+import { DailyLogCard } from "./daily-log-card";
+import { DailyLogDialog } from "./daily-log-dialog";
+⋮----
+onOpen=
+```
+
+## File: src/features/workspace.slice/business.daily/_components/daily.view.tsx
+```typescript
+import { AccountDailyComponent } from "./daily.account-view";
+export default function AccountDailyView()
+```
+
+## File: src/features/workspace.slice/business.daily/_components/daily.workspace-view.tsx
+```typescript
+import { MessageSquare } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useWorkspace } from "@/features/workspace.slice/core";
+import { useWorkspaceDailyLog } from "../_hooks/use-workspace-daily";
+import { DailyLogComposer } from "./composer";
+import { DailyLogCard } from "./daily-log-card";
+⋮----
+router.push(
+```
+
+## File: src/features/workspace.slice/business.daily/_components/image-carousel.tsx
+```typescript
+import Image from "next/image";
+import { Card, CardContent } from "@/shadcn-ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/shadcn-ui/carousel";
+interface ImageCarouselProps {
+    images: string[];
+}
+```
+
+## File: src/features/workspace.slice/business.daily/_hooks/use-aggregated-logs.ts
+```typescript
+import { useMemo } from "react";
+import { useAccount } from "@/features/workspace.slice/core";
+import type { DailyLog } from "../_types";
+export function useAggregatedLogs()
+```
+
+## File: src/features/workspace.slice/business.daily/_hooks/use-bookmark-commands.ts
+```typescript
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/app-runtime/providers/auth-provider';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { toggleBookmark as toggleBookmarkAction } from '../_bookmark-actions';
+import { subscribeToBookmarks } from '../_queries';
+export function useBookmarkActions()
+```
+
+## File: src/features/workspace.slice/business.daily/_hooks/use-daily-commands.ts
+```typescript
+import { useCallback } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { toggleLike as toggleLikeAction } from "../_actions";
+export function useDailyActions()
+```
+
+## File: src/features/workspace.slice/business.daily/_hooks/use-daily-upload.ts
+```typescript
+import { useState, useCallback } from "react";
+import { useStorage } from "@/features/workspace.slice/business.files";
+import { useWorkspace } from "@/features/workspace.slice/core";
+export function useDailyUpload()
+```
+
+## File: src/features/workspace.slice/business.daily/_hooks/use-workspace-daily.ts
+```typescript
+import { useState, useMemo } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useWorkspace } from "@/features/workspace.slice/core";
+import { useAccount } from "@/features/workspace.slice/core";
+import { useLogger } from "@/features/workspace.slice/gov.audit";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { type DailyLog } from "../_types";
+import { useDailyUpload } from "./use-daily-upload";
+const getErrorMessage = (error: unknown, fallback: string)
+export function useWorkspaceDailyLog()
+⋮----
+const handlePost = async () =>
+```
+
+## File: src/features/workspace.slice/business.daily/_queries.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import { getDailyLogs as getDailyLogsFacade } from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  type Unsubscribe,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.read.adapter";
+import type { DailyLog, DailyLogComment } from "./_types";
+export async function getDailyLogs(
+  accountId: string,
+  limit = 30
+): Promise<DailyLog[]>
+export function subscribeToDailyLogComments(
+  accountId: string,
+  logId: string,
+  onUpdate: (comments: DailyLogComment[]) => void,
+): Unsubscribe
+export function subscribeToBookmarks(
+  userId: string,
+  onUpdate: (bookmarkedIds: Set<string>) => void,
+  onError?: (error: Error) => void,
+): Unsubscribe
+```
+
+## File: src/features/workspace.slice/business.daily/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+export interface DailyLogComment {
+  id: string;
+  author: {
+    uid: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  content: string;
+  createdAt: Timestamp;
+}
+export interface DailyLog {
+  id: string;
+  accountId: string;
+  workspaceId: string;
+  workspaceName: string;
+  author: {
+    uid: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  content: string;
+  photoURLs: string[];
+  recordedAt: Timestamp;
+  createdAt: Timestamp;
+  likes?: string[];
+  likeCount?: number;
+  commentCount?: number;
+  comments?: DailyLogComment[];
+}
+```
+
+## File: src/features/workspace.slice/business.daily/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.document-parser/_components/document-parser-tables.tsx
+```typescript
+import {
+  AlertCircle,
+  BriefcaseBusiness,
+  Coins,
+  Hammer,
+  type LucideIcon,
+  ShieldCheck,
+} from 'lucide-react';
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
+import { classifyCostItem, shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
+import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import type { ParsingIntent } from '../_types';
+⋮----
+export function WorkItemsTable({
+  initialData,
+  onImport,
+  tagPresentationMap,
+}: {
+  initialData: WorkItem[];
+onImport: ()
+⋮----
+const getItemSemanticStatus = (item: WorkItem) =>
+⋮----
+export function ParsedItemsTable({
+  intent,
+  tagPresentationMap,
+}: {
+  intent: ParsingIntent;
+  tagPresentationMap: Readonly<Record<string, TagSnapshotPresentation>>;
+})
+```
+
+## File: src/features/workspace.slice/business.document-parser/_form-actions.ts
+```typescript
+import { z } from 'zod';
+import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
+⋮----
+function isAllowedStorageUrl(url: string): boolean
+export type ActionState = {
+  data?: { workItems: WorkItem[] };
+  error?: string;
+  fileName?: string;
+};
+export async function extractDataFromDocument(
+  prevState: ActionState,
+  formData: FormData
+): Promise<ActionState>
+⋮----
+const toNum = (v: unknown, fallback: number): number =>
+⋮----
+// quantity 0 is invalid for an invoice line — default to 1
+⋮----
+// 0 is a valid price (e.g. free/fully-discounted) — only fall back when null/undefined
+```
+
+## File: src/features/workspace.slice/business.document-parser/_types.ts
+```typescript
+import type { CostItemType } from '@/features/semantic-graph.slice'
+import type { SkillRequirement } from '@/shared-kernel'
+import type { Timestamp } from '@/shared-kernel/ports'
+import type {
+  ParsingIntentSourceType,
+  ParsingIntentReviewStatus,
+  ParsingIntentStatus,
+} from '../business.parsing-intent/_contract'
+export type IntentID = string & { readonly _brand: 'IntentID' }
+export type SourcePointer = string & { readonly _brand: 'SourcePointer' }
+export interface ParsedLineItem {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  discount?: number;
+  subtotal: number;
+  costItemType: CostItemType;
+  semanticTagSlug: string;
+  sourceIntentIndex: number;
+}
+⋮----
+export interface ParsingIntent {
+  id: IntentID;
+  workspaceId: string;
+  sourceFileName: string;
+  sourceFileDownloadURL?: SourcePointer;
+  sourceFileId?: string;
+  intentVersion: number;
+  supersededByIntentId?: IntentID;
+  baseIntentId?: IntentID;
+  lineItems: ParsedLineItem[];
+  skillRequirements?: SkillRequirement[];
+  parserVersion?: string;
+  modelVersion?: string;
+  sourceType: ParsingIntentSourceType;
+  reviewStatus: ParsingIntentReviewStatus;
+  reviewedBy?: string;
+  reviewedAt?: Timestamp;
+  semanticHash?: string;
+  status: ParsingIntentStatus;
+  createdAt: Timestamp;
+  importedAt?: Timestamp;
+}
+export type ParsingImportStatus =
+  | 'started'
+  | 'applied'
+  | 'partial'
+  | 'failed';
+export interface ParsingImport {
+  id: string;
+  workspaceId: string;
+  intentId: IntentID;
+  intentVersion: number;
+  idempotencyKey: string;
+  status: ParsingImportStatus;
+  appliedTaskIds: string[];
+  startedAt: Timestamp;
+  completedAt?: Timestamp;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
+```
+
+## File: src/features/workspace.slice/business.document-parser/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.files/_actions.ts
+```typescript
+import {
+  createWorkspaceFile as createFileFacade,
+  addWorkspaceFileVersion as addVersionFacade,
+  restoreWorkspaceFileVersion as restoreVersionFacade,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import {
+  type CommandResult,
+  commandFailureFrom,
+  commandSuccess,
+} from '@/shared-kernel';
+import type { WorkspaceFile, WorkspaceFileVersion } from './_types';
+export type CreateWorkspaceFileInput = Omit<WorkspaceFile, 'id' | 'updatedAt'>;
+export async function createWorkspaceFile(
+  workspaceId: string,
+  fileData: CreateWorkspaceFileInput
+): Promise<CommandResult>
+export async function addWorkspaceFileVersion(
+  workspaceId: string,
+  fileId: string,
+  version: WorkspaceFileVersion,
+  currentVersionId: string
+): Promise<CommandResult>
+export async function restoreWorkspaceFileVersion(
+  workspaceId: string,
+  fileId: string,
+  versionId: string
+): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/business.files/_components/files-view.tsx
+```typescript
+import {
+  FileText,
+  UploadCloud,
+  Clock,
+  History,
+  RotateCcw,
+  Trash2,
+  MoreVertical,
+  ImageIcon,
+  FileArchive,
+  FileCode,
+  FileJson,
+  User,
+  CheckCircle2,
+  AlertCircle,
+  Download,
+  Loader2,
+  FileScan,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/shadcn-ui/sheet";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shadcn-ui/table";
+import { cn } from "@/shadcn-ui/utils/utils";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+import {
+  createWorkspaceFile,
+  addWorkspaceFileVersion,
+  restoreWorkspaceFileVersion,
+} from '../_actions';
+import { subscribeToWorkspaceFiles } from '../_queries';
+import { uploadRawFile } from '../_storage-actions';
+import type { WorkspaceFile, WorkspaceFileVersion } from "../_types";
+const getErrorMessage = (error: unknown, fallback: string)
+const formatBytes = (bytes: number): string =>
+⋮----
+const getFileIcon = (fileName: string) =>
+const handleUploadClick = () =>
+const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) =>
+const handleRestore = async (file: WorkspaceFile, versionId: string) =>
+⋮----
+<DropdownMenuItem onClick=
+⋮----
+<div className=
+```
+
+## File: src/features/workspace.slice/business.files/_hooks/use-storage.ts
+```typescript
+import { useCallback } from 'react';
+import { useApp } from '@/app-runtime/providers/app-provider';
+import {
+  uploadDailyPhoto as uploadDailyPhotoAction,
+  uploadTaskAttachment as uploadTaskAttachmentAction,
+} from '../_storage-actions';
+export function useStorage(workspaceId: string)
+```
+
+## File: src/features/workspace.slice/business.files/_hooks/use-workspace-filters.ts
+```typescript
+import { useMemo, useDeferredValue } from "react";
+import type { Workspace } from "@/features/workspace.slice/core/_types";
+export function useWorkspaceFilters(
+  workspaces: Workspace[],
+  searchQuery: string
+)
+```
+
+## File: src/features/workspace.slice/business.files/_queries.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { WorkspaceFile } from './_types';
+export function subscribeToWorkspaceFiles(
+  workspaceId: string,
+  onUpdate: (files: WorkspaceFile[]) => void
+): Unsubscribe
+export async function getWorkspaceFiles(workspaceId: string): Promise<WorkspaceFile[]>
+```
+
+## File: src/features/workspace.slice/business.files/_storage-actions.ts
+```typescript
+import {
+  uploadDailyPhoto as uploadDailyPhotoFacade,
+  uploadTaskAttachment as uploadTaskAttachmentFacade,
+  uploadProfilePicture as uploadProfilePictureFacade,
+  uploadWorkspaceDocument,
+} from "@/shared-infra/frontend-firebase/storage/storage.facade"
+export async function uploadDailyPhoto(
+  accountId: string,
+  workspaceId: string,
+  file: File
+): Promise<string>
+export async function uploadTaskAttachment(
+  workspaceId: string,
+  file: File
+): Promise<string>
+export async function uploadProfilePicture(
+  userId: string,
+  file: File
+): Promise<string>
+export async function uploadRawFile(
+  workspaceId: string,
+  fileId: string,
+  versionId: string,
+  file: File
+): Promise<string>
+```
+
+## File: src/features/workspace.slice/business.files/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+export interface WorkspaceFileVersion {
+  versionId: string;
+  versionNumber: number;
+  versionName: string;
+  size: number;
+  uploadedBy: string;
+  createdAt: Timestamp | Date;
+  downloadURL: string;
+}
+export interface WorkspaceFile {
+  id: string;
+  name: string;
+  type: string;
+  currentVersionId: string;
+  updatedAt: Timestamp | Date;
+  versions: WorkspaceFileVersion[];
+}
+```
+
+## File: src/features/workspace.slice/business.files/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.finance/_actions.ts
+```typescript
+import {
+  saveFinanceAggregateState as saveFinanceAggregateStateFacade,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import type { FinanceAggregateState } from './_types';
+export async function saveFinanceAggregateState(
+  state: FinanceAggregateState,
+): Promise<void>
+```
+
+## File: src/features/workspace.slice/business.finance/_components/finance-item-table.tsx
+```typescript
+import { BriefcaseBusiness, Coins, Hammer, type LucideIcon, ShieldCheck } from 'lucide-react';
+import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { Badge } from '@/shadcn-ui/badge';
+import { Checkbox } from '@/shadcn-ui/checkbox';
+import { Input } from '@/shadcn-ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shadcn-ui/table';
+import { NON_TASK_COST_ITEM_TYPES } from '../_constants';
+import type { FinanceClaimDraftEntry, FinanceDirectiveItem } from '../_types';
+interface FinanceItemTableProps {
+  readonly items: readonly FinanceDirectiveItem[];
+  readonly claimDraft: Readonly<Record<string, FinanceClaimDraftEntry>>;
+  readonly isEditable: boolean;
+  readonly tagPresentationMap: Readonly<Record<string, TagSnapshotPresentation>>;
+  readonly onToggleItem: (itemId: string, selected: boolean) => void;
+  readonly onChangeQuantity: (itemId: string, quantity: number) => void;
+}
+```
+
+## File: src/features/workspace.slice/business.finance/_components/finance-lifecycle-tracker.tsx
+```typescript
+import { useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { FINANCE_LIFECYCLE_STAGES } from '../_constants';
+import type { FinanceLifecycleStage } from '../_types';
+⋮----
+interface FinanceLifecycleTrackerProps {
+  readonly stage: FinanceLifecycleStage;
+  readonly cycleIndex: number;
+  readonly outstandingClaimableAmount: number;
+  readonly paymentTermStartAt: Date | null;
+}
+function formatDuration(totalSeconds: number): string
+export function FinanceLifecycleTracker(props: FinanceLifecycleTrackerProps)
+⋮----
+<Badge variant="outline">Payment Term Timer:
+```
+
+## File: src/features/workspace.slice/business.finance/_components/finance-view.tsx
+```typescript
+import { AlertCircle, CheckCircle2, FileSearch, Send } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { useFinanceLifecycle } from '../_hooks/use-finance-lifecycle';
+import { FinanceItemTable } from './finance-item-table';
+import { FinanceLifecycleTracker } from './finance-lifecycle-tracker';
+⋮----
+async function hydrateTagPresentationMap()
+⋮----
+const handleSubmitClaim = () =>
+const handleAdvance = () =>
+const handlePaymentReceived = () =>
+const handleCloseCycle = () =>
+```
+
+## File: src/features/workspace.slice/business.finance/_constants.ts
+```typescript
+import { CostItemType } from '@/features/semantic-graph.slice';
+import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
+import type { FinanceLifecycleStage } from './_types';
+```
+
+## File: src/features/workspace.slice/business.finance/_hooks/use-finance-lifecycle.helpers.ts
+```typescript
+import { classifyCostItem } from '@/features/semantic-graph.slice';
+import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus/_events';
+import type {
+  FinanceClaimDraftEntry,
+  FinanceClaimLineItem,
+  FinanceDirectiveItem,
+  FinanceLifecycleStage,
+} from '../_types';
+export function buildDirectiveItem(
+  payload: DocumentParserItemsExtractedPayload,
+  item: DocumentParserItemsExtractedPayload['items'][number],
+): FinanceDirectiveItem
+export function buildDirectiveItemFromParsingIntentLineItem(
+  intent: {
+    id: string;
+    sourceFileName: string;
+  },
+  lineItem: {
+    name: string;
+    quantity: number;
+    unitPrice: number;
+    sourceIntentIndex?: number;
+    semanticTagSlug?: string;
+    costItemType?: FinanceDirectiveItem['costItemType'];
+  },
+  fallbackIndex: number,
+): FinanceDirectiveItem | null
+export function isActiveParsingIntentStatus(status: string | undefined): boolean
+export function normalizeLifecycleStage(stage: string | undefined): FinanceLifecycleStage
+export function clampRemainingQuantity(item: FinanceDirectiveItem, persistedRemaining: number | undefined): number
+export function hasValidClaimSelection(
+  directiveItems: readonly FinanceDirectiveItem[],
+  claimDraft: Readonly<Record<string, FinanceClaimDraftEntry>>,
+): boolean
+export function buildClaimLineItems(
+  directiveItems: readonly FinanceDirectiveItem[],
+  claimDraft: Readonly<Record<string, FinanceClaimDraftEntry>>,
+): FinanceClaimLineItem[]
+export function getNextStageFromAction(currentStage: FinanceLifecycleStage): FinanceLifecycleStage
+```
+
+## File: src/features/workspace.slice/business.finance/_hooks/use-finance-lifecycle.ts
+```typescript
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { listWorkflowStates } from '@/features/workspace.slice/business.workflow';
+import type { WorkspaceEventBus } from '@/features/workspace.slice/core.event-bus';
+import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { saveFinanceAggregateState } from '../_actions';
+import { getFinanceAggregateState } from '../_queries';
+import { fetchFinanceStrongReadSnapshot } from '../_services/finance-strong-read';
+import type {
+  FinanceAggregateState,
+  FinanceClaimDraftEntry,
+  FinanceClaimLineItem,
+  FinanceDirectiveItem,
+  FinanceLifecycleStage,
+  FinanceStrongReadSnapshot,
+} from '../_types';
+import {
+  buildClaimLineItems,
+  buildDirectiveItem,
+  buildDirectiveItemFromParsingIntentLineItem,
+  clampRemainingQuantity,
+  getNextStageFromAction,
+  hasValidClaimSelection,
+  isActiveParsingIntentStatus,
+  normalizeLifecycleStage,
+} from './use-finance-lifecycle.helpers';
+⋮----
+interface UseFinanceLifecycleInput {
+  readonly workspaceId: string;
+  readonly eventBus: WorkspaceEventBus;
+}
+export function useFinanceLifecycle(input: UseFinanceLifecycleInput)
+⋮----
+async function hydrateFinanceAggregate()
+⋮----
+async function hydrateAcceptanceGate()
+⋮----
+async function refreshStrongReadSnapshot()
+```
+
+## File: src/features/workspace.slice/business.finance/_queries.ts
+```typescript
+import {
+  getFinanceAggregateState as getFinanceAggregateStateFacade,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import type { FinanceAggregateState } from './_types';
+export async function getFinanceAggregateState(
+  workspaceId: string,
+): Promise<FinanceAggregateState | null>
+```
+
+## File: src/features/workspace.slice/business.finance/_services/finance-strong-read.ts
+```typescript
+import { resolveReadConsistency } from '@/shared-kernel';
+import type { FinanceStrongReadSnapshot } from '../_types';
+import { executeFinanceStrongReadQuery } from './finance-aggregate-query-gateway';
+interface FinanceStrongReadInput {
+  readonly workspaceId: string;
+  readonly receivedAmount: number;
+}
+export async function fetchFinanceStrongReadSnapshot(
+  input: FinanceStrongReadInput,
+): Promise<FinanceStrongReadSnapshot>
+```
+
+## File: src/features/workspace.slice/business.finance/_types.ts
+```typescript
+import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
+import type { ReadConsistencyMode } from '@/shared-kernel';
+export type FinanceLifecycleStage =
+  | 'claim-preparation'
+  | 'claim-submitted'
+  | 'claim-approved'
+  | 'invoice-requested'
+  | 'payment-term'
+  | 'payment-received'
+  | 'completed';
+export interface FinanceDirectiveItem {
+  readonly id: string;
+  readonly name: string;
+  readonly sourceDocument: string;
+  readonly intentId: string;
+  readonly semanticTagSlug: string;
+  readonly costItemType: CostItemTypeValue;
+  readonly unitPrice: number;
+  readonly totalQuantity: number;
+  readonly remainingQuantity: number;
+}
+export interface FinanceClaimDraftEntry {
+  readonly selected: boolean;
+  readonly quantity: number;
+}
+export interface FinanceClaimLineItem {
+  readonly itemId: string;
+  readonly name: string;
+  readonly quantity: number;
+  readonly unitPrice: number;
+  readonly lineAmount: number;
+}
+export interface FinanceStrongReadSnapshot {
+  readonly readConsistencyMode: ReadConsistencyMode;
+  readonly source: 'aggregate';
+  readonly totalClaimableAmount: number;
+  readonly receivedAmount: number;
+  readonly outstandingClaimableAmount: number;
+}
+export interface FinanceAggregateState {
+  readonly workspaceId: string;
+  readonly stage: FinanceLifecycleStage;
+  readonly cycleIndex: number;
+  readonly receivedAmount: number;
+  readonly directiveItems: FinanceDirectiveItem[];
+  readonly currentClaimLineItems: FinanceClaimLineItem[];
+  readonly paymentTermStartAtISO: string | null;
+  readonly paymentReceivedAtISO: string | null;
+  readonly updatedAt: number;
+}
+```
+
+## File: src/features/workspace.slice/business.finance/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.issues/_actions.ts
+```typescript
+import {
+  createIssue as createIssueFacade,
+  addCommentToIssue as addCommentToIssueFacade,
+  resolveIssue as resolveIssueFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
+export async function createIssue(
+  workspaceId: string,
+  title: string,
+  type: "technical" | "financial",
+  priority: "high" | "medium",
+  sourceTaskId?: string
+): Promise<CommandResult>
+export async function addCommentToIssue(
+  workspaceId: string,
+  issueId: string,
+  author: string,
+  content: string
+): Promise<CommandResult>
+export async function resolveIssue(
+  workspaceId: string,
+  issueId: string
+): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/business.issues/_components/issues-view.tsx
+```typescript
+import { format } from "date-fns";
+import { AlertCircle, Plus, ArrowRight, ShieldAlert, DollarSign, PenTool, MessageSquare, CornerUpLeft, CheckCircle2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/shadcn-ui/sheet";
+import { Textarea } from "@/shadcn-ui/textarea";
+import { type WorkspaceIssue } from "../_types";
+const getErrorMessage = (error: unknown, fallback: string)
+export function WorkspaceIssues()
+⋮----
+const handleAddIssue = async () =>
+const handleAddComment = async () =>
+const handleResolveIssue = async (issue: WorkspaceIssue) =>
+const getIssueIcon = (type: string) =>
+```
+
+## File: src/features/workspace.slice/business.issues/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+export interface IssueComment {
+  id: string;
+  author: string;
+  content: string;
+  createdAt: Timestamp;
+}
+export interface WorkspaceIssue {
+  id: string;
+  title: string;
+  type: 'technical' | 'financial';
+  priority: 'high' | 'medium';
+  issueState: 'open' | 'closed';
+  sourceTaskId?: string;
+  createdAt: Timestamp;
+  comments?: IssueComment[];
+}
+```
+
+## File: src/features/workspace.slice/business.issues/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.parsing-intent/_architecture-test-helpers.ts
+```typescript
+export function collectSourceFiles(dir: string): string[]
+export function findDirectFirebaseImports(dir: string): string[]
+```
+
+## File: src/features/workspace.slice/business.parsing-intent/_contract.ts
+```typescript
+import type { SkillRequirement } from '@/shared-kernel';
+export type ParsingIntentStatus = 'pending' | 'importing' | 'imported' | 'superseded' | 'failed';
+export type ParsingIntentSourceType = 'ai' | 'human' | 'system';
+export type ParsingIntentReviewStatus =
+  | 'not_required'
+  | 'pending_review'
+  | 'approved'
+  | 'rejected';
+export interface ParsingIntentContract {
+  intentId: string;
+  workspaceId: string;
+  sourceFileId: string;
+  sourceVersionId: string;
+  intentVersion: number;
+  baseIntentId?: string;
+  taskDraftCount: number;
+  skillRequirements: SkillRequirement[];
+  parserVersion?: string;
+  modelVersion?: string;
+  sourceType: ParsingIntentSourceType;
+  reviewStatus: ParsingIntentReviewStatus;
+  reviewedBy?: string;
+  reviewedAt?: number;
+  semanticHash?: string;
+  status: ParsingIntentStatus;
+  supersededByIntentId?: string;
+  createdAt: number;
+  updatedAt: number;
+}
+export interface CreateParsingIntentInput {
+  intentId: string;
+  workspaceId: string;
+  sourceFileId: string;
+  sourceVersionId: string;
+  intentVersion?: number;
+  baseIntentId?: string;
+  taskDraftCount: number;
+  skillRequirements?: SkillRequirement[];
+  parserVersion?: string;
+  modelVersion?: string;
+  sourceType?: ParsingIntentSourceType;
+  reviewStatus?: ParsingIntentReviewStatus;
+  reviewedBy?: string;
+  reviewedAt?: number;
+  semanticHash?: string;
+}
+export function createParsingIntentContract(
+  input: CreateParsingIntentInput
+): ParsingIntentContract
+export function markParsingIntentImported(
+  current: ParsingIntentContract
+): ParsingIntentContract
+export function supersedeParsingIntent(
+  current: ParsingIntentContract,
+  nextIntentId: string
+): ParsingIntentContract
+```
+
+## File: src/features/workspace.slice/business.parsing-intent/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.quality-assurance/_components/quality-assurance-view.tsx
+```typescript
+import { ShieldCheck, XCircle, CheckCircle, Search, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { type WorkspaceTask } from "@/features/workspace.slice/business.tasks/_types";
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+const getErrorMessage = (error: unknown, fallback: string)
+export function WorkspaceQualityAssurance()
+⋮----
+const handleApprove = async (task: WorkspaceTask) =>
+const handleReject = async (task: WorkspaceTask) =>
+```
+
+## File: src/features/workspace.slice/business.quality-assurance/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.tasks/_actions/helpers.ts
+```typescript
+import type { WorkspaceTask } from '../_types';
+export type ReconcileIncomingItem = {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  discount?: number;
+  subtotal: number;
+  sourceIntentIndex?: number;
+};
+export const toErrorMessage = (error: unknown): string
+export const sanitizeTaskUpdates = (
+  updates: Partial<WorkspaceTask>
+): Partial<WorkspaceTask> =>
+const withOptionalDiscount = (
+  discount: number | undefined
+):
+const withOptionalSourceIntentIndex = (
+  sourceIntentIndex: number | undefined
+):
+export const buildReconcileUpdatePayload = (
+  item: ReconcileIncomingItem,
+  newIntentId: string,
+  newIntentVersion: number
+) => (
+export const buildReconcileCreatePayload = (
+  baseTaskData: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'quantity' | 'unitPrice' | 'discount' | 'subtotal' | 'sourceIntentId' | 'sourceIntentVersion'>,
+  item: ReconcileIncomingItem,
+  newIntentId: string,
+  newIntentVersion: number
+) => (
+```
+
+## File: src/features/workspace.slice/business.tasks/_actions/index.ts
+```typescript
+import {
+  createTask as createTaskFacade,
+  updateTask as updateTaskFacade,
+  deleteTask as deleteTaskFacade,
+  getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
+  reconcileTask as reconcileTaskFacade,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
+import type { WorkspaceTask } from '../_types';
+import {
+  buildReconcileCreatePayload,
+  buildReconcileUpdatePayload,
+  sanitizeTaskUpdates,
+  toErrorMessage,
+  type ReconcileIncomingItem,
+} from './helpers';
+export async function createTask(
+  workspaceId: string,
+  taskData: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<CommandResult>
+export async function updateTask(
+  workspaceId: string,
+  taskId: string,
+  updates: Partial<WorkspaceTask>
+): Promise<CommandResult>
+export async function deleteTask(
+  workspaceId: string,
+  taskId: string
+): Promise<CommandResult>
+export async function batchImportTasks(
+  workspaceId: string,
+  items: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>[]
+): Promise<CommandResult>
+export async function reconcileIntentTasks(
+  workspaceId: string,
+  oldIntentId: string,
+  newIntentId: string,
+  newIntentVersion: number,
+  items: ReconcileIncomingItem[],
+  baseTaskData: Omit<
+    WorkspaceTask,
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'name'
+    | 'quantity'
+    | 'unitPrice'
+    | 'discount'
+    | 'subtotal'
+    | 'sourceIntentId'
+    | 'sourceIntentVersion'
+  >
+): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/attachments-action.tsx
+```typescript
+import { Paperclip } from 'lucide-react';
+import { Button } from '@/shadcn-ui/button';
+import { type TaskWithChildren } from '../_types';
+type AttachmentsActionProps = {
+  node: TaskWithChildren;
+  onOpenAttachments: (node: TaskWithChildren) => void;
+};
+export function AttachmentsAction(
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/attachments-dialog.tsx
+```typescript
+import { Loader2, UploadCloud, X } from 'lucide-react';
+import Image from 'next/image';
+import { Button } from '@/shadcn-ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shadcn-ui/dialog';
+type AttachmentsDialogProps = {
+  isOpen: boolean;
+  attachments: string[];
+  files: File[];
+  onFilesSelected: (files: FileList | null) => void;
+  onRemoveFile: (index: number) => void;
+  onSave: () => void;
+  isSaving: boolean;
+  onOpenChange: (open: boolean) => void;
+  onPreviewImage: (url: string) => void;
+};
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/location-action.tsx
+```typescript
+import { MapPin } from 'lucide-react';
+import { Button } from '@/shadcn-ui/button';
+import { type TaskWithChildren } from '../_types';
+type LocationActionProps = {
+  node: TaskWithChildren;
+  onOpenLocation: (node: TaskWithChildren) => void;
+};
+export function LocationAction(
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/location-dialog.tsx
+```typescript
+import { Loader2, MapPin } from 'lucide-react';
+import { Button } from '@/shadcn-ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shadcn-ui/dialog';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import { Textarea } from '@/shadcn-ui/textarea';
+import { type Location } from '../_types';
+type LocationDialogProps = {
+  isOpen: boolean;
+  draft: Location;
+  onDraftChange: (field: keyof Location, value: string) => void;
+  onSave: () => void;
+  isSaving: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+export function LocationDialog({
+  isOpen,
+  draft,
+  onDraftChange,
+  onSave,
+  isSaving,
+  onOpenChange,
+}: LocationDialogProps)
+⋮----
+onChange=
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/progress-report-dialog.tsx
+```typescript
+import { useEffect, useState } from 'react';
+import { Button } from '@/shadcn-ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shadcn-ui/dialog';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import type { TaskWithChildren } from '../_types';
+interface ProgressReportDialogProps {
+  task: TaskWithChildren | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (taskId: string, newCompletedQuantity: number) => Promise<void>;
+}
+export function ProgressReportDialog({
+  task,
+  isOpen,
+  onClose,
+  onSubmit,
+}: ProgressReportDialogProps)
+⋮----
+const handleSubmit = async () =>
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/task-editor-dialog.tsx
+```typescript
+import { Loader2, Settings2 } from 'lucide-react';
+import { Button } from '@/shadcn-ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/shadcn-ui/dialog';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shadcn-ui/select';
+import { Textarea } from '@/shadcn-ui/textarea';
+import { type WorkspaceTask } from '../_types';
+interface TaskEditorDialogProps {
+  isOpen: boolean;
+  editingTask: Partial<WorkspaceTask> | null;
+  setEditingTask: React.Dispatch<React.SetStateAction<Partial<WorkspaceTask> | null>>;
+  isUploading: boolean;
+  onSave: () => void;
+  onOpenChange: (open: boolean) => void;
+}
+export function TaskEditorDialog({
+  isOpen,
+  editingTask,
+  setEditingTask,
+  isUploading,
+  onSave,
+  onOpenChange,
+}: TaskEditorDialogProps)
+⋮----
+onChange={(e) => setEditingTask({ ...editingTask, name: e.target.value })}
+              className="h-11 rounded-lg border-input bg-background"
+            />
+          </div>
+          <div className="col-span-2 space-y-1.5">
+            <Label className="ml-1 text-xs font-semibold text-foreground">Description & Specs</Label>
+            <Textarea
+              value={editingTask?.description || ''}
+              onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+              className="min-h-[96px] resize-none rounded-lg border-input bg-background"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="ml-1 text-xs font-semibold text-foreground">Status</Label>
+            <Select
+              value={editingTask?.progressState}
+onValueChange=
+⋮----
+onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
+              className="min-h-[96px] resize-none rounded-lg border-input bg-background"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="ml-1 text-xs font-semibold text-foreground">Status</Label>
+            <Select
+              value={editingTask?.progressState}
+onValueChange=
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/task-tree-node.tsx
+```typescript
+import { CalendarPlus, ChevronDown, ChevronRight, ClipboardPlus, OctagonX, Plus, Send, Settings2, Trash2 } from 'lucide-react';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Progress } from '@/shadcn-ui/progress';
+import { cn } from '@/shadcn-ui/utils/utils';
+import { type TaskWithChildren, type WorkspaceTask } from '../_types';
+import { AttachmentsAction } from './attachments-action';
+import { LocationAction } from './location-action';
+interface TaskTreeNodeProps {
+  node: TaskWithChildren;
+  level?: number;
+  expandedIds: Set<string>;
+  setExpandedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  visibleColumns: Set<string>;
+  onPreviewImage: (url: string) => void;
+  onOpenLocation: (node: TaskWithChildren) => void;
+  onOpenAttachments: (node: TaskWithChildren) => void;
+  onReportProgress: (node: TaskWithChildren) => void;
+  onScheduleRequest: (node: WorkspaceTask) => void;
+  onMarkBlocked: (node: TaskWithChildren) => void;
+  onCreateChild: (node: TaskWithChildren) => void;
+  onEditNode: (node: TaskWithChildren) => void;
+  onDeleteNode: (node: TaskWithChildren) => void;
+  onSubmitForQA: (node: TaskWithChildren) => void;
+}
+⋮----
+className=
+```
+
+## File: src/features/workspace.slice/business.tasks/_components/tasks-view.tsx
+```typescript
+import {
+  BarChart3,
+  Clock,
+  Coins,
+  Plus,
+  View,
+} from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
+import { useStorage } from '@/features/workspace.slice/business.files';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Button } from '@/shadcn-ui/button';
+import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/shadcn-ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/shadcn-ui/dropdown-menu';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { useAttachmentsDialogController, useLocationDialogController } from '../_hooks';
+import { type TaskWithChildren, type WorkspaceTask } from '../_types';
+import { AttachmentsDialog } from './attachments-dialog';
+import { LocationDialog } from './location-dialog';
+import { ProgressReportDialog } from './progress-report-dialog';
+import { TaskEditorDialog } from './task-editor-dialog';
+import { TaskTreeNode } from './task-tree-node';
+const getErrorMessage = (error: unknown, fallback: string)
+export function WorkspaceTasks()
+⋮----
+const handleSaveTask = async () =>
+const handleReportProgress = async (taskId: string, newCompletedQuantity: number) =>
+const handleSubmitForQA = async (task: TaskWithChildren) =>
+const handleDeleteTask = async (node: TaskWithChildren) =>
+const handleScheduleRequest = (task: WorkspaceTask) =>
+const handleMarkBlocked = async (task: TaskWithChildren) =>
+const toggleColumn = (key: string) =>
+⋮----
+onCheckedChange=
+⋮----
+onClose=
+⋮----
+<Dialog open=
+⋮----
+setEditingTask({
+                  parentId: node.id,
+                  quantity: 1,
+                  completedQuantity: 0,
+                  unitPrice: 0,
+                  discount: 0,
+                  type: 'Sub-task',
+                  priority: 'medium',
+                  progressState: 'todo',
+                });
+setIsAddOpen(true);
+⋮----
+setEditingTask({
+                  ...node,
+                  location: node.location || { description: '' },
+                });
+```
+
+## File: src/features/workspace.slice/business.tasks/_hooks/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.tasks/_hooks/use-attachments-dialog-controller.ts
+```typescript
+import { useState } from 'react';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { type TaskWithChildren, type WorkspaceTask } from '../_types';
+type UpdateTask = (taskId: string, updates: Partial<WorkspaceTask>) => Promise<void>;
+type UploadTaskAttachment = (file: File) => Promise<string>;
+type LogAuditEvent = (action: string, target: string, operation: 'create' | 'update' | 'delete') => void;
+const getErrorMessage = (error: unknown, fallback: string)
+export function useAttachmentsDialogController(params: {
+  updateTask: UpdateTask;
+  uploadTaskAttachment: UploadTaskAttachment;
+  logAuditEvent: LogAuditEvent;
+})
+⋮----
+const openAttachments = (task: TaskWithChildren) =>
+const closeAttachments = () =>
+const selectFiles = (files: FileList | null) =>
+const removeFile = (index: number) =>
+const saveAttachments = async () =>
+```
+
+## File: src/features/workspace.slice/business.tasks/_hooks/use-location-dialog-controller.ts
+```typescript
+import { useState } from 'react';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { type Location, type TaskWithChildren, type WorkspaceTask } from '../_types';
+type UpdateTask = (taskId: string, updates: Partial<WorkspaceTask>) => Promise<void>;
+type LogAuditEvent = (action: string, target: string, operation: 'create' | 'update' | 'delete') => void;
+const getErrorMessage = (error: unknown, fallback: string)
+export function useLocationDialogController(params: {
+  updateTask: UpdateTask;
+  logAuditEvent: LogAuditEvent;
+})
+⋮----
+const openLocation = (task: TaskWithChildren) =>
+const closeLocation = () =>
+const updateDraft = (field: keyof Location, value: string) =>
+const saveLocation = async () =>
+```
+
+## File: src/features/workspace.slice/business.tasks/_queries.ts
+```typescript
+import {
+  getWorkspaceTasks as getWorkspaceTasksFacade,
+  getWorkspaceTask as getWorkspaceTaskFacade,
+  getTaskBySourceIntentId as getTaskBySourceIntentIdFacade,
+  getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import type { WorkspaceTask } from "./_types";
+export async function getWorkspaceTasks(
+  workspaceId: string
+): Promise<WorkspaceTask[]>
+export async function getWorkspaceTask(
+  workspaceId: string,
+  taskId: string
+): Promise<WorkspaceTask | null>
+export async function hasTasksForSourceIntent(
+  workspaceId: string,
+  sourceIntentId: string
+): Promise<boolean>
+export async function getTasksBySourceIntentId(
+  workspaceId: string,
+  sourceIntentId: string
+): Promise<WorkspaceTask[]>
+```
+
+## File: src/features/workspace.slice/business.tasks/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/business.workflow/_aggregate.ts
+```typescript
+export type WorkflowStage =
+  | 'draft'
+  | 'in-progress'
+  | 'quality-assurance'
+  | 'acceptance'
+  | 'finance'
+  | 'completed';
+export interface WorkflowAggregateState {
+  workflowId: string;
+  workspaceId: string;
+  stage: WorkflowStage;
+  blockedBy: string[];
+  version: number;
+  updatedAt: number;
+}
+⋮----
+export function createWorkflowAggregate(
+  workspaceId: string,
+  workflowId: string
+): WorkflowAggregateState
+export function canAdvanceWorkflowStage(
+  current: WorkflowStage,
+  next: WorkflowStage
+): boolean
+export function advanceWorkflowStage(
+  state: WorkflowAggregateState,
+  next: WorkflowStage
+): WorkflowAggregateState
+export function blockWorkflow(
+  state: WorkflowAggregateState,
+  issueId: string
+): WorkflowAggregateState
+export function unblockWorkflow(
+  state: WorkflowAggregateState,
+  resolvedIssueId: string
+): WorkflowAggregateState
+export function isWorkflowUnblocked(state: WorkflowAggregateState): boolean
+```
+
+## File: src/features/workspace.slice/business.workflow/_issue-handler.ts
+```typescript
+import { blockWorkflow, createWorkflowAggregate, isWorkflowUnblocked, unblockWorkflow } from './_aggregate';
+import { findWorkflowsBlockedByIssue, loadWorkflowState, saveWorkflowState } from './_persistence';
+export interface WorkflowIssueBlockedResult {
+  workflowId: string;
+  blockedByCount: number;
+  wasChanged: boolean;
+}
+export interface WorkflowIssueResolvedResult {
+  touchedWorkflowIds: string[];
+  unblockedWorkflowIds: string[];
+}
+async function getOrCreateWorkflowState(
+  workspaceId: string,
+  workflowId: string
+)
+export async function handleIssueCreatedForWorkflow(
+  workspaceId: string,
+  issueId: string,
+  workflowId = workspaceId
+): Promise<WorkflowIssueBlockedResult>
+export async function handleIssueResolvedForWorkflow(
+  workspaceId: string,
+  issueId: string
+): Promise<WorkflowIssueResolvedResult>
+```
+
+## File: src/features/workspace.slice/business.workflow/_persistence.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import { collection, getDocs, limit, query, type QueryDocumentSnapshot, type DocumentData, where } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import type { WorkflowAggregateState, WorkflowStage } from './_aggregate';
+const workflowPath = (workspaceId: string, workflowId: string)
+const workflowCollectionPath = (workspaceId: string)
+export async function loadWorkflowState(
+  workspaceId: string,
+  workflowId: string
+): Promise<WorkflowAggregateState | null>
+export async function saveWorkflowState(state: WorkflowAggregateState): Promise<void>
+export async function updateWorkflowState(
+  workspaceId: string,
+  workflowId: string,
+  patch: Partial<Pick<WorkflowAggregateState, 'stage' | 'blockedBy' | 'version' | 'updatedAt'>>
+): Promise<void>
+export async function findWorkflowsBlockedByIssue(
+  workspaceId: string,
+  issueId: string
+): Promise<WorkflowAggregateState[]>
+export async function findWorkflowsByStage(
+  workspaceId: string,
+  stage: WorkflowStage
+): Promise<WorkflowAggregateState[]>
+export async function listWorkflowStates(
+  workspaceId: string,
+  maxResults = 200
+): Promise<WorkflowAggregateState[]>
+```
+
+## File: src/features/workspace.slice/business.workflow/_stage-transition.ts
+```typescript
+import {
+  advanceWorkflowStage,
+  createWorkflowAggregate,
+  WORKFLOW_STAGE_ORDER,
+  type WorkflowAggregateState,
+  type WorkflowStage,
+} from './_aggregate';
+import { loadWorkflowState, saveWorkflowState } from './_persistence';
+export async function advanceWorkflowToStage(
+  workspaceId: string,
+  targetStage: WorkflowStage,
+  workflowId = workspaceId,
+): Promise<WorkflowAggregateState>
+```
+
+## File: src/features/workspace.slice/business.workflow/_workflow.constants.ts
+```typescript
+export type WorkflowStatus = (typeof WorkflowStatusValues)[number];
+⋮----
+export type WorkflowErrorCode = (typeof WorkflowErrorCodes)[keyof typeof WorkflowErrorCodes];
+```
+
+## File: src/features/workspace.slice/business.workflow/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core.event-bus/_context.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core.event-bus/_events.ts
+```typescript
+import type { CostItemType } from "@/features/semantic-graph.slice"
+import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/shared-kernel"
+import type { DailyLog } from "../business.daily/_types"
+import type { WorkspaceTask } from "../business.tasks/_types"
+⋮----
+export interface WorkspaceTaskCompletedPayload {
+  task: WorkspaceTask
+  traceId?: string
+}
+export interface WorkspaceTaskScheduleRequestedPayload {
+  taskName: string
+}
+export interface QualityAssuranceRejectedPayload {
+  task: WorkspaceTask
+  rejectedBy: string
+  traceId?: string
+}
+export interface WorkspaceAcceptanceFailedPayload {
+  task: WorkspaceTask
+  rejectedBy: string
+  traceId?: string
+}
+export interface WorkspaceQualityAssuranceApprovedPayload {
+  task: WorkspaceTask
+  approvedBy: string
+}
+export interface WorkspaceAcceptancePassedPayload {
+  task: WorkspaceTask
+  acceptedBy: string
+}
+export interface DocumentParserItemsExtractedPayload {
+  sourceDocument: string
+  intentId: string
+  intentVersion: number
+  autoImport?: boolean
+  items: Array<{
+    name: string
+    quantity: number
+    unitPrice: number
+    discount?: number
+    subtotal: number
+    costItemType: CostItemType
+    semanticTagSlug: string
+    sourceIntentIndex: number
+  }>
+  skillRequirements?: SkillRequirement[]
+  oldIntentId?: string
+}
+export interface IntentDeltaProposedPayload {
+  intentId: string
+  intentVersion: number
+  workspaceId: string
+  sourceFileName: string
+  taskDraftCount: number
+  oldIntentId?: string
+  skillRequirements?: SkillRequirement[]
+  traceId?: string
+}
+export interface DailyLogForwardRequestedPayload {
+  log: DailyLog
+  targetCapability: "tasks" | "issues"
+  action: "create"
+}
+export interface FileSendToParserPayload {
+  fileName: string
+  downloadURL: string
+  fileType: string
+  fileId?: string
+}
+export interface WorkspaceIssueResolvedPayload {
+  issueId: string
+  issueTitle: string
+  resolvedBy: string
+  sourceTaskId?: string
+  traceId?: string
+}
+export interface WorkspaceDocumentParserFailedPayload {
+  sourceDocument: string
+  reason: string
+  traceId?: string
+}
+export interface WorkspaceWorkflowBlockedPayload {
+  workflowId: string
+  issueId: string
+  blockedByCount: number
+  traceId?: string
+}
+export interface WorkspaceWorkflowUnblockedPayload {
+  workflowId: string
+  issueId: string
+  blockedByCount: number
+  traceId?: string
+}
+export interface WorkspaceFinanceDisbursementFailedPayload {
+  taskId: string
+  taskTitle: string
+  amount: number
+  reason: string
+  traceId?: string
+}
+export interface WorkspaceFinanceCompletedPayload {
+  cycleIndex: number
+  traceId?: string
+}
+export interface WorkspaceTaskBlockedPayload {
+  task: WorkspaceTask
+  reason?: string
+  traceId?: string
+}
+export interface WorkspaceTaskAssignedPayload {
+  taskId: string
+  taskName: string
+  assigneeId: string
+  workspaceId: string
+  sourceIntentId?: string
+  requiredSkills?: SkillRequirement[]
+  traceId?: string
+}
+export type WorkspaceEventName =
+  | "workspace:tasks:completed"
+  | "workspace:tasks:scheduleRequested"
+  | "workspace:tasks:blocked"
+  | "workspace:tasks:assigned"
+  | "workspace:schedule:proposed"
+  | "workspace:quality-assurance:rejected"
+  | "workspace:acceptance:failed"
+  | "workspace:quality-assurance:approved"
+  | "workspace:acceptance:passed"
+  | "workspace:document-parser:itemsExtracted"
+  | "workspace:document-parser:failed"
+  | "workspace:files:sendToParser"
+  | "workspace:issues:resolved"
+  | "workspace:workflow:blocked"
+  | "workspace:workflow:unblocked"
+  | "workspace:finance:disburseFailed"
+  | "workspace:finance:completed"
+  | "daily:log:forwardRequested"
+  | "workspace:parsing-intent:deltaProposed"
+export interface WorkspaceEventPayloadMap {
+  "workspace:tasks:completed": WorkspaceTaskCompletedPayload
+  "workspace:tasks:scheduleRequested": WorkspaceTaskScheduleRequestedPayload
+  "workspace:tasks:blocked": WorkspaceTaskBlockedPayload
+  "workspace:tasks:assigned": WorkspaceTaskAssignedPayload
+  "workspace:schedule:proposed": WorkspaceScheduleProposedPayload
+  "workspace:quality-assurance:rejected": QualityAssuranceRejectedPayload
+  "workspace:acceptance:failed": WorkspaceAcceptanceFailedPayload
+  "workspace:quality-assurance:approved": WorkspaceQualityAssuranceApprovedPayload
+  "workspace:acceptance:passed": WorkspaceAcceptancePassedPayload
+  "workspace:document-parser:itemsExtracted": DocumentParserItemsExtractedPayload
+  "workspace:document-parser:failed": WorkspaceDocumentParserFailedPayload
+  "workspace:files:sendToParser": FileSendToParserPayload
+  "workspace:issues:resolved": WorkspaceIssueResolvedPayload
+  "workspace:workflow:blocked": WorkspaceWorkflowBlockedPayload
+  "workspace:workflow:unblocked": WorkspaceWorkflowUnblockedPayload
+  "workspace:finance:disburseFailed": WorkspaceFinanceDisbursementFailedPayload
+  "workspace:finance:completed": WorkspaceFinanceCompletedPayload
+  "daily:log:forwardRequested": DailyLogForwardRequestedPayload
+  "workspace:parsing-intent:deltaProposed": IntentDeltaProposedPayload
+}
+export type WorkspaceEventPayload<T extends WorkspaceEventName> =
+  WorkspaceEventPayloadMap[T]
+export type WorkspaceEventHandler<T extends WorkspaceEventName> = (
+  payload: WorkspaceEventPayload<T>
+) => Promise<void> | void
+export type PublishFn = <T extends WorkspaceEventName>(
+  type: T,
+  payload: WorkspaceEventPayload<T>
+) => void
+export type SubscribeFn = <T extends WorkspaceEventName>(
+  type: T,
+  handler: WorkspaceEventHandler<T>
+) => () => void
+```
+
+## File: src/features/workspace.slice/core.event-bus/_hooks/_context.ts
+```typescript
+import { createContext, useContext } from "react"
+import type {
+  PublishFn,
+  SubscribeFn,
+} from "../_events"
+export interface WorkspaceEventContextType {
+  publish: PublishFn
+  subscribe: SubscribeFn
+}
+⋮----
+export function useWorkspaceEvents(): WorkspaceEventContextType
+```
+
+## File: src/features/workspace.slice/core.event-bus/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core.event-store/_store.ts
+```typescript
+import {
+  appendDomainEvent as appendDomainEventRepo,
+  getDomainEvents as getDomainEventsRepo,
+  type StoredWorkspaceEvent,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+⋮----
+export async function appendDomainEvent(
+  workspaceId: string,
+  event: Omit<StoredWorkspaceEvent, 'id' | 'occurredAt'>
+): Promise<string>
+export async function getDomainEvents(
+  workspaceId: string
+): Promise<StoredWorkspaceEvent[]>
+```
+
+## File: src/features/workspace.slice/core.event-store/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core/_components/create-workspace-dialog.tsx
+```typescript
+import { useState } from "react";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { Button } from "@/shadcn-ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { useApp } from "../_hooks/use-app";
+import { handleCreateWorkspace } from "../_use-cases";
+interface CreateWorkspaceDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+⋮----
+const onCreate = async () =>
+```
+
+## File: src/features/workspace.slice/core/_components/dashboard-view.tsx
+```typescript
+import { User as UserIcon } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import { useAuth } from "@/app-runtime/providers/auth-provider"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
+import { PermissionTree } from "@/features/account.slice"
+import { AccountGrid } from "@/features/organization.slice"
+import { Badge } from "@/shadcn-ui/badge"
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { useApp } from "../_hooks/use-app"
+import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
+import { WorkspaceList } from "./workspace-list"
+```
+
+## File: src/features/workspace.slice/core/_components/shell/account-create-dialog.tsx
+```typescript
+import { Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { Button } from "@/shadcn-ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
+import { type Account } from "@/shared-kernel"
+interface AccountCreateDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  createOrganization: (name: string) => Promise<string>
+  dispatch: React.Dispatch<AppAction>
+  accounts: Record<string, Account>
+  t: (key: string) => string
+}
+⋮----
+const handleCreate = async () =>
+⋮----
+```
+
+## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
+```typescript
+import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu"
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+} from "@/shadcn-ui/sidebar"
+import { cn } from "@/shadcn-ui/utils/utils"
+import type { Account } from "@/shared-kernel"
+import { ROUTES } from "@/shared-kernel/constants/routes"
+interface AccountSwitcherProps {
+  user: Account | null
+  accounts: Record<string, Account>
+  activeAccount: Account | null
+  dispatch: React.Dispatch<AppAction>
+  createOrganization: (name: string) => Promise<string>
+  t: (key: string) => string
+}
+const getAccountInitial = (name?: string)
+⋮----
+<AvatarFallback className=
+⋮----
+```
+
+## File: src/features/workspace.slice/core/_components/shell/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core/_components/shell/nav-main.tsx
+```typescript
+import {
+  LayoutDashboard,
+  Layers,
+  FolderTree,
+  ChevronRight,
+  Users,
+  Globe,
+  Grid3X3,
+  Calendar,
+  MessageSquare,
+  History,
+} from "lucide-react";
+import Link from "next/link";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shadcn-ui/collapsible";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
+  SidebarMenuButton,
+} from "@/shadcn-ui/sidebar";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+interface NavMainProps {
+  pathname: string;
+  isOrganizationAccount: boolean;
+  t: (key: string) => string;
+}
+⋮----
+const isActive = (path: string)
+const isPartiallyActive = (path: string)
+⋮----
+<SidebarMenuButton asChild isActive=
+⋮----
+<SidebarMenuSubButton asChild isActive=
+```
+
+## File: src/features/workspace.slice/core/_components/shell/nav-user.tsx
+```typescript
+import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMemo } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
+import type { Account } from "@/shared-kernel"
+import { ROUTES } from "@/shared-kernel/constants/routes"
+interface NavUserProps {
+  user: Account | null
+  accounts: Record<string, Account>
+  activeAccount: Account | null
+  logout: () => void
+  t: (key: string, params?: Record<string, string | number>) => string;
+}
+const getAccountInitial = (name?: string)
+⋮----
+const handleLogout = () =>
+⋮----
+<AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
+```
+
+## File: src/features/workspace.slice/core/_components/shell/nav-workspaces.tsx
+```typescript
+import { Terminal } from "lucide-react";
+import Link from "next/link";
+import type { Workspace } from "@/features/workspace.slice/core/_types";
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuBadge,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+} from "@/shadcn-ui/sidebar";
+interface NavWorkspacesProps {
+  workspaces: Workspace[];
+  pathname: string;
+  t: (key: string) => string;
+}
+```
+
+## File: src/features/workspace.slice/core/_components/shell/notification-center.tsx
+```typescript
+import { Bell, Trash2, Check } from "lucide-react";
+import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { Button } from "@/shadcn-ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { type Notification } from "@/shared-kernel";
+interface NotificationCenterProps {
+  notifications: Notification[];
+  dispatch: React.Dispatch<AppAction>;
+}
+```
+
+## File: src/features/workspace.slice/core/_components/shell/theme-adapter.tsx
+```typescript
+import { useEffect, useState, useRef } from "react";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { Skeleton } from "@/shadcn-ui/skeleton";
+import { hexToHsl } from "@/shadcn-ui/utils/utils";
+⋮----
+interface ThemeAdapterProps {
+    children: React.ReactNode;
+}
+export function ThemeAdapter(
+⋮----
+async function adaptTheme()
+```
+
+## File: src/features/workspace.slice/core/_components/stat-cards.tsx
+```typescript
+import { ShieldCheck, Activity, Layers, Zap } from "lucide-react";
+import { useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { Progress } from "@/shadcn-ui/progress";
+import { useAccount } from "../_hooks/use-account";
+import { useApp } from "../_hooks/use-app";
+export function StatCards()
+```
+
+## File: src/features/workspace.slice/core/_components/workflow-blockers-state.ts
+```typescript
+export type WorkflowBlockersState = Record<string, number>
+export type WorkflowBlockersSource = {
+  workflowId: string
+  blockedBy?: string[]
+}
+export function applyWorkflowBlocked(
+  state: WorkflowBlockersState,
+  workflowId: string,
+  blockedByCount: number
+): WorkflowBlockersState
+export function applyWorkflowUnblocked(
+  state: WorkflowBlockersState,
+  workflowId: string,
+  blockedByCount = 0
+): WorkflowBlockersState
+export function deriveWorkflowBlockersFromSources(
+  sources: readonly WorkflowBlockersSource[]
+): WorkflowBlockersState
+export function summarizeWorkflowBlockers(state: WorkflowBlockersState)
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-capabilities.tsx
+```typescript
+import {
+  Box,
+  Trash2,
+  FileText,
+  ListTodo,
+  ShieldCheck,
+  Trophy,
+  AlertCircle,
+  MessageSquare,
+  Layers,
+  Plus,
+  Users,
+  Settings2,
+  Activity,
+  Landmark,
+  Info,
+  Calendar,
+  FileScan,
+  Loader2,
+} from "lucide-react";
+import { useCallback, useState, useMemo } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shadcn-ui/card";
+import { Checkbox } from "@/shadcn-ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shadcn-ui/dialog";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
+import { useApp } from '../_hooks/use-app';
+import { type Capability } from "../_types";
+import { useWorkspace } from './workspace-provider';
+⋮----
+const getErrorMessage = (error: unknown, fallback: string)
+⋮----
+const toggleCapSelection = (capId: string) =>
+const getIcon = (id: string) =>
+const getSpecIcon = (type: string) =>
+⋮----
+<span className="font-mono text-[9px] text-muted-foreground opacity-60">SPEC_ID:
+⋮----
+<Button size="sm" className="gap-2" onClick=
+⋮----
+<Dialog open=
+⋮----
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-card.tsx
+```typescript
+import {
+  Building2,
+  Eye,
+  EyeOff,
+  HardHat,
+  Hash,
+  MapPin,
+  Settings,
+  Shield,
+  ShieldCheck,
+  Trash2,
+  UserPlus,
+  User2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useCallback } from "react";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shadcn-ui/alert-dialog";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn-ui/card";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn-ui/tooltip";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+import { deleteWorkspace, updateWorkspaceSettings } from "../_actions";
+import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
+import { WorkspaceSettingsDialog } from "./workspace-settings";
+interface WorkspaceCardProps {
+  workspace: Workspace;
+}
+function buildMapsUrl(address: Workspace["address"]): string
+function PersonnelSlot({
+  icon: Icon,
+  label,
+  userId,
+  onAssign,
+}: {
+  icon: React.FC<{ className?: string }>;
+  label: string;
+  userId?: string;
+onAssign: ()
+⋮----
+onClick=
+⋮----
+const handleSettingsSave = async (settings: {
+    name: string;
+    visibility: "visible" | "hidden";
+    lifecycleState: WorkspaceLifecycleState;
+    address?: Address;
+    personnel?: WorkspacePersonnel;
+}) =>
+const handleDestroyConfirm = async () =>
+⋮----
+href=
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-context.types.ts
+```typescript
+import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
+import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
+import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
+import type { ScheduleItem, CommandResult } from '@/shared-kernel';
+import type {
+  Address,
+  Capability,
+  Workspace,
+  WorkspaceLifecycleState,
+  WorkspacePersonnel,
+} from '../_types';
+import type { WorkflowBlockersState } from './workflow-blockers-state';
+export type CreateScheduleItemInput = Omit<
+  ScheduleItem,
+  'id' | 'createdAt' | 'updatedAt' | 'startDate' | 'endDate'
+> & {
+  startDate?: Date | null;
+  endDate?: Date | null;
+};
+export interface WorkspaceContextType {
+  workspace: Workspace;
+  localAuditLogs: import('../../gov.audit/_types').AuditLog[];
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-grid-view.tsx
+```typescript
+import type { Workspace } from "../_types";
+import { WorkspaceCard } from "./workspace-card";
+interface WorkspaceGridViewProps {
+  workspaces: Workspace[];
+}
+export function WorkspaceGridView(
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-list-header.tsx
+```typescript
+import {
+  Plus,
+  Search,
+  Filter,
+  LayoutGrid,
+  List as ListIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { Button } from "@/shadcn-ui/button";
+import { PageHeader } from "@/shadcn-ui/custom-ui/page-header";
+import { Input } from "@/shadcn-ui/input";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+interface WorkspaceListHeaderProps {
+  activeAccountName: string;
+  viewMode: "grid" | "list";
+  onViewModeChange: (mode: "grid" | "list") => void;
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
+}
+⋮----
+title=
+⋮----
+placeholder=
+⋮----
+onChange=
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-list.tsx
+```typescript
+import { Eye, EyeOff, Shield, Trash2, ArrowUpRight, Terminal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+import { type Workspace } from "../_types";
+interface WorkspaceListItemProps {
+  workspace: Workspace;
+  onDelete?: (id: string) => void;
+}
+⋮----
+<span className="text-[10px] text-muted-foreground">ID:
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-locations-panel.tsx
+```typescript
+import { Plus, Pencil, Trash2, MapPin } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shadcn-ui/dialog';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import { createWorkspaceLocation, updateWorkspaceLocation, deleteWorkspaceLocation } from '../_actions';
+import type { WorkspaceLocation } from '../_types';
+interface LocationFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  workspaceId: string;
+  existing?: WorkspaceLocation;
+  onSaved: () => void;
+}
+⋮----
+// FR-L2: update
+⋮----
+onChange=
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-nav-tabs.tsx
+```typescript
+import Link from "next/link"
+import { useSelectedLayoutSegment } from "next/navigation"
+import { useMemo } from "react"
+import { useApp } from "../_hooks/use-app"
+import type { Capability } from "../_types"
+import { useWorkspace } from "./workspace-provider";
+⋮----
+interface WorkspaceNavTabsProps {
+  workspaceId: string
+}
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-settings.tsx
+```typescript
+import { HardHat, ShieldCheck, User2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Button } from "@/shadcn-ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/shadcn-ui/dialog";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn-ui/select";
+import { Switch } from "@/shadcn-ui/switch";
+import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
+interface WorkspaceSettingsDialogProps {
+  workspace: Workspace;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: (settings: {
+    name: string;
+    visibility: "visible" | "hidden";
+    lifecycleState: WorkspaceLifecycleState;
+    address?: Address;
+    personnel?: WorkspacePersonnel;
+  }) => Promise<void>;
+  loading: boolean;
+}
+⋮----
+export function WorkspaceSettingsDialog({
+  workspace,
+  open,
+  onOpenChange,
+  onSave,
+  loading,
+}: WorkspaceSettingsDialogProps)
+⋮----
+const handleAddressChange = (field: keyof Address, value: string) =>
+const handlePersonnelChange = (field: keyof WorkspacePersonnel, value: string) =>
+const handleSave = () =>
+⋮----
+onChange={(e) => setName(e.target.value)}
+              className="h-11 rounded-xl"
+            />
+          </div>
+          {}
+          <div className="space-y-3">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+              指派人員 Personnel
+            </Label>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <User2 className="h-3.5 w-3.5" />
+                  <span>經理 Manager</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.managerId ?? ""}
+                  onChange={(e) => handlePersonnelChange("managerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <HardHat className="h-3.5 w-3.5" />
+                  <span>督導 Supervisor</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.supervisorId ?? ""}
+                  onChange={(e) => handlePersonnelChange("supervisorId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>安衛 Safety</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.safetyOfficerId ?? ""}
+                  onChange={(e) => handlePersonnelChange("safetyOfficerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+          {}
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+                Physical Address
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Country"
+                    value={address.country}
+                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+                <Input
+                    placeholder="State / Province"
+                    value={address.state}
+                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+            <Input
+                placeholder="City"
+                value={address.city}
+                onChange={(e) => handleAddressChange('city', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <Input
+                placeholder="Street Address"
+                value={address.street}
+                onChange={(e) => handleAddressChange('street', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Postal Code"
+                    value={address.postalCode}
+                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+              Current Lifecycle State
+            </Label>
+            <Select
+              value={lifecycleState}
+onValueChange=
+⋮----
+onChange={(e) => handlePersonnelChange("managerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <HardHat className="h-3.5 w-3.5" />
+                  <span>督導 Supervisor</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.supervisorId ?? ""}
+                  onChange={(e) => handlePersonnelChange("supervisorId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>安衛 Safety</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.safetyOfficerId ?? ""}
+                  onChange={(e) => handlePersonnelChange("safetyOfficerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+          {}
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+                Physical Address
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Country"
+                    value={address.country}
+                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+                <Input
+                    placeholder="State / Province"
+                    value={address.state}
+                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+            <Input
+                placeholder="City"
+                value={address.city}
+                onChange={(e) => handleAddressChange('city', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <Input
+                placeholder="Street Address"
+                value={address.street}
+                onChange={(e) => handleAddressChange('street', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Postal Code"
+                    value={address.postalCode}
+                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+              Current Lifecycle State
+            </Label>
+            <Select
+              value={lifecycleState}
+onValueChange=
+⋮----
+onChange={(e) => handlePersonnelChange("supervisorId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>安衛 Safety</span>
+                </div>
+                <Input
+                  placeholder="User ID / 姓名"
+                  value={personnel.safetyOfficerId ?? ""}
+                  onChange={(e) => handlePersonnelChange("safetyOfficerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+          {}
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+                Physical Address
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Country"
+                    value={address.country}
+                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+                <Input
+                    placeholder="State / Province"
+                    value={address.state}
+                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+            <Input
+                placeholder="City"
+                value={address.city}
+                onChange={(e) => handleAddressChange('city', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <Input
+                placeholder="Street Address"
+                value={address.street}
+                onChange={(e) => handleAddressChange('street', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Postal Code"
+                    value={address.postalCode}
+                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+              Current Lifecycle State
+            </Label>
+            <Select
+              value={lifecycleState}
+onValueChange=
+⋮----
+onChange={(e) => handlePersonnelChange("safetyOfficerId", e.target.value)}
+                  className="h-9 rounded-xl"
+                />
+              </div>
+            </div>
+          </div>
+          {}
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+                Physical Address
+            </Label>
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Country"
+                    value={address.country}
+                    onChange={(e) => handleAddressChange('country', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+                <Input
+                    placeholder="State / Province"
+                    value={address.state}
+                    onChange={(e) => handleAddressChange('state', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+            <Input
+                placeholder="City"
+                value={address.city}
+                onChange={(e) => handleAddressChange('city', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <Input
+                placeholder="Street Address"
+                value={address.street}
+                onChange={(e) => handleAddressChange('street', e.target.value)}
+                className="h-11 rounded-xl"
+            />
+            <div className="grid grid-cols-2 gap-4">
+                <Input
+                    placeholder="Postal Code"
+                    value={address.postalCode}
+                    onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                    className="h-11 rounded-xl"
+                />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest opacity-60">
+              Current Lifecycle State
+            </Label>
+            <Select
+              value={lifecycleState}
+onValueChange=
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-status-bar.tsx
+```typescript
+import { AlertTriangle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { Badge } from "@/shadcn-ui/badge";
+import { useWorkspace } from "./workspace-provider";
+⋮----
+ID:
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-table-view.tsx
+```typescript
+import { Eye, EyeOff, Shield, ArrowUpRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import type { Workspace } from "../_types";
+interface WorkspaceListItemProps {
+  workspace: Workspace;
+}
+⋮----
+ID:
+```
+
+## File: src/features/workspace.slice/core/_components/workspaces-view.tsx
+```typescript
+import { Terminal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { useWorkspaceFilters } from "@/features/workspace.slice/business.files/_hooks/use-workspace-filters";
+import { Button } from "@/shadcn-ui/button";
+import { ROUTES } from "@/shared-kernel/constants/routes";
+import { useApp } from "../_hooks/use-app";
+import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
+import { WorkspaceGridView } from "./workspace-grid-view";
+import { WorkspaceListHeader } from "./workspace-list-header";
+import { WorkspaceTableView } from "./workspace-table-view";
+```
+
+## File: src/features/workspace.slice/core/_hooks/use-account.ts
+```typescript
+import { useContext } from 'react';
+import { AccountContext } from '@/app-runtime/contexts/account-context';
+export const useAccount = () =>
+```
+
+## File: src/features/workspace.slice/core/_hooks/use-app.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core/_hooks/use-visible-workspaces.ts
+```typescript
+import { useMemo } from 'react'
+import { useAuth } from '@/app-runtime/providers/auth-provider'
+import { filterVisibleWorkspaces } from '@/features/workspace.slice/_workspace.rules'
+import { useAccount } from './use-account'
+import { useApp } from './use-app'
+export function useVisibleWorkspaces()
+```
+
+## File: src/features/workspace.slice/core/_hooks/use-workspace-commands.ts
+```typescript
+import { useCallback } from "react";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { deleteWorkspace } from "../_actions";
+export function useWorkspaceCommands()
+```
+
+## File: src/features/workspace.slice/core/_hooks/use-workspace-event-handler.tsx
+```typescript
+import { useEffect, useRef } from "react";
+import { handleScheduleProposed } from "@/features/workforce-scheduling.slice";
+import { createIssue } from "@/features/workspace.slice/business.issues";
+import {
+  advanceWorkflowToStage,
+  handleIssueCreatedForWorkflow,
+  handleIssueResolvedForWorkflow,
+  type WorkflowStage,
+} from "@/features/workspace.slice/business.workflow";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { useWorkspace } from '../_components/workspace-provider';
+import { useApp } from './use-app';
+import { createWorkspaceImportHandler } from './workspace-import-handler';
+⋮----
+export function useWorkspaceEventHandler()
+⋮----
+const pushNotification = (
+      title: string,
+      message: string,
+      type: "info" | "success" | "alert"
+) =>
+const createIssueAndBlockWorkflow = async (
+      title: string,
+      type: "technical" | "financial",
+      sourceTaskId?: string,
+      traceId?: string
+) =>
+const advanceWorkspaceWorkflowTo = async (targetStage: WorkflowStage) =>
+⋮----
+const buildWorkflowBlockedMessage = (
+      workflowId: string,
+      issueId: string,
+      blockedByCount: number
+)
+⋮----
+const buildIssueResolvedMessage = (
+      issueTitle: string,
+      resolvedBy: string,
+      unblockedCount: number
+)
+```
+
+## File: src/features/workspace.slice/core/_hooks/workspace-import-handler.tsx
+```typescript
+import type { MutableRefObject } from 'react';
+import { shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
+import {
+  finishParsingImport,
+  markParsingIntentFailed,
+  markParsingIntentImported,
+  startParsingImport,
+} from '@/features/workspace.slice/business.document-parser';
+import { createTask, hasTasksForSourceIntent, reconcileIntentTasks } from '@/features/workspace.slice/business.tasks';
+import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
+import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ToastAction } from '@/shadcn-ui/toast';
+⋮----
+interface CreateWorkspaceImportHandlerInput {
+  workspaceId: string;
+  inProgressImports: MutableRefObject<Set<string>>;
+  toastLongDurationMs: number;
+  logAuditEvent: (action: string, detail: string, type: 'create' | 'update' | 'delete') => Promise<void>;
+}
+export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandlerInput)
+⋮----
+const importItems = () =>
+```
+
+## File: src/features/workspace.slice/core/_queries.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  type Unsubscribe,
+  query,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils';
+import type { WorkspaceIssue } from '../business.issues/_types';
+import type { WorkspaceTask } from '../business.tasks/_types';
+export function subscribeToWorkspaceTasks(
+  workspaceId: string,
+  onUpdate: (tasks: Record<string, WorkspaceTask>) => void,
+): Unsubscribe
+export function subscribeToWorkspaceIssues(
+  workspaceId: string,
+  onUpdate: (issues: Record<string, WorkspaceIssue>) => void,
+): Unsubscribe
+```
+
+## File: src/features/workspace.slice/core/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+import type { WorkspaceFile } from '../business.files/_types'
+import type { WorkspaceIssue } from '../business.issues/_types'
+import type { WorkspaceTask } from '../business.tasks/_types'
+import type { WorkspaceGrant } from '../gov.role/_types'
+export type WorkspaceLifecycleState = 'preparatory' | 'active' | 'stopped';
+export interface WorkspacePersonnel {
+  managerId?: string;
+  supervisorId?: string;
+  safetyOfficerId?: string;
+}
+export interface CapabilitySpec {
+  id: string;
+  name: string;
+  type: 'ui' | 'api' | 'data' | 'governance' | 'monitoring';
+  status: 'stable' | 'beta';
+  description: string;
+}
+export interface Capability extends CapabilitySpec {
+  config?: object;
+}
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  details?: string;
+}
+export interface WorkspaceLocation {
+  locationId: string;
+  label: string;
+  description?: string;
+  capacity?: number;
+}
+export interface Workspace {
+  id: string;
+  dimensionId: string;
+  name: string;
+  lifecycleState: WorkspaceLifecycleState;
+  visibility: 'visible' | 'hidden';
+  scope: string[];
+  protocol: string;
+  capabilities: Capability[];
+  grants: WorkspaceGrant[];
+  teamIds: string[];
+  tasks?: Record<string, WorkspaceTask>;
+  issues?: Record<string, WorkspaceIssue>;
+  files?: Record<string, WorkspaceFile>;
+  address?: Address;
+  locations?: WorkspaceLocation[];
+  personnel?: WorkspacePersonnel;
+  createdAt: Timestamp;
+}
+```
+
+## File: src/features/workspace.slice/core/_use-cases.ts
+```typescript
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import type { CommandResult, Account } from '@/shared-kernel';
+import { createWorkspace, mountCapabilities, updateWorkspaceSettings, deleteWorkspace } from "./_actions";
+import type { Capability, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "./_types";
+export async function createWorkspaceWithCapabilities(
+  name: string,
+  account: Account,
+  capabilities: Capability[] = []
+): Promise<CommandResult>
+export const handleCreateWorkspace = async (
+  name: string,
+  activeAccount: Account | null,
+  onSuccess: () => void,
+  t: (key: string) => string
+) =>
+export const handleUpdateWorkspaceSettings = async (
+  workspaceId: string,
+  settings: { name: string; visibility: 'visible' | 'hidden'; lifecycleState: WorkspaceLifecycleState; address?: Address; personnel?: WorkspacePersonnel },
+  onSuccess: () => void
+) =>
+export const handleDeleteWorkspace = async (workspaceId: string, onSuccess: () => void) =>
+```
+
+## File: src/features/workspace.slice/core/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.audit-convergence/_bridge.ts
+```typescript
+export interface AuditConvergenceInput {
+  accountId: string;
+  workspaceId?: string;
+  limit?: number;
+}
+export interface AuditProjectionQuery {
+  accountId: string;
+  workspaceId?: string;
+  limit: number;
+}
+⋮----
+function normalizeAuditLimit(limit?: number): number
+export function toAuditProjectionQuery(
+  input: AuditConvergenceInput
+): AuditProjectionQuery
+```
+
+## File: src/features/workspace.slice/gov.audit-convergence/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.audit/_actions.ts
+```typescript
+import { addDocument, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
+import type { CommandResult } from '@/shared-kernel';
+import type { AuditLog } from './_types';
+export interface WriteAuditLogInput {
+  accountId: string;
+  actor: string;
+  action: string;
+  target: string;
+  type: AuditLog['type'];
+  workspaceId?: string;
+}
+export async function writeAuditLog(input: WriteAuditLogInput): Promise<CommandResult>
+export interface WriteDailyLogInput {
+  accountId: string;
+  content: string;
+  author: { uid: string; name: string; avatarUrl: string };
+  workspaceId?: string;
+  workspaceName?: string;
+  photoURLs?: string[];
+}
+export async function writeDailyLog(input: WriteDailyLogInput): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit-detail-sheet.tsx
+```typescript
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/shadcn-ui/sheet";
+import { type AuditLog } from "../_types";
+interface AuditDetailSheetProps {
+    log: AuditLog | null;
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+export function AuditDetailSheet(
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit-event-item.tsx
+```typescript
+import { format } from "date-fns";
+import { Badge } from "@/shadcn-ui/badge";
+import { cn } from "@/shadcn-ui/utils/utils";
+import { type AuditLog } from "../_types";
+import { AuditEventItemContainer } from "./audit-timeline";
+import { AuditTypeIcon } from "./audit-type-icon";
+interface AuditEventItemProps {
+    log: AuditLog;
+    onSelect: () => void;
+}
+⋮----
+<span className=
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit-timeline.tsx
+```typescript
+import { cn } from "@/shadcn-ui/utils/utils";
+interface AuditTimelineProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+export function AuditTimeline(
+⋮----
+<div className=
+⋮----
+interface AuditEventItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+export function AuditEventItemContainer(
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit-type-icon.tsx
+```typescript
+import { Zap, Shield, Activity, Terminal } from "lucide-react";
+import { type AuditLog } from "../_types";
+interface AuditTypeIconProps {
+    type: AuditLog['type'];
+}
+export function AuditTypeIcon(
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit.account-view.tsx
+```typescript
+import { AlertCircle, Terminal } from "lucide-react";
+import { useAccountAudit } from "../_hooks/use-account-audit";
+import { AuditDetailSheet } from "./audit-detail-sheet";
+import { AuditEventItem } from "./audit-event-item";
+import { AuditTimeline } from "./audit-timeline";
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit.view.tsx
+```typescript
+import { AccountAuditComponent } from "./audit.account-view";
+export default function AccountAuditView()
+```
+
+## File: src/features/workspace.slice/gov.audit/_components/audit.workspace-view.tsx
+```typescript
+import { format } from "date-fns";
+import { Activity } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
+import { ScrollArea } from "@/shadcn-ui/scroll-area";
+import { useWorkspaceAudit } from "../_hooks/use-workspace-audit";
+import { AuditDetailSheet } from "./audit-detail-sheet";
+import { AuditTypeIcon } from "./audit-type-icon";
+⋮----
+onOpenChange={(open) => { if (!open) clearSelection(); }}
+      />
+    </div>
+  );
+```
+
+## File: src/features/workspace.slice/gov.audit/_hooks/use-account-audit.ts
+```typescript
+import { useMemo, useState } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import { useAccount } from "@/features/workspace.slice/core";
+import { type AuditLog } from "../_types";
+export function useAccountAudit()
+```
+
+## File: src/features/workspace.slice/gov.audit/_hooks/use-logger.ts
+```typescript
+import { useCallback } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import type { Account } from "@/shared-kernel";
+import { writeDailyLog, writeAuditLog } from '../_actions';
+import type { AuditLog } from "../_types";
+export function useLogger(workspaceId?: string, workspaceName?: string)
+⋮----
+avatarUrl: '', // populated at display time from the user's profile photo URL
+```
+
+## File: src/features/workspace.slice/gov.audit/_hooks/use-workspace-audit.ts
+```typescript
+import { useState } from "react";
+import { useWorkspace } from "@/features/workspace.slice/core";
+import { type AuditLog } from "../_types";
+export function useWorkspaceAudit()
+```
+
+## File: src/features/workspace.slice/gov.audit/_queries.ts
+```typescript
+import {
+  getAuditLogs as getAuditLogsFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+import type { AuditLog } from "./_types"
+export async function getAuditLogs(
+  accountId: string,
+  workspaceId?: string,
+  limit = 50
+): Promise<AuditLog[]>
+```
+
+## File: src/features/workspace.slice/gov.audit/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+export type AuditLogType = 'create' | 'update' | 'delete' | 'security';
+export interface AuditLog {
+  id: string;
+  accountId: string;
+  workspaceId?: string;
+  workspaceName?: string;
+  recordedAt: Timestamp;
+  actor: string;
+  actorId?: string;
+  action: string;
+  target: string;
+  type: AuditLogType;
+  metadata?: {
+    before?: unknown;
+    after?: unknown;
+    ip?: string;
+  };
+}
+```
+
+## File: src/features/workspace.slice/gov.audit/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.members/_components/members-panel.tsx
+```typescript
+import {
+  Users,
+  Trash2,
+  ShieldCheck,
+  Globe,
+  Plus,
+  CheckCircle2,
+  ShieldAlert,
+  MoreVertical
+} from "lucide-react";
+import { useState, useMemo } from "react";
+import { useApp } from '@/app-runtime/providers/app-provider';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { type WorkspaceRole } from "@/features/workspace.slice/gov.role/_types";
+import { Badge } from "@/shadcn-ui/badge";
+import { Button } from "@/shadcn-ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shadcn-ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/shadcn-ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shadcn-ui/dropdown-menu";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Label } from "@/shadcn-ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shadcn-ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
+import { cn } from "@/shadcn-ui/utils/utils";
+import { type Team, type MemberReference } from "@/shared-kernel";
+const getErrorMessage = (error: unknown, fallback: string)
+export function WorkspaceMembers()
+⋮----
+const handleToggleTeam = async (team: Team, isAuthorized: boolean) =>
+const handleConfirmGrant = async () =>
+const handleRevokeGrant = async (grantId: string) =>
+⋮----
+<DropdownMenuItem onClick=
+```
+
+## File: src/features/workspace.slice/gov.members/_queries.ts
+```typescript
+import {
+  getWorkspaceGrants as getWorkspaceGrantsFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+import type { WorkspaceGrant } from "../gov.role/_types"
+export async function getWorkspaceGrants(
+  workspaceId: string
+): Promise<WorkspaceGrant[]>
+```
+
+## File: src/features/workspace.slice/gov.members/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.partners/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.role/_actions.ts
+```typescript
+import {
+  grantIndividualWorkspaceAccess,
+  revokeIndividualWorkspaceAccess,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
+import type { WorkspaceRole } from './_types';
+export interface AssignWorkspaceRoleInput {
+  workspaceId: string;
+  userId: string;
+  role: WorkspaceRole;
+  protocol?: string;
+}
+export interface RevokeWorkspaceRoleInput {
+  workspaceId: string;
+  userId: string;
+}
+export async function assignWorkspaceRole(input: AssignWorkspaceRoleInput): Promise<CommandResult>
+export async function revokeWorkspaceRole(input: RevokeWorkspaceRoleInput): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/gov.role/_hooks/use-workspace-role.ts
+```typescript
+import { useState, useEffect } from 'react';
+import { getWorkspaceGrant } from '../_queries';
+import type { WorkspaceGrant } from '../_types';
+export function useWorkspaceRole(workspaceId: string | null, userId: string | null)
+```
+
+## File: src/features/workspace.slice/gov.role/_queries.ts
+```typescript
+import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { Workspace } from '../core/_types';
+import type { WorkspaceGrant } from './_types';
+export async function getWorkspaceGrant(
+  workspaceId: string,
+  userId: string
+): Promise<WorkspaceGrant | null>
+export async function getWorkspaceGrants(workspaceId: string): Promise<WorkspaceGrant[]>
+```
+
+## File: src/features/workspace.slice/gov.role/_types.ts
+```typescript
+import type { Timestamp } from '@/shared-kernel/ports'
+export type WorkspaceRole = 'Manager' | 'Contributor' | 'Viewer';
+export interface WorkspaceGrant {
+  grantId: string;
+  userId: string;
+  role: WorkspaceRole;
+  protocol: string;
+  status: 'active' | 'revoked' | 'expired';
+  grantedAt: Timestamp;
+  revokedAt?: Timestamp;
+  expiresAt?: Timestamp;
+}
+```
+
+## File: src/features/workspace.slice/gov.role/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/gov.teams/index.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/index.ts
+```typescript
+
+```
+
 ## File: src/shared-infra/backend-firebase/functions/src/claims/claims-refresh.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
@@ -801,59 +4273,6 @@ export const upsertProjectionVersion = async (
   lastEventOffset: number,
   readModelVersion: string
 ): Promise<void> =>
-```
-
-## File: src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
-```typescript
-import {
-  serverTimestamp,
-  arrayUnion,
-  arrayRemove,
-  doc,
-  updateDoc,
-  collection,
-  query,
-  orderBy,
-  where,
-} from 'firebase/firestore'
-import type { ScheduleItem } from '@/shared-kernel'
-import { db } from '../firestore.client'
-import { createConverter } from '../firestore.converter'
-import { getDocuments } from '../firestore.read.adapter'
-import { addDocument, updateDocument } from '../firestore.write.adapter'
-export const createScheduleItem = async (
-  itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>
-): Promise<string> =>
-export const updateScheduleItemStatus = async (
-  organizationId: string,
-  itemId: string,
-  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
-): Promise<void> =>
-export const updateScheduleItemDateRange = async (
-  accountId: string,
-  itemId: string,
-  startDate: ScheduleItem['startDate'],
-  endDate: ScheduleItem['endDate']
-): Promise<void> =>
-export const assignMemberAndApprove = async (
-  organizationId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const assignMemberToScheduleItem = async (
-  accountId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const unassignMemberFromScheduleItem = async (
-  accountId: string,
-  itemId: string,
-  memberId: string
-): Promise<void> =>
-export const getScheduleItems = async (
-  accountId: string,
-  workspaceId?: string
-): Promise<ScheduleItem[]> =>
 ```
 
 ## File: src/shared-infra/frontend-firebase/firestore/repositories/user.repository.ts
@@ -3149,6 +6568,346 @@ export interface TimelineMember {
 }
 ```
 
+## File: src/features/workspace.slice/application/_org-policy-cache.ts
+```typescript
+import type { OrgPolicyChangedPayload } from '@/features/organization.slice';
+import { onOrgEvent } from '@/features/organization.slice';
+import { upsertProjectionVersion } from '@/shared-infra/projection.bus';
+export interface OrgPolicyEntry {
+  policyId: string;
+  orgId: string;
+  changeType: 'created' | 'updated' | 'deleted';
+  changedBy: string;
+  cachedAt: string;
+}
+⋮----
+export function getCachedOrgPolicy(policyId: string): OrgPolicyEntry | undefined
+export function getAllCachedPolicies(): OrgPolicyEntry[]
+export function registerOrgPolicyCache(): () => void
+export function clearOrgPolicyCache(): void
+```
+
+## File: src/features/workspace.slice/application/_scope-guard.ts
+```typescript
+import { queryWorkspaceAccess } from '@/shared-infra/projection.bus';
+export interface ScopeGuardResult {
+  allowed: boolean;
+  role?: string;
+  reason?: string;
+}
+export async function checkWorkspaceAccess(
+  workspaceId: string,
+  userId: string
+): Promise<ScopeGuardResult>
+```
+
+## File: src/features/workspace.slice/business.document-parser/_intent-actions.ts
+```typescript
+import {
+  createParsingImport as createParsingImportFacade,
+  createParsingIntent as createParsingIntentFacade,
+  getParsingImportByIdempotencyKey as getParsingImportByIdempotencyKeyFacade,
+  getParsingIntentById as getParsingIntentByIdFacade,
+  getParsingIntentBySourceFileId as getParsingIntentBySourceFileIdFacade,
+  supersedeParsingIntent as supersedeParsingIntentFacade,
+  updateParsingImportStatus as updateParsingImportStatusFacade,
+  updateParsingIntentStatus as updateParsingIntentStatusFacade,
+} from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import type { SkillRequirement } from '@/shared-kernel'
+import type { Timestamp } from '@/shared-kernel/ports'
+import type {
+  ParsedLineItem,
+  IntentID,
+  SourcePointer,
+  ParsingImport,
+  ParsingImportStatus,
+  ParsingIntentReviewStatus,
+  ParsingIntentSourceType,
+} from './_types'
+⋮----
+function stableSerialize(value: unknown, seen = new WeakSet<object>()): string
+async function createSemanticHash(lineItems: ParsedLineItem[]): Promise<string>
+export type ParsingImportStartResult = {
+  importId: string
+  idempotencyKey: string
+  status: ParsingImportStatus
+  isDuplicate: boolean
+}
+export type ParsingImportFinishInput = {
+  status: ParsingImportStatus
+  appliedTaskIds: string[]
+  error?: {
+    code: string
+    message: string
+  }
+}
+/**
+ * Builds the canonical idempotency key for one intent materialization attempt.
+ *
+ * intentId      = ParsingIntent aggregate ID.
+ * intentVersion = ParsingIntent version for that aggregate snapshot.
+ *
+ * Format: import:{intentId}:{intentVersion}
+ */
+/**
+ * Builds a deterministic idempotency key used as the Firestore document ID
+ * for a parsing-import record.
+ *
+ * **Firestore document ID constraint**: the returned string must never contain
+ * forward-slashes (`/`), must not be `.` or `..`, and must not be surrounded
+ * by double-underscores (`__name__`). The `import:<uuid>:<number>` format
+ * satisfies all of these requirements as long as `intentId` is a valid UUID or
+ * Firestore auto-ID (no `/`).  Callers MUST NOT pass a raw path segment as
+ * `intentId`.
+ */
+export function buildParsingImportIdempotencyKey(
+  intentId: string,
+  intentVersion: number
+): string
+export type SaveParsingIntentResult = {
+  intentId: IntentID
+  /** Present when a previous intent was superseded by this save. */
+  oldIntentId?: IntentID
+}
+⋮----
+/** Present when a previous intent was superseded by this save. */
+⋮----
+export async function saveParsingIntent(
+  workspaceId: string,
+  sourceFileName: string,
+  lineItems: ParsedLineItem[],
+  options?: {
+    sourceFileDownloadURL?: SourcePointer
+    sourceFileId?: string
+    skillRequirements?: SkillRequirement[]
+    intentVersion?: number
+    parserVersion?: string
+    modelVersion?: string
+    sourceType?: ParsingIntentSourceType
+    reviewStatus?: ParsingIntentReviewStatus
+    reviewedBy?: string
+    reviewedAt?: Timestamp
+    semanticHash?: string
+    baseIntentId?: IntentID
+    /** When provided, the old intent is marked as superseded by the new intent [#A4]. */
+    previousIntentId?: IntentID
+  }
+): Promise<SaveParsingIntentResult>
+⋮----
+/** When provided, the old intent is marked as superseded by the new intent [#A4]. */
+⋮----
+// [D14/D15] Write-idempotency guard: when a sourceFileId is supplied, check
+// whether a non-superseded ParsingIntent already exists for this source file.
+//   -> Same semanticHash: content is identical; return the existing intent
+//                          without creating a duplicate document.
+//   -> Different hash: the file was re-parsed; automatically supersede the
+//                          previous intent and create a fresh one.
+⋮----
+// True duplicate: identical content; return the existing intent.
+// The caller receives the same intentId it would from a fresh create, so
+// all downstream consumers (document-parser-view, import ledger) behave
+// normally. No Firestore write is made and no side-effects are triggered.
+⋮----
+// Content changed ??supersede the previous intent.
+⋮----
+// [D14/D15] SECONDARY guard: when no sourceFileId is available (e.g. the
+// direct-upload path where handleFileChange does not set sourceFileIdRef),
+// but a previousIntentId IS provided, fetch the previous intent and compare
+// hashes.  If the content is identical the user just re-submitted the same
+// document without uploading a new file; return the existing intent as a
+// no-op to prevent a duplicate intent chain and the duplicate tasks it would
+// produce [D14].
+// Any fetch failure is non-fatal: log a warning and fall through to create a
+// new intent (original behaviour) so a transient network error never blocks
+// the import flow.
+⋮----
+export async function startParsingImport(
+  workspaceId: string,
+  intentId: string,
+  intentVersion = INITIAL_PARSING_INTENT_VERSION
+): Promise<ParsingImportStartResult>
+export async function finishParsingImport(
+  workspaceId: string,
+  importId: string,
+  input: ParsingImportFinishInput
+): Promise<void>
+export async function markParsingIntentImported(
+  workspaceId: string,
+  intentId: string
+): Promise<void>
+export async function markParsingIntentFailed(
+  workspaceId: string,
+  intentId: string
+): Promise<void>
+```
+
+## File: src/features/workspace.slice/business.document-parser/_queries.ts
+```typescript
+import { db } from '@/shared-infra/frontend-firebase';
+import { SUBCOLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
+import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import type { ParsingIntent } from './_types';
+export function subscribeToParsingIntents(
+  workspaceId: string,
+  onUpdate: (intents: ParsingIntent[]) => void
+): Unsubscribe
+```
+
+## File: src/features/workspace.slice/business.tasks/_types.ts
+```typescript
+import type { Location, SkillRequirement } from '@/shared-kernel'
+import type { Timestamp } from '@/shared-kernel/ports'
+⋮----
+export interface WorkspaceTask {
+  id: string;
+  name: string;
+  description?: string;
+  progressState: 'todo' | 'doing' | 'blocked' | 'completed' | 'verified' | 'accepted';
+  priority: 'low' | 'medium' | 'high';
+  type?: string;
+  progress?: number;
+  quantity?: number;
+  completedQuantity?: number;
+  unitPrice?: number;
+  unit?: string;
+  discount?: number;
+  subtotal: number;
+  parentId?: string;
+  assigneeId?: string;
+  dueDate?: Timestamp;
+  photoURLs?: string[];
+  location?: Location;
+  sourceIntentId?: string;
+  sourceIntentIndex?: number;
+  requiredSkills?: SkillRequirement[];
+  aggregateVersion?: number;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
+  [key: string]: unknown;
+}
+export type TaskWithChildren = WorkspaceTask & {
+  children: TaskWithChildren[];
+  descendantSum: number;
+  wbsNo: string;
+  progress: number;
+}
+```
+
+## File: src/features/workspace.slice/core.event-bus/_event-funnel.ts
+```typescript
+
+```
+
+## File: src/features/workspace.slice/core/_actions.ts
+```typescript
+import {
+  createWorkspace as createWorkspaceFacade,
+  authorizeWorkspaceTeam as authorizeWorkspaceTeamFacade,
+  revokeWorkspaceTeam as revokeWorkspaceTeamFacade,
+  grantIndividualWorkspaceAccess as grantIndividualWorkspaceAccessFacade,
+  revokeIndividualWorkspaceAccess as revokeIndividualWorkspaceAccessFacade,
+  mountCapabilities as mountCapabilitiesFacade,
+  unmountCapability as unmountCapabilityFacade,
+  updateWorkspaceSettings as updateWorkspaceSettingsFacade,
+  deleteWorkspace as deleteWorkspaceFacade,
+  createWorkspaceLocation as createWorkspaceLocationFacade,
+  updateWorkspaceLocation as updateWorkspaceLocationFacade,
+  deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
+} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+import {
+  type CommandResult,
+  commandSuccess,
+  commandFailureFrom,
+} from '@/shared-kernel';
+import type { Account } from "@/shared-kernel"
+import type { WorkspaceRole } from "../gov.role/_types"
+import type { Capability, WorkspaceLifecycleState, WorkspaceLocation, Address, WorkspacePersonnel } from "./_types"
+export async function createWorkspace(
+  name: string,
+  account: Account
+): Promise<CommandResult>
+export async function authorizeWorkspaceTeam(
+  workspaceId: string,
+  teamId: string
+): Promise<CommandResult>
+export async function revokeWorkspaceTeam(
+  workspaceId: string,
+  teamId: string
+): Promise<CommandResult>
+export async function grantIndividualWorkspaceAccess(
+  workspaceId: string,
+  userId: string,
+  role: WorkspaceRole,
+  protocol?: string
+): Promise<CommandResult>
+export async function revokeIndividualWorkspaceAccess(
+  workspaceId: string,
+  grantId: string
+): Promise<CommandResult>
+export async function mountCapabilities(
+  workspaceId: string,
+  capabilities: Capability[]
+): Promise<CommandResult>
+export async function unmountCapability(
+  workspaceId: string,
+  capability: Capability
+): Promise<CommandResult>
+export async function updateWorkspaceSettings(
+  workspaceId: string,
+  settings: {
+    name: string
+    visibility: "visible" | "hidden"
+    lifecycleState: WorkspaceLifecycleState
+    address?: Address
+    personnel?: WorkspacePersonnel
+  }
+): Promise<CommandResult>
+export async function deleteWorkspace(workspaceId: string): Promise<CommandResult>
+export async function createWorkspaceLocation(
+  workspaceId: string,
+  location: WorkspaceLocation
+): Promise<CommandResult>
+export async function updateWorkspaceLocation(
+  workspaceId: string,
+  locationId: string,
+  updates: Partial<Pick<WorkspaceLocation, 'label' | 'description' | 'capacity'>>
+): Promise<CommandResult>
+export async function deleteWorkspaceLocation(
+  workspaceId: string,
+  locationId: string
+): Promise<CommandResult>
+```
+
+## File: src/features/workspace.slice/core/_components/shell/header.tsx
+```typescript
+import { Search, Command, BookOpen } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { GlobalSearch } from "@/features/global-search.slice";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
+import type { Account } from '@/shared-kernel'
+import { NotificationCenter } from "./notification-center";
+⋮----
+function usePageBreadcrumbs(pathname: string)
+⋮----
+const down = (e: KeyboardEvent) =>
+⋮----
+const handleSwitchOrganization = (organization: Account) =>
+```
+
 ## File: src/shared-infra/backend-firebase/functions/src/index.ts
 ```typescript
 import { initializeApp, getApps } from "firebase-admin/app";
@@ -3265,6 +7024,59 @@ async withGuard<T>(
       caller: CallerContext,
       handler: () => Promise<T>
 ): Promise<T | GuardCheckResult>
+```
+
+## File: src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
+```typescript
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  updateDoc,
+  collection,
+  query,
+  orderBy,
+  where,
+} from 'firebase/firestore'
+import type { ScheduleItem } from '@/shared-kernel'
+import { db } from '../firestore.client'
+import { createConverter } from '../firestore.converter'
+import { getDocuments } from '../firestore.read.adapter'
+import { addDocument, updateDocument } from '../firestore.write.adapter'
+export const createScheduleItem = async (
+  itemData: Omit<ScheduleItem, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<string> =>
+export const updateScheduleItemStatus = async (
+  organizationId: string,
+  itemId: string,
+  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
+): Promise<void> =>
+export const updateScheduleItemDateRange = async (
+  accountId: string,
+  itemId: string,
+  startDate: ScheduleItem['startDate'],
+  endDate: ScheduleItem['endDate']
+): Promise<void> =>
+export const assignMemberAndApprove = async (
+  organizationId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const assignMemberToScheduleItem = async (
+  accountId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const unassignMemberFromScheduleItem = async (
+  accountId: string,
+  itemId: string,
+  memberId: string
+): Promise<void> =>
+export const getScheduleItems = async (
+  accountId: string,
+  workspaceId?: string
+): Promise<ScheduleItem[]> =>
 ```
 
 ## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
@@ -4800,6 +8612,114 @@ import type { TimelineMember } from '../../types/timeline.types';
 export function useWorkspaceTimeline()
 ```
 
+## File: src/features/workspace.slice/application/_command-handler.ts
+```typescript
+import { createTraceContext, logDomainError } from '@/shared-infra/observability';
+import { evaluatePolicy, type WorkspaceRole } from './_policy-engine';
+import { checkWorkspaceAccess } from './_scope-guard';
+import { runTransaction, type TransactionContext } from './_transaction-runner';
+export interface WorkspaceCommand {
+  workspaceId: string;
+  userId: string;
+  action: string;
+}
+export interface WorkspaceExecutorResult<T = void> {
+  success: boolean;
+  value?: T;
+  error?: string;
+}
+export async function executeCommand<T>(
+  command: WorkspaceCommand,
+  handler: (ctx: TransactionContext) => Promise<T>,
+  publish?: (type: string, payload: unknown) => void
+): Promise<WorkspaceExecutorResult<T>>
+```
+
+## File: src/features/workspace.slice/application/_transaction-runner.ts
+```typescript
+import { generateTraceId, logDomainError } from '@/shared-infra/observability';
+import { appendDomainEvent } from '../core.event-store';
+import { createOutbox, type Outbox, type OutboxEvent } from './_outbox';
+export interface TransactionContext {
+  workspaceId: string;
+  correlationId: string;
+  outbox: Outbox;
+}
+export interface TransactionResult<T> {
+  value: T;
+  events: OutboxEvent[];
+}
+export async function runTransaction<T>(
+  workspaceId: string,
+  userId: string,
+  handler: (ctx: TransactionContext) => Promise<T>,
+  correlationId?: string
+): Promise<TransactionResult<T>>
+```
+
+## File: src/features/workspace.slice/business.finance/_services/finance-aggregate-query-gateway.ts
+```typescript
+import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { executeQuery, registerQuery } from '@/shared-infra/gateway-query';
+import type { FinanceStrongReadSnapshot } from '../_types';
+⋮----
+interface FinanceStrongReadQueryParams {
+  readonly workspaceId: string;
+  readonly receivedAmount: number;
+}
+⋮----
+function normalizeAmount(value: number | undefined): number
+function isActiveParsingIntentStatus(status: string | undefined): boolean
+export function registerFinanceStrongReadQueryHandler(): void
+export async function executeFinanceStrongReadQuery(
+  params: FinanceStrongReadQueryParams,
+): Promise<FinanceStrongReadSnapshot>
+```
+
+## File: src/features/workspace.slice/core.event-bus/_bus.ts
+```typescript
+import { recordEventPublished } from "@/shared-infra/observability"
+import type { ImplementsEventEnvelopeContract } from '@/shared-kernel'
+import type {
+  WorkspaceEventName,
+  WorkspaceEventHandler,
+  PublishFn,
+  SubscribeFn,
+  WorkspaceEventPayloadMap,
+} from "./_events"
+type HandlerRegistry = Map<WorkspaceEventName, WorkspaceEventHandler<WorkspaceEventName>[]>
+export class WorkspaceEventBus implements ImplementsEventEnvelopeContract
+readonly implementsEventEnvelope = true as const;
+⋮----
+constructor()
+```
+
+## File: src/features/workspace.slice/core/_components/shell/dashboard-sidebar.tsx
+```typescript
+import { usePathname } from 'next/navigation';
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { useUser } from "@/features/account.slice";
+import { useOrganizationManagement } from "@/features/organization.slice";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from "@/features/workspace.slice/core/_hooks/use-visible-workspaces";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarRail,
+  SidebarSeparator,
+} from "@/shadcn-ui/sidebar";
+import { AccountSwitcher } from "./account-switcher";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
+import { NavWorkspaces } from "./nav-workspaces";
+```
+
 ## File: src/shared-infra/event-router/index.ts
 ```typescript
 
@@ -5793,6 +9713,55 @@ export function TimelineCanvas({
 <div className=
 ```
 
+## File: src/features/workspace.slice/business.document-parser/_components/document-parser-view.tsx
+```typescript
+import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle, ListChecks } from 'lucide-react';
+import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
+import { classifyCostItem } from '@/features/semantic-graph.slice';
+import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { Badge } from '@/shadcn-ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
+import { useToast } from '@/shadcn-ui/hooks/use-toast';
+import { logDomainError } from '@/shared-infra/observability';
+import {
+  extractDataFromDocument,
+  type ActionState,
+} from '../_form-actions';
+import {
+  INITIAL_PARSING_INTENT_VERSION,
+  saveParsingIntent,
+} from '../_intent-actions';
+import { subscribeToParsingIntents } from '../_queries';
+import type { IntentID, SourcePointer, ParsingIntent } from '../_types';
+import { ParsedItemsTable, WorkItemsTable } from './document-parser-tables';
+⋮----
+export function WorkspaceDocumentParser()
+⋮----
+const hydrateTagPresentationMap = async () =>
+⋮----
+// Helper: trigger the AI extraction pipeline from a Firebase Storage URL.
+// The URL is passed directly to the Server Action which fetches it server-side,
+// avoiding the browser CORS restriction on Firebase Storage URLs.
+⋮----
+// On mount: if files-view queued a file via WorkspaceProvider context, auto-trigger.
+// This bridges the cross-tab gap — subscriber only exists when this component is mounted.
+// Deps intentionally empty: pendingParseFile/setPendingParseFile are stable React state
+// references, triggerParseFromURL is stable via useCallback, and we only want to run once
+// on mount (not re-run whenever pendingParseFile changes later).
+⋮----
+// eslint-disable-next-line react-hooks/exhaustive-deps
+⋮----
+const handleFileChange = (event: ChangeEvent<HTMLInputElement>) =>
+const handleUploadClick = () =>
+const handleImport = async () =>
+⋮----
+// Omit discount entirely when undefined to avoid Firestore "Unsupported field value: undefined"
+⋮----
+// Layer-2 Semantic Classification (VS8) — applied here during the import phase.
+```
+
 ## File: src/shared-infra/gateway-command/index.ts
 ```typescript
 
@@ -5884,6 +9853,113 @@ export function useWorkspaceSchedule()
 ⋮----
 const handleMonthChange = (direction: "prev" | "next") =>
 const handleOpenAddDialog = (date: Date) =>
+```
+
+## File: src/features/workspace.slice/application/_outbox.ts
+```typescript
+import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { logDomainError } from '@/shared-infra/observability';
+import { buildIdempotencyKey, type DlqTier } from '@/shared-kernel';
+import type {
+  WorkspaceEventName,
+  WorkspaceEventPayloadMap,
+} from '../core.event-bus';
+export type OutboxEvent = {
+  [K in WorkspaceEventName]: { type: K; payload: WorkspaceEventPayloadMap[K] };
+}[WorkspaceEventName];
+export interface Outbox {
+  collect<T extends WorkspaceEventName>(type: T, payload: WorkspaceEventPayloadMap[T]): void;
+  flush(publish: (type: string, payload: unknown) => void): void;
+  drain(): OutboxEvent[];
+}
+⋮----
+collect<T extends WorkspaceEventName>(type: T, payload: WorkspaceEventPayloadMap[T]): void;
+flush(publish: (type: string, payload: unknown)
+drain(): OutboxEvent[];
+⋮----
+interface WsOutboxDocument {
+  outboxId: string;
+  eventType: WorkspaceEventName;
+  envelopeJson: string;
+  lane: typeof WS_OUTBOX_IER_LANE;
+  dlqTier: DlqTier;
+  idempotencyKey: string;
+  status: 'pending';
+  createdAt: string;
+  attemptCount: 0;
+}
+function extractTraceIdFromPayload(payload: unknown): string | undefined
+async function persistToWsOutbox(
+  event: OutboxEvent,
+  workspaceId: string,
+): Promise<void>
+export async function persistWorkspaceOutboxEvent<T extends WorkspaceEventName>(
+  workspaceId: string,
+  type: T,
+  payload: WorkspaceEventPayloadMap[T],
+): Promise<void>
+export function createOutbox(workspaceId?: string): Outbox
+⋮----
+collect<T extends WorkspaceEventName>(type: T, payload: WorkspaceEventPayloadMap[T])
+flush(publish: (type: string, payload: unknown) => void)
+drain()
+```
+
+## File: src/features/workspace.slice/core/_components/workspace-provider.tsx
+```typescript
+import { Loader2 } from 'lucide-react';
+import type React from 'react';
+import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
+import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
+import {
+  createIssue as createIssueAction,
+  addCommentToIssue as addCommentToIssueAction,
+  resolveIssue as resolveIssueAction,
+} from '@/features/workspace.slice/business.issues'
+import {
+  createTask as createTaskAction,
+  updateTask as updateTaskAction,
+  deleteTask as deleteTaskAction,
+  getWorkspaceTask as getWorkspaceTaskAction,
+} from '@/features/workspace.slice/business.tasks'
+import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
+import { listWorkflowStates } from '@/features/workspace.slice/business.workflow'
+import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
+import { writeAuditLog } from '@/features/workspace.slice/gov.audit/_actions';
+import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
+import { firestoreTimestampToISO } from '@/shadcn-ui/utils/utils';
+import {
+  dispatchCreateScheduleItemCommand,
+} from '@/shared-infra/gateway-command';
+import type { AuthoritySnapshot } from '@/shared-kernel';
+import {
+  authorizeWorkspaceTeam as authorizeWorkspaceTeamAction,
+  revokeWorkspaceTeam as revokeWorkspaceTeamAction,
+  grantIndividualWorkspaceAccess as grantIndividualWorkspaceAccessAction,
+  revokeIndividualWorkspaceAccess as revokeIndividualWorkspaceAccessAction,
+  mountCapabilities as mountCapabilitiesAction,
+  unmountCapability as unmountCapabilityAction,
+  updateWorkspaceSettings as updateWorkspaceSettingsAction,
+  deleteWorkspace as deleteWorkspaceAction,
+} from '../_actions'
+import { useAccount } from '../_hooks/use-account';
+import { useApp } from '../_hooks/use-app';
+import { subscribeToWorkspaceTasks, subscribeToWorkspaceIssues } from '../_queries';
+import type { WorkspaceLifecycleState, Capability, Address, WorkspacePersonnel } from '../_types';
+import {
+  applyWorkflowBlocked,
+  applyWorkflowUnblocked,
+  deriveWorkflowBlockersFromSources,
+  summarizeWorkflowBlockers,
+  type WorkflowBlockersState,
+} from './workflow-blockers-state';
+import type { CreateScheduleItemInput, WorkspaceContextType } from './workspace-context.types';
+⋮----
+export function WorkspaceProvider(
+⋮----
+const hydrateWorkflowBlockers = async () =>
+⋮----
+export function useWorkspace()
 ```
 
 ## File: src/shared-infra/gateway-query/index.ts
