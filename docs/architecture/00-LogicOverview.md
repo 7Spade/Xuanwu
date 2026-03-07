@@ -101,6 +101,14 @@
 %%    3) Consistency Infrastructure：S2 下沉 Projection Bus/FIREBASE_ACL；S3 由 L6 Query Gateway 統一路由
 %%    4) Firebase ACL：D24 嚴格防腐；Feature Slice 僅可依賴 SK_PORTS，不得直連 firebase/*
 %%    5) Authority Exits：D26 收口 Global Search / Notification Hub，業務端只產生事實事件
+%%  ── OPTIMIZATION ADOPTION（落地採納清單 · 單向依賴鏈版）──
+%%    MUST: IF 需要呼叫 Firebase SDK THEN 必須經 L7 FIREBASE_ACL；且 aggregateVersion 守衛必須在 L5/L7 生效
+%%    MUST: IF 事件鏈需要 traceId THEN 僅能由 CBG_ENTRY 注入；L9 僅可觀測不可生成
+%%    MUST: IF UI 讀取業務資料 THEN 必須經 L6 Query Gateway；Timeline overlap/grouping 必須下沉 L5
+%%    MUST: IF 涉及 SLA/Outbox/Resilience/EventEnvelope THEN 必須引用 L1 契約，不得切片內重定義
+%%    MUST: IF 屬跨片共用契約（如 SK_SKILL_REQ）THEN 必須集中於 L1，切片僅可引用
+%%    MUST: IF 涉及全域語義註冊 THEN 必須在 VS8 Core Domain（CTA/tag-definitions）定義，非 Shared Kernel
+%%    SHOULD: IF 設計 L2 Command Gateway 下沉 THEN 僅下沉契約/型別到 L1；協調流程保留 L2
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  ARCHITECTURE CONTROL PLANE（四大治理視圖 · 規則句版）
 %%  ── CP1 MUST：Hard Invariants（系統穩定基石）──
@@ -1234,42 +1242,37 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D22 跨切片 tag 語義引用：必須指向 TE1~TE6 實體節點，禁止隱式 tagSlug 字串引用
 %%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
 %%  ── Firebase 隔離守則（D24~D25）──
-%%  D24 feature slice / shared/types / app 層禁止直接 import firebase/*
-%%      所有 Firebase SDK 呼叫必須透過 FIREBASE_ACL 對應 Adapter
-%%      Adapter 路徑：src/shared/infra/{auth|firestore|messaging|storage}
-%%      Feature slice 禁止直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
-%%      Feature slice 必須只依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
-%%  D25 新增 Firebase 功能必須在 FIREBASE_ACL 新增 Adapter 實作對應 SK_PORTS Port
+%%  D24 MUST: IF 位於 feature slice / shared/types / app THEN 必須禁止直接 import firebase/*
+%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared/infra/{auth|firestore|messaging|storage}）
+%%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
+%%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
+%%  D25 MUST: IF 新增 Firebase 功能 THEN 必須在 FIREBASE_ACL 新增 Adapter 以實作對應 SK_PORTS Port
 %%  ── Cross-cutting Authority 守則（D26）──
-%%  D26 Cross-cutting Authority 治理：
-%%      global-search.slice 為唯一跨域搜尋權威，各業務 Slice 禁止自建搜尋邏輯
-%%      notification-hub (VS7) 為唯一副作用出口，業務 Slice 禁止直接調用 sendEmail/push/SMS
-%%      兩者須擁有自己的 _actions.ts / _services.ts [D3]，不得寄生於 shared-kernel [D8]
+%%  D26 MUST: IF 執行跨域搜尋 THEN 必須經 global-search.slice；業務 Slice 不得自建搜尋邏輯
+%%  D26 MUST: IF 執行通知副作用 THEN 必須經 notification-hub(VS7)；業務 Slice 不得直接調用 sendEmail/push/SMS
+%%  D26 MUST: IF 屬 global-search.slice 或 notification-hub THEN 必須具備自己的 _actions.ts / _services.ts [D3]
+%%  D26 FORBIDDEN: IF 屬 cross-cutting authority THEN MUST NOT 寄生於 shared-kernel [D8]
+%%  ── L2 Command Gateway 下沉邊界（單向鏈防呆）──
+%%      MUST: IF 元件為 GatewayCommand / DispatchOptions / Handler 介面型別 THEN 可下沉至 L1（Shared Kernel）
+%%      MUST: IF 元件為 CommandResult/錯誤碼契約且為純資料或純函式 THEN 可下沉至 L1（Shared Kernel）
+%%      MUST: IF 元件屬 CBG_ENTRY / CBG_AUTH / CBG_ROUTE 執行管線 THEN 必須保留在 L2（Infrastructure Orchestration）
+%%      MUST: IF 元件屬 handler registry 或 resilience 接線（rate-limit/circuit-breaker/bulkhead）THEN 必須保留在 L2
+%%      FORBIDDEN: IF 元件包含 async / side effects / routing registry THEN MUST NOT 下沉至 shared.kernel.* [D8]
+%%      FORBIDDEN: IF 位於 L1 THEN MUST NOT 產生 traceId；traceId 僅允許 CBG_ENTRY 注入 [D10]
 %%  ── 成本語義路由守則（D27 · Extension Gate）──
-%%  D27 CostItemType Semantic Routing（成本語義路由三層架構）：
-%%      Layer-1（原始解析）：document-parser 解析文件 → 產生 raw ParsedLineItem[]
-%%      Layer-2（語義分類）：VS5 document-parser-view 呼叫 VS8 classifyCostItem(name) → (costItemType, semanticTagSlug)
-%%                           classifyCostItem 為純函式（[D8] 禁止 async / Firestore / 副作用）
-%%                           優先級：EXECUTABLE override > MANAGEMENT > RESOURCE > FINANCIAL > PROFIT > ALLOWANCE > EXECUTABLE(預設)
-%%                           EXECUTABLE override 舉例：機電檢測、qc test、現場試驗、commissioning、調試 等施工測試關鍵字
-%%                           ALLOWANCE 舉例：差旅、運輸、勘查、工安補貼（不可物化為 task）
-%%                           PROFIT 舉例：利潤（不可物化為 task）
-%%                           CostItemType：EXECUTABLE | MANAGEMENT | RESOURCE | FINANCIAL | PROFIT | ALLOWANCE
-%%                           semanticTagSlug：以 ParsingIntent.costItemType 作為索引匹配 VS8 tagSlug；每一行 LineItem 必帶 semanticTagSlug
-%%                           標注結果寫入 ParsedLineItem.(costItemType, semanticTagSlug)，隨 DocumentParserItemsExtractedPayload 傳遞
-%%      Layer-3（語義路由）：use-workspace-event-handler.tsx Semantic Router
-%%                           [D27-Gate] shouldMaterializeAsTask(item.costItemType) → 此函式是唯一的物化閘門
-%%                           禁止在 workspace.slice 內直接寫 `=== CostItemType.EXECUTABLE`；必須呼叫 shouldMaterializeAsTask() [D27]
-%%                           只有 shouldMaterializeAsTask() 返回 true 的項目才能物化為 WorkspaceTask
-%%                           物化同時寫入 sourceIntentIndex（項目在原始文件中的位置）以確保任務清單排序一致 [D27-ORDER]
-%%                           DocumentParser UI 顯示屬性（icon/color/label）必須由 tag-snapshot 投影讀取，不得從分類器硬編碼 [T5]
-%%                           其餘類型：靜默跳過 + toast 通知（禁止物化為 tasks [#A14]）
-%%      [D27-ORDER] 任務排序不變量：tasks-view.tsx 須先按 createdAt（批次間），再按 sourceIntentIndex（批次內），確保任務順序與來源文件一致。
-%%      [D27-Order] 單向依賴鏈：WorkspaceItem → WorkspaceTask → Schedule；禁止跳過事項直接建立任務
-%%      [D27-Gate] 任務物化唯一入口：shouldMaterializeAsTask()；僅 EXECUTABLE 可轉化為任務
-%%      [L5-Bus] Calendar/Timeline 為 Read Side 投影：日期維度與資源維度必須分離物化
-%%      [L6-Gateway] UI 禁止直讀 VS6/Firebase；所有排班視圖僅可讀 Query Gateway 投影
-%%      [Timeline] overlap 判定與 resource grouping 必須在 L5 投影層完成，前端僅渲染
-%%      禁止 VS5 document-parser 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
+%%  D27 MUST: IF 處理成本語義路由 THEN 必須採用三層架構（Layer-1 原始解析 → Layer-2 語義分類 → Layer-3 語義路由）
+%%  D27 MUST: IF 位於 Layer-2 THEN 必須呼叫 VS8 classifyCostItem(name) 輸出 (costItemType, semanticTagSlug)
+%%  D27 MUST: IF 實作 classifyCostItem THEN 必須為純函式（禁止 async / Firestore / 副作用）[D8]
+%%  D27 MUST: IF 產生 ParsedLineItem THEN 必須寫入 (costItemType, semanticTagSlug) 並隨 payload 傳遞
+%%  D27 MUST: IF 位於 Layer-3 物化流程 THEN 必須以 shouldMaterializeAsTask() 作為唯一物化閘門 [D27-Gate]
+%%  D27 FORBIDDEN: IF 位於 workspace.slice THEN MUST NOT 直接硬寫 `=== CostItemType.EXECUTABLE` 判斷
+%%  D27 MUST: IF shouldMaterializeAsTask() 返回 true THEN 才可物化為 WorkspaceTask；否則必須靜默跳過並 toast [#A14]
+%%  D27 MUST: IF 物化為任務 THEN 必須寫入 sourceIntentIndex 以維持排序不變量 [D27-ORDER]
+%%  D27 MUST: IF tasks-view 呈現任務清單 THEN 必須先按 createdAt（批次間）再按 sourceIntentIndex（批次內）排序
+%%  D27 MUST: IF 設計任務鏈路 THEN 必須遵守單向鏈 WorkspaceItem → WorkspaceTask → Schedule（禁止跳級）[D27-Order]
+%%  D27 MUST: IF UI 顯示 DocumentParser icon/color/label THEN 必須讀取 tag-snapshot（不得分類器硬編碼）[T5]
+%%  D27 MUST: IF 為排班視圖讀取 THEN 僅可經 L6 Query Gateway；UI 禁止直讀 VS6/Firebase [L6-Gateway]
+%%  D27 MUST: IF 涉及 overlap/resource-grouping THEN 必須在 L5 Projection 層完成，前端僅渲染 [Timeline]
+%%  D27 FORBIDDEN: IF 位於 VS5 document-parser THEN MUST NOT 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
 %%      禁止 Layer-3 Semantic Router 繞過 costItemType 直接物化非 EXECUTABLE 項目
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
