@@ -1,8 +1,8 @@
 /**
- * @test VS8 Semantic Graph — SemanticGuard [D21-H D21-K D21-9 D21-3]
+ * @test VS8 Semantic Graph — InvariantGuard [D21-H D21-K D21-9 D21-3]
  *
  * Validates the Blood-Brain Barrier (BBB) at
- * centralized-guards/semantic-guard.ts.
+ * centralized-guards/invariant-guard.ts.
  *
  * Scenarios covered:
  *   1. Self-loop rejection (IS_A / REQUIRES) — [D21-3]
@@ -12,7 +12,7 @@
  *   5. Approval for well-formed proposals
  *
  * Architecture:
- *   [D21-H] SemanticGuard owns final veto over edge proposals.
+ *   [D21-H] InvariantGuard owns final veto over edge proposals.
  *   [D21-K] Proposals violating semantic logic are rejected here.
  *   [D8]    All tag logic lives in semantic-graph.slice, not shared-kernel.
  */
@@ -20,7 +20,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { addEdge, _clearEdgesForTest } from '../centralized-edges/semantic-edge-store';
 
-import { validateEdgeProposal } from './semantic-guard';
+import { validateEdgeProposal } from './invariant-guard';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
@@ -32,7 +32,7 @@ beforeEach(() => {
 // Rule 1 — Self-loop rejection [D21-3]
 // ═══════════════════════════════════════════════════════════════════
 
-describe('SemanticGuard — self-loop rejection [D21-3]', () => {
+describe('InvariantGuard — self-loop rejection [D21-3]', () => {
   it('rejects an IS_A self-loop', () => {
     const result = validateEdgeProposal({
       fromTagSlug: 'skill:welding',
@@ -68,7 +68,7 @@ describe('SemanticGuard — self-loop rejection [D21-3]', () => {
 // Rule 2 — Weight invariant [D21-9]
 // ═══════════════════════════════════════════════════════════════════
 
-describe('SemanticGuard — weight invariant [D21-9]', () => {
+describe('InvariantGuard — weight invariant [D21-9]', () => {
   it('rejects weight = 0', () => {
     const result = validateEdgeProposal({
       fromTagSlug: 'skill:expert',
@@ -136,7 +136,7 @@ describe('SemanticGuard — weight invariant [D21-9]', () => {
 // Rule 3 — Duplicate edge rejection [D21-A]
 // ═══════════════════════════════════════════════════════════════════
 
-describe('SemanticGuard — duplicate edge rejection [D21-A]', () => {
+describe('InvariantGuard — duplicate edge rejection [D21-A]', () => {
   it('rejects a proposal that duplicates an existing edge', () => {
     addEdge('skill:expert', 'skill:senior', 'IS_A');
 
@@ -178,7 +178,7 @@ describe('SemanticGuard — duplicate edge rejection [D21-A]', () => {
 // Rule 4 — IS_A cycle detection [D21-C / D21-K]
 // ═══════════════════════════════════════════════════════════════════
 
-describe('SemanticGuard — IS_A cycle detection [D21-C D21-K]', () => {
+describe('InvariantGuard — IS_A cycle detection [D21-C D21-K]', () => {
   it('rejects a direct two-node cycle (A IS_A B, then B IS_A A)', () => {
     addEdge('skill:expert', 'skill:senior', 'IS_A');
 
@@ -233,7 +233,7 @@ describe('SemanticGuard — IS_A cycle detection [D21-C D21-K]', () => {
 // Rule 5 — Approval for well-formed proposals
 // ═══════════════════════════════════════════════════════════════════
 
-describe('SemanticGuard — approves valid proposals', () => {
+describe('InvariantGuard — approves valid proposals', () => {
   it('approves the first edge in an empty graph', () => {
     const result = validateEdgeProposal({
       fromTagSlug: 'skill:expert',
