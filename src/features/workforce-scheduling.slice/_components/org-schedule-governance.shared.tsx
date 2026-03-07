@@ -7,13 +7,14 @@
 
 'use client';
 
-import type { OrgEligibleMemberView } from '@/shared-infra/projection.bus';
 import { Avatar, AvatarFallback } from '@/shadcn-ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn-ui/tooltip';
 import { tierSatisfies } from '@/shared-kernel';
 import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
 import { findSkill } from '@/shared-kernel/constants/skills';
 import type { Timestamp } from '@/shared-kernel/ports';
+
+import type { OrgEligibleMemberView } from '../_queries';
 
 type TimestampLike = { toDate: () => Date };
 
