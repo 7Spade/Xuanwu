@@ -17,6 +17,11 @@ Completed sequential phases from the requested prompt:
 	 - `docs/ai/repomix-output.context.md` exists and is non-empty.
 3. Repomix skill generated:
 	 - `skills/` exists and contains generated outputs.
+4. Pre-migration architecture baseline clarified:
+	 - `L1 Shared Kernel` and `Shared Infrastructure Plane (L6/L7/L8/L9)` are now explicitly separated in SSOT diagram and wording.
+	 - Canonical ownership paths documented for L6/L7/L9.
+5. Diagram path-annotation normalization completed:
+	 - Core layer/slice/authority labels and major subgraph sections now include concrete repository paths to prevent interpretation drift during migration.
 
 ## 2. High-Impact Findings
 
@@ -103,5 +108,4 @@ Completed sequential phases from the requested prompt:
 The repository has strong foundational alignment with SSOT (L2/L4/L5/L6 modules, VS8 semantic engine, notification hub authority, global search authority all exist), but the main architecture debt remains boundary hardening and canonical path alignment:
 
 1. Infrastructure boundary import discipline (`D24`),
-2. Projection responsibility placement (L5 consolidation),
-3. Strong typed semantic references (`D22`).
+2. Projection responsibility placement (L5 consolidation).
