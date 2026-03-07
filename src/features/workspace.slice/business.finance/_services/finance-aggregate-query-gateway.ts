@@ -5,8 +5,8 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { executeQuery, registerQuery } from '@/shared-infra/gateway-query';
 import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { executeQuery, registerQuery } from '@/shared-infra/gateway-query';
 
 import type { FinanceStrongReadSnapshot } from '../_types';
 

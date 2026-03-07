@@ -5,9 +5,6 @@ import { Loader2 } from 'lucide-react';
 import type React from 'react';
 import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  dispatchCreateScheduleItemCommand,
-} from '@/shared-infra/gateway-command';
 import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
 import {
   createIssue as createIssueAction,
@@ -26,6 +23,9 @@ import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, reg
 import { writeAuditLog } from '@/features/workspace.slice/gov.audit/_actions';
 import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
 import { firestoreTimestampToISO } from '@/shadcn-ui/utils/utils';
+import {
+  dispatchCreateScheduleItemCommand,
+} from '@/shared-infra/gateway-command';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 
 import {
