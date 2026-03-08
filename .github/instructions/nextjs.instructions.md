@@ -167,6 +167,17 @@ Always move client-only UI into a Client Component and import it directly in you
 - **Turbopack is the default dev bundler.** Configure via the top-level `turbopack` field in `next.config.*` (do not use the removed `experimental.turbo`).
 - **Typed routes are stable** via `typedRoutes` (TypeScript required).
 
+## 8. Parallel Routes & Intercepting Routes (App Router)
+
+- Use `@slot` route segments for independent UI regions (e.g., `@analytics`, `@activity`, `@modal`).
+- Keep each slot self-contained with its own `page.tsx` and optional `loading.tsx` / `error.tsx`.
+- Never couple one slot to another slot's internal implementation; coordinate only via shared context/hooks.
+- For detail overlays, prefer intercepting routes (`(.)` same-level, `(..)` one-level up); always provide a non-intercepted canonical route for direct URL access.
+- Keep layouts thin: orchestrate slots and shared chrome only; never place feature logic in layout files.
+- Add `'use client'` only for state, browser APIs, and event handlers; never at route or layout level.
+- Use route-level `loading.tsx` for initial suspense and local `Suspense` for independent sub-regions.
+- Add `error.tsx` for recoverable route-level runtime failures.
+
 # Avoid Unnecessary Example Files
 
 Do not create example/demo files (like ModalExample.tsx) in the main codebase unless the user specifically requests a live example, Storybook story, or explicit documentation component. Keep the repository clean and production-focused by default.
