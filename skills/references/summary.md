@@ -35,7 +35,7 @@ This skill contains the following reference files:
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
 - Only files matching these patterns are included: src/features/**/*.ts, src/features/**/*.tsx, src/shared-kernel/**/*.ts, src/shared-kernel/**/*.tsx, src/shared-infra/**/*.ts, src/shared-infra/**/*.tsx
-- Files matching these patterns are excluded: src/app/favicon.ico, src/app/globals.css, **/*.md, **/*.test.ts, **/*.svg, **/types/generated.ts, **/*.md, .codacy/**, .firebase/**, .github/**, .idx/**, .next/**, docs/**, public/**, skills/**, .aiexclude, .firebaserc, .gitattributes, .gitignore, .modified, .prettierrc, apphosting.yaml, components.json, eslint.config.mts, next.config.ts, postcss.config.mjs, README.md, repomix.config.ts, **/node_modules/**, src/shared-infra/backend-firebase/functions/lib/**, src/shared/shadcn-ui/**, tailwind.config.ts, vitest.config.ts, **/dist/**, **/build/**, **/.git/**, package-lock.json, repomix-output.md, src/shared-infra/backend-firebase/functions/lib/**, src/shared-infra/backend-firebase/functions/node_modules/**, src/shared-infra/backend-firebase/functions/package-lock.json, src/shared-infra/backend-firebase/dataconnect/**
+- Files matching these patterns are excluded: src/app/favicon.ico, src/app/globals.css, **/*.md, **/*.test.ts, **/*.svg, **/types/generated.ts, **/*.md, .codacy/**, .firebase/**, .github/**, .idx/**, .next/**, docs/**, public/**, skills/**, .aiexclude, .firebaserc, .gitattributes, .gitignore, .modified, .prettierrc, apphosting.yaml, components.json, eslint.config.mts, next.config.ts, postcss.config.mjs, README.md, repomix.config.ts, **/node_modules/**, src/shared/shadcn-ui/**, tailwind.config.ts, vitest.config.ts, **/dist/**, **/build/**, **/.git/**, package-lock.json, repomix-output.md, src/shared-infra/backend-firebase/functions/lib/**, src/shared-infra/backend-firebase/functions/node_modules/**, src/shared-infra/backend-firebase/functions/package-lock.json, src/shared-infra/backend-firebase/dataconnect/**
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Code comments have been removed from supported file types
@@ -45,21 +45,21 @@ This skill contains the following reference files:
 
 ## Statistics
 
-568 files | 10,902 lines
+570 files | 10,799 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 457 | 8,504 |
-| TypeScript (TSX) | 111 | 2,398 |
+| TypeScript | 459 | 8,394 |
+| TypeScript (TSX) | 111 | 2,405 |
 
 **Largest files:**
-- `src/features/workspace.slice/core.event-bus/_events.ts` (183 lines)
+- `src/features/workspace.slice/core.event-bus/_events.ts` (185 lines)
 - `src/features/semantic-graph.slice/core/types/index.ts` (139 lines)
-- `src/features/workspace.slice/business.document-parser/_intent-actions.ts` (136 lines)
+- `src/features/workspace.slice/business.document-parser/_intent-actions.ts` (138 lines)
 - `src/features/organization.slice/core.event-bus/_events.ts` (126 lines)
 - `src/features/organization.slice/gov.semantic/_components/org-semantic-dictionary-panel.tsx` (95 lines)
 - `src/features/workforce-scheduling.slice/ports/command.port.ts` (93 lines)
 - `src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts` (91 lines)
 - `src/features/workspace.slice/core/_actions.ts` (85 lines)
 - `src/features/organization.slice/gov.semantic/_actions.ts` (78 lines)
-- `src/features/workforce-scheduling.slice/ui/components/runtime/proposal-dialog.tsx` (75 lines)
+- `src/features/workspace.slice/business.document-parser/_types.ts` (76 lines)
