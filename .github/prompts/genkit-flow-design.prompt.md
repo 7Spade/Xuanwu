@@ -1,20 +1,20 @@
 ---
 name: genkit-flow-design
-description: 'Genkit AI Flow and observability design under Serverless constraints. Design evolvable AI Flows that decouple from the data layer.'
+description: 'Design Genkit flows with clear I/O contracts, observability, and architecture-safe boundaries.'
+agent: 'agent'
 ---
 
 # Genkit Flow Architect
 
-## Design Principles
+Design evolvable Genkit flows under serverless constraints.
 
-Design evolvable AI Flows under Serverless constraints; the Flow must be decoupled from the data layer.
+## Constraints
+- Define explicit input/output schema
+- Keep flow logic decoupled from direct data-layer mutations
+- Route state-changing operations through application commands
+- Include observability hooks for tracing and failure analysis
 
-## Tool Collaboration
-
-1. **Documentation Sync:** Mandatory invocation of `tool-context7` to query the latest Genkit plugin and Zod Schema specifications.
-2. **Architecture Planning:** Use `tool-planning` to define the input/output boundaries of the Flow.
-3. **Logic Validation:** Invoke `tool-thinking` to ensure AI logic does not directly and unauthorizedly operate the database.
-
-## Hard Constraints
-
-AI Flows must trigger Commands through the Application Layer. Bypassing BC boundaries is not allowed.
+## Output
+- Flow contract
+- Execution steps
+- Risk and boundary checklist

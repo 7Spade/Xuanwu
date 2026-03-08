@@ -1,20 +1,21 @@
 ---
+name: next-intl-add-language
 agent: 'agent'
-tools: ['changes','search/codebase', 'edit/editFiles', 'findTestFiles', 'search', 'writeTest']
-description: 'Add new language to a Next.js + next-intl application'
+tools: ['search/codebase', 'edit/editFiles', 'changes']
+description: 'Add a new language to a Next.js app using next-intl and keep routing + UI language selector in sync.'
 ---
 
-This is a guide to add a new language to a Next.js project using next-intl for internationalization,
+# Add next-intl Language
 
-- For i18n, the application uses next-intl.
-- All translations are in the directory `./messages`.
-- The UI component is `src/components/language-toggle.tsx`.
-- Routing and middleware configuration are handled in:
-  - `src/i18n/routing.ts`
-  - `src/middleware.ts`
+Add one locale end-to-end in a Next.js + next-intl project.
 
-When adding a new language:
+## Required updates
+- Add new messages file by translating from `en.json`
+- Update locale routing and middleware
+- Update language switcher UI
+- Verify all keys exist and no fallback gaps remain
 
-- Translate all the content of `en.json` to the new language. The goal is to have all the JSON entries in the new language for a complete translation.
-- Add the path in `routing.ts` and `middleware.ts`.
-- Add the language to `language-toggle.tsx`.
+## Output
+- Files changed
+- Missing/added keys summary
+- Validation checklist
