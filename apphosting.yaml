@@ -47,8 +47,8 @@ env:
       - RUNTIME
 
   # Web Push/App Check values should come from Secret Manager.
-  - variable: NEXT_PUBLIC_WEB_PUSH_VAPID_PUBLIC_KEY
-    secret: BGnZm6Y1hqYG-N-hMnwWuJiEEM9LDO85L69kLqggG9IimGXGjrQpfxhmU9f0DCU_S4G2Ujb9_etDZHWzSpGk0co
+  - variable: VAPID_PRIVATE_KEY
+    secret: VAPID_PRIVATE_KEY
     availability:
       - BUILD
       - RUNTIME

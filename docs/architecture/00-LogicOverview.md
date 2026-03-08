@@ -53,12 +53,14 @@
 %%    L0=ExternalTriggers   L1=SharedKernel       L2=CommandGateway
 %%    L3=DomainSlices       L4=IER                L5=ProjectionBus
 %%    L6=QueryGateway       L7=FirebaseACL         L8=FirebaseInfra      L9=Observability
+%%    L10=AIRuntime&Orchestration（Genkit Flow Gateway / Prompt Policy / Tool ACL / Model Routing）
 %%    ※ L8 = 外部 Firebase 平台執行層（SDK Runtime），非本 repo 內資料夾
+%%    ※ L10 = AI 執行與治理層（可由 src/app-runtime/ai + shared-infra/ai-* 共同實作；受 L1 契約與 L9 觀測約束）
 %%    ※ L3 Domain Slices = VS1(Identity) · VS2(Account) · VS3(Skill) ·
 %%                          VS4(Organization) · VS5(Workspace) · VS6(Workforce-Scheduling) ·
 %%                          VS7(Notification) · VS8(SemanticGraph)
-%%    ※ VS0(Foundation) 不屬於 L3 Domain Slices；其中 VS0-Kernel=L1，VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9
-%%    ※ 邊界澄清：VS0-Kernel=L1（契約）；VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9（執行層，含觀測）
+%%    ※ VS0(Foundation) 不屬於 L3 Domain Slices；其中 VS0-Kernel=L1，VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9/L10
+%%    ※ 邊界澄清：VS0-Kernel=L1（契約）；VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9/L10（執行層，含觀測）
 %%  ── 標準目錄結構（Standard Directory Structure · 單向依賴鏈對齊）──
 %%    src/
 %%      shared-kernel/                          # VS0-Kernel / L1: contracts/constants/pure zone
@@ -158,6 +160,21 @@
 %%      - IF 操作涉及高權限、複雜協調或高扇出 THEN 優先 Backend Firebase（降低一致性風險與重試放大成本）
 %%      - IF 讀取模式為長連線即時更新 THEN 優先 RTDB/Firestore listener；若僅偶發查詢則避免常駐 listener 以控制讀取成本
 %%      - IF 可批次/去抖/聚合後再寫入 THEN 必須在 Backend 端集中處理，以降低寫入次數與出站成本
+%%    Security Closure（身份與安全閉環）:
+%%      - App Check 必須在 external-trigger 入口驗證，未通過請求直接拒絕；不得繞過至 Domain Slice
+%%      - Security Rules 必須以 org/workspace/account 三層租戶鍵約束資料存取；高風險操作必須再經 backend-firebase/functions 驗證
+%%      - Rules 變更需搭配回歸測試與版本註記，避免 ACL 漂移
+%%  ── AI Platform Control Plane（Genkit + SaaS Workflow）──
+%%    AI 寫鏈：UI/ServerAction → L10 AI Flow Gateway → Prompt Policy Guard → Tool ACL → Domain Command（L2）
+%%    AI 讀鏈：UI/Parallel Routes → L6 Query Gateway → Projection（L5）→ L10 Response Composer（Streaming）
+%%    MUST:
+%%      - IF 進入 AI flow THEN 必須先通過 Prompt Policy（敏感詞/資料分級/租戶邊界）
+%%      - IF AI 需要資料存取 THEN Tool 必須走 L1 Port + L7 Adapter；禁止 AI flow 直連 firebase/*
+%%      - IF AI 觸發寫入 THEN 必須經 L2 Command Gateway，禁止繞過 Aggregate
+%%      - IF AI 回應包含工具輸出 THEN 必須帶 traceId / toolCallId / modelId 供 L9 觀測
+%%    SHOULD:
+%%      - Parallel Routes（chat/tool-panel/modal/console）各 slot 維持獨立 Suspense 邊界與資料通道，避免單點阻塞
+%%      - Streaming UI 採 partial-first 策略：先回覆骨架與低風險內容，再增量補齊工具結果
 %%  ── RULESET-MUST（不可違反）: R · S · A · # ──
 %%    R1=relay-lag-metrics   R5=DLQ-failure-rule   R6=workflow-state-rule
 %%    R7=aggVersion-relay    R8=traceId-readonly
@@ -172,6 +189,8 @@
 %%    D7=cross-slice-index-only   D24=no-firebase-import D26=cross-cutting-authority
 %%    D27=cost-semantic-routing   D27-A=semantic-aware-routing-policy
 %%    D27-Order=single-direction-chain   D27-Gate=task-materialization-gate   D22=strong-typed-tag-ref
+%%    P6=parallel-routes-data-contract  P7=realtime-subscription-lifecycle
+%%    E7=app-check-enforcement-closure  E8=genkit-tool-governance
 %%    D21=VS8-semantic-engine-governance（四層語義引擎 D21-1~D21-10 + D21-A~D21-X）
 %%    D21-1=semantic-uniqueness(→D21-A)   D21-2=strong-typed-tags(→D22)  D21-3=node-connectivity(→D21-C)
 %%    D21-4=aggregate-constraint          D21-5=semantic-aware-routing(→D27-A)
@@ -317,6 +336,7 @@
 %%    B-track 禁止回呼 A-track → 只能透過 Domain Event 溝通
 %%    Feature slice 禁止直接 import firebase/* [D24]
 %%    Feature slice 禁止直接 import @/shared-infra/*；僅可依賴 SK_PORTS / Query Gateway / slice public API
+%%    Notification Hub 禁止直接依賴 L7 具體 Adapter（含 RTDB_ADP/FCM_ADP）；必須經 Port 或 Gateway 公開介面
 %%    Feature slice 禁止自建搜尋邏輯，必須透過 Global Search [D26 #A12]
 %%    Feature slice 禁止直接 call sendEmail/push/SMS，必須透過 Notification Hub [D26 #A13]
 %%    禁止 L6 Query Gateway 反向驅動 L2 Command Gateway（讀寫鏈不得形成回饋環）
@@ -552,6 +572,8 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             STORE_ADP["storage.facade.ts\nStorageAdapter\n實作 IFileStore\nPath Resolver / URL 簽發\n[D24] 唯一合法 firebase/storage 呼叫點"]
 
             ANALYTICS_ADP["analytics.adapter.ts\nAnalyticsAdapter\nGoogle Analytics 事件寫入（logEvent/screen_view）\n僅允許遙測事件，禁止承載領域寫入\n[D24] 唯一合法 firebase/analytics 呼叫點"]
+
+            APPCHK_ADP["app-check.adapter.ts\nAppCheckAdapter\nClient attestation token 初始化/續期/驗證\n未通過不得進入 L2/L3\n[D24 D25 E7] 唯一合法 firebase/app-check 呼叫點"]
         end
 
         subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；無本地資料夾）"]
@@ -562,6 +584,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             F_FCM[("Firebase Cloud Messaging\nfirebase/messaging")]
             F_STORE[("Cloud Storage\nfirebase/storage")]
             F_ANALYTICS[("Google Analytics\nfirebase/analytics")]
+            F_APPCHK[("Firebase App Check\nfirebase/app-check")]
         end
 
         subgraph OBS_LAYER["⬜ L9 · Observability（src/shared-infra/observability）"]
@@ -1047,7 +1070,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
 end
 
 USER_NOTIF -.->|"uses IMessaging [R8]"| I_MSG
-USER_NOTIF -.->|"low-latency feed via RTDB Adapter"| RTDB_ADP
+USER_NOTIF -.->|"low-latency feed via QueryGateway/Port"| QGWAY_NOTIF
 NOTIF_HUB_SVC -.->|"標籤感知路由"| VS8
 
 %% 所有 OUTBOX → RELAY
@@ -1109,6 +1132,7 @@ RTDB_ADP --> F_RTDB
 FCM_ADP --> F_FCM
 STORE_ADP --> F_STORE
 ANALYTICS_ADP --> F_ANALYTICS
+APPCHK_ADP --> F_APPCHK
 
 EXT_CLIENT -.->|"UI 行為遙測（GA events）"| ANALYTICS_ADP
 
@@ -1250,7 +1274,8 @@ class TIER_FN tierFn
 class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_ACL,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
-class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS firebaseExt
+class APPCHK_ADP aclAdapter
+class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
 class GLOBAL_SEARCH crossCutAuth
@@ -1415,10 +1440,13 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
 %%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
 %%  D25 MUST: IF 新增 Firebase 前端能力 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
+%%  D25 MUST: IF 入口涉及受保護資料或可變更狀態 THEN 必須先完成 App Check 驗證（含 token 續期與失效處理）[E7]
 %%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/backend-firebase/functions
 %%  D25 MUST: IF 需要受治理的 GraphQL 資料契約 THEN 必須走 src/shared-infra/backend-firebase/dataconnect
 %%  D25 SHOULD: IF 可由 Rules 安全完成且為高頻小請求 THEN 優先 frontend-firebase 以降低 Functions 成本
 %%  D25 SHOULD: IF 為高扇出或可批次流程 THEN 優先 backend-firebase/functions 集中批處理以降低總寫入成本
+%%  D25 SHOULD: IF 為即時訂閱能力 THEN 必須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略 [P7]
+%%  D25 SHOULD: IF 為 AI tool data access THEN 必須由 Genkit tool gateway 統一檢查租戶邊界與可見性 [E8]
 %%  ── Cross-cutting Authority 守則（D26）──
 %%  D26 MUST: IF 執行跨域搜尋 THEN 必須經 global-search.slice；業務 Slice 不得自建搜尋邏輯
 %%  D26 MUST: IF 執行通知副作用 THEN 必須經 notification-hub.slice（VS7）；業務 Slice 不得直接調用 sendEmail/push/SMS
@@ -1445,6 +1473,10 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D27 MUST: IF UI 顯示 DocumentParser icon/color/label THEN 必須讀取 tag-snapshot（不得分類器硬編碼）[T5]
 %%  D27 MUST: IF 為排班視圖讀取 THEN 僅可經 L6 Query Gateway；UI 禁止直讀 VS6/Firebase [L6-Gateway]
 %%  D27 MUST: IF 涉及 overlap/resource-grouping THEN 必須在 L5 Projection 層完成，前端僅渲染 [Timeline]
+%%  P6 SHOULD: IF 使用 Next.js Parallel Routes THEN 每個 @slot 必須對應單一資料通道（QGWAY channel）與獨立 Suspense fallback
+%%  P6 SHOULD: IF 使用 Streaming UI THEN 必須定義可中斷/可重試策略，避免跨 slot 共享阻塞
+%%  E8 MUST: IF Genkit flow 觸發 tool calling THEN 必須經 Tool ACL（role/scope/tenant）與審計追蹤（traceId/toolCallId/modelId）
+%%  E8 FORBIDDEN: IF 位於 AI flow THEN MUST NOT 直接呼叫 firebase/* 或跨租戶讀寫
 %%  D27 FORBIDDEN: IF 位於 VS5 document-parser THEN MUST NOT 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
 %%      禁止 Layer-3 Semantic Router 繞過 costItemType 直接物化非 EXECUTABLE 項目
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
