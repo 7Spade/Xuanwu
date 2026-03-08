@@ -59,11 +59,6 @@ env:
       - BUILD
       - RUNTIME
 
-  - variable: FIREBASE_APPCHECK_DEBUG_TOKEN
-    secret: firebaseAppCheckDebugToken
-    availability:
-      - RUNTIME
-
   - variable: GOOGLE_API_KEY
     secret: GOOGLE_API_KEY
     availability:

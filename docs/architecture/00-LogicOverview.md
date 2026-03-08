@@ -1395,7 +1395,7 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D21-F 注意力隔離：context-attention.ts 必須根據當前 Workspace 情境過濾無關標籤，防止語義噪聲污染路由結果
 %%  D21-G 演化回饋環：learning-engine.ts 僅能依據 VS3（排班）/ VS2（任務）的真實事實事件進行神經元強度調整，
 %%                    禁止手動隨機修改或注入合成數據；每次調整須附帶來源事件溯源
-%%  D21-H 血腦屏障（BBB）：執行管線：L8 consensus-engine 先行校驗治理邏輯一致性，通過後提案轉送 L5 BBB 做最終物理不變量裁決；
+%%  D21-H 血腦屏障（BBB）：執行管線：L3(VS8 Governance) consensus-engine 先行校驗治理邏輯一致性，通過後提案轉送 BBB 做最終物理不變量裁決；
 %%                          invariant-guard.ts 擁有最高否決權，可直接拒絕已通過治理共識但違反圖物理結構的提案，
 %%                          其最終裁決權優先凌駕於 consensus-engine 與 learning-engine 之上
 %%  D21-I 全域共識律：標籤治理決策開放全部組織用戶提案，所有提案必須通過 consensus-engine 的邏輯一致性校驗
