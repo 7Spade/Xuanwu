@@ -655,7 +655,6 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             F_STORE[("Cloud Storage\nfirebase/storage")]
             F_ANALYTICS[("Google Analytics\nfirebase/analytics")]
             F_APPCHK[("Firebase App Check\nfirebase/app-check")]
-            F_DC[("Data Connect\nfirebase/data-connect")]
         end
 
         subgraph OBS_LAYER["⬜ L9 · Observability（src/shared-infra/observability）"]
@@ -1126,7 +1125,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
     direction TB
 
     NOTIF_R["notification-router\n無狀態路由 [#A10]\n消費 IER STANDARD_LANE\nScheduleAssigned [E3]\n從 envelope 讀取 traceId [R8]"]
-    NOTIF_EXIT["notification-hub._services.ts\nNOTIF_EXIT（唯一副作用出口）\n標籤感知路由策略\n對接 VS8 語義索引\n#channel:slack → Slack\n#urgency:high → 電話"]
+    NOTIF_HUB_SVC["notification-hub._services.ts\n唯一副作用出口\n標籤感知路由策略\n對接 VS8 語義索引\n#channel:slack → Slack\n#urgency:high → 電話"]
 
     subgraph VS7_DEL["📤 Delivery（src/features/notification-hub.slice）"]
         USER_NOTIF["account-user.notification\n個人推播 + RTDB 即時通知串流"]
@@ -1134,15 +1133,15 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
         USER_NOTIF --> USER_DEV
     end
 
-    NOTIF_R -->|TargetAccountID 匹配| NOTIF_EXIT
-    NOTIF_EXIT -->|路由策略決定| USER_NOTIF
+    NOTIF_R -->|TargetAccountID 匹配| NOTIF_HUB_SVC
+    NOTIF_HUB_SVC -->|路由策略決定| USER_NOTIF
     PROFILE -.->|"FCM Token（唯讀）"| USER_NOTIF
     USER_NOTIF -.->|"[#6] 投影"| QGWAY_NOTIF
 end
 
-NOTIF_EXIT -.->|"uses IMessaging [R8]"| I_MSG
+USER_NOTIF -.->|"uses IMessaging [R8]"| I_MSG
 USER_NOTIF -.->|"low-latency feed via QueryGateway/Port"| QGWAY_NOTIF
-NOTIF_EXIT -.->|"標籤感知路由"| VS8
+NOTIF_HUB_SVC -.->|"標籤感知路由"| VS8
 
 %% 所有 OUTBOX → RELAY
 ACC_OB & ORG_OB & SCH_OB & SKILL_OB & TAG_OB & WS_OB -.->|"被 RELAY 掃描 [R1]"| RELAY
@@ -1210,7 +1209,7 @@ ANALYTICS_ADP --> F_ANALYTICS
 APPCHK_ADP --> F_APPCHK
 BFN_GW --> F_DB
 BFN_GW --> F_STORE
-BDC_GW --> F_DC
+BDC_GW --> F_DB
 
 EXT_CLIENT -.->|"UI 行為遙測（GA events）"| ANALYTICS_ADP
 EXT_WEBHOOK --> BFN_GW
@@ -1357,11 +1356,11 @@ class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_ACL,AC_TRANSLATOR_L7,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
 class APPCHK_ADP aclAdapter
 class FIREBASE_BACKEND,BFN_GW,BDC_GW aclAdapter
-class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK,F_DC firebaseExt
+class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
 class GLOBAL_SEARCH crossCutAuth
-class NOTIF_EXIT crossCutAuth
+class NOTIF_HUB_SVC crossCutAuth
 
 %%  ╔══════════════════════════════════════════════════════════════════════════╗
 %%  ║  CONSISTENCY INVARIANTS 完整索引                                         ║
