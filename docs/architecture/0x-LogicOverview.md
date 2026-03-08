@@ -82,9 +82,9 @@ subgraph VS0["VS0 Foundation"]
       BE_ROOT --> BE_DC
     end
 
-    FE_SDK --> AC_GATE
-    ADMIN_SDK --> AC_GATE
-    BE_DC --> AC_GATE
+    AC_GATE --> FE_SDK
+    AC_GATE --> ADMIN_SDK
+    AC_GATE --> BE_DC
   end
 
   subgraph L9["L9 Observability"]
@@ -117,6 +117,7 @@ subgraph L8["L8 External Firebase Runtime Services"]
   F_APPCHECK[(App Check)]
   F_FUNCTIONS[(Cloud Functions)]
   F_DATACONNECT[(Data Connect)]
+  F_CSQL[(Cloud SQL PostgreSQL)]
 end
 
 %% Inbound validation
@@ -140,7 +141,7 @@ BG_LANE --> PROJ_BUS
 STD_LANE -->|notification events| NOTIF_ROUTER
 
 %% Query chain
-QGWAY --> PROJ_BUS
+PROJ_BUS --> QGWAY
 
 %% Contract discipline
 CMD_PIPE -. uses contracts .-> SK_PORTS
@@ -166,13 +167,12 @@ ADMIN_SDK --> F_STORE
 ADMIN_SDK --> F_APPCHECK
 
 BE_DC --> F_DATACONNECT
-F_DATACONNECT --> F_DB
+F_DATACONNECT --> F_CSQL
 
 %% App Check lifecycle
 FE_SDK -. token init and refresh .-> APPCHK_VERIFY
 
 %% VS7 runtime egress via SDK boundary
-NOTIF_EXIT -. client push path .-> FE_SDK
 NOTIF_EXIT -. server push path .-> ADMIN_SDK
 
 %% Cross-cutting observability
@@ -190,6 +190,8 @@ AI_GW --> READ_GW
 
 %% Forbidden paths (governance invariants)
 L3_DOMAIN -. forbidden direct sdk call .-x F_DB
+L3_DOMAIN -. forbidden direct sdk call .-x FE_SDK
+L3_DOMAIN -. forbidden direct sdk call .-x ADMIN_SDK
 L3_DOMAIN -. forbidden direct notify call .-x NOTIF_EXIT
 UNIFIED_EXIT -. forbidden bypass IER .-x NOTIF_ROUTER
 QGWAY -. forbidden reverse drive .-x WRITE_GW
