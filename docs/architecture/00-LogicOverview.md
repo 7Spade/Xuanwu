@@ -24,7 +24,7 @@
 %%    VS0=Foundation（SharedKernel + SharedInfra）  VS1=Identity   VS2=Account      VS3=Skill
 %%    VS4=Organization  VS5=Workspace  VS6=Workforce-Scheduling   VS7=Notification
 %%    VS8=SemanticGraphEngine
-%%    Path Map: VS0=src/shared-kernel + src/shared-kernel/observability + src/shared-infra/frontend-firebase + src/shared-infra/observability
+%%    Path Map: VS0=src/shared-kernel + src/shared-kernel/observability + src/shared-infra/frontend-firebase + src/shared-infra/backend-firebase + src/shared-infra/observability
 %%              VS1=src/features/identity.slice   VS2=src/features/account.slice
 %%              VS3=src/features/skill-xp.slice   VS4=src/features/organization.slice
 %%              VS5=src/features/workspace.slice  VS6=src/features/workforce-scheduling.slice
@@ -63,13 +63,18 @@
 %%    src/
 %%      shared-kernel/                          # VS0-Kernel / L1: contracts/constants/pure zone
 %%      shared-kernel/observability/            # VS0-Kernel / L1: observability contracts only (no side effects)
-%%      shared-infra/frontend-firebase/         # VS0-Infra / L7: Firebase ACL adapters only
+%%      shared-infra/frontend-firebase/         # VS0-Infra / L7: Frontend Firebase ACL adapters (Web SDK boundary)
 %%        auth/
 %%        firestore/
 %%        realtime-database/
 %%        messaging/
 %%        storage/
 %%        analytics/
+%%      shared-infra/backend-firebase/          # VS0-Infra / L7: Backend Firebase execution boundary (server-side)
+%%        functions/                            # Cloud Functions (HTTP/callable/triggers/scheduler)
+%%        dataconnect/                          # Data Connect schema/connector/operations
+%%        firestore/                            # Firestore rules/indexes deploy artifacts
+%%        storage/                              # Storage rules deploy artifacts
 %%      shared-infra/external-triggers/         # VS0-Infra / L0: external triggers
 %%      shared-infra/gateway-command/           # VS0-Infra / L2: CBG_ENTRY/CBG_AUTH/CBG_ROUTE orchestration
 %%      shared-infra/event-router/              # VS0-Infra / L4: IER core + lanes
@@ -101,7 +106,8 @@
 %%    A. 層級與依賴規則（Layering & Dependency）
 %%      - 純契約/常數/純函式（無 I/O）→ src/shared-kernel/*（VS0-Kernel / L1）
 %%      - Observability 契約（TraceContext/DomainErrorEntry/interfaces）→ src/shared-kernel/observability/*（L1, contract-only）
-%%      - Firebase SDK 邊界 → src/shared-infra/frontend-firebase/*（VS0-Infra / L7）
+%%      - Firebase SDK 邊界（前端）→ src/shared-infra/frontend-firebase/*（VS0-Infra / L7）
+%%      - Firebase 高權限/伺服流程（後端）→ src/shared-infra/backend-firebase/{functions|dataconnect}/*（VS0-Infra / L7）
 %%      - 讀取編排（Read registry）→ src/shared-infra/gateway-query/*（L6, ownership=VS0-Infra）
 %%      - 觀測執行能力（trace provider / metrics recorder / error logger）→ src/shared-infra/observability/*（L9, ownership=VS0-Infra）
 %%      - 領域規則（aggregate/policy/invariant）→ src/features/{slice}.slice/*（L3）
@@ -132,7 +138,26 @@
 %%  ── 依賴方向約束（對應目錄）──
 %%    寫鏈：shared-infra/external-triggers → shared-infra/gateway-command → *.slice → shared-infra/event-router → shared-infra/projection-bus
 %%    讀鏈：app/UI → shared-infra/gateway-query → shared-infra/projection-bus
-%%    Infra鏈：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/frontend-firebase(FIREBASE_ACL)
+%%    Infra鏈：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/frontend-firebase(FIREBASE_ACL, Web SDK)
+%%             高權限/排程/觸發鏈：L0 or L2 API entry → backend-firebase/functions|dataconnect → Firebase Platform (L8)
+
+%%  ── Firebase 前後端分層與成本決策（Front/Back Decision Matrix）──
+%%    Frontend Firebase（src/shared-infra/frontend-firebase）適用：
+%%      - 使用者會話內、受 Security Rules 保護的讀寫（個人資料/一般列表/互動狀態）
+%%      - RTDB presence/typing/live-feed 低延遲互動
+%%      - FCM token 綁定、Analytics 遙測上報
+%%    Backend Firebase（src/shared-infra/backend-firebase/functions）必用：
+%%      - 需要 Admin 權限、跨租戶資料存取、密鑰/機密使用
+%%      - 跨集合/跨聚合一致性寫入、補償交易、批次寫入與高扇出工作
+%%      - Firestore/Storage trigger、排程任務、Webhook 驗簽、對外 HTTP/Callable API
+%%    Data Connect（src/shared-infra/backend-firebase/dataconnect）必用：
+%%      - 需要可治理的 GraphQL schema/connector，並以後端策略統一路由資料存取
+%%      - 需要跨前端統一查詢能力與強型別 API 契約時
+%%    成本與效能取捨（邏輯正確優先，成本次之）：
+%%      - IF 操作可由 Security Rules 安全完成且為高頻小請求 THEN 優先 Frontend Firebase（降低 Functions 呼叫成本與尾延遲）
+%%      - IF 操作涉及高權限、複雜協調或高扇出 THEN 優先 Backend Firebase（降低一致性風險與重試放大成本）
+%%      - IF 讀取模式為長連線即時更新 THEN 優先 RTDB/Firestore listener；若僅偶發查詢則避免常駐 listener 以控制讀取成本
+%%      - IF 可批次/去抖/聚合後再寫入 THEN 必須在 Backend 端集中處理，以降低寫入次數與出站成本
 %%  ── RULESET-MUST（不可違反）: R · S · A · # ──
 %%    R1=relay-lag-metrics   R5=DLQ-failure-rule   R6=workflow-state-rule
 %%    R7=aggVersion-relay    R8=traceId-readonly
@@ -1386,10 +1411,14 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
 %%  ── Firebase 隔離守則（D24~D25）──
 %%  D24 MUST: IF 位於 feature slice / shared/types / app THEN 必須禁止直接 import firebase/*
-%%  D24 MUST: IF 需要呼叫 Firebase SDK THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|realtime-database|messaging|storage|analytics}）
+%%  D24 MUST: IF 屬前端使用者態 Firebase 呼叫 THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|realtime-database|messaging|storage|analytics}）
 %%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
 %%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
-%%  D25 MUST: IF 新增 Firebase 功能 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
+%%  D25 MUST: IF 新增 Firebase 前端能力 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
+%%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/backend-firebase/functions
+%%  D25 MUST: IF 需要受治理的 GraphQL 資料契約 THEN 必須走 src/shared-infra/backend-firebase/dataconnect
+%%  D25 SHOULD: IF 可由 Rules 安全完成且為高頻小請求 THEN 優先 frontend-firebase 以降低 Functions 成本
+%%  D25 SHOULD: IF 為高扇出或可批次流程 THEN 優先 backend-firebase/functions 集中批處理以降低總寫入成本
 %%  ── Cross-cutting Authority 守則（D26）──
 %%  D26 MUST: IF 執行跨域搜尋 THEN 必須經 global-search.slice；業務 Slice 不得自建搜尋邏輯
 %%  D26 MUST: IF 執行通知副作用 THEN 必須經 notification-hub.slice（VS7）；業務 Slice 不得直接調用 sendEmail/push/SMS
