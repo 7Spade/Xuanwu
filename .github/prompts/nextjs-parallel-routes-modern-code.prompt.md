@@ -13,7 +13,7 @@ Implement modern App Router patterns without breaking existing behavior.
 - Use `@slot` routes for independent UI regions
 - Use intercepting routes for overlays/modals when appropriate
 - Keep Server Components by default
-- Place `loading.tsx`/`error.tsx` intentionally for streaming UX
+- Place `loading.tsx`/`error.tsx` at appropriate boundaries to optimize streaming UX and user feedback
 - Avoid placing infra calls in presentation-only components
 
 ## Output

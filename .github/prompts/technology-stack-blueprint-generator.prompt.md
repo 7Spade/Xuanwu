@@ -1,12 +1,12 @@
 ---
 name: technology-stack-blueprint-generator
-description: 'Generate a prompt that produces a practical technology-stack blueprint from repository evidence.'
+description: 'Generate a prompt that produces a practical technology stack blueprint from repository evidence.'
 agent: 'agent'
 ---
 
 # Technology Stack Blueprint Generator
 
-Create a reusable prompt that documents the stack from actual code/config evidence.
+Generate a meta-prompt that documents the stack from actual code/config evidence.
 
 ## Required sections in generated blueprint
 - Detected languages/frameworks/platforms

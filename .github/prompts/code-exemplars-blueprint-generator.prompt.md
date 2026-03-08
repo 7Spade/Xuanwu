@@ -6,7 +6,7 @@ agent: 'agent'
 
 # Code Exemplars Blueprint Generator
 
-Create a prompt that finds representative, high-quality examples from the current repository.
+Generate a prompt that scans the current repository for representative, high-quality examples.
 
 ## Required behavior
 1. Detect stack/language from repository files.

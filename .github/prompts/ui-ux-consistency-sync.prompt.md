@@ -1,6 +1,6 @@
 ---
 name: ui-ux-consistency-sync
-description: 'Audit UI/UX consistency across design system usage, accessibility, and i18n completeness.'
+description: 'Audit UI/UX consistency across design system usage, accessibility standards, and i18n completeness.'
 agent: 'agent'
 ---
 

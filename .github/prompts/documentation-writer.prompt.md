@@ -2,7 +2,7 @@
 name: documentation-writer
 agent: 'agent'
 tools: ['search', 'edit/editFiles', 'fetch']
-description: 'Write or update technical documentation using Diátaxis (Tutorial, How-to, Reference, Explanation).'
+description: 'Write or update technical documentation using the Diátaxis framework (Tutorial, How-to, Reference, Explanation quadrants).'
 ---
 
 # Diátaxis Documentation Expert

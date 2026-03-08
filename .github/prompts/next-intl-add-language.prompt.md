@@ -13,7 +13,7 @@ Add one locale end-to-end in a Next.js + next-intl project.
 - Add new messages file by translating from `en.json`
 - Update locale routing and middleware
 - Update language switcher UI
-- Verify all keys exist and no fallback gaps remain
+- Verify all translation keys exist with no missing entries requiring fallbacks
 
 ## Output
 - Files changed
