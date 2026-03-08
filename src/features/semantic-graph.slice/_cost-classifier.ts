@@ -60,6 +60,48 @@ export interface CostItemSemanticClassification {
 }
 
 // =================================================================
+// Parser-facing classification axes — Type / Status / Billing Mode
+// =================================================================
+
+export const ParserLineItemType = {
+  WORK_PACKAGE: 'WORK_PACKAGE',
+  TEST_COMMISSIONING: 'TEST_COMMISSIONING',
+  LOGISTICS_RESOURCE: 'LOGISTICS_RESOURCE',
+  MANAGEMENT_HSE: 'MANAGEMENT_HSE',
+  FINANCIAL_TERM: 'FINANCIAL_TERM',
+  FINANCIAL_MARGIN: 'FINANCIAL_MARGIN',
+  ALLOWANCE_EXPENSE: 'ALLOWANCE_EXPENSE',
+} as const
+
+export type ParserLineItemType =
+  (typeof ParserLineItemType)[keyof typeof ParserLineItemType]
+
+export const ParserRoutingStatus = {
+  TASK_CANDIDATE: 'TASK_CANDIDATE',
+  AUTO_ACCEPTED_NO_TASK: 'AUTO_ACCEPTED_NO_TASK',
+  FINANCE_ONLY: 'FINANCE_ONLY',
+  EXCLUDED: 'EXCLUDED',
+} as const
+
+export type ParserRoutingStatus =
+  (typeof ParserRoutingStatus)[keyof typeof ParserRoutingStatus]
+
+export const ParserBillingMode = {
+  INHERIT_PO_TERMS: 'INHERIT_PO_TERMS',
+  BY_PROGRESS: 'BY_PROGRESS',
+  ON_COMPLETION: 'ON_COMPLETION',
+} as const
+
+export type ParserBillingMode =
+  (typeof ParserBillingMode)[keyof typeof ParserBillingMode]
+
+export interface ParserLineItemClassification extends CostItemSemanticClassification {
+  lineItemType: ParserLineItemType
+  routingStatus: ParserRoutingStatus
+  billingMode: ParserBillingMode
+}
+
+// =================================================================
 // Keyword Rules — ordered from most-specific to least-specific
 // =================================================================
 
@@ -172,6 +214,80 @@ function toSemanticTagSlug(costItemType: CostItemType): SemanticTagSlug {
   return COST_ITEM_TAG_SLUG[costItemType]
 }
 
+function deriveLineItemType(name: string, costItemType: CostItemType): ParserLineItemType {
+  const lower = name.toLowerCase()
+
+  if (costItemType === CostItemType.EXECUTABLE) {
+    if (
+      lower.includes('測試') ||
+      lower.includes('調試') ||
+      lower.includes('commissioning') ||
+      lower.includes('qc test') ||
+      lower.includes('testing')
+    ) {
+      return ParserLineItemType.TEST_COMMISSIONING
+    }
+    return ParserLineItemType.WORK_PACKAGE
+  }
+
+  if (costItemType === CostItemType.MANAGEMENT) {
+    return ParserLineItemType.MANAGEMENT_HSE
+  }
+
+  if (costItemType === CostItemType.RESOURCE) {
+    return ParserLineItemType.LOGISTICS_RESOURCE
+  }
+
+  if (costItemType === CostItemType.FINANCIAL) {
+    return ParserLineItemType.FINANCIAL_TERM
+  }
+
+  if (costItemType === CostItemType.PROFIT) {
+    return ParserLineItemType.FINANCIAL_MARGIN
+  }
+
+  return ParserLineItemType.ALLOWANCE_EXPENSE
+}
+
+function deriveRoutingStatus(costItemType: CostItemType): ParserRoutingStatus {
+  if (costItemType === CostItemType.EXECUTABLE) {
+    return ParserRoutingStatus.TASK_CANDIDATE
+  }
+
+  if (costItemType === CostItemType.FINANCIAL || costItemType === CostItemType.PROFIT) {
+    return ParserRoutingStatus.FINANCE_ONLY
+  }
+
+  if (costItemType === CostItemType.MANAGEMENT || costItemType === CostItemType.RESOURCE || costItemType === CostItemType.ALLOWANCE) {
+    return ParserRoutingStatus.AUTO_ACCEPTED_NO_TASK
+  }
+
+  return ParserRoutingStatus.EXCLUDED
+}
+
+function deriveBillingMode(name: string, costItemType: CostItemType): ParserBillingMode {
+  const lower = name.toLowerCase()
+
+  if (
+    lower.includes('尾款') ||
+    lower.includes('final payment') ||
+    lower.includes('retention')
+  ) {
+    return ParserBillingMode.ON_COMPLETION
+  }
+
+  if (
+    costItemType === CostItemType.EXECUTABLE ||
+    costItemType === CostItemType.MANAGEMENT ||
+    costItemType === CostItemType.RESOURCE ||
+    costItemType === CostItemType.ALLOWANCE
+  ) {
+    return ParserBillingMode.BY_PROGRESS
+  }
+
+  return ParserBillingMode.INHERIT_PO_TERMS
+}
+
 export function classifyCostItem(name: string): CostItemType
 export function classifyCostItem(
   name: string,
@@ -195,6 +311,23 @@ export function classifyCostItemWithSemanticTag(
   name: string
 ): CostItemSemanticClassification {
   return classifyCostItem(name, { includeSemanticTagSlug: true })
+}
+
+/**
+ * Parser-level business classification with explicit Type / Status / BillingMode.
+ *
+ * This keeps semantic type (`costItemType`) and process routing (`routingStatus`)
+ * separate, so document-parser never relies on ambiguous labels like
+ * MATERIALIZABLE/SKIPPED.
+ */
+export function classifyParserLineItem(name: string): ParserLineItemClassification {
+  const semantic = classifyCostItemWithSemanticTag(name)
+  return {
+    ...semantic,
+    lineItemType: deriveLineItemType(name, semantic.costItemType),
+    routingStatus: deriveRoutingStatus(semantic.costItemType),
+    billingMode: deriveBillingMode(name, semantic.costItemType),
+  }
 }
 
 /**

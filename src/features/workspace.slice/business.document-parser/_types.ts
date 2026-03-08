@@ -1,4 +1,9 @@
-import type { CostItemType } from '@/features/semantic-graph.slice'
+import type {
+  CostItemType,
+  ParserBillingModeValue,
+  ParserLineItemTypeValue,
+  ParserRoutingStatusValue,
+} from '@/features/semantic-graph.slice'
 import type { SkillRequirement } from '@/shared-kernel'
 import type { Timestamp } from '@/shared-kernel/ports'
 
@@ -34,6 +39,12 @@ export interface ParsedLineItem {
    * receives the item.
    */
   costItemType: CostItemType;
+  /** Business-facing parsed type to avoid overloading costItemType with process semantics. */
+  lineItemType?: ParserLineItemTypeValue;
+  /** Routing status emitted by parser (task candidate / auto-accepted / finance-only / excluded). */
+  routingStatus?: ParserRoutingStatusValue;
+  /** Billing intent inferred during parse phase. */
+  billingMode?: ParserBillingModeValue;
   /**
    * VS8 semantic tag identity (tagSlug) for this line item.
    * Used by projection and UI to resolve semantic visual attributes via tag-snapshot [T5].

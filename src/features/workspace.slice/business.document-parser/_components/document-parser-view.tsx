@@ -3,7 +3,7 @@
 import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle, ListChecks } from 'lucide-react';
 import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
 
-import { classifyCostItem } from '@/features/semantic-graph.slice';
+import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
 import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
@@ -90,7 +90,7 @@ export function WorkspaceDocumentParser() {
 
   useEffect(() => {
     const parsedWorkItemSlugs = (state.data?.workItems ?? []).map((item) => {
-      const semantic = classifyCostItem(item.item, { includeSemanticTagSlug: true });
+      const semantic = classifyParserLineItem(item.item);
       return typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
         ? item.semanticTagSlug
         : semantic.semanticTagSlug;
@@ -201,7 +201,7 @@ export function WorkspaceDocumentParser() {
     }
 
     const lineItems = state.data.workItems.map((item, index) => {
-      const semantic = classifyCostItem(item.item, { includeSemanticTagSlug: true });
+      const semantic = classifyParserLineItem(item.item);
       const resolvedTaskType = resolveOrgTaskTypeByItemName(item.item, orgTaskTypes);
       return {
       name: item.item,
@@ -212,6 +212,9 @@ export function WorkspaceDocumentParser() {
       subtotal: item.price,
       // Layer-2 Semantic Classification (VS8) — applied here during the import phase.
       costItemType: semantic.costItemType,
+      lineItemType: semantic.lineItemType,
+      routingStatus: semantic.routingStatus,
+      billingMode: semantic.billingMode,
       semanticTagSlug:
         typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
           ? item.semanticTagSlug
@@ -290,12 +293,14 @@ export function WorkspaceDocumentParser() {
     // Digital Twin delta is available, without exposing document-parser internals [D7].
     // oldIntentId is included when a prior intent was superseded so consumers can retract
     // draft tasks linked to the previous intent.
+    const taskDraftCount = lineItems.filter((item) => item.routingStatus === 'TASK_CANDIDATE').length;
+
     const deltaPayload = {
       intentId,
       intentVersion: INITIAL_PARSING_INTENT_VERSION,
       workspaceId: workspace.id,
       sourceFileName: state.fileName || 'Unknown Document',
-      taskDraftCount: lineItems.length,
+      taskDraftCount,
       ...(aggregatedSkillRequirements.length > 0
         ? { skillRequirements: aggregatedSkillRequirements }
         : {}),

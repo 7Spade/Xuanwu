@@ -1,6 +1,6 @@
 import type { MutableRefObject } from 'react';
 
-import { shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
+import { ParserRoutingStatus, shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
 import {
   finishParsingImport,
   markParsingIntentFailed,
@@ -28,6 +28,13 @@ interface CreateWorkspaceImportHandlerInput {
 
 export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandlerInput) {
   return (payload: DocumentParserItemsExtractedPayload) => {
+    const shouldCreateTask = (item: DocumentParserItemsExtractedPayload['items'][number]): boolean => {
+      if (item.routingStatus) {
+        return item.routingStatus === ParserRoutingStatus.TASK_CANDIDATE
+      }
+      return shouldMaterializeAsTask(item.costItemType)
+    }
+
     const importItems = () => {
       if (input.inProgressImports.current.has(payload.intentId)) {
         toast({
@@ -44,7 +51,7 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
       });
 
       const items: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'>[] = payload.items.flatMap((item, originalIndex) =>
-        shouldMaterializeAsTask(item.costItemType)
+        shouldCreateTask(item)
           ? [{
               name: item.name,
               quantity: item.quantity,
@@ -66,8 +73,10 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
           : [],
       );
 
-      const skippedItems = payload.items.filter((item) => !shouldMaterializeAsTask(item.costItemType));
-      const skippedSummaryLines = skippedItems.map((item) => `• [${item.costItemType}] ${item.name}`);
+      const skippedItems = payload.items.filter((item) => !shouldCreateTask(item));
+      const skippedSummaryLines = skippedItems.map(
+        (item) => `• [${item.routingStatus ?? 'EXCLUDED'} / ${item.lineItemType ?? item.costItemType}] ${item.name}`
+      );
 
       hasTasksForSourceIntent(input.workspaceId, payload.intentId)
         .then((alreadyImported) => {
@@ -101,7 +110,7 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
               }
 
               const executablePayloadItems = payload.items.flatMap((item, originalIndex) =>
-                shouldMaterializeAsTask(item.costItemType)
+                shouldCreateTask(item)
                   ? [{
                       ...item,
                       sourceIntentIndex: item.sourceIntentIndex ?? originalIndex,
@@ -181,7 +190,7 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
                 description: statusWritebackWarning
                   ? `${successfulTaskIds.length} tasks have been added; intent status update failed: ${statusWritebackWarning}`
                   : skippedSummaryLines.length > 0
-                    ? `${successfulTaskIds.length} task(s) added; ${skippedSummaryLines.length} non-executable item(s) skipped (financial, management, etc.).`
+                    ? `${successfulTaskIds.length} task(s) added; ${skippedSummaryLines.length} non-task item(s) routed to auto-acceptance/finance.`
                     : `${successfulTaskIds.length} tasks have been added.`,
               });
               await input.logAuditEvent(
@@ -215,10 +224,10 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
       return;
     }
 
-    const executableCount = payload.items.filter((item) => shouldMaterializeAsTask(item.costItemType)).length;
-    const nonExecutableCount = payload.items.length - executableCount;
-    const itemBreakdown = nonExecutableCount > 0
-      ? `${executableCount} executable task(s), ${nonExecutableCount} non-task item(s) (e.g. financial, management) will be skipped.`
+    const taskCandidateCount = payload.items.filter((item) => shouldCreateTask(item)).length;
+    const nonTaskCount = payload.items.length - taskCandidateCount;
+    const itemBreakdown = nonTaskCount > 0
+      ? `${taskCandidateCount} task candidate(s), ${nonTaskCount} non-task item(s) will be routed to auto-acceptance/finance.`
       : 'Do you want to import them as new root tasks?';
 
     toast({

@@ -1,5 +1,10 @@
 // [?·責] 事件?稱??Payload ??TypeScript 類å?定義 (Contract)
-import type { CostItemType } from "@/features/semantic-graph.slice"
+import type {
+  CostItemType,
+  ParserBillingModeValue,
+  ParserLineItemTypeValue,
+  ParserRoutingStatusValue,
+} from "@/features/semantic-graph.slice"
 import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/shared-kernel"
 
 import type { DailyLog } from "../business.daily/_types"
@@ -59,11 +64,17 @@ export interface DocumentParserItemsExtractedPayload {
     subtotal: number
     /**
      * Layer-2 Semantic Classification (VS8) ??populated during the document parse
-     * phase by `classifyCostItem`.  The semantic router in the event handler uses
-     * this to decide whether to materialise the item as a WorkspaceTask (EXECUTABLE)
-     * or to route it to a different domain model / skip task creation.
+      * phase by `classifyCostItem`.  Routing is resolved separately via
+      * `routingStatus` so downstream handlers do not overload CostItemType as a
+      * process status flag.
      */
     costItemType: CostItemType
+    /** Parser-level business type for downstream UI/reporting. */
+    lineItemType?: ParserLineItemTypeValue
+    /** Parser routing result; TASK_CANDIDATE items are materialized as WorkspaceTask. */
+    routingStatus?: ParserRoutingStatusValue
+    /** Parser-inferred billing mode for finance lifecycle hints. */
+    billingMode?: ParserBillingModeValue
     /**
      * Canonical semantic tag slug aligned with VS8 tag taxonomy.
      */

@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
-import { classifyCostItem, shouldMaterializeAsTask } from '@/features/semantic-graph.slice';
+import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import type { TagSnapshotPresentation } from '@/features/semantic-graph.slice';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
@@ -41,15 +41,16 @@ export function WorkItemsTable({
   const total = initialData.reduce((sum, item) => sum + item.price, 0);
 
   const getItemSemanticStatus = (item: WorkItem) => {
-    const semantic = classifyCostItem(item.item, { includeSemanticTagSlug: true });
+    const semantic = classifyParserLineItem(item.item);
     const semanticTagSlug =
       typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
         ? item.semanticTagSlug
         : semantic.semanticTagSlug;
-    const itemStatus = shouldMaterializeAsTask(semantic.costItemType)
-      ? 'MATERIALIZABLE'
-      : 'SKIPPED';
-    return { semanticTagSlug, itemStatus };
+    return {
+      semanticTagSlug,
+      itemStatus: semantic.routingStatus,
+      lineItemType: semantic.lineItemType,
+    };
   };
 
   return (
@@ -64,12 +65,13 @@ export function WorkItemsTable({
               <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Discount</th>
               <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Subtotal</th>
               <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Tag</th>
+              <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Type</th>
               <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Status</th>
             </tr>
           </thead>
           <tbody>
             {initialData.map((item, idx) => {
-              const { semanticTagSlug, itemStatus } = getItemSemanticStatus(item);
+              const { semanticTagSlug, itemStatus, lineItemType } = getItemSemanticStatus(item);
               const presentation = tagPresentationMap[semanticTagSlug];
               const Icon = presentation ? ICON_MAP[presentation.iconToken] : Hammer;
               const colorClass = presentation ? COLOR_CLASS_MAP[presentation.colorToken] : 'text-muted-foreground';
@@ -87,7 +89,12 @@ export function WorkItemsTable({
                     </span>
                   </td>
                   <td className="px-4 py-2">
-                    <Badge variant={itemStatus === 'MATERIALIZABLE' ? 'default' : 'secondary'} className="text-[10px] uppercase">
+                    <Badge variant={itemStatus === 'TASK_CANDIDATE' ? 'default' : 'secondary'} className="text-[10px] uppercase">
+                      {lineItemType ?? 'WORK_PACKAGE'}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Badge variant={itemStatus === 'TASK_CANDIDATE' ? 'default' : 'secondary'} className="text-[10px] uppercase">
                       {itemStatus}
                     </Badge>
                   </td>
@@ -97,7 +104,7 @@ export function WorkItemsTable({
           </tbody>
           <tfoot>
             <tr className="border-t bg-muted/50">
-              <td colSpan={6} className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Total</td>
+              <td colSpan={7} className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Total</td>
               <td className="px-4 py-2 text-right font-bold">{total.toLocaleString()}</td>
             </tr>
           </tfoot>
@@ -105,7 +112,7 @@ export function WorkItemsTable({
       </div>
 
       <div className="mt-6 flex items-center justify-end">
-        <Button onClick={onImport}>Import as Root Tasks</Button>
+        <Button onClick={onImport}>Import with Routing</Button>
       </div>
     </div>
   );
@@ -135,12 +142,13 @@ export function ParsedItemsTable({
         <thead>
           <tr className="border-b bg-muted/50">
             <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Item</th>
-            <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Type</th>
+            <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Cost Type</th>
             <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Qty</th>
             <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Unit Price</th>
             <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Discount</th>
             <th className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Subtotal</th>
             <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Tag</th>
+            <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Type</th>
             <th className="px-4 py-2 text-left font-bold uppercase tracking-widest text-muted-foreground">Status</th>
           </tr>
         </thead>
@@ -170,8 +178,13 @@ export function ParsedItemsTable({
                   </span>
                 </td>
                 <td className="px-4 py-2">
-                  <Badge variant={shouldMaterializeAsTask(item.costItemType) ? 'default' : 'secondary'} className="text-[10px] uppercase">
-                    {shouldMaterializeAsTask(item.costItemType) ? 'MATERIALIZABLE' : 'SKIPPED'}
+                  <Badge variant={item.routingStatus === 'TASK_CANDIDATE' ? 'default' : 'secondary'} className="text-[10px] uppercase">
+                    {item.lineItemType ?? item.costItemType}
+                  </Badge>
+                </td>
+                <td className="px-4 py-2">
+                  <Badge variant={item.routingStatus === 'TASK_CANDIDATE' ? 'default' : 'secondary'} className="text-[10px] uppercase">
+                    {item.routingStatus ?? 'EXCLUDED'}
                   </Badge>
                 </td>
               </tr>
@@ -180,7 +193,7 @@ export function ParsedItemsTable({
         </tbody>
         <tfoot>
           <tr className="border-t bg-muted/50">
-            <td colSpan={7} className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Total</td>
+            <td colSpan={8} className="px-4 py-2 text-right font-bold uppercase tracking-widest text-muted-foreground">Total</td>
             <td className="px-4 py-2 text-right font-bold">{total.toLocaleString()}</td>
           </tr>
         </tfoot>

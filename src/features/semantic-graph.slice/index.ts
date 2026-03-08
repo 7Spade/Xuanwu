@@ -156,13 +156,21 @@ export {
 export {
   classifyCostItem,
   classifyCostItemWithSemanticTag,
+  classifyParserLineItem,
   CostItemType,
+  ParserLineItemType,
+  ParserRoutingStatus,
+  ParserBillingMode,
   shouldMaterializeAsTask,
 } from './_cost-classifier';
 export type {
   CostItemType as CostItemTypeValue,
   SemanticTagSlug,
   CostItemSemanticClassification,
+  ParserLineItemType as ParserLineItemTypeValue,
+  ParserRoutingStatus as ParserRoutingStatusValue,
+  ParserBillingMode as ParserBillingModeValue,
+  ParserLineItemClassification,
 } from './_cost-classifier';
 
 export {
