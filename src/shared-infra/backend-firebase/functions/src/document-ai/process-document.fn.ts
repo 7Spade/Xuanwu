@@ -1,6 +1,6 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { initializeApp, getApps } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { FieldValue, Timestamp, getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { DocumentProcessorServiceClient } from "@google-cloud/documentai";
 import type { protos } from "@google-cloud/documentai";
@@ -39,11 +39,175 @@ interface OutputEntity {
 
 interface WorkspaceFileVersionRecord {
   versionId?: string;
+  versionNumber?: number;
+  downloadURL?: string;
+  size?: number;
+  uploadedBy?: string;
+  versionName?: string;
   storagePath?: string;
+}
+
+interface WorkspaceFileRecord {
+  name?: string;
+  type?: string;
+  currentVersionId?: string;
+  versions?: WorkspaceFileVersionRecord[];
 }
 
 function normalizeStoragePath(path: string): string {
   return path.replace(/^\/+/, "");
+}
+
+function parseGcsUri(gcsUri: string): { bucket: string; path: string } {
+  if (!gcsUri.startsWith("gs://")) {
+    throw new Error("Invalid gcsUri");
+  }
+  const withoutScheme = gcsUri.slice(5);
+  const firstSlash = withoutScheme.indexOf("/");
+  if (firstSlash < 0) {
+    throw new Error("Invalid gcsUri path");
+  }
+  return {
+    bucket: withoutScheme.slice(0, firstSlash),
+    path: withoutScheme.slice(firstSlash + 1),
+  };
+}
+
+function removeExtension(fileName: string): string {
+  const dot = fileName.lastIndexOf(".");
+  if (dot <= 0) return fileName;
+  return fileName.slice(0, dot);
+}
+
+function buildFirebaseDownloadUrl(bucketName: string, objectPath: string, token: string): string {
+  const encoded = encodeURIComponent(objectPath);
+  return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encoded}?alt=media&token=${token}`;
+}
+
+async function persistJsonArtifact(params: {
+  workspaceId?: string;
+  sourceFileId?: string;
+  sourceVersionId?: string;
+  sourceFileName?: string;
+  sourceStoragePath: string;
+  resolvedGcsUri: string;
+  traceId: string;
+  mimeType: string;
+  text: string;
+  entities: OutputEntity[];
+  pageCount: number;
+}): Promise<{ artifactStoragePath: string; artifactDownloadURL: string } | null> {
+  if (!params.workspaceId || !params.sourceFileId || !params.sourceVersionId) {
+    return null;
+  }
+
+  const parsed = parseGcsUri(params.resolvedGcsUri);
+  const storage = getStorage();
+  const bucket = storage.bucket(parsed.bucket);
+
+  const sourcePath = normalizeStoragePath(params.sourceStoragePath);
+  const lastSlash = sourcePath.lastIndexOf("/");
+  const sourceDir = lastSlash >= 0 ? sourcePath.slice(0, lastSlash) : "";
+  const sourceNameFromPath = lastSlash >= 0 ? sourcePath.slice(lastSlash + 1) : sourcePath;
+  const sourceName = params.sourceFileName && params.sourceFileName.trim().length > 0
+    ? params.sourceFileName.trim()
+    : sourceNameFromPath;
+
+  const jsonFileName = `${removeExtension(sourceName)}.document-ai.json`;
+  const artifactStoragePath = sourceDir.length > 0 ? `${sourceDir}/${jsonFileName}` : jsonFileName;
+
+  const artifactPayload = {
+    traceId: params.traceId,
+    source: {
+      workspaceId: params.workspaceId,
+      fileId: params.sourceFileId,
+      versionId: params.sourceVersionId,
+      gcsUri: params.resolvedGcsUri,
+      storagePath: sourcePath,
+      mimeType: params.mimeType,
+      fileName: sourceName,
+    },
+    parsedAt: new Date().toISOString(),
+    pageCount: params.pageCount,
+    text: params.text,
+    entities: params.entities,
+  };
+
+  const token = randomUUID();
+  const artifactFile = bucket.file(artifactStoragePath);
+  await artifactFile.save(Buffer.from(JSON.stringify(artifactPayload, null, 2), "utf8"), {
+    contentType: "application/json",
+    resumable: false,
+    metadata: {
+      metadata: {
+        firebaseStorageDownloadTokens: token,
+      },
+    },
+  });
+
+  const artifactDownloadURL = buildFirebaseDownloadUrl(bucket.name, artifactStoragePath, token);
+
+  const db = getFirestore();
+  const artifactFileDocId = `${params.sourceFileId}--document-ai-json`;
+  const artifactVersionId = `${params.sourceVersionId}--document-ai-json`;
+  const artifactVersion = {
+    versionId: artifactVersionId,
+    versionNumber: 1,
+    versionName: "Document AI JSON",
+    size: Buffer.byteLength(JSON.stringify(artifactPayload), "utf8"),
+    uploadedBy: "document-ai-function",
+    createdAt: Timestamp.now(),
+    downloadURL: artifactDownloadURL,
+    storagePath: artifactStoragePath,
+  };
+
+  const artifactDocRef = db
+    .collection("workspaces")
+    .doc(params.workspaceId)
+    .collection("files")
+    .doc(artifactFileDocId);
+
+  const artifactDocSnap = await artifactDocRef.get();
+  if (!artifactDocSnap.exists) {
+    await artifactDocRef.set({
+      name: jsonFileName,
+      type: "application/json",
+      currentVersionId: artifactVersionId,
+      versions: [artifactVersion],
+      updatedAt: Timestamp.now(),
+    });
+    return { artifactStoragePath, artifactDownloadURL };
+  }
+
+  const artifactDocData = artifactDocSnap.data() as WorkspaceFileRecord;
+  const existingVersions = Array.isArray(artifactDocData.versions) ? artifactDocData.versions : [];
+  const existingIndex = existingVersions.findIndex((item) => item.versionId === artifactVersionId);
+
+  if (existingIndex >= 0) {
+    const replaced = [...existingVersions];
+    replaced[existingIndex] = {
+      ...replaced[existingIndex],
+      ...artifactVersion,
+      versionNumber: replaced[existingIndex]?.versionNumber ?? artifactVersion.versionNumber,
+    };
+    await artifactDocRef.update({
+      versions: replaced,
+      currentVersionId: artifactVersionId,
+      updatedAt: Timestamp.now(),
+    });
+    return { artifactStoragePath, artifactDownloadURL };
+  }
+
+  await artifactDocRef.update({
+    versions: FieldValue.arrayUnion({
+      ...artifactVersion,
+      versionNumber: existingVersions.length + 1,
+    }),
+    currentVersionId: artifactVersionId,
+    updatedAt: Timestamp.now(),
+  });
+
+  return { artifactStoragePath, artifactDownloadURL };
 }
 
 async function resolveGcsUriFromWorkspaceRecord(payload: ProcessDocumentRequestBody): Promise<string> {
@@ -68,10 +232,7 @@ async function resolveGcsUriFromWorkspaceRecord(payload: ProcessDocumentRequestB
     throw new Error("Workspace file document not found");
   }
 
-  const fileData = fileDoc.data() as {
-    name?: string;
-    versions?: WorkspaceFileVersionRecord[];
-  };
+  const fileData = fileDoc.data() as WorkspaceFileRecord;
 
   const versions = Array.isArray(fileData.versions) ? fileData.versions : [];
   const selectedVersion = versions.find((version) => version.versionId === payload.versionId);
@@ -144,6 +305,25 @@ export const processDocument = onRequest(
         })
       );
 
+      const sourceStoragePathFromBody = body?.storagePath?.trim();
+      const sourceStoragePath = sourceStoragePathFromBody && sourceStoragePathFromBody.length > 0
+        ? sourceStoragePathFromBody
+        : parseGcsUri(resolvedGcsUri).path;
+
+      const artifact = await persistJsonArtifact({
+        workspaceId: body?.workspaceId,
+        sourceFileId: body?.fileId,
+        sourceVersionId: body?.versionId,
+        sourceFileName: body?.fileName,
+        sourceStoragePath,
+        resolvedGcsUri,
+        traceId,
+        mimeType,
+        text: result.document?.text ?? "",
+        entities,
+        pageCount: result.document?.pages?.length ?? 0,
+      });
+
       res.status(200).json({
         ok: true,
         traceId,
@@ -154,6 +334,8 @@ export const processDocument = onRequest(
         text: result.document?.text ?? "",
         entities,
         pageCount: result.document?.pages?.length ?? 0,
+        artifactStoragePath: artifact?.artifactStoragePath,
+        artifactDownloadURL: artifact?.artifactDownloadURL,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";

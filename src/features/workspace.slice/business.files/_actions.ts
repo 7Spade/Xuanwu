@@ -13,6 +13,7 @@
 import {
   createWorkspaceFile as createFileFacade,
   addWorkspaceFileVersion as addVersionFacade,
+  deleteWorkspaceFile as deleteFileFacade,
   restoreWorkspaceFileVersion as restoreVersionFacade,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -103,6 +104,24 @@ export async function restoreWorkspaceFileVersion(
     return commandFailureFrom(
       'RESTORE_WORKSPACE_FILE_VERSION_FAILED',
       err instanceof Error ? err.message : 'Failed to restore workspace file version'
+    );
+  }
+}
+
+/**
+ * Deregisters a workspace file by deleting the file document.
+ */
+export async function deregisterWorkspaceFile(
+  workspaceId: string,
+  fileId: string
+): Promise<CommandResult> {
+  try {
+    await deleteFileFacade(workspaceId, fileId);
+    return commandSuccess(fileId, Date.now());
+  } catch (err) {
+    return commandFailureFrom(
+      'DEREGISTER_WORKSPACE_FILE_FAILED',
+      err instanceof Error ? err.message : 'Failed to deregister workspace file'
     );
   }
 }

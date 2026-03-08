@@ -77,6 +77,7 @@ export const deleteWorkspaceLocation = repositories.deleteWorkspaceLocation
 export const createWorkspaceFile = repositories.createWorkspaceFile
 export const addWorkspaceFileVersion = repositories.addWorkspaceFileVersion
 export const restoreWorkspaceFileVersion = repositories.restoreWorkspaceFileVersion
+export const deleteWorkspaceFile = repositories.deleteWorkspaceFile
 export const getWorkspaceFilesFromSubcollection = repositories.getWorkspaceFilesFromSubcollection
 
 export const createParsingIntent = repositories.createParsingIntent

@@ -6,7 +6,7 @@
  */
 
 import { getFileDownloadURL } from './storage.read.adapter';
-import { uploadFile } from './storage.write.adapter';
+import { deleteFile, uploadFile } from './storage.write.adapter';
 
 /**
  * Uploads a photo for a daily log entry to a structured path and returns its public URL.
@@ -125,4 +125,14 @@ export const uploadWorkspaceDocument = async (
     storagePath,
     downloadURL: await getFileDownloadURL(storagePath),
   };
+};
+
+/**
+ * Deletes a stored object by path.
+ * @param storagePath The storage object path inside bucket.
+ */
+export const deleteWorkspaceStorageObject = async (
+  storagePath: string
+): Promise<void> => {
+  await deleteFile(storagePath);
 };

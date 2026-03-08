@@ -13,11 +13,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/sha
 import { useToast } from '@/shadcn-ui/hooks/use-toast';
 import { logDomainError } from '@/shared-infra/observability';
 import type { SkillRequirement } from '@/shared-kernel';
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 
 
 
 import {
   extractDataFromDocument,
+  runAiParsingFromOcrDocument,
+  type OcrDocumentPayload,
   type ActionState,
 } from '../_form-actions';
 import {
@@ -61,10 +64,12 @@ export function WorkspaceDocumentParser() {
     initialState
   );
   const { eventBus, logAuditEvent, workspace, pendingParseFile, setPendingParseFile } = useWorkspace();
-  const [isPending, startTransition] = useTransition();
+  const [isOcrPending, startOcrTransition] = useTransition();
+  const [isAiPending, startAiTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
+  const [aiWorkItems, setAiWorkItems] = useState<WorkItem[]>([]);
   // Tracks the WorkspaceFile ID when a file is sent from the Files tab for full traceability
   const sourceFileIdRef = useRef<string | undefined>(undefined);
   const sourceFileVersionIdRef = useRef<string | undefined>(undefined);
@@ -91,7 +96,7 @@ export function WorkspaceDocumentParser() {
   }, [workspace.id]);
 
   useEffect(() => {
-    const parsedWorkItemSlugs = (state.data?.workItems ?? []).map((item) => {
+    const parsedWorkItemSlugs = aiWorkItems.map((item) => {
       const semantic = classifyParserLineItem(item.item);
       return typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
         ? item.semanticTagSlug
@@ -119,7 +124,7 @@ export function WorkspaceDocumentParser() {
     return () => {
       cancelled = true;
     };
-  }, [selectedIntent, state.data?.workItems]);
+  }, [selectedIntent, aiWorkItems]);
 
   // Helper: trigger the AI extraction pipeline from a Firebase Storage URL.
   // The URL is passed directly to the Server Action which fetches it server-side,
@@ -142,8 +147,9 @@ export function WorkspaceDocumentParser() {
     if (payload.storagePath) {
       formData.append('storagePath', payload.storagePath);
     }
-    startTransition(() => formAction(formData));
-  }, [formAction, startTransition, workspace.id]);
+    setAiWorkItems([]);
+    startOcrTransition(() => formAction(formData));
+  }, [formAction, startOcrTransition, workspace.id]);
 
   // On mount: if files-view queued a file via WorkspaceProvider context, auto-trigger.
   // This bridges the cross-tab gap — subscriber only exists when this component is mounted.
@@ -187,11 +193,41 @@ export function WorkspaceDocumentParser() {
     if (event.target.files && event.target.files.length > 0) {
       if (formRef.current) {
         const formData = new FormData(formRef.current);
-        startTransition(() => {
+        setAiWorkItems([]);
+        startOcrTransition(() => {
           formAction(formData);
         });
       }
     }
+  };
+
+  const handleRunAiParsing = () => {
+    if (!state.data?.ocrDocument) {
+      toast({
+        variant: 'destructive',
+        title: 'OCR not ready',
+        description: 'Run Document AI OCR first.',
+      });
+      return;
+    }
+
+    startAiTransition(() => {
+      runAiParsingFromOcrDocument(state.data?.ocrDocument as OcrDocumentPayload)
+        .then((result) => {
+          setAiWorkItems(result.workItems);
+          toast({
+            title: 'AI parsing completed',
+            description: `Parsed ${result.workItems.length} item(s).`,
+          });
+        })
+        .catch((error: unknown) => {
+          toast({
+            variant: 'destructive',
+            title: 'AI parsing failed',
+            description: error instanceof Error ? error.message : 'Unknown error',
+          });
+        });
+    });
   };
 
   const handleUploadClick = () => {
@@ -202,7 +238,7 @@ export function WorkspaceDocumentParser() {
   };
 
   const handleImport = async () => {
-    if (!state.data?.workItems) return;
+    if (!aiWorkItems || aiWorkItems.length === 0) return;
 
     let orgTaskTypes = [] as Awaited<ReturnType<typeof getOrgTaskTypes>>;
     if (workspace.dimensionId) {
@@ -213,7 +249,7 @@ export function WorkspaceDocumentParser() {
       }
     }
 
-    const lineItems = state.data.workItems.map((item, index) => {
+    const lineItems = aiWorkItems.map((item, index) => {
       const semantic = classifyParserLineItem(item.item);
       const resolvedTaskType = resolveOrgTaskTypeByItemName(item.item, orgTaskTypes);
       return {
@@ -378,7 +414,7 @@ export function WorkspaceDocumentParser() {
                 name="file"
                 className="hidden"
                 onChange={handleFileChange}
-                disabled={isPending}
+                disabled={isOcrPending}
                 accept=".pdf,.png,.jpg,.jpeg"
               />
             </div>
@@ -386,15 +422,15 @@ export function WorkspaceDocumentParser() {
         </CardContent>
       </Card>
 
-       {isPending && (
+       {isOcrPending && (
         <div className="mt-8 flex flex-col items-center justify-center text-center">
           <Loader2 className="mb-4 size-16 animate-spin text-primary" />
-          <p className="text-lg font-medium text-foreground">Extracting Data...</p>
-          <p className="text-muted-foreground">This may take a moment.</p>
+          <p className="text-lg font-medium text-foreground">Running Document AI OCR...</p>
+          <p className="text-muted-foreground">This step only extracts OCR text and entities.</p>
         </div>
       )}
 
-      {state.data && !isPending && (
+      {state.data && !isOcrPending && (
         <div className="mt-8">
             <Card className="bg-card shadow-2xl">
                 <CardHeader>
@@ -403,13 +439,24 @@ export function WorkspaceDocumentParser() {
                     <CardTitle className="text-2xl">Extracted Items</CardTitle>
                     <CardDescription className="flex items-center gap-2 pt-2">
                         <FileIcon className="size-4" />
-                        {state.fileName}
+                        {state.fileName} · OCR extracted
                     </CardDescription>
                     </div>
                 </div>
                 </CardHeader>
                 <CardContent>
-                    <WorkItemsTable initialData={state.data.workItems} onImport={handleImport} tagPresentationMap={tagPresentationMap} />
+                    <div className="mb-4 flex items-center gap-2">
+                      <Button onClick={handleRunAiParsing} disabled={isAiPending}>
+                        {isAiPending ? 'Running Genkit AI...' : 'Run Genkit AI Parsing'}
+                      </Button>
+                    </div>
+                    {aiWorkItems.length > 0 ? (
+                      <WorkItemsTable initialData={aiWorkItems} onImport={handleImport} tagPresentationMap={tagPresentationMap} />
+                    ) : (
+                      <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                        Genkit parsing not executed yet. Click "Run Genkit AI Parsing".
+                      </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

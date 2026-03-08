@@ -4,7 +4,22 @@ import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-item
 import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 
 export type ActionState = {
-  data?: { workItems: WorkItem[] };
+  data?: {
+    workItems: WorkItem[];
+    ocrDocument: {
+      source: 'document-ocr-extractor';
+      mimeType: string;
+      text: string;
+      entities: Array<{
+        type: string;
+        mentionText: string;
+        confidence: number;
+        normalizedValue?: string;
+      }>;
+      traceId: string;
+      extractedAt: string;
+    };
+  };
   error?: string;
   fileName?: string;
 };
@@ -24,15 +39,45 @@ interface ProcessDocumentFunctionResponse {
   }>;
 }
 
+export interface OcrDocumentPayload {
+  source: 'document-ocr-extractor';
+  mimeType: string;
+  text: string;
+  entities: Array<{
+    type: string;
+    mentionText: string;
+    confidence: number;
+    normalizedValue?: string;
+  }>;
+  traceId: string;
+  extractedAt: string;
+}
+
+export async function runAiParsingFromOcrDocument(
+  ocrDocument: OcrDocumentPayload
+): Promise<{ workItems: WorkItem[] }> {
+  const extraction = await extractInvoiceItems({
+    documentObject: ocrDocument,
+  });
+  return {
+    workItems: extraction.workItems,
+  };
+}
+
 function getProcessDocumentEndpoint(): string {
   const explicit = process.env.DOCAI_PROCESS_DOCUMENT_URL;
   if (explicit && explicit.trim().length > 0) {
     return explicit.trim();
   }
 
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const projectId =
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCLOUD_PROJECT ||
+    'xuanwu-i-00708880-4e2d8';
+
   if (!projectId) {
-    throw new Error('NEXT_PUBLIC_FIREBASE_PROJECT_ID is required for processDocument endpoint resolution.');
+    throw new Error('Cannot resolve Firebase project ID for processDocument endpoint. Set DOCAI_PROCESS_DOCUMENT_URL explicitly.');
   }
 
   const emulatorHost = process.env.FUNCTIONS_EMULATOR_HOST;
@@ -93,26 +138,27 @@ export async function extractDataFromDocument(
       };
     }
 
-    const extraction = await extractInvoiceItems({
-      documentObject: {
-        source: 'document-ocr-extractor',
-        mimeType: payload.mimeType ?? (typeof fileType === 'string' ? fileType : 'application/octet-stream'),
-        text: payload.text ?? '',
-        entities: (payload.entities ?? []).map((entity) => ({
-          type: entity.type,
-          mentionText: entity.mentionText,
-          confidence: entity.confidence,
-          ...(entity.normalizedValue ? { normalizedValue: entity.normalizedValue } : {}),
-        })),
-        traceId: payload.traceId ?? crypto.randomUUID(),
-        extractedAt: payload.extractedAt ?? new Date().toISOString(),
-      },
-    });
+    const ocrDocument = {
+      source: 'document-ocr-extractor' as const,
+      mimeType: payload.mimeType ?? (typeof fileType === 'string' ? fileType : 'application/octet-stream'),
+      text: payload.text ?? '',
+      entities: (payload.entities ?? []).map((entity) => ({
+        type: entity.type,
+        mentionText: entity.mentionText,
+        confidence: entity.confidence,
+        ...(entity.normalizedValue ? { normalizedValue: entity.normalizedValue } : {}),
+      })),
+      traceId: payload.traceId ?? crypto.randomUUID(),
+      extractedAt: payload.extractedAt ?? new Date().toISOString(),
+    };
 
     return {
       fileName: typeof fileName === 'string' ? fileName : undefined,
       data: {
-        workItems: extraction.workItems,
+        // Document AI and AI semantic parsing are intentionally decoupled.
+        // This action only executes Document AI OCR extraction.
+        workItems: [],
+        ocrDocument,
       },
     };
   } catch (error) {

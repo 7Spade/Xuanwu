@@ -57,10 +57,11 @@ import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   createWorkspaceFile,
   addWorkspaceFileVersion,
+  deregisterWorkspaceFile,
   restoreWorkspaceFileVersion,
 } from '../_actions';
 import { subscribeToWorkspaceFiles } from '../_queries';
-import { uploadRawFile } from '../_storage-actions';
+import { deleteVersionStorageObjects, uploadRawFile } from '../_storage-actions';
 import type { WorkspaceFile, WorkspaceFileVersion } from "../_types";
 
 
@@ -210,6 +211,30 @@ export function WorkspaceFiles() {
     setHistoryFile(null);
   };
 
+  const handleDeregister = async (file: WorkspaceFile) => {
+    const storagePaths = (file.versions ?? [])
+      .map((version) => version.storagePath)
+      .filter((path): path is string => typeof path === 'string' && path.length > 0);
+
+    await deleteVersionStorageObjects(storagePaths);
+
+    const result = await deregisterWorkspaceFile(workspace.id, file.id);
+    if (!result.success) {
+      toast({
+        variant: "destructive",
+        title: t('workspaces.failedToDeregisterFile'),
+        description: result.error.message,
+      });
+      return;
+    }
+
+    await logAuditEvent("Deregistered File", file.name, 'delete');
+    toast({
+      title: t('workspaces.fileDeregistered'),
+      description: t('workspaces.fileDeregisteredDescription', { name: file.name }),
+    });
+  };
+
   return (
     <div className="space-y-6 pb-20 duration-500 animate-in fade-in">
       <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" />
@@ -297,7 +322,10 @@ export function WorkspaceFiles() {
                         <DropdownMenuItem onClick={() => setHistoryFile(file)} className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase">
                           <History className="size-3.5 text-primary" /> {t('workspaces.versionHistory')}
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase text-destructive">
+                        <DropdownMenuItem
+                          onClick={() => void handleDeregister(file)}
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase text-destructive"
+                        >
                           <Trash2 className="size-3.5" /> {t('workspaces.deregisterFile')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>

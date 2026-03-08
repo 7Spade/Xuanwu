@@ -6,6 +6,7 @@
  */
 
 import {
+  deleteWorkspaceStorageObject,
   uploadDailyPhoto as uploadDailyPhotoFacade,
   uploadTaskAttachment as uploadTaskAttachmentFacade,
   uploadProfilePicture as uploadProfilePictureFacade,
@@ -73,4 +74,21 @@ export async function uploadRawFile(
   file: File
 ): Promise<{ downloadURL: string; storagePath: string }> {
   return uploadWorkspaceDocument(workspaceId, fileId, versionId, file)
+}
+
+/**
+ * Deletes all known version storage objects for a workspace file.
+ * Missing objects are ignored to keep deregistration idempotent.
+ */
+export async function deleteVersionStorageObjects(
+  storagePaths: readonly string[]
+): Promise<void> {
+  for (const path of storagePaths) {
+    if (!path) continue
+    try {
+      await deleteWorkspaceStorageObject(path)
+    } catch {
+      // Ignore not-found or stale paths to keep file deregistration resilient.
+    }
+  }
 }

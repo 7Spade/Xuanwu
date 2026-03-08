@@ -21,6 +21,7 @@ import { db } from '../firestore.client';
 import { createConverter } from '../firestore.converter';
 import { getDocuments } from '../firestore.read.adapter';
 import { updateDocument, addDocument } from '../firestore.write.adapter';
+import { deleteDocument } from '../firestore.write.adapter';
 
 /**
  * Creates a new file document in the workspace files subcollection.
@@ -72,6 +73,18 @@ export const restoreWorkspaceFileVersion = async (
     currentVersionId: versionId,
     updatedAt: serverTimestamp(),
   });
+};
+
+/**
+ * Deletes a workspace file document from the files subcollection.
+ * @param workspaceId The ID of the workspace.
+ * @param fileId The ID of the file document to remove.
+ */
+export const deleteWorkspaceFile = async (
+  workspaceId: string,
+  fileId: string
+): Promise<void> => {
+  return deleteDocument(`workspaces/${workspaceId}/files/${fileId}`);
 };
 
 /**
