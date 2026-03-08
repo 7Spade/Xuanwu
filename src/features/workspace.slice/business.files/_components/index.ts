@@ -1,1 +1,5 @@
 export { WorkspaceFiles } from './files-view'
+export { FilesTable } from './files-table'
+export { FileHistorySheet } from './file-history-sheet'
+export { FileTypeIcon } from './file-type-icon'
+export { getCurrentVersion, formatBytes } from './files-view.utils'

@@ -427,6 +427,25 @@ export function UserSettingsView()
 title=
 ```
 
+## File: src/features/account.slice/user.profile/_components/user-settings.tsx
+```typescript
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { useUser } from "../_hooks/use-user";
+import { EmailCard } from "./email-card";
+import { PreferencesCard } from "./preferences-card";
+import { ProfileCard } from "./profile-card";
+import { SecurityCard } from "./security-card";
+export function UserSettings()
+⋮----
+const handleSaveProfile = async () =>
+const handleWithdraw = () =>
+const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) =>
+```
+
 ## File: src/features/account.slice/user.profile/_hooks/use-user.ts
 ```typescript
 import { useState, useEffect, useCallback } from 'react'
@@ -726,6 +745,29 @@ interface LoginFormProps {
 }
 ⋮----
 <form className="flex flex-1 flex-col space-y-4" onSubmit=
+```
+
+## File: src/features/identity.slice/_components/login-view.tsx
+```typescript
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { completeRegistration , signIn, signInAnonymously } from "../_actions"
+import { AuthBackground } from "./auth-background"
+import { AuthTabsRoot } from "./auth-tabs-root"
+import { ResetPasswordForm } from "./reset-password-form"
+⋮----
+const handleAuth = async (type: "login" | "register") =>
+const handleAnonymous = async () =>
+⋮----
+onCancel=
 ```
 
 ## File: src/features/identity.slice/_components/register-form.tsx
@@ -5201,6 +5243,108 @@ export function subscribeToParsingIntents(
 
 ```
 
+## File: src/features/workspace.slice/business.files/_components/file-history-sheet.tsx
+```typescript
+import {
+  CheckCircle2,
+  Download,
+  History,
+  RotateCcw,
+  User,
+} from 'lucide-react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/shadcn-ui/sheet';
+import { cn } from '@/shadcn-ui/utils/utils';
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import { formatBytes } from './files-view.utils';
+interface FileHistorySheetProps {
+  readonly historyFile: WorkspaceFile | null;
+  readonly onClose: () => void;
+  readonly onRestore: (file: WorkspaceFile, versionId: string) => void;
+  readonly onDownloadVersion: (version?: WorkspaceFileVersion) => void;
+}
+⋮----
+<Sheet open=
+⋮----
+<SheetTitle className="text-xl font-black">
+⋮----
+className=
+```
+
+## File: src/features/workspace.slice/business.files/_components/file-type-icon.tsx
+```typescript
+import {
+  FileArchive,
+  FileCode,
+  FileJson,
+  FileText,
+  ImageIcon,
+} from 'lucide-react';
+interface FileTypeIconProps {
+  readonly fileName: string;
+}
+export function FileTypeIcon(
+```
+
+## File: src/features/workspace.slice/business.files/_components/files-table.tsx
+```typescript
+import {
+  AlertCircle,
+  Clock,
+  Download,
+  FileScan,
+  History,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shadcn-ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shadcn-ui/table';
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import { FileTypeIcon } from './file-type-icon';
+import { formatBytes, getCurrentVersion } from './files-view.utils';
+interface FilesTableProps {
+  readonly files: readonly WorkspaceFile[];
+  readonly onOpenHistory: (file: WorkspaceFile) => void;
+  readonly onDeregister: (file: WorkspaceFile) => void;
+  readonly onDownload: (version?: WorkspaceFileVersion) => void;
+  readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
+}
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/business.files/_components/files-view.utils.ts
+```typescript
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+export const getErrorMessage = (error: unknown, fallback: string)
+export const formatBytes = (bytes: number): string =>
+export const getCurrentVersion = (file: WorkspaceFile): WorkspaceFileVersion | undefined
+```
+
 ## File: src/features/workspace.slice/business.files/_hooks/use-workspace-filters.ts
 ```typescript
 import { useMemo, useDeferredValue } from "react";
@@ -9370,6 +9514,11 @@ export function workspaceRoleAtLeast(
 ): boolean
 ```
 
+## File: src/shared-kernel/constants/routes.ts
+```typescript
+
+```
+
 ## File: src/shared-kernel/constants/settings.ts
 ```typescript
 
@@ -10171,25 +10320,6 @@ onForegroundMessage(
 
 ```
 
-## File: src/features/account.slice/user.profile/_components/user-settings.tsx
-```typescript
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/app-runtime/providers/auth-provider";
-import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { toast } from "@/shadcn-ui/hooks/use-toast";
-import { useUser } from "../_hooks/use-user";
-import { EmailCard } from "./email-card";
-import { PreferencesCard } from "./preferences-card";
-import { ProfileCard } from "./profile-card";
-import { SecurityCard } from "./security-card";
-export function UserSettings()
-⋮----
-const handleSaveProfile = async () =>
-const handleWithdraw = () =>
-const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) =>
-```
-
 ## File: src/features/identity.slice/_actions.ts
 ```typescript
 import { createUserAccount } from '@/features/account.slice'
@@ -10213,29 +10343,6 @@ export async function completeRegistration(
   password: string,
   name: string
 ): Promise<CommandResult>
-```
-
-## File: src/features/identity.slice/_components/login-view.tsx
-```typescript
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { useI18n } from "@/app-runtime/providers/i18n-provider"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/shadcn-ui/dialog"
-import { toast } from "@/shadcn-ui/hooks/use-toast"
-import { completeRegistration , signIn, signInAnonymously } from "../_actions"
-import { AuthBackground } from "./auth-background"
-import { AuthTabsRoot } from "./auth-tabs-root"
-import { ResetPasswordForm } from "./reset-password-form"
-⋮----
-const handleAuth = async (type: "login" | "register") =>
-const handleAnonymous = async () =>
-⋮----
-onCancel=
 ```
 
 ## File: src/features/organization.slice/core/_components/account-grid.tsx
@@ -11854,11 +11961,6 @@ import { queryWorkspaceAccess } from './workspace-scope-guard';
 export function registerAllQueryHandlers(): Array<() => void>
 ```
 
-## File: src/shared-kernel/constants/routes.ts
-```typescript
-
-```
-
 ## File: src/shared-kernel/ports/i-auth.service.ts
 ```typescript
 export interface AuthUser {
@@ -13007,53 +13109,15 @@ export async function extractDataFromDocument(
 import {
   FileText,
   UploadCloud,
-  Clock,
-  History,
-  RotateCcw,
-  Trash2,
-  MoreVertical,
-  ImageIcon,
-  FileArchive,
-  FileCode,
-  FileJson,
-  User,
-  CheckCircle2,
-  AlertCircle,
-  Download,
   Loader2,
-  FileScan,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useWorkspace } from '@/features/workspace.slice/core';
-import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shadcn-ui/dropdown-menu";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
-import { ScrollArea } from "@/shadcn-ui/scroll-area";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle
-} from "@/shadcn-ui/sheet";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shadcn-ui/table";
-import { cn } from "@/shadcn-ui/utils/utils";
 import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   createWorkspaceFile,
@@ -13064,17 +13128,17 @@ import {
   uploadRawFile,
 } from '../_actions';
 import { subscribeToWorkspaceFiles } from '../_queries';
-import type { WorkspaceFile, WorkspaceFileVersion } from "../_types";
-const getErrorMessage = (error: unknown, fallback: string)
-const formatBytes = (bytes: number): string =>
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import { FileHistorySheet } from './file-history-sheet';
+import { FilesTable } from './files-table';
+import {
+  getErrorMessage,
+} from './files-view.utils';
 ⋮----
-const getFileIcon = (fileName: string) =>
 const handleUploadClick = () =>
 const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) =>
 const handleRestore = async (file: WorkspaceFile, versionId: string) =>
 const handleDeregister = async (file: WorkspaceFile) =>
-⋮----
-<DropdownMenuItem onClick=
-⋮----
-<div className=
+const handleDownloadVersion = (version?: WorkspaceFileVersion) =>
+const handleParseWithAi = (file: WorkspaceFile, version?: WorkspaceFileVersion) =>
 ```

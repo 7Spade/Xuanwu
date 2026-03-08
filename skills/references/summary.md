@@ -45,12 +45,12 @@ This skill contains the following reference files:
 
 ## Statistics
 
-570 files | 10,799 lines
+574 files | 10,847 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 459 | 8,394 |
-| TypeScript (TSX) | 111 | 2,405 |
+| TypeScript | 460 | 8,398 |
+| TypeScript (TSX) | 114 | 2,449 |
 
 **Largest files:**
 - `src/features/workspace.slice/core.event-bus/_events.ts` (185 lines)
