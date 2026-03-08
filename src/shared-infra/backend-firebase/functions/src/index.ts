@@ -35,6 +35,7 @@ export {
 // ── L2 Command Gateway ────────────────────────────────────────────────────────
 export { commandGateway } from "./gateway/command-gateway.fn";
 export { webhook }        from "./gateway/webhook.fn";
+export { backupCrud }     from "./gateway/backup-crud.fn";
 
 // ── L4 Outbox Relay ───────────────────────────────────────────────────────────
 export { outboxRelay } from "./relay/outbox-relay.fn";
