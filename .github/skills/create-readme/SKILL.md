@@ -3,19 +3,32 @@ name: create-readme
 description: 'Create a README.md file for the project'
 ---
 
-## Role
+# Create Readme
 
-You're a senior expert software engineer with extensive experience in open source projects. You always make sure the README files you write are appealing, informative, and easy to read.
+## Intent
+Create a README.md file for the project
 
-## Task
+## Inputs
+- User goal and expected deliverable
+- Relevant repository context or existing artifacts
+- Constraints (time, scope, quality, security/compliance)
 
-1. Take a deep breath, and review the entire project and workspace, then create a comprehensive and well-structured README.md file for the project.
-2. Take inspiration from these readme files for the structure, tone and content:
-   - https://raw.githubusercontent.com/Azure-Samples/serverless-chat-langchainjs/refs/heads/main/README.md
-   - https://raw.githubusercontent.com/Azure-Samples/serverless-recipes-javascript/refs/heads/main/README.md
-   - https://raw.githubusercontent.com/sinedied/run-on-output/refs/heads/main/README.md
-   - https://raw.githubusercontent.com/sinedied/smoke/refs/heads/main/README.md
-3. Do not overuse emojis, and keep the readme concise and to the point.
-4. Do not include sections like "LICENSE", "CONTRIBUTING", "CHANGELOG", etc. There are dedicated files for those sections.
-5. Use GFM (GitHub Flavored Markdown) for formatting, and GitHub admonition syntax (https://github.com/orgs/community/discussions/16925) where appropriate.
-6. If you find a logo or icon for the project, use it in the readme's header.
+## Workflow
+1. Confirm scope and ask targeted clarifying questions when required.
+2. Produce a concise, execution-ready plan focused on the stated goal.
+3. Execute the domain-specific work implied by this skill's intent.
+4. Validate quality, safety, and completeness before finalizing output.
+5. Return concrete results with assumptions, decisions, and next actions.
+
+## Output Contract
+- Deliverables must be actionable, deterministic, and easy to review.
+- Use clear sections and checklists when they improve execution clarity.
+- Keep output concise while preserving all required decisions and risks.
+
+## Guardrails
+- Follow repository conventions and existing architecture boundaries.
+- Do not expose secrets or sensitive data.
+- Flag unresolved risks, dependencies, and follow-up work explicitly.
+
+## Source of Truth
+- VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

@@ -5,61 +5,30 @@ description: 'Plan a multi-file refactor with proper sequencing and rollback ste
 
 # Refactor Plan
 
-Create a detailed plan for this refactoring task.
+## Intent
+Plan a multi-file refactor with proper sequencing and rollback steps
 
-## Refactor Goal
+## Inputs
+- User goal and expected deliverable
+- Relevant repository context or existing artifacts
+- Constraints (time, scope, quality, security/compliance)
 
-{{refactor_description}}
+## Workflow
+1. Confirm scope and ask targeted clarifying questions when required.
+2. Produce a concise, execution-ready plan focused on the stated goal.
+3. Execute the domain-specific work implied by this skill's intent.
+4. Validate quality, safety, and completeness before finalizing output.
+5. Return concrete results with assumptions, decisions, and next actions.
 
-## Instructions
+## Output Contract
+- Deliverables must be actionable, deterministic, and easy to review.
+- Use clear sections and checklists when they improve execution clarity.
+- Keep output concise while preserving all required decisions and risks.
 
-1. Search the codebase to understand current state
-2. Identify all affected files and their dependencies
-3. Plan changes in a safe sequence (types first, then implementations, then tests)
-4. Include verification steps between changes
-5. Consider rollback if something fails
+## Guardrails
+- Follow repository conventions and existing architecture boundaries.
+- Do not expose secrets or sensitive data.
+- Flag unresolved risks, dependencies, and follow-up work explicitly.
 
-## Output Format
-
-```markdown
-## Refactor Plan: [title]
-
-### Current State
-[Brief description of how things work now]
-
-### Target State
-[Brief description of how things will work after]
-
-### Affected Files
-| File | Change Type | Dependencies |
-|------|-------------|--------------|
-| path | modify/create/delete | blocks X, blocked by Y |
-
-### Execution Plan
-
-#### Phase 1: Types and Interfaces
-- [ ] Step 1.1: [action] in `file.ts`
-- [ ] Verify: [how to check it worked]
-
-#### Phase 2: Implementation
-- [ ] Step 2.1: [action] in `file.ts`
-- [ ] Verify: [how to check]
-
-#### Phase 3: Tests
-- [ ] Step 3.1: Update tests in `file.test.ts`
-- [ ] Verify: Run `npm test`
-
-#### Phase 4: Cleanup
-- [ ] Remove deprecated code
-- [ ] Update documentation
-
-### Rollback Plan
-If something fails:
-1. [Step to undo]
-2. [Step to undo]
-
-### Risks
-- [Potential issue and mitigation]
-```
-
-Shall I proceed with Phase 1?
+## Source of Truth
+- VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
