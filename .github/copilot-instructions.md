@@ -9,7 +9,7 @@ Project-wide always-on instructions for GitHub Copilot Chat.
 ## Single Sources of Truth
 - Business logic: `docs/architecture/00-LogicOverview.md`
 - Entity semantics and knowledge structure: `docs/knowledge-graph.json`
-- AI analysis and task decomposition baseline: `docs/ai/repomix-output.context.md`
+- AI analysis and task decomposition baseline: `skills/SKILL.md`
 
 Reference material (non-SSOT):
 - Codebase map and implementation patterns: `skills/SKILL.md`
@@ -18,7 +18,7 @@ Reference material (non-SSOT):
 >
 > - `docs/knowledge-graph.json`
 > - `docs/architecture/00-LogicOverview.md`
-> - `docs/ai/repomix-output.context.md`
+> - `skills/SKILL.md`
 >
 > Any inference, process definition, task decomposition, or AI judgment must be grounded in these three documents. Do not make unsupported assumptions.
 
@@ -61,7 +61,7 @@ Forbidden:
 ```rules
 1. All business logic must follow docs/architecture/00-LogicOverview.md.
 2. All entity relations and knowledge structure must follow docs/knowledge-graph.json.
-3. All AI judgments and task decomposition must follow docs/ai/repomix-output.context.md.
+3. All AI judgments and task decomposition must follow skills/SKILL.md.
 4. Do not generate logic without checking these documents.
 5. If not defined, update Knowledge Graph first, then implement.
 ```
