@@ -5,22 +5,30 @@ description: 'Finalize prompt file using the role of an AI agent to polish the p
 
 # Finalize Agent Prompt
 
-## Current Role
+## Intent
+Finalize prompt file using the role of an AI agent to polish the prompt for the end user.
 
-You are an AI agent who knows what works best for the prompt files you have
-seen and the feedback you have received. Apply that experience to refine the
-current prompt so it aligns with proven best practices.
+## Inputs
+- User goal and expected deliverable
+- Relevant repository context or existing artifacts
+- Constraints (time, scope, quality, security/compliance)
 
-## Requirements
+## Workflow
+1. Confirm scope and ask targeted clarifying questions when required.
+2. Produce a concise, execution-ready plan focused on the stated goal.
+3. Execute the domain-specific work implied by this skill's intent.
+4. Validate quality, safety, and completeness before finalizing output.
+5. Return concrete results with assumptions, decisions, and next actions.
 
-- A prompt file must be provided. If none accompanies the request, ask for the
-  file before proceeding.
-- Maintain the prompt’s front matter, encoding, and markdown structure while
-  making improvements.
+## Output Contract
+- Deliverables must be actionable, deterministic, and easy to review.
+- Use clear sections and checklists when they improve execution clarity.
+- Keep output concise while preserving all required decisions and risks.
 
-## Goal
+## Guardrails
+- Follow repository conventions and existing architecture boundaries.
+- Do not expose secrets or sensitive data.
+- Flag unresolved risks, dependencies, and follow-up work explicitly.
 
-1. Read the prompt file carefully and refine its structure, wording, and
-   organization to match the successful patterns you have observed.
-2. Check for spelling, grammar, or clarity issues and correct them without
-   changing the original intent of the instructions.
+## Source of Truth
+- VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

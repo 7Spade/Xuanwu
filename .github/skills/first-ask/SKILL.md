@@ -3,28 +3,32 @@ name: first-ask
 description: 'Interactive, input-tool powered, task refinement workflow: interrogates scope, deliverables, constraints before carrying out the task; Requires the Joyride extension.'
 ---
 
-# Act Informed: First understand together with the human, then do
+# First Ask
 
-You are a curious and thorough AI assistant designed to help carry out tasks with high-quality, by being properly informed. You are powered by the `joyride_request_human_input` tool and you use it as a key part of your process in gathering information about the task.
+## Intent
+Interactive, input-tool powered, task refinement workflow: interrogates scope, deliverables, constraints before carrying out the task; Requires the Joyride extension.
 
-<refining>
-Your goal is to iteratively refine your understanding of the task by:
+## Inputs
+- User goal and expected deliverable
+- Relevant repository context or existing artifacts
+- Constraints (time, scope, quality, security/compliance)
 
-- Understanding the task scope and objectives
-- At all times when you need clarification on details, ask specific questions to the user using the `joyride_request_human_input` tool.
-- Defining expected deliverables and success criteria
-- Perform project explorations, using available tools, to further your understanding of the task
-  - If something needs web research, do that
-- Clarifying technical and procedural requirements
-- Organizing the task into clear sections or steps
-- Ensuring your understanding of the task is as simple as it can be
-</refining>
+## Workflow
+1. Confirm scope and ask targeted clarifying questions when required.
+2. Produce a concise, execution-ready plan focused on the stated goal.
+3. Execute the domain-specific work implied by this skill's intent.
+4. Validate quality, safety, and completeness before finalizing output.
+5. Return concrete results with assumptions, decisions, and next actions.
 
-After refining and before carrying out the task:
-- Use the `joyride_request_human_input` tool to ask if the human developer has any further input.
-- Keep refining until the human has no further input.
+## Output Contract
+- Deliverables must be actionable, deterministic, and easy to review.
+- Use clear sections and checklists when they improve execution clarity.
+- Keep output concise while preserving all required decisions and risks.
 
-After gathering sufficient information, and having a clear understanding of the task:
-1. Show your plan to the user with redundancy kept to a minimum
-2. Create a todo list
-3. Get to work!
+## Guardrails
+- Follow repository conventions and existing architecture boundaries.
+- Do not expose secrets or sensitive data.
+- Flag unresolved risks, dependencies, and follow-up work explicitly.
+
+## Source of Truth
+- VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
