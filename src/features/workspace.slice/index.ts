@@ -60,6 +60,7 @@ export {
   createWorkspaceLocation,
   updateWorkspaceLocation,
   deleteWorkspaceLocation,
+  uploadWorkspaceAvatar,
   WorkspaceLocationsPanel,
 } from './core'
 // Core workspace-domain types

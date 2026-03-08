@@ -16,6 +16,7 @@ export interface IAuthService {
   signInWithEmailAndPassword(email: string, password: string): Promise<AuthUser>;
   createUserWithEmailAndPassword(email: string, password: string): Promise<AuthUser>;
   sendPasswordResetEmail(email: string): Promise<void>;
+  verifyBeforeUpdateEmail(user: AuthUser, newEmail: string): Promise<void>;
   signInAnonymously(): Promise<AuthUser>;
   updateProfile(user: AuthUser, profile: { displayName?: string; photoURL?: string }): Promise<void>;
   signOut(): Promise<void>;

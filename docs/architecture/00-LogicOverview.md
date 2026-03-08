@@ -555,14 +555,16 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             direction LR
             QGWAY["read-model-registry\n統一讀取入口\n版本對照 / 快照路由\n[S2] 所有 Projection 遵守 SK_VERSION_GUARD"]
             QGWAY_SCHED["→ .org-eligible-member-view\n[#14 #15 #16]"]
-            QGWAY_CAL["→ .schedule-calendar-view\n日期維度（UI 禁止直讀 VS6/Firebase）"]
-            QGWAY_TL["→ .schedule-timeline-view\n資源維度（overlap/grouping 已預計算）"]
+            QGWAY_CAL_DAY["→ .schedule-calendar-view/day\n日期維度（單日，by dateKey）"]
+            QGWAY_CAL_ALL["→ .schedule-calendar-view/all\n日期維度（全量，by orgId）"]
+            QGWAY_TL_MEMBER["→ .schedule-timeline-view/member\n資源維度（單成員，by memberId）"]
+            QGWAY_TL_ALL["→ .schedule-timeline-view/all\n資源維度（全量，by orgId）"]
             QGWAY_NOTIF["→ .account-view + notification-feed-view\n[#6] FCM Token + RTDB 通知快照"]
             QGWAY_SCOPE["→ .workspace-scope-guard-view\n[#A9]"]
             QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
             QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
             QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
-            QGWAY --> QGWAY_SCHED & QGWAY_CAL & QGWAY_TL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
+            QGWAY --> QGWAY_SCHED & QGWAY_CAL_DAY & QGWAY_CAL_ALL & QGWAY_TL_MEMBER & QGWAY_TL_ALL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
         end
 
         subgraph FIREBASE_ACL["🔌 L7 · Firebase ACL Adapters（VS0-Infra · src/shared-infra/frontend-firebase）[D24 D25]"]

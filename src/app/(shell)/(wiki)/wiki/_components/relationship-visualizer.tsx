@@ -121,13 +121,14 @@ const NETWORK_OPTIONS: Options = {
   nodes: {
     borderWidth: 1,
     borderWidthSelected: 2,
-    margin: 10,
+    margin: { top: 10, right: 10, bottom: 10, left: 10 },
     font: { size: 12 },
   },
   edges: {
     smooth: {
       enabled: true,
       type: "dynamic",
+      roundness: 0.5,
     },
     font: {
       size: 11,

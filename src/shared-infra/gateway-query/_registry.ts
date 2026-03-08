@@ -143,10 +143,14 @@ export const QUERY_ROUTES = {
   WORKSPACE_SCOPE_GUARD: 'workspace-scope-guard',
   /** [Q8][D5] wallet-balance — STRONG_READ back to WALLET_AGG */
   WALLET_BALANCE: 'wallet-balance',
-  /** [S4] schedule-calendar-view — 日期維度 read model (UI 禁止直讀 VS6/Firebase) */
-  SCHEDULE_CALENDAR: 'schedule-calendar',
-  /** [S4] schedule-timeline-view — 資源維度 read model (overlap/grouping 已預計算) */
-  SCHEDULE_TIMELINE: 'schedule-timeline',
+  /** [S4] schedule-calendar-view — 單日 read model by dateKey */
+  SCHEDULE_CALENDAR_DAY: 'schedule-calendar-day',
+  /** [S4] schedule-calendar-view — 全部日曆日 read model by orgId */
+  SCHEDULE_CALENDAR_ALL: 'schedule-calendar-all',
+  /** [S4] schedule-timeline-view — 單成員 timeline read model by memberId */
+  SCHEDULE_TIMELINE_MEMBER: 'schedule-timeline-member',
+  /** [S4] schedule-timeline-view — 全部成員 timeline read model by orgId */
+  SCHEDULE_TIMELINE_ALL: 'schedule-timeline-all',
   /** [A6] semantic-governance-view — 語義治理頁讀模型 (提案/共識/關係) */
   SEMANTIC_GOVERNANCE: 'semantic-governance',
 } as const;

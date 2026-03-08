@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  verifyBeforeUpdateEmail as firebaseVerifyBeforeUpdateEmail,
   signInAnonymously,
   updateProfile,
   signOut,
@@ -49,6 +50,14 @@ class FirebaseAuthAdapter implements IAuthService {
 
   async sendPasswordResetEmail(email: string): Promise<void> {
     await sendPasswordResetEmail(auth, email);
+  }
+
+  async verifyBeforeUpdateEmail(user: AuthUser, newEmail: string): Promise<void> {
+    const firebaseUser = auth.currentUser;
+    if (!firebaseUser || firebaseUser.uid !== user.uid) {
+      throw new Error('[auth.adapter] verifyBeforeUpdateEmail: user mismatch or not signed in');
+    }
+    await firebaseVerifyBeforeUpdateEmail(firebaseUser, newEmail);
   }
 
   async signInAnonymously(): Promise<AuthUser> {

@@ -8,8 +8,10 @@
  *   QGWAY_NOTIF     → projection.account-view              [#6 FCM Token]
  *   QGWAY_SCOPE     → projection.workspace-scope-guard     [#A9]
  *   QGWAY_WALLET    → projection.wallet-balance (EVENTUAL_READ [Q8][D5])
- *   QGWAY_CAL       → projection.schedule-calendar-view    [S4] 日期維度
- *   QGWAY_TL        → projection.schedule-timeline-view    [S4] 資源維度
+ *   QGWAY_CAL_DAY   → projection.schedule-calendar-view/day [S4] 日期維度（單日）
+ *   QGWAY_CAL_ALL   → projection.schedule-calendar-view/all [S4] 日期維度（全量）
+ *   QGWAY_TL_MEMBER → projection.schedule-timeline-view/member [S4] 資源維度（單成員）
+ *   QGWAY_TL_ALL    → projection.schedule-timeline-view/all [S4] 資源維度（全量）
  *   QGWAY_SEM_GOV   → projection.semantic-governance-view  [A6] 治理頁
  *
  * Call registerAllQueryHandlers() once at app startup, after all projection
@@ -27,7 +29,7 @@ import { getDisplayWalletBalance } from './wallet-balance';
 import { queryWorkspaceAccess } from './workspace-scope-guard';
 
 /**
- * Register all four v9 QUERY_ROUTES with their projection handlers.
+ * Register all v9 QUERY_ROUTES with their projection handlers.
  *
  * Call once at app startup after all projection slices are initialized,
  * following the same pattern as registerWorkspaceFunnel().
@@ -62,22 +64,28 @@ export function registerAllQueryHandlers(): Array<() => void> {
     '[Q8][D5] projection.wallet-balance — EVENTUAL_READ display balance'
   );
 
-  const unregCalendar = registerQuery(
-    QUERY_ROUTES.SCHEDULE_CALENDAR,
-    ({ orgId, dateKey }: { orgId: string; dateKey?: string }) =>
-      dateKey
-        ? getScheduleCalendarDay(orgId, dateKey)
-        : getAllScheduleCalendarDays(orgId),
-    '[S4] projection.schedule-calendar-view — 日期維度 (UI 禁止直讀 VS6/Firebase)'
+  const unregCalendarDay = registerQuery(
+    QUERY_ROUTES.SCHEDULE_CALENDAR_DAY,
+    ({ orgId, dateKey }: { orgId: string; dateKey: string }) => getScheduleCalendarDay(orgId, dateKey),
+    '[S4] projection.schedule-calendar-view/day — 日期維度單日 (UI 禁止直讀 VS6/Firebase)'
   );
 
-  const unregTimeline = registerQuery(
-    QUERY_ROUTES.SCHEDULE_TIMELINE,
-    ({ orgId, memberId }: { orgId: string; memberId?: string }) =>
-      memberId
-        ? getScheduleTimelineForMember(orgId, memberId)
-        : getAllScheduleTimelines(orgId),
-    '[S4] projection.schedule-timeline-view — 資源維度 (overlap/grouping 已預計算)'
+  const unregCalendarAll = registerQuery(
+    QUERY_ROUTES.SCHEDULE_CALENDAR_ALL,
+    ({ orgId }: { orgId: string }) => getAllScheduleCalendarDays(orgId),
+    '[S4] projection.schedule-calendar-view/all — 日期維度全量 (UI 禁止直讀 VS6/Firebase)'
+  );
+
+  const unregTimelineMember = registerQuery(
+    QUERY_ROUTES.SCHEDULE_TIMELINE_MEMBER,
+    ({ orgId, memberId }: { orgId: string; memberId: string }) => getScheduleTimelineForMember(orgId, memberId),
+    '[S4] projection.schedule-timeline-view/member — 資源維度單成員 (overlap/grouping 已預計算)'
+  );
+
+  const unregTimelineAll = registerQuery(
+    QUERY_ROUTES.SCHEDULE_TIMELINE_ALL,
+    ({ orgId }: { orgId: string }) => getAllScheduleTimelines(orgId),
+    '[S4] projection.schedule-timeline-view/all — 資源維度全量 (overlap/grouping 已預計算)'
   );
 
   const unregSemanticGov = registerQuery(
@@ -86,5 +94,15 @@ export function registerAllQueryHandlers(): Array<() => void> {
     '[A6] projection.semantic-governance-view — 語義治理頁讀模型 (提案/共識/關係)'
   );
 
-  return [unregOrgEligible, unregAccountView, unregScopeGuard, unregWallet, unregCalendar, unregTimeline, unregSemanticGov];
+  return [
+    unregOrgEligible,
+    unregAccountView,
+    unregScopeGuard,
+    unregWallet,
+    unregCalendarDay,
+    unregCalendarAll,
+    unregTimelineMember,
+    unregTimelineAll,
+    unregSemanticGov,
+  ];
 }

@@ -41,4 +41,5 @@ export { WorkspaceCapabilities } from './_components/workspace-capabilities'
 export { handleCreateWorkspace, handleUpdateWorkspaceSettings, handleDeleteWorkspace, createWorkspaceWithCapabilities } from './_use-cases'
 // WorkspaceLocation CRUD — FR-L1/FR-L2/FR-L3
 export { createWorkspaceLocation, updateWorkspaceLocation, deleteWorkspaceLocation } from './_actions'
+export { uploadWorkspaceAvatar } from './_actions'
 export { WorkspaceLocationsPanel } from './_components/workspace-locations-panel'
