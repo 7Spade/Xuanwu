@@ -113,15 +113,22 @@ src/shared-infra/
   event-router/              # L4 IER（outbox-relay-worker / lane-router / dlq）
   projection-bus/            # L5 event-funnel + projectors
   frontend-firebase/
-    auth/                    # AuthAdapter（L7）
-    firestore/               # FirestoreAdapter（L7）
-    realtime-database/       # RTDBAdapter（L7，即時通訊）
-    messaging/               # FCMAdapter（L7，R8 traceId）
-    storage/                 # StorageAdapter（L7）
-    analytics/               # AnalyticsAdapter（L7，遙測只寫）
+    auth/                    # AuthAdapter（L7-A · firebase/auth）
+    firestore/               # FirestoreAdapter（L7-A · firebase/firestore）
+    realtime-database/       # RTDBAdapter（L7-A · firebase/database，即時通訊）
+    messaging/               # FCMAdapter（L7-A · firebase/messaging · R8 traceId）
+    storage/                 # StorageAdapter（L7-A · firebase/storage）
+    analytics/               # AnalyticsAdapter（L7-A · firebase/analytics，遙測只寫）
+    app-check/               # AppCheckAdapter（L7-A · firebase/app-check）
   backend-firebase/
-    functions/               # Cloud Functions（Admin 權限/跨租戶/觸發器）
-    dataconnect/             # GraphQL 資料契約（受治理 GraphQL）
+    functions/               # Cloud Functions（firebase-admin 唯一容器）[D25]
+      src/claims/            #   Admin Auth → firebase-admin/auth（自訂 Claims）
+      src/gateway/           #   functions-gateway HTTP/Callable 入口
+      src/ier/               #   IER 三條 Lane
+      src/projection/        #   Projection Workers
+      src/relay/             #   Outbox Relay Worker
+      src/document-ai/       #   Document AI integration
+    dataconnect/             # GraphQL 資料契約（受治理 GraphQL）[D25]
   observability/             # L9 metrics/trace/errors
   ai-orchestration/          # L10 Genkit Flow Gateway
 ```
@@ -213,21 +220,39 @@ Firestore onSnapshot (CDC)
 ## L7 Firebase ACL Adapters（FIREBASE_ACL）
 
 > Firebase SDK 唯一合法呼叫層 [D24 D25]
+>
+> **三層分離原則**：`firebase-client` SDK（瀏覽器/Next.js client context）→ L7-A 前端 Adapters ／ `firebase-admin` SDK（Admin 特權 API）→ L7-B 後端 Adapters ／ `functions`（Cloud Functions）→ firebase-admin 一律透過 functions [D25]
+
+### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/frontend-firebase/`）
 
 | Adapter | 實作介面 | 路徑 | 說明 |
 |---------|----------|------|------|
-| `AuthAdapter` | `IAuthService` | `src/shared-infra/frontend-firebase/auth/` | sole `firebase/auth` 呼叫點 |
-| `FirestoreAdapter` | `IFirestoreRepo` [S2] | `src/shared-infra/frontend-firebase/firestore/` | sole `firebase/firestore` 呼叫點；enforces aggregateVersion |
-| `FCMAdapter` | `IMessaging` [R8] | `src/shared-infra/frontend-firebase/messaging/` | sole `firebase/messaging` 呼叫點；adds traceId to FCM metadata |
-| `StorageAdapter` | `IFileStore` | `src/shared-infra/frontend-firebase/storage/` | sole `firebase/storage` 呼叫點 |
-| `RTDBAdapter` | — | `src/shared-infra/frontend-firebase/realtime-database/` | 即時通訊用；禁止承載領域寫入 [D25] |
-| `AnalyticsAdapter` | — | `src/shared-infra/frontend-firebase/analytics/` | 遙測寫入；禁止承載領域寫入 [D25] |
+| `AuthAdapter` | `IAuthService` | `.../auth/` | sole `firebase/auth` 呼叫點 |
+| `FirestoreAdapter` | `IFirestoreRepo` [S2] | `.../firestore/` | sole `firebase/firestore` 呼叫點；enforces aggregateVersion |
+| `FCMAdapter` | `IMessaging` [R8] | `.../messaging/` | sole `firebase/messaging` 呼叫點（Client context 推播；Server-side 推播改用 AdminMessagingAdapter）；adds traceId to FCM metadata |
+| `StorageAdapter` | `IFileStore` | `.../storage/` | sole `firebase/storage` 呼叫點 |
+| `RTDBAdapter` | — | `.../realtime-database/` | 即時通訊用；禁止承載領域寫入 [D25] |
+| `AnalyticsAdapter` | — | `.../analytics/` | 遙測寫入；禁止承載領域寫入 [D25] |
+| `AppCheckAdapter` | — | `.../app-check/` | Client attestation token 初始化/續期；未通過不得進入 L2/L3 [D24 D25 E7] |
 
-> **Firebase 後端決策**：Admin 權限 / 跨租戶 / 排程 / 觸發器 / Webhook 驗簽 → `src/shared-infra/backend-firebase/functions` [D25]
+### L7-B 後端 Admin SDK Adapters（firebase-admin SDK — 一律透過 Cloud Functions）[D25]
+
+> **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/backend-firebase/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
+
+| Adapter | 實作介面 | 路徑 | 說明 |
+|---------|----------|------|------|
+| `FunctionsGateway` | — | `src/shared-infra/backend-firebase/functions/src/gateway/` | HTTP/Callable 入口；Admin SDK 初始化容器 |
+| `AdminAuthAdapter` | `IAuthService`（BE） | `.../functions/src/claims/` | sole `firebase-admin/auth` 呼叫點（自訂 Claims）|
+| `AdminFirestoreAdapter` | `IFirestoreRepo`（BE） | `.../functions/src/relay/` 與 `.../projection/` | sole `firebase-admin/firestore` 呼叫點（強一致寫入/跨集合 TX）|
+| `AdminMessagingAdapter` | `IMessaging`（BE） | `.../functions/src/` | sole `firebase-admin/messaging` 呼叫點（Server-side FCM 主要通道）|
+| `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
+| `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
 
 ---
 
 ## Firebase 前後端分層決策矩陣
+
+> **核心原則**：`firebase-client` SDK（瀏覽器端） → L7-A 前端 Adapters；`firebase-admin` SDK → L7-B 後端 Adapters 且一律透過 Cloud Functions
 
 | 情境 | 選擇 | 原因 |
 |------|------|------|
@@ -235,6 +260,7 @@ Firestore onSnapshot (CDC)
 | 高扇出或可批次流程 | `backend-firebase/functions`（集中批處理） | 降低總寫入成本 [D25 SHOULD] |
 | 需要即時訂閱能力 | `frontend-firebase/realtime-database`（須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略） | [P7 D25 SHOULD] |
 | Admin 權限 / 跨租戶 / Webhook 驗簽 | `backend-firebase/functions` | 安全邊界要求 [D25 MUST] |
+| **firebase-admin SDK 任何使用場景** | **`backend-firebase/functions`（Cloud Functions 唯一容器）** | **firebase-admin 一律透過 functions [D25 MUST]** |
 | 受治理的 GraphQL 資料契約 | `backend-firebase/dataconnect` | [D25 MUST] |
 | 受保護資料或可變更狀態 | 必須先完成 App Check 驗證（含 token 續期與失效處理）| [E7 D25 MUST] |
 | AI tool data access | 必須由 Genkit tool gateway 統一檢查租戶邊界 | [E8 D25 SHOULD] |

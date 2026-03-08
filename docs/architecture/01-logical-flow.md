@@ -260,22 +260,35 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> APPCHK_ADP
         end
 
-        subgraph FIREBASE_BACKEND["🔌 L7 · Backend Firebase Gateways（VS0-Infra · src/shared-infra/backend-firebase）[D25]"]
+        subgraph FIREBASE_BACKEND["🔌 L7 · Backend Firebase Gateways（VS0-Infra · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions · 禁止在 Next.js server/edge/Server Actions/Edge Functions 中直接使用"]
             direction LR
-            BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\n對外 HTTP/Callable API 入口"]
-            BDC_GW["dataconnect-gateway\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
+            BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
+
+            subgraph ADMIN_ADPTS["Admin SDK Adapters（firebase-admin — 一律在 Cloud Functions 內執行）[D25]"]
+                direction TB
+                ADMIN_AUTH_ADP["admin-auth-adapter\n[D25] 唯一合法 firebase-admin/auth 呼叫點\n(自訂 Claims / 使用者管理)"]
+                ADMIN_DB_ADP["admin-data-adapter\n[D25] 唯一合法 firebase-admin/firestore 呼叫點\n(強一致寫入 / 跨集合 TX)"]
+                ADMIN_MSG_ADP["admin-messaging-adapter\n[D25] 唯一合法 firebase-admin/messaging 呼叫點\n(Server-side FCM 主要通道)"]
+                ADMIN_STORE_ADP["admin-storage-adapter\n[D25] 唯一合法 firebase-admin/storage 呼叫點\n(後端簽署 URL / 跨租戶操作)"]
+                ADMIN_APPCHK_ADP["admin-appcheck-adapter\n[D25] 唯一合法 firebase-admin/app-check 呼叫點\n(驗證 App Check token)"]
+            end
+
+            BFN_GW -.->|"Admin SDK init → 各 Service API 委派"| ADMIN_AUTH_ADP & ADMIN_DB_ADP & ADMIN_MSG_ADP & ADMIN_STORE_ADP & ADMIN_APPCHK_ADP
+
+            BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
         end
 
         subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；本 repo 僅邊界映射）"]
             direction LR
-            F_AUTH[("Firebase Auth\nfirebase/auth")]
-            F_DB[("Firestore\nfirebase/firestore")]
+            F_AUTH[("Firebase Auth\nfirebase/auth\nfirebase-admin/auth")]
+            F_DB[("Firestore\nfirebase/firestore\nfirebase-admin/firestore")]
             F_RTDB[("Realtime Database\nfirebase/database")]
-            F_FCM[("Firebase Cloud Messaging\nfirebase/messaging")]
-            F_STORE[("Cloud Storage\nfirebase/storage")]
+            F_FCM[("Firebase Cloud Messaging\nfirebase/messaging\nfirebase-admin/messaging")]
+            F_STORE[("Cloud Storage\nfirebase/storage\nfirebase-admin/storage")]
             F_ANALYTICS[("Google Analytics\nfirebase/analytics")]
-            F_APPCHK[("Firebase App Check\nfirebase/app-check")]
+            F_APPCHK[("Firebase App Check\nfirebase/app-check\nfirebase-admin/app-check")]
             F_DC[("Data Connect\nfirebase/data-connect")]
+            F_FUNCTIONS[("Cloud Functions Runtime\nfirebase-admin/app\n初始化 Admin SDK 的唯一容器")]
         end
 
         subgraph OBS_LAYER["⬜ L9 · Observability（src/shared-infra/observability）"]
@@ -828,8 +841,12 @@ FCM_ADP --> F_FCM
 STORE_ADP --> F_STORE
 ANALYTICS_ADP --> F_ANALYTICS
 APPCHK_ADP --> F_APPCHK
-BFN_GW --> F_DB
-BFN_GW --> F_STORE
+BFN_GW --> F_FUNCTIONS
+ADMIN_AUTH_ADP --> F_AUTH
+ADMIN_DB_ADP --> F_DB
+ADMIN_MSG_ADP --> F_FCM
+ADMIN_STORE_ADP --> F_STORE
+ADMIN_APPCHK_ADP --> F_APPCHK
 BDC_GW --> F_DC
 
 EXT_CLIENT -.->|"UI 行為遙測（GA events）"| ANALYTICS_ADP
@@ -976,8 +993,8 @@ class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_ACL,AC_TRANSLATOR_L7,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
 class APPCHK_ADP aclAdapter
-class FIREBASE_BACKEND,BFN_GW,BDC_GW aclAdapter
-class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK,F_DC firebaseExt
+class FIREBASE_BACKEND,BFN_GW,BDC_GW,ADMIN_ADPTS,ADMIN_AUTH_ADP,ADMIN_DB_ADP,ADMIN_MSG_ADP,ADMIN_STORE_ADP,ADMIN_APPCHK_ADP aclAdapter
+class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK,F_DC,F_FUNCTIONS firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
 class GLOBAL_SEARCH crossCutAuth

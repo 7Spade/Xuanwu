@@ -399,6 +399,8 @@
 | `D25` | MUST | 入口涉及受保護資料必須先完成 App Check 驗證 [E7] |
 | `D25` | MUST | Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽必須走 `src/shared-infra/backend-firebase/functions` |
 | `D25` | MUST | 需要受治理的 GraphQL 資料契約必須走 `src/shared-infra/backend-firebase/dataconnect` |
+| `D25` | MUST | `firebase-admin` SDK 只在 `src/shared-infra/backend-firebase/functions`（Cloud Functions）內初始化與呼叫；firebase-admin 一律透過 functions |
+| `D25` | FORBIDDEN | 在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin` |
 
 ### D26：Cross-cutting Authority 守則
 
