@@ -1,0 +1,67 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+}
+
+type Organization @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+}
+
+type Workspace @table {
+  name: String!
+  createdAt: Timestamp!
+  isPersonal: Boolean!
+  description: String
+  organization: Organization
+  user: User # For personal workspaces
+}
+
+type Task @table {
+  title: String!
+  status: String! # Enum: TODO, DOING, BLOCKED, VERIFIED, ACCEPTED
+  createdAt: Timestamp!
+  description: String
+  dueDate: Timestamp
+  workspace: Workspace
+  assignedTo: User
+  parent: Task
+}
+
+type Issue @table {
+  title: String!
+  status: String! # Enum: OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority: String! # Enum: LOW, MEDIUM, HIGH
+  createdAt: Timestamp!
+  description: String
+  workspace: Workspace
+  task: Task
+  reporter: User
+  assignee: User
+}
+
+type File @table {
+  filename: String!
+  fileUrl: String!
+  createdAt: Timestamp!
+  version: Int!
+  description: String
+  workspace: Workspace
+  uploadedBy: User
+}
+
+type Role @table {
+  name: String!
+  description: String
+}
+
+type Membership @table(key: ["user", "organization"]) {
+  createdAt: Timestamp!
+  joinedAt: Timestamp
+  user: User!
+  organization: Organization!
+  role: Role
+}
