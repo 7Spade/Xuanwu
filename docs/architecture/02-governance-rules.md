@@ -60,7 +60,7 @@
 ### 本輪必審範圍
 
 1. **VS0–VS8**：每個編號域必須有明確層位與單一職責
-   - `VS0`：L1+L0+L2+L4+L5+L6+L7+L8+L9+L10
+   - `VS0`：L1+L0+L2+L4+L5+L6+L7+L9+L10（L8 = Firebase 外部平台，不在 VS0 管轄）
    - `VS1–VS8`：L3
    - VS0 檢核：每個 VS0 路徑必須標明 `VS0-Kernel` 或 `VS0-Infra`（不得混稱）
 2. **D1–D27**：列為 Mandatory Gate（D27 為 Extension Gate，命中場景必審）

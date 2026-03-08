@@ -195,6 +195,7 @@ Firestore onSnapshot (CDC)
 | `account-skill-view` | 技能視圖 [S2] |
 | `global-audit-view` | 全域審計（含 traceId [R8]） |
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
+| `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
 
 > **規則**：`getTier(xp) → Tier` 是純函式 [#12]；Tier 是推導值，永遠不存 DB。
 
@@ -211,6 +212,7 @@ Firestore onSnapshot (CDC)
 | `workspace-scope-guard-view` | Scope Guard 快路徑 | [A9] |
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
 | `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |
+| `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
