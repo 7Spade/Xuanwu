@@ -13,12 +13,42 @@ import * as logger from "firebase-functions/logger";
 import { randomUUID } from "crypto";
 import { initializeApp, getApps } from "firebase-admin/app";
 
+import { DocumentAiApiError } from "../clients/document-ai.client.js";
 import { classifyDocument } from "../processors/classify.processor.js";
 import type { ClassifyDocumentRequest } from "../contracts/document-ai.request.js";
 import type {
   ClassifyDocumentResponse,
   DocumentAiErrorResponse,
 } from "../contracts/document-ai.response.js";
+
+function mapUpstreamStatusToHttpStatus(error: DocumentAiApiError): number {
+  if (error.status === 429 || error.upstreamStatus === "RESOURCE_EXHAUSTED") {
+    return 429;
+  }
+  if (error.status === 400) {
+    return 400;
+  }
+  if (error.status === 401 || error.status === 403) {
+    return 502;
+  }
+  if (error.status === 408 || error.status === 504) {
+    return 504;
+  }
+  return 502;
+}
+
+function mapUpstreamStatusToCode(error: DocumentAiApiError): string {
+  if (error.status === 429 || error.upstreamStatus === "RESOURCE_EXHAUSTED") {
+    return "RESOURCE_EXHAUSTED";
+  }
+  if (error.status === 400) {
+    return "UPSTREAM_INVALID_ARGUMENT";
+  }
+  if (error.status === 408 || error.status === 504) {
+    return "UPSTREAM_TIMEOUT";
+  }
+  return "UPSTREAM_SERVICE_ERROR";
+}
 
 if (getApps().length === 0) {
   initializeApp();
@@ -92,6 +122,26 @@ export const classifyDocumentFn = onRequest(
         error: String(err),
         structuredData: true,
       });
+
+      if (err instanceof DocumentAiApiError) {
+        const status = mapUpstreamStatusToHttpStatus(err);
+        const code = mapUpstreamStatusToCode(err);
+
+        if (status === 429) {
+          res.set("Retry-After", "60");
+        }
+
+        const upstreamErrorResp: DocumentAiErrorResponse = {
+          success: false,
+          error: {
+            code,
+            message: err.message,
+          },
+          traceId,
+        };
+        res.status(status).json(upstreamErrorResp);
+        return;
+      }
 
       const errorResp: DocumentAiErrorResponse = {
         success: false,

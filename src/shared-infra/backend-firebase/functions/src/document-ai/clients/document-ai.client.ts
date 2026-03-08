@@ -14,18 +14,121 @@
 
 import { getApp } from "firebase-admin/app";
 
-const DOCAI_BASE_URL =
-  "https://asia-southeast1-documentai.googleapis.com/v1";
+interface DocumentAiConfig {
+  readonly projectNumber: string;
+  readonly location: string;
+  readonly classifierProcessorId: string;
+  readonly extractorProcessorId: string;
+  readonly timeoutMs: number;
+}
+
+const DEFAULT_CONFIG: DocumentAiConfig = {
+  projectNumber: "65970295651",
+  location: "asia-southeast1",
+  classifierProcessorId: "94f84cf3b653b085",
+  extractorProcessorId: "86a3e4af9c5bba38",
+  timeoutMs: 45_000,
+};
+
+function parsePositiveInt(value: string | undefined, fallback: number): number {
+  if (!value) {
+    return fallback;
+  }
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+
+function getDocumentAiConfig(): DocumentAiConfig {
+  return {
+    projectNumber:
+      process.env.DOCAI_PROJECT_NUMBER ?? DEFAULT_CONFIG.projectNumber,
+    location: process.env.DOCAI_LOCATION ?? DEFAULT_CONFIG.location,
+    classifierProcessorId:
+      process.env.DOCAI_CLASSIFIER_PROCESSOR_ID ??
+      DEFAULT_CONFIG.classifierProcessorId,
+    extractorProcessorId:
+      process.env.DOCAI_EXTRACTOR_PROCESSOR_ID ??
+      DEFAULT_CONFIG.extractorProcessorId,
+    timeoutMs: parsePositiveInt(
+      process.env.DOCAI_HTTP_TIMEOUT_MS,
+      DEFAULT_CONFIG.timeoutMs
+    ),
+  };
+}
+
+const DOCAI_CONFIG = getDocumentAiConfig();
+const DOCAI_BASE_URL = `https://${DOCAI_CONFIG.location}-documentai.googleapis.com/v1`;
 
 /** Processor endpoint constants */
 export const PROCESSOR_URLS = {
   /** Document OCR Classifier */
   CLASSIFIER:
-    `${DOCAI_BASE_URL}/projects/65970295651/locations/asia-southeast1/processors/94f84cf3b653b085:process`,
+    `${DOCAI_BASE_URL}/projects/${DOCAI_CONFIG.projectNumber}/locations/${DOCAI_CONFIG.location}/processors/${DOCAI_CONFIG.classifierProcessorId}:process`,
   /** Document OCR Extractor */
   EXTRACTOR:
-    `${DOCAI_BASE_URL}/projects/65970295651/locations/asia-southeast1/processors/86a3e4af9c5bba38:process`,
+    `${DOCAI_BASE_URL}/projects/${DOCAI_CONFIG.projectNumber}/locations/${DOCAI_CONFIG.location}/processors/${DOCAI_CONFIG.extractorProcessorId}:process`,
 } as const;
+
+interface UpstreamErrorPayload {
+  readonly error?: {
+    readonly code?: number;
+    readonly message?: string;
+    readonly status?: string;
+  };
+}
+
+export class DocumentAiApiError extends Error {
+  readonly status: number;
+  readonly upstreamStatus?: string;
+  readonly upstreamCode?: number;
+  readonly retryable: boolean;
+
+  constructor(params: {
+    message: string;
+    status: number;
+    upstreamStatus?: string;
+    upstreamCode?: number;
+  }) {
+    super(params.message);
+    this.name = "DocumentAiApiError";
+    this.status = params.status;
+    this.upstreamStatus = params.upstreamStatus;
+    this.upstreamCode = params.upstreamCode;
+    this.retryable = isRetryableStatus(params.status, params.upstreamStatus);
+  }
+}
+
+function isRetryableStatus(status: number, upstreamStatus?: string): boolean {
+  return (
+    status === 408 ||
+    status === 429 ||
+    status === 500 ||
+    status === 502 ||
+    status === 503 ||
+    status === 504 ||
+    upstreamStatus === "RESOURCE_EXHAUSTED"
+  );
+}
+
+function parseUpstreamErrorPayload(rawText: string): UpstreamErrorPayload {
+  try {
+    return JSON.parse(rawText) as UpstreamErrorPayload;
+  } catch {
+    return {};
+  }
+}
+
+function createTimeoutController(): {
+  readonly controller: AbortController;
+  readonly cleanup: () => void;
+} {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), DOCAI_CONFIG.timeoutMs);
+  return {
+    controller,
+    cleanup: () => clearTimeout(timer),
+  };
+}
 
 /** Raw shape returned by the Document AI Process API */
 export interface RawDocumentAiResponse {
@@ -105,21 +208,54 @@ export async function callDocumentAi(
     Promise.resolve(buildRequestBody(documentUri, mimeType)),
   ]);
 
-  const response = await fetch(processorUrl, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const { controller, cleanup } = createTimeoutController();
+  try {
+    const response = await fetch(processorUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
 
-  if (!response.ok) {
+    if (response.ok) {
+      return response.json() as Promise<RawDocumentAiResponse>;
+    }
+
     const errorText = await response.text();
-    throw new Error(
-      `document-ai.client: API error ${response.status} — ${errorText}`
-    );
-  }
+    const parsed = parseUpstreamErrorPayload(errorText);
+    throw new DocumentAiApiError({
+      message:
+        parsed.error?.message ??
+        `document-ai.client: API error ${response.status}`,
+      status: response.status,
+      upstreamStatus: parsed.error?.status,
+      upstreamCode: parsed.error?.code,
+    });
+  } catch (error) {
+    const isAbortError =
+      error instanceof DOMException && error.name === "AbortError";
 
-  return response.json() as Promise<RawDocumentAiResponse>;
+    if (isAbortError) {
+      throw new DocumentAiApiError({
+        message: `document-ai.client: request timed out after ${DOCAI_CONFIG.timeoutMs}ms`,
+        status: 504,
+        upstreamStatus: "DEADLINE_EXCEEDED",
+      });
+    }
+
+    if (error instanceof DocumentAiApiError) {
+      throw error;
+    }
+
+    throw new DocumentAiApiError({
+      message: `document-ai.client: network failure - ${String(error)}`,
+      status: 503,
+      upstreamStatus: "UNAVAILABLE",
+    });
+  } finally {
+    cleanup();
+  }
 }

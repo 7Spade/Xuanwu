@@ -129,8 +129,12 @@ export function WorkspaceDocumentParser() {
     formData.append('downloadURL', payload.downloadURL);
     formData.append('fileName', payload.fileName);
     formData.append('fileType', payload.fileType || '');
+    formData.append('workspaceId', workspace.id);
+    if (payload.fileId) {
+      formData.append('fileId', payload.fileId);
+    }
     startTransition(() => formAction(formData));
-  }, [formAction, startTransition]);
+  }, [formAction, startTransition, workspace.id]);
 
   // On mount: if files-view queued a file via WorkspaceProvider context, auto-trigger.
   // This bridges the cross-tab gap — subscriber only exists when this component is mounted.

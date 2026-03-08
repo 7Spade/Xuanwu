@@ -20,8 +20,17 @@ export interface ClassifyDocumentRequest extends DocumentSource {
   readonly traceId?: string;
 }
 
+export interface ProcessDocumentSourceRef {
+  /** Workspace ID owning the source PDF. */
+  readonly workspaceId: string;
+  /** File document ID under workspaces/{workspaceId}/files/{fileId}. */
+  readonly fileId: string;
+}
+
 /** Request body for process-document handler (OCR + entity extraction) */
 export interface ProcessDocumentRequest extends DocumentSource {
   /** [R8] Optional caller-injected traceId; generated if absent */
   readonly traceId?: string;
+  /** Optional source file reference used to persist OCR status back to Firestore. */
+  readonly sourceRef?: ProcessDocumentSourceRef;
 }

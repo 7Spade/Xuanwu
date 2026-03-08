@@ -46,3 +46,19 @@ env:
   # --- Google API ---
   - variable: GOOGLE_API_KEY
     secret: GOOGLE_API_KEY
+
+  # --- Document AI Runtime (non-secret) ---
+  - variable: DOCAI_PROJECT_NUMBER
+    value: "65970295651"
+
+  - variable: DOCAI_LOCATION
+    value: "asia-southeast1"
+
+  - variable: DOCAI_CLASSIFIER_PROCESSOR_ID
+    value: "94f84cf3b653b085"
+
+  - variable: DOCAI_EXTRACTOR_PROCESSOR_ID
+    value: "86a3e4af9c5bba38"
+
+  - variable: DOCAI_HTTP_TIMEOUT_MS
+    value: "45000"

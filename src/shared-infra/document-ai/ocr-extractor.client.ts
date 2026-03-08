@@ -25,6 +25,61 @@ const processDocumentErrorSchema = z.object({
   traceId: z.string().optional(),
 });
 
+export class OcrExtractorError extends Error {
+  readonly status: number;
+  readonly code: string;
+  readonly retryable: boolean;
+
+  constructor(params: {
+    message: string;
+    status: number;
+    code: string;
+    retryable: boolean;
+  }) {
+    super(params.message);
+    this.name = 'OcrExtractorError';
+    this.status = params.status;
+    this.code = params.code;
+    this.retryable = params.retryable;
+  }
+}
+
+function isRetryableError(status: number, code: string): boolean {
+  return (
+    status === 408 ||
+    status === 429 ||
+    status === 500 ||
+    status === 502 ||
+    status === 503 ||
+    status === 504 ||
+    code === 'RESOURCE_EXHAUSTED' ||
+    code === 'UPSTREAM_TIMEOUT'
+  );
+}
+
+function inferErrorCode(status: number, rawCode: string, message: string): string {
+  if (rawCode === 'RESOURCE_EXHAUSTED') {
+    return rawCode;
+  }
+  if (status === 429 || /RESOURCE_EXHAUSTED|API error 429/i.test(message)) {
+    return 'RESOURCE_EXHAUSTED';
+  }
+  if (status === 408 || status === 504) {
+    return 'UPSTREAM_TIMEOUT';
+  }
+  return rawCode;
+}
+
+function formatUserFacingMessage(code: string, fallback: string): string {
+  if (code === 'RESOURCE_EXHAUSTED') {
+    return 'Document OCR quota is temporarily exhausted. Please retry in 1-2 minutes.';
+  }
+  if (code === 'UPSTREAM_TIMEOUT') {
+    return 'Document OCR timed out. Please retry with a smaller or clearer file.';
+  }
+  return fallback;
+}
+
 export interface OcrDocumentEntity {
   readonly type: string;
   readonly mentionText: string;
@@ -45,6 +100,10 @@ export interface ExtractDocumentObjectInput {
   readonly documentDataUri: string;
   readonly mimeType: string;
   readonly traceId?: string;
+  readonly sourceRef?: {
+    readonly workspaceId: string;
+    readonly fileId: string;
+  };
 }
 
 function getProcessDocumentEndpoint(): string {
@@ -64,6 +123,7 @@ export async function extractDocumentObjectWithOcr(
       documentUri: input.documentDataUri,
       mimeType: input.mimeType,
       ...(input.traceId ? { traceId: input.traceId } : {}),
+      ...(input.sourceRef ? { sourceRef: input.sourceRef } : {}),
     }),
   });
 
@@ -77,16 +137,37 @@ export async function extractDocumentObjectWithOcr(
   if (!response.ok) {
     const parsedError = processDocumentErrorSchema.safeParse(payload);
     if (parsedError.success) {
-      throw new Error(
-        `Document OCR Extractor failed: ${parsedError.data.error.code} - ${parsedError.data.error.message}`
+      const code = inferErrorCode(
+        response.status,
+        parsedError.data.error.code,
+        parsedError.data.error.message
       );
+      throw new OcrExtractorError({
+        message: formatUserFacingMessage(
+          code,
+          `Document OCR Extractor failed: ${code} - ${parsedError.data.error.message}`
+        ),
+        status: response.status,
+        code,
+        retryable: isRetryableError(response.status, code),
+      });
     }
-    throw new Error(`Document OCR Extractor failed with HTTP ${response.status}.`);
+    throw new OcrExtractorError({
+      message: `Document OCR Extractor failed with HTTP ${response.status}.`,
+      status: response.status,
+      code: 'UNKNOWN_OCR_ERROR',
+      retryable: isRetryableError(response.status, 'UNKNOWN_OCR_ERROR'),
+    });
   }
 
   const parsed = processDocumentResponseSchema.safeParse(payload);
   if (!parsed.success) {
-    throw new Error('Document OCR Extractor response shape is invalid.');
+    throw new OcrExtractorError({
+      message: 'Document OCR Extractor response shape is invalid.',
+      status: response.status,
+      code: 'INVALID_OCR_RESPONSE',
+      retryable: false,
+    });
   }
 
   return {

@@ -4,7 +4,10 @@ import { z } from 'zod';
 
 import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
 import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
-import { extractDocumentObjectWithOcr } from '@/shared-infra/document-ai/ocr-extractor.client';
+import {
+  extractDocumentObjectWithOcr,
+  OcrExtractorError,
+} from '@/shared-infra/document-ai/ocr-extractor.client';
 
 const actionInputSchema = z.object({
   documentDataUri: z.string().startsWith('data:'),
@@ -48,6 +51,8 @@ export async function extractDataFromDocument(
   const downloadURL = formData.get('downloadURL') as string | null;
   const urlFileName = formData.get('fileName') as string | null;
   const urlFileType = formData.get('fileType') as string | null;
+  const workspaceId = formData.get('workspaceId') as string | null;
+  const fileId = formData.get('fileId') as string | null;
 
   // Resolve the file buffer: either from a direct File upload or by fetching a
   // Firebase Storage URL on the server (no CORS restrictions in Node.js).
@@ -97,7 +102,15 @@ export async function extractDataFromDocument(
       return { error: 'Invalid file data URI.' };
     }
 
-    const documentObject = await extractDocumentObjectWithOcr(validatedInput.data);
+    const sourceRef =
+      workspaceId && fileId
+        ? { workspaceId, fileId }
+        : undefined;
+
+    const documentObject = await extractDocumentObjectWithOcr({
+      ...validatedInput.data,
+      ...(sourceRef ? { sourceRef } : {}),
+    });
 
     if (documentObject.text.trim().length === 0) {
       return {
@@ -149,6 +162,17 @@ export async function extractDataFromDocument(
 
     return { data: { workItems: sanitizedItems }, fileName: displayName };
   } catch (e) {
+    if (e instanceof OcrExtractorError) {
+      if (e.retryable) {
+        return {
+          error: `Failed to process document: ${e.message} Please retry shortly.`,
+        };
+      }
+      return {
+        error: `Failed to process document: ${e.message}`,
+      };
+    }
+
     // [SEC-1] Log a safe message only — do not log the raw error object which
     // may expose internal AI model details or stack traces to server logs.
     const safeMsg = e instanceof Error ? e.message : 'unknown error';

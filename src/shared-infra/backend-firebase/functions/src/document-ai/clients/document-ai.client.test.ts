@@ -53,6 +53,24 @@ describe('callDocumentAi', () => {
     vi.restoreAllMocks();
   });
 
+  it('does not retry when API returns 429', async () => {
+    mockGetApp.mockReturnValue(makeApp());
+
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(makeResponse({ error: { code: 429, status: 'RESOURCE_EXHAUSTED', message: 'Quota exceeded' } }, 429));
+
+    await expect(
+      callDocumentAi(
+        PROCESSOR_URLS.EXTRACTOR,
+        'gs://my-bucket/doc.pdf',
+        'application/pdf'
+      )
+    ).rejects.toThrow('Quota exceeded');
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('sends a GCS URI as gcsDocument in the request body', async () => {
     mockGetApp.mockReturnValue(makeApp());
 
