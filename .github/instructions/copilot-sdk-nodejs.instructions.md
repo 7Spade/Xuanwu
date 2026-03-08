@@ -1,7 +1,6 @@
 ---
-applyTo: "**.ts, **.js, package.json"
-description: "This file provides guidance on building Node.js/TypeScript applications using GitHub Copilot SDK."
-name: "GitHub Copilot SDK Node.js Instructions"
+applyTo: '**/*.{ts,js}, **/package.json'
+description: 'Guidance for building Node.js/TypeScript applications using the GitHub Copilot SDK.'
 ---
 
 ## Core Principles

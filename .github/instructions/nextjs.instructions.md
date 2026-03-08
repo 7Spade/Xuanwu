@@ -167,6 +167,14 @@ Always move client-only UI into a Client Component and import it directly in you
 - **Turbopack is the default dev bundler.** Configure via the top-level `turbopack` field in `next.config.*` (do not use the removed `experimental.turbo`).
 - **Typed routes are stable** via `typedRoutes` (TypeScript required).
 
+## 8. Tailwind CSS
+
+- Use a consistent color palette defined in `tailwind.config.*`.
+- Apply responsive design patterns using Tailwind's breakpoint prefixes (`sm:`, `md:`, `lg:`, `xl:`).
+- Support dark mode via `dark:` variant classes (use `darkMode: 'class'` in config).
+- Follow CSS container-query best practices (`@container` + `@container-size` utilities).
+- Maintain semantic HTML structure; use Tailwind utilities to style, not to replace semantics.
+
 # Avoid Unnecessary Example Files
 
 Do not create example/demo files (like ModalExample.tsx) in the main codebase unless the user specifically requests a live example, Storybook story, or explicit documentation component. Keep the repository clean and production-focused by default.
