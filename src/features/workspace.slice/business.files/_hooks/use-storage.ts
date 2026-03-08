@@ -6,7 +6,7 @@ import { useApp } from '@/app-runtime/providers/app-provider';
 import {
   uploadDailyPhoto as uploadDailyPhotoAction,
   uploadTaskAttachment as uploadTaskAttachmentAction,
-} from '../_storage';
+} from '../_actions';
 
 /**
  * @fileoverview A hook for abstracting file storage operations.

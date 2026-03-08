@@ -1,5 +1,0 @@
-export { deleteVersionStorageObjects } from './delete-version-storage-objects.storage-action'
-export { uploadDailyPhoto } from './upload-daily-photo.storage-action'
-export { uploadProfilePicture } from './upload-profile-picture.storage-action'
-export { uploadRawFile } from './upload-raw-file.storage-action'
-export { uploadTaskAttachment } from './upload-task-attachment.storage-action'

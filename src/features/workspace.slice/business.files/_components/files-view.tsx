@@ -57,11 +57,12 @@ import { ROUTES } from "@/shared-kernel/constants/routes";
 import {
   createWorkspaceFile,
   addWorkspaceFileVersion,
+  deleteVersionStorageObjects,
   deregisterWorkspaceFile,
   restoreWorkspaceFileVersion,
+  uploadRawFile,
 } from '../_actions';
 import { subscribeToWorkspaceFiles } from '../_queries';
-import { deleteVersionStorageObjects, uploadRawFile } from '../_storage';
 import type { WorkspaceFile, WorkspaceFileVersion } from "../_types";
 
 
