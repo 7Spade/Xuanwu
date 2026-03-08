@@ -63,9 +63,10 @@ export default defineConfig({
       "**/.git/**",
       "package-lock.json",
       "repomix-output.md",
-      "src/shared-infra/backend-firebase/functions/lib",
-      "src/shared-infra/backend-firebase/functions/node_modules",
+      "src/shared-infra/backend-firebase/functions/lib/**",
+      "src/shared-infra/backend-firebase/functions/node_modules/**",
       "src/shared-infra/backend-firebase/functions/package-lock.json",
+      "src/shared-infra/backend-firebase/dataconnect/**"
     ],
     // 繼承 .gitignore 設定
     useGitignore: true,
