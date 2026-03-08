@@ -58,7 +58,7 @@ env:
     value: "94f84cf3b653b085"
 
   - variable: DOCAI_EXTRACTOR_PROCESSOR_ID
-    value: "86a3e4af9c5bba38"
+    value: "1516a32299c1709e"
 
   - variable: DOCAI_HTTP_TIMEOUT_MS
     value: "45000"
