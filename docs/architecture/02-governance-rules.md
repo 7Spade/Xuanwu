@@ -401,6 +401,7 @@
 | `D25` | MUST | Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽必須走 `src/shared-infra/backend-firebase/functions` |
 | `D25` | MUST | 需要受治理的 GraphQL 資料契約必須走 `src/shared-infra/backend-firebase/dataconnect` |
 | `D25` | MUST | `firebase-admin` SDK 只在 `src/shared-infra/backend-firebase/functions`（Cloud Functions）內初始化與呼叫；firebase-admin 一律透過 functions |
+| `D25` | MUST | `firebase-admin/app-check`（服務端 App Check token 驗簽）只在 `AdminAppCheckAdapter`（`src/shared-infra/backend-firebase/functions/`）中呼叫 [E7 → 見 §E7 章節] |
 | `D25` | FORBIDDEN | 在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin` |
 
 ### D26：Cross-cutting Authority 守則
@@ -432,6 +433,18 @@
 | `D27` | MUST | 排班視圖讀取僅可經 L6 Query Gateway；UI 禁止直讀 VS6/Firebase [L6-Gateway] |
 | `D27` | MUST | overlap/resource-grouping 必須在 L5 Projection 層完成，前端僅渲染 [Timeline] |
 | `D27` | FORBIDDEN | VS5 document-parser 禁止自行實作成本語義邏輯；禁止 Layer-3 繞過 costItemType |
+
+### E7：App Check 安全閉環（app-check-enforcement-closure）
+
+> E7 為 Firebase Entry Security Gate；凡新增或修改受保護資料入口、App Check Adapter 或 `firebase/app-check` / `firebase-admin/app-check` 呼叫點時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `E7` | MUST | HTTP endpoint / Webhook / Callable Function 等外部入口涉及受保護資料或可變更狀態，必須先完成 App Check 驗證（含 token 續期與失效處理）；未通過不得進入 L2/L3 |
+| `E7` | MUST | Client 端 `AppCheckAdapter`（L7-A · `src/shared-infra/frontend-firebase/app-check/`）是唯一合法的 `firebase/app-check` 呼叫點 |
+| `E7` | MUST | 服務端驗證 App Check token 必須經 `AdminAppCheckAdapter`（L7-B · `src/shared-infra/backend-firebase/functions/`）；不得在 Next.js Server Components / Server Actions / Edge Functions 直接呼叫 `firebase-admin/app-check` |
+| `E7` | FORBIDDEN | Domain Slice / Feature Slice 禁止繞過 App Check 驗證直接存取受保護資源 |
+| `E7` | FORBIDDEN | 禁止在 `AppCheckAdapter` / `AdminAppCheckAdapter` 以外的位置實作 `firebase/app-check` 或 `firebase-admin/app-check` 邏輯 |
 
 ### P6, E8：平行路由與 AI 治理
 
@@ -477,6 +490,13 @@
 | `A15` | finance-lifecycle-gate |
 | `A16` | multi-claim-cycle |
 | `A17` | skill-xp-award-contract |
+
+### E 類（Security Gate 閉環）
+
+| 索引 | 摘要 |
+|------|------|
+| `E7` | app-check-enforcement-closure |
+| `E8` | genkit-tool-governance |
 
 ---
 

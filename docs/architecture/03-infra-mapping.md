@@ -47,7 +47,7 @@ VS8 = src/features/semantic-graph.slice
 | 標記 | 說明 |
 |------|------|
 | `VS0-Kernel` | `src/shared-kernel/*`：契約 / 常數 / 純函式（No I/O） → Layer L1 |
-| `VS0-Infra` | `src/shared-infra/*`：執行層 → L0 / L2 / L4 / L5 / L6 / L7 / L9 |
+| `VS0-Infra` | `src/shared-infra/*`：執行層 → L0 / L2 / L4 / L5 / L6 / L7 / L9 / L10（L3 = VS1–VS8 Feature Slices，非 VS0-Infra 管轄；L8 = Firebase 外部平台，不在 codebase 管控範圍） |
 
 > **規則**：VS0-Kernel 與 VS0-Infra 必須明確區分，不得混稱；檢核時必須標明 `VS0-Kernel` 或 `VS0-Infra`。
 
@@ -247,6 +247,7 @@ Firestore onSnapshot (CDC)
 | `AdminFirestoreAdapter` | `IFirestoreRepo`（BE） | `.../functions/src/relay/` 與 `.../projection/` | sole `firebase-admin/firestore` 呼叫點（強一致寫入/跨集合 TX）|
 | `AdminMessagingAdapter` | `IMessaging`（BE） | `.../functions/src/` | sole `firebase-admin/messaging` 呼叫點（Server-side FCM 主要通道）|
 | `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
+| `AdminAppCheckAdapter` | — | `.../functions/src/` | sole `firebase-admin/app-check` 呼叫點（服務端 App Check token 驗簽）[D25 E7] |
 | `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
 
 ---
