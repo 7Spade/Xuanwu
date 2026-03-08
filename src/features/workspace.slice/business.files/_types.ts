@@ -19,3 +19,5 @@ export interface WorkspaceFile {
   updatedAt: Timestamp | Date; // Can be Date for client-side, becomes Timestamp on server
   versions: WorkspaceFileVersion[];
 }
+
+export type CreateWorkspaceFileInput = Omit<WorkspaceFile, 'id' | 'updatedAt'>;

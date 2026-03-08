@@ -61,7 +61,7 @@ import {
   restoreWorkspaceFileVersion,
 } from '../_actions';
 import { subscribeToWorkspaceFiles } from '../_queries';
-import { deleteVersionStorageObjects, uploadRawFile } from '../_storage-actions';
+import { deleteVersionStorageObjects, uploadRawFile } from '../_storage';
 import type { WorkspaceFile, WorkspaceFileVersion } from "../_types";
 
 
