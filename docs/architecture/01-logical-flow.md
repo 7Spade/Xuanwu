@@ -12,11 +12,31 @@
 
 | 鏈路 | 流向 |
 |------|------|
-| **寫鏈（Command）** | External/L0 → L0A `COMMAND_API_GATEWAY` → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection |
-| **讀鏈（Query）** | UI/L0 → L0A `QUERY_API_GATEWAY` → L6 Query Gateway → L5 Projection（Read Model） |
+| **寫鏈（Command）** | External/L0 → **CQRS Gateway（Write Path · L0A `CMD_API_GW` → L2 `CBG_ENTRY→CBG_AUTH→CBG_ROUTE`）** → L3 Domain Slices → L4 IER → L5 Projection |
+| **讀鏈（Query）** | UI/L0 → **CQRS Gateway（Read Path · L0A `QRY_API_GW` → L6 `QGWAY`）** → L5 Projection Read Model |
 | **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
 
 > **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
+> **CQRS Gateway**：Command Layer（入口防護後）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
+
+---
+
+## Firebase 路由決策（L7-A firebase-client SDK vs L7-B functions→firebase-admin）
+
+> **欄位說明**：`路由層級` = 應使用的 SDK / 路徑；`強度` = MUST（架構強制）/ SHOULD（推薦做法）
+
+| 情境 | 路由層級 | 強度 |
+|------|----------|------|
+| UI 操作（讀取/訂閱）、App Check 初始化、Analytics 遙測 | **L7-A** `frontend-firebase`（firebase-client SDK） | SHOULD |
+| **firebase-admin SDK 任何使用場景** | **L7-B** `functions`（Cloud Functions 唯一容器）| **MUST** |
+| Admin 權限 / 自訂 Claims / 跨租戶操作 | **L7-B** `functions` | **MUST** |
+| Webhook 驗簽 / Scheduler / 高扇出批次協調 | **L7-B** `functions` | **MUST** |
+| 高頻小請求且 Security Rules 足以保護 | **L7-A** `frontend-firebase`（降低 Functions 調用成本） | SHOULD |
+| 即時訂閱（presence / typing / live-feed） | **L7-A** `frontend-firebase/realtime-database`（RTDBAdapter） | SHOULD |
+| 受治理 GraphQL 資料契約 | **L7-B** `functions/dataconnect`（DataConnectGatewayAdapter） | **MUST** |
+| 受保護資料或可變更狀態 | 先完成 App Check 驗證（含 token 續期與失效處理）再進入 L2/L3 | **MUST [E7]** |
+
+> **FORBIDDEN**：Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin` [D25]
 
 ---
 
@@ -99,32 +119,57 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 RATE_LIM --> CIRCUIT --> BULKHEAD
             end
 
-            subgraph API_SPLIT["🚪 L0A · API Gateway Split（src/shared-infra/api-gateway）"]
-                direction LR
-                CMD_API_GW["COMMAND_API_GATEWAY\nwrite-only ingress"]
-                QRY_API_GW["QUERY_API_GATEWAY\nread-only ingress"]
-            end
-
-            BULKHEAD -->|command ingress| CMD_API_GW
-            BULKHEAD -->|client/server-action read ingress| QRY_API_GW
             EXT_WEBHOOK -.->|forbidden read| WEBHOOK_READ_REJECT
         end
 
+        BULKHEAD -->|command ingress| CMD_API_GW
+        BULKHEAD -->|client/server-action read ingress| QRY_API_GW
+
         %% ═══════════════════════════════════════════════════════════════
-        %% LAYER 2 ── COMMAND GATEWAY（統一寫入閘道）
+        %% CQRS GATEWAY（讀寫分離統一閘道 · L0A / L2 / L6）
+        %% 架構設計正確性：Command Layer + Command Gateway + Query Gateway
+        %% 三者同屬「讀寫分離閘道」，以讀/寫為唯一切割線，合一呈現
         %% ═══════════════════════════════════════════════════════════════
 
-        subgraph GW_CMD["🔵 L2 · Command Gateway（src/shared-infra/gateway-command）"]
+        subgraph UNIFIED_GW["🔀 CQRS Gateway（讀寫分離統一閘道 · L0A + L2 + L6 · src/shared-infra/api-gateway + gateway-command + gateway-query）"]
             direction LR
 
-            subgraph GW_PIPE["⚙️ Command Pipeline（src/shared-infra/gateway-command）"]
-                CBG_ENTRY["unified-command-gateway\n[R8] TraceID 注入（唯一注入點）\n→ event-envelope.traceId"]
-                CBG_AUTH["authority-interceptor\nAuthoritySnapshot [#A9]\n衝突以 ACTIVE_CTX 為準"]
-                CBG_ROUTE["command-router\n路由至對應切片\n回傳 SK_CMD_RESULT"]
-                CBG_ENTRY --> CBG_AUTH --> CBG_ROUTE
+            subgraph CQRS_WRITE["✍ Write Path（L0A → L2）"]
+                direction TB
+                CMD_API_GW["COMMAND_API_GATEWAY\nwrite-only ingress · L0A\nsrc/shared-infra/api-gateway"]
+
+                subgraph GW_PIPE["⚙️ Command Pipeline（L2 · src/shared-infra/gateway-command）"]
+                    CBG_ENTRY["unified-command-gateway\n[R8] TraceID 注入（唯一注入點）\n→ event-envelope.traceId"]
+                    CBG_AUTH["authority-interceptor\nAuthoritySnapshot [#A9]\n衝突以 ACTIVE_CTX 為準"]
+                    CBG_ROUTE["command-router\n路由至對應切片\n回傳 SK_CMD_RESULT"]
+                    CBG_ENTRY --> CBG_AUTH --> CBG_ROUTE
+                end
+
+                CMD_API_GW --> CBG_ENTRY
             end
 
-            CMD_API_GW --> CBG_ENTRY
+            subgraph CQRS_READ["📖 Read Path（L0A → L6）"]
+                direction TB
+                QRY_API_GW["QUERY_API_GATEWAY\nread-only ingress · L0A\nsrc/shared-infra/api-gateway"]
+
+                subgraph GW_QUERY["⚙️ Query Routes（L6 · src/shared-infra/gateway-query）[S2 S3]"]
+                    direction LR
+                    QGWAY["read-model-registry\n統一讀取入口\n版本對照 / 快照路由\n[S2] 所有 Projection 遵守 SK_VERSION_GUARD"]
+                    QGWAY_SCHED["→ .org-eligible-member-view\n[#14 #15 #16]"]
+                    QGWAY_CAL_DAY["→ .schedule-calendar-view/day\n日期維度（單日，by dateKey）"]
+                    QGWAY_CAL_ALL["→ .schedule-calendar-view/all\n日期維度（全量，by orgId）"]
+                    QGWAY_TL_MEMBER["→ .schedule-timeline-view/member\n資源維度（單成員，by memberId）"]
+                    QGWAY_TL_ALL["→ .schedule-timeline-view/all\n資源維度（全量，by orgId）"]
+                    QGWAY_NOTIF["→ .account-view + notification-feed-view\n[#6] FCM Token + RTDB 通知快照"]
+                    QGWAY_SCOPE["→ .workspace-scope-guard-view\n[#A9]"]
+                    QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
+                    QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
+                    QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
+                    QGWAY --> QGWAY_SCHED & QGWAY_CAL_DAY & QGWAY_CAL_ALL & QGWAY_TL_MEMBER & QGWAY_TL_ALL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
+                end
+
+                QRY_API_GW --> QGWAY
+            end
         end
 
         %% ═══════════════════════════════════════════════════════════════
@@ -214,25 +259,10 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             ORG_ELIG_V -.->|"[#12] getTier"| TIER_FN
         end
 
-        subgraph GW_QUERY["🟢 L6 · Query Gateway（src/shared-infra/gateway-query；ownership: VS0-Infra）[S2 S3]"]
+        subgraph FIREBASE_L7["🔥 L7 Firebase 前後端分層（決策矩陣：何時用 firebase-client vs functions → D25 / 見 §Firebase 路由決策）"]
             direction LR
-            QGWAY["read-model-registry\n統一讀取入口\n版本對照 / 快照路由\n[S2] 所有 Projection 遵守 SK_VERSION_GUARD"]
-            QGWAY_SCHED["→ .org-eligible-member-view\n[#14 #15 #16]"]
-            QGWAY_CAL_DAY["→ .schedule-calendar-view/day\n日期維度（單日，by dateKey）"]
-            QGWAY_CAL_ALL["→ .schedule-calendar-view/all\n日期維度（全量，by orgId）"]
-            QGWAY_TL_MEMBER["→ .schedule-timeline-view/member\n資源維度（單成員，by memberId）"]
-            QGWAY_TL_ALL["→ .schedule-timeline-view/all\n資源維度（全量，by orgId）"]
-            QGWAY_NOTIF["→ .account-view + notification-feed-view\n[#6] FCM Token + RTDB 通知快照"]
-            QGWAY_SCOPE["→ .workspace-scope-guard-view\n[#A9]"]
-            QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
-            QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
-            QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
-            QGWAY --> QGWAY_SCHED & QGWAY_CAL_DAY & QGWAY_CAL_ALL & QGWAY_TL_MEMBER & QGWAY_TL_ALL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
-        end
 
-        QRY_API_GW --> QGWAY
-
-        subgraph FIREBASE_ACL["🔌 L7 · Anti-Corruption Translator + Functional Adapters（VS0-Infra）[D24 D25]"]
+        subgraph FIREBASE_ACL["🔥 L7-A · firebase-client SDK（Client Adapters · src/shared-infra/frontend-firebase · FIREBASE_ACL）[D24]\n前端操作 / App Check 初始化 / Analytics 遙測 / 即時訂閱\n流程：L3/L5/L6 → L1 SK_PORTS → L7-A → L8"]
             direction LR
 
             AC_TRANSLATOR_L7["anti-corruption-translator\nSDK semantics -> standardized ports"]
@@ -260,7 +290,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> APPCHK_ADP
         end
 
-        subgraph FIREBASE_BACKEND["🔌 L7 · Backend Firebase Gateways（VS0-Infra · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions · 禁止在 Next.js server/edge/Server Actions/Edge Functions 中直接使用"]
+        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
             direction LR
             BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
 
@@ -276,6 +306,8 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             BFN_GW -.->|"Admin SDK init → 各 Service API 委派"| ADMIN_AUTH_ADP & ADMIN_DB_ADP & ADMIN_MSG_ADP & ADMIN_STORE_ADP & ADMIN_APPCHK_ADP
 
             BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
+        end
+
         end
 
         subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；本 repo 僅邊界映射）"]
@@ -970,9 +1002,9 @@ class B_ISSUES,W_DAILY,W_SCHED wsSlice
 class VS6,SCH_CMD,SCH_CONFLICT,ORG_SCH,SCH_SAGA schedSlice
 class SCH_OB outboxNode
 class VS7,NOTIF_R,USER_NOTIF,USER_DEV notifSlice
-class GW_CMD,GW_GUARD,GW_PIPE gateway
+class UNIFIED_GW,CQRS_WRITE,CQRS_READ,GW_GUARD,GW_PIPE gateway
 class RATE_LIM,CIRCUIT,BULKHEAD guardLayer
-class CBG_ENTRY,CBG_AUTH,CBG_ROUTE cmdGw
+class CMD_API_GW,CBG_ENTRY,CBG_AUTH,CBG_ROUTE cmdGw
 class GW_IER,IER_CORE,IER eventGw
 class RELAY relay
 class CRIT_LANE critLane
@@ -982,7 +1014,7 @@ class DLQ dlqNode
 class DLQ_S dlqSafe
 class DLQ_R dlqReview
 class DLQ_B dlqBlock
-class GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV qgway
+class QRY_API_GW,GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV qgway
 class PROJ_BUS,FUNNEL,PROJ_VER,READ_REG stdProj
 class CRIT_PROJ,WS_SCOPE_V,ORG_ELIG_V,WALLET_V critProj
 class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V stdProj
@@ -991,7 +1023,7 @@ class TAG_SNAP tagSub
 class TIER_FN tierFn
 class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
-class FIREBASE_ACL,AC_TRANSLATOR_L7,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
+class FIREBASE_L7,FIREBASE_ACL,AC_TRANSLATOR_L7,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
 class APPCHK_ADP aclAdapter
 class FIREBASE_BACKEND,BFN_GW,BDC_GW,ADMIN_ADPTS,ADMIN_AUTH_ADP,ADMIN_DB_ADP,ADMIN_MSG_ADP,ADMIN_STORE_ADP,ADMIN_APPCHK_ADP aclAdapter
 class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK,F_DC,F_FUNCTIONS firebaseExt
@@ -1032,14 +1064,15 @@ class NOTIF_EXIT crossCutAuth
 | Layer | 名稱 | 職責 |
 |-------|------|------|
 | L0 | External Triggers | 外部觸發入口 |
+| L0A | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）/ `QRY_API_GW`（read-only ingress）；均在 `UNIFIED_GW` 內 [CQRS] |
 | L1 | Shared Kernel | 契約／常數／純函式（No I/O） |
-| L2 | Command Gateway | CBG_ENTRY / CBG_AUTH / CBG_ROUTE |
+| L2 | Command Gateway（Write Path） | CBG_ENTRY / CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` 的 Write Pipeline |
 | L3 | Domain Slices | VS1–VS8 業務切片 |
 | L4 | Integration Event Router（IER） | 統一事件出口 [#9] |
 | L5 | Projection Bus | 投影物化（event-funnel，唯一寫路徑） |
-| L6 | Query Gateway | 統一讀取出口 |
-| L7-A | Firebase Client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter 等）；Feature slice → L1 SK_PORTS → L7-A [D24] |
-| L7-B | Firebase Admin SDK（Cloud Functions） | Admin SDK 唯一容器；`firebase-admin` 一律透過 functions；禁止在 Next.js server/edge 直接使用 [D25] |
+| L6 | Query Gateway（Read Path） | 統一讀取出口；`UNIFIED_GW.CQRS_READ` 的 Read Routes（QGWAY + routes） |
+| L7-A | firebase-client SDK（FIREBASE_ACL） | Client SDK Adapters；Feature slice → L1 SK_PORTS → L7-A → L8 [D24] |
+| L7-B | functions（firebase-admin 唯一容器） | Admin SDK 唯一容器；`firebase-admin` 一律透過 Cloud Functions；禁止在 Next.js server/edge 直接使用 [D25] |
 | L8 | Firebase Runtime | 外部 Firebase 平台執行層 |
 | L9 | Observability | 跨切面觀測（metrics/trace/errors）；observe-only |
 | L10 | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL |

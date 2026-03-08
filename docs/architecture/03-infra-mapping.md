@@ -56,12 +56,13 @@ VS8 = src/features/semantic-graph.slice
 | Layer | 名稱 | 職責 | 路徑前綴 |
 |-------|------|------|----------|
 | `L0` | External Triggers | 外部觸發入口（HTTP/WebSocket/Schedule/Webhook/AI） | `src/shared-infra/gateway-*` / `src/app/api/` |
+| `L0A` | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）→ L2 Write Path ／ `QRY_API_GW`（read-only ingress）→ L6 Read Path；`UNIFIED_GW` 讀寫分離統一閘道的入口 | `src/shared-infra/api-gateway/` |
 | `L1` | Shared Kernel | 契約/常數/純函式（No I/O, No Side Effects） | `src/shared-kernel/` |
-| `L2` | Command Gateway | CBG_ENTRY / CBG_AUTH / CBG_ROUTE（唯一 traceId 注入點） | `src/shared-infra/gateway-command/` |
+| `L2` | Command Gateway（Write Path） | CBG_ENTRY（TraceID 注入唯一點）/ CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` Write Pipeline | `src/shared-infra/gateway-command/` |
 | `L3` | Domain Slices | VS1–VS8 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
 | `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
-| `L6` | Query Gateway | 統一讀取出口（read-model-registry） | `src/shared-infra/gateway-query/` |
+| `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
 | `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/frontend-firebase/` |
 | `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
 | `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
@@ -109,8 +110,9 @@ src/shared-kernel/
 
 ```
 src/shared-infra/
-  gateway-command/           # L2 CBG_ENTRY + CBG_AUTH + CBG_ROUTE
-  gateway-query/             # L6 read-model-registry
+  api-gateway/               # L0A CMD_API_GW + QRY_API_GW（讀寫分流入口）
+  gateway-command/           # L2 CBG_ENTRY + CBG_AUTH + CBG_ROUTE（Write Path Pipeline）
+  gateway-query/             # L6 read-model-registry（Read Path Routes）
   event-router/              # L4 IER（outbox-relay-worker / lane-router / dlq）
   projection-bus/            # L5 event-funnel + projectors
   frontend-firebase/
@@ -136,6 +138,8 @@ src/shared-infra/
 
 ---
 
+> **CQRS Gateway（讀寫分離統一閘道）**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在圖中合一為 `UNIFIED_GW`，以讀寫分離為唯一切割線。詳見 [`01-logical-flow.md §三條主鏈`](./01-logical-flow.md)
+>
 > **L2 Command Gateway 邊界規則**（可下沉 L1 元件 / MUST stay at L2 / D8・D10 禁止）→ [`02-governance-rules.md §L2 Command Gateway 邊界規則`](./02-governance-rules.md#l2-command-gateway-邊界規則d8--d10-附則)
 
 ---
@@ -227,7 +231,12 @@ Firestore onSnapshot (CDC)
 
 > Firebase SDK 唯一合法呼叫層 [D24 D25]
 >
-> **三層分離原則**：`firebase-client` SDK（瀏覽器/Next.js client context）→ L7-A 前端 Adapters ／ `firebase-admin` SDK（Admin 特權 API）→ L7-B 後端 Adapters ／ `functions`（Cloud Functions）→ firebase-admin 一律透過 functions [D25]
+> **三層分離原則**：
+> - **L7-A `firebase-client` SDK**（瀏覽器/Next.js client context）→ `frontend-firebase/` Client Adapters
+> - **L7-B `firebase-admin` SDK**（Admin 特權 API）→ L7-B 後端 Adapters
+> - **`functions`（Cloud Functions）→ `firebase-admin` 一律透過 functions** [D25]
+>
+> **路由決策矩陣**（何時用 L7-A vs L7-B）→ [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)
 
 ### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/frontend-firebase/`）
 
