@@ -112,6 +112,8 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[#A14]` | `ParsedLineItem.(costItemType, semanticTagSlug)` (Layer-2) 由 VS8 `_cost-classifier.ts` 標注；Layer-3 只允許 EXECUTABLE 物化為 tasks |
 | `[#A15]` | Finance 進入閘門：僅 Acceptance=OK 才可進入 Finance |
 | `[#A16]` | Multi-Claim Cycle：Finance 為可重入循環，直到 `outstandingClaimableAmount = 0` 才允許 Completed |
+| `[#A17]` | XP 僅能由 VS3 寫入；`awardedXp = baseXp × qualityMultiplier × policyMultiplier`（含 clamp）；VS8 禁止直接寫入 VS3 XP aggregate/ledger |
+| `[#A18]` | 組織新建 task-type/skill-type 必須走 VS4 org-semantic-registry，以 org namespace 寫入 tag-snapshot |
 
 ---
 

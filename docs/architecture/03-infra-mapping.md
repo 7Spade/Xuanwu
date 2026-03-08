@@ -215,7 +215,7 @@ Firestore onSnapshot (CDC)
 | `org-eligible-member-view` | 排班/組織成員快照 | [#14 #15 #16] |
 | `schedule-calendar-view` | 日曆視圖（UI 禁止直讀 VS6/Firebase） | [D27 L6-Gateway] |
 | `schedule-timeline-view` | 時間軸視圖（overlap/grouping 預計算） | [D27 Timeline] |
-| `account-view` | 帳戶資料（含 FCM Token） | [#6] |
+| `account-view` | 帳戶資料（含 FCM Token）；`notification-feed-view` RTDB 即時通知串流（via L7-A RTDBAdapter） | [#6] |
 | `workspace-scope-guard-view` | Scope Guard 快路徑 | [A9] |
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
 | `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |

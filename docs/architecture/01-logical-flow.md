@@ -803,11 +803,10 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
     NOTIF_R -->|TargetAccountID 匹配| NOTIF_EXIT
     NOTIF_EXIT -->|路由策略決定| USER_NOTIF
     PROFILE -.->|"FCM Token（唯讀）"| USER_NOTIF
-    USER_NOTIF -.->|"[#6] 投影"| QGWAY_NOTIF
 end
 
 NOTIF_EXIT -.->|"uses IMessaging [R8]"| I_MSG
-USER_NOTIF -.->|"low-latency feed via QueryGateway/Port"| QGWAY_NOTIF
+USER_NOTIF -.->|"[#6] RTDB 即時通知串流（低延遲 · L7-A RTDBAdapter）"| QGWAY_NOTIF
 NOTIF_EXIT -.->|"標籤感知路由"| VS8
 
 %% 所有 OUTBOX → RELAY
