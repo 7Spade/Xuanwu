@@ -11,6 +11,10 @@ Shared always-on guidance for multi-agent workflows in this repository.
 2. `.github/instructions/*.instructions.md` (file/task-specific)
 3. Task prompt requirements
 
+## VS Code Settings
+- Enable `chat.useAgentsMdFile` to load `AGENTS.md` instructions.
+- Enable `chat.useNestedAgentsMdFiles` to apply nested `AGENTS.md` in subfolders (experimental).
+
 ## Required Behavior
 - Follow architecture SSOT:
   - `docs/architecture/00-LogicOverview.md`

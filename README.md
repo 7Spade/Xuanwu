@@ -15,6 +15,11 @@ This repository uses VS Code Copilot custom instructions:
 - Global workspace instructions: `.github/copilot-instructions.md`
 - Multi-agent shared conventions: `AGENTS.md`
 - File-scoped rules: `.github/instructions/*.instructions.md`
+- Nested agent instructions: `src/**/AGENTS.md`
+
+To ensure nested instructions are applied in VS Code:
+- Enable `chat.useAgentsMdFile`
+- Enable `chat.useNestedAgentsMdFiles` (experimental)
 
 ## i18n Requirement
 
