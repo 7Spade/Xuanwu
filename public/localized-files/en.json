@@ -496,7 +496,13 @@
     "taskAcceptedDesc": "{name} has passed all dimension verifications.",
     "failedToAccept": "Failed to Accept Task",
     "acceptanceFailed": "Acceptance Failed",
-    "failedToUpdateTask": "Failed to Update Task"
+    "failedToUpdateTask": "Failed to Update Task",
+    "uatTitle": "A-Track: User Acceptance Testing (UAT)",
+    "pendingCount": "{count} Pending",
+    "qaPassed": "QA PASSED",
+    "noPendingItems": "No items pending acceptance",
+    "securityNotice": "Acceptance Security Notice",
+    "securityNoticeDesc": "Any acceptance failure is treated as a critical spec deviation and will automatically create a high-priority issue on the B-Track for immediate follow-up."
   },
   "files": {
     "failedToUpload": "Failed to Upload File",
@@ -517,7 +523,13 @@
     "qaPassedDesc": "{name} has been sent for final acceptance.",
     "failedToApprove": "Failed to Approve QA",
     "taskRejected": "Task Rejected",
-    "failedToReject": "Failed to Reject QA"
+    "failedToReject": "Failed to Reject QA",
+    "qaTitle": "A-Track: Quality Assurance (QA)",
+    "pendingCount": "{count} Pending Review",
+    "submitterLabel": "Submitter: Dimension Member",
+    "noItems": "No items pending QA",
+    "qaStandards": "QA Standards",
+    "qaStandardsDesc": "All tasks entering the QA phase must pass automated testing and manual review to ensure they meet the defined technical specifications and acceptance criteria."
   },
   "capabilities": {
     "mounted": "{count} capabilities have been mounted",
@@ -600,7 +612,10 @@
   "audit": {
     "notAvailable": "Audit Log Not Available",
     "notAvailableDesc": "Audit logs are only available within an organization dimension.",
-    "noChanges": "No technical specification changes recorded"
+    "noChanges": "No technical specification changes recorded",
+    "title": "Audit",
+    "titleDesc": "Architectural event log for the entire dimension.",
+    "detailDesc": "Detailed information about this audit event."
   },
   "wiki": {
     "title": "VS8 Semantic Wiki",

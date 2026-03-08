@@ -496,7 +496,13 @@
     "taskAcceptedDesc": "{name} 已通過所有維度驗證。",
     "failedToAccept": "接受任務失敗",
     "acceptanceFailed": "驗收失敗",
-    "failedToUpdateTask": "更新任務失敗"
+    "failedToUpdateTask": "更新任務失敗",
+    "uatTitle": "A-Track：使用者驗收測試（UAT）",
+    "pendingCount": "{count} 待處理",
+    "qaPassed": "品管通過",
+    "noPendingItems": "無待驗收項目",
+    "securityNotice": "驗收安全通知",
+    "securityNoticeDesc": "任何驗收失敗均視為關鍵規格偏差，將自動在 B-Track 建立高優先級問題以立即跟進。"
   },
   "files": {
     "failedToUpload": "上傳檔案失敗",
@@ -517,7 +523,13 @@
     "qaPassedDesc": "{name} 已送交最終驗收。",
     "failedToApprove": "批准品質保證失敗",
     "taskRejected": "任務已拒絕",
-    "failedToReject": "拒絕品質保證失敗"
+    "failedToReject": "拒絕品質保證失敗",
+    "qaTitle": "A-Track：品質保證（QA）",
+    "pendingCount": "{count} 待審核",
+    "submitterLabel": "提交者：維度成員",
+    "noItems": "無待品管項目",
+    "qaStandards": "品管標準",
+    "qaStandardsDesc": "所有進入品管階段的任務必須通過自動測試和人工審查，以確保符合已定義的技術規格和驗收標準。"
   },
   "capabilities": {
     "mounted": "已掛載 {count} 個功能",
@@ -600,7 +612,10 @@
   "audit": {
     "notAvailable": "日誌無法使用",
     "notAvailableDesc": "日誌僅在組織維度中可用。",
-    "noChanges": "未記錄任何技術規格變更"
+    "noChanges": "未記錄任何技術規格變更",
+    "title": "稽核",
+    "titleDesc": "整個維度的架構事件日誌。",
+    "detailDesc": "此稽核事件的詳細資訊。"
   },
   "wiki": {
     "title": "VS8 語義 Wiki",
