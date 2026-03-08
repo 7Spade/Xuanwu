@@ -9,58 +9,37 @@ runConfig:
 
 # Environment variables and secrets.
 env:
-  # Firebase Web configuration (from src/shared-infra/frontend-firebase/config/firebase.config.ts)
+  # --- Firebase Web configuration ---
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: "AIzaSyBkniZGal_Lls4CR3eFuZvSVMZBe73STNs"
-    availability:
-      - BUILD
-      - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
     value: "xuanwu-i-00708880-4e2d8.firebaseapp.com"
-    availability:
-      - BUILD
-      - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
     value: "xuanwu-i-00708880-4e2d8"
-    availability:
-      - BUILD
-      - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
     value: "xuanwu-i-00708880-4e2d8.firebasestorage.app"
-    availability:
-      - BUILD
-      - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
     value: "65970295651"
-    availability:
-      - BUILD
-      - RUNTIME
 
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
     value: "1:65970295651:web:0f5d7e391eff98e8c93956"
-    availability:
-      - BUILD
-      - RUNTIME
 
-  # Web Push/App Check values should come from Secret Manager.
+  # --- Web Push (VAPID) ---
+  - variable: NEXT_PUBLIC_VAPID_PUBLIC_KEY
+    value: "BGnZm6Y1hqYG-N-hMnwWuJiEEM9LDO85L69kLqggG9IimGXGjrQpfxhmU9f0DCU_S4G2Ujb9_etDZHWzSpGk0co"
+
   - variable: VAPID_PRIVATE_KEY
     secret: VAPID_PRIVATE_KEY
-    availability:
-      - BUILD
-      - RUNTIME
 
+  # --- App Check ---
+  # 注意：Site Key 是公開的，直接放 value 即可；只有 Secret Key 才需要放 secret
   - variable: NEXT_PUBLIC_FIREBASE_APPCHECK_SITE_KEY
-    secret: 6LfSHGgsAAAAAAjTO77dmeQ7rZntLtaB6kOv4qPT
-    availability:
-      - BUILD
-      - RUNTIME
+    value: "6LfSHGgsAAAAAAjTO77dmeQ7rZntLtaB6kOv4qPT"
 
+  # --- Google API ---
   - variable: GOOGLE_API_KEY
     secret: GOOGLE_API_KEY
-    availability:
-      - BUILD
-      - RUNTIME
