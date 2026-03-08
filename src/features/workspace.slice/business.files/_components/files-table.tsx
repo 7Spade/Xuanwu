@@ -87,12 +87,14 @@ export function FilesTable({
             const isExpanded = Boolean(expandedFileIds[file.id]);
             const relatedStructuredFile = getRelatedStructuredFile(file);
             const isCurrentStructuredFile = isStructuredSidecarFile(file.name);
-            const aiSourceFile = isCurrentStructuredFile
+            const genkitAiSourceFile = isCurrentStructuredFile
               ? file
               : relatedStructuredFile;
-            const aiSourceVersion = aiSourceFile
-              ? getCurrentVersion(aiSourceFile)
+            const genkitAiSourceVersion = genkitAiSourceFile
+              ? getCurrentVersion(genkitAiSourceFile)
               : undefined;
+            const documentAiFile = file;
+            const documentAiVersion = current;
 
             return (
               <Fragment key={file.id}>
@@ -139,18 +141,18 @@ export function FilesTable({
                           <Download className="size-3.5 text-primary" /> {t('workspaces.download')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          disabled={!aiSourceVersion?.downloadURL || !aiSourceFile}
-                          onClick={() => aiSourceFile && onParseWithAi(aiSourceFile, aiSourceVersion)}
+                          disabled={!documentAiVersion?.downloadURL}
+                          onClick={() => onParseWithAi(documentAiFile, documentAiVersion)}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
-                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.parseWithAi')}
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.documentAi')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          disabled={!current?.downloadURL}
-                          onClick={() => onParseWithAi(file, current)}
+                          disabled={!genkitAiSourceVersion?.downloadURL || !genkitAiSourceFile}
+                          onClick={() => genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion)}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
-                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.structurize')}
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.genkitAi')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => onOpenHistory(file, 'versions')}
@@ -190,10 +192,10 @@ export function FilesTable({
                             variant="secondary"
                             size="sm"
                             className="h-7 text-[10px] font-bold"
-                            disabled={!aiSourceVersion?.downloadURL || !aiSourceFile}
-                            onClick={() => aiSourceFile && onParseWithAi(aiSourceFile, aiSourceVersion)}
+                            disabled={!genkitAiSourceVersion?.downloadURL || !genkitAiSourceFile}
+                            onClick={() => genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion)}
                           >
-                            {t('workspaces.parseWithAi')}
+                            {t('workspaces.genkitAi')}
                           </Button>
                         </div>
                       </div>

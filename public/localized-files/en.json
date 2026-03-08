@@ -133,6 +133,8 @@
     "synced": "SYNCED",
     "download": "Download",
     "parseWithAi": "Parse with AI",
+    "documentAi": "document-ai",
+    "genkitAi": "genkit-ai",
     "reparse": "Reparse",
     "structurize": "Structure",
     "versionHistory": "Version History",

@@ -133,6 +133,8 @@
     "synced": "已同步",
     "download": "下載",
     "parseWithAi": "使用 AI 解析",
+    "documentAi": "document-ai",
+    "genkitAi": "genkit-ai",
     "reparse": "重新解析",
     "structurize": "結構化",
     "versionHistory": "版本歷史",
