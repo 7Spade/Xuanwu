@@ -280,6 +280,28 @@
 | `D11` | `workspace-core.event-store` 支援 projection rebuild；必須持續同步 |
 | `D12` | `getTier()` 必須從 `shared-kernel/skill-tier` import；Firestore 寫入禁帶 tier 欄位 |
 
+### L2 Command Gateway 邊界規則（D8 / D10 附則）
+
+#### 可下沉至 L1（Shared Kernel）的元件
+
+| 元件類型 | 說明 |
+|----------|------|
+| `GatewayCommand` / `DispatchOptions` / Handler 介面型別 | 純型別契約，無 async/side effects |
+| `CommandResult` / 錯誤碼契約（純資料或純函式） | 符合 D8 |
+
+#### 必須保留在 L2 的元件
+
+| 元件類型 | 說明 |
+|----------|------|
+| `CBG_ENTRY` / `CBG_AUTH` / `CBG_ROUTE` 執行管線 | 含執行邏輯，禁止下沉 |
+| handler registry | 路由表動態注冊 |
+| resilience 接線（rate-limit / circuit-breaker / bulkhead） | 含 async/side effects |
+
+#### 嚴格禁止
+
+- `[D8]`：含 async / side effects / routing registry 的元件禁止下沉至 `shared-kernel/*`
+- `[D10]`：L1 禁止產生 `traceId`；traceId 僅允許 `CBG_ENTRY` 注入
+
 ### D13–D20：契約治理守則
 
 | 規則 | 說明 |
@@ -452,3 +474,42 @@
 | `A15` | finance-lifecycle-gate |
 | `A16` | multi-claim-cycle |
 | `A17` | skill-xp-award-contract |
+
+---
+
+## 跨切片 RULESET-MUST（分類整理）
+
+### VS6 強制規則
+
+| 規則 | 說明 |
+|------|------|
+| VS6 MUST 讀 `ORG_ELIGIBLE_MEMBER_VIEW` | 取得可排班成員、tagSlug 技能能力（skills{tagSlug→xp}）與 eligible 狀態 [#14 #15 #16] |
+| VS6 MUST 使用語義感知排班路由 | 基於 VS8 tagSlug 語義，禁止硬編碼成員 ID 或技能 ID [D21-5] |
+| VS6 MUST 使用 `SK_SKILL_REQ` × Tag Authority | 排班職能需求合法性由 `SK_SKILL_REQ` × tagSlug 確定 [T4] |
+| VS6 MUST 走 L6 Query Gateway | 排班視圖讀取只可經 L6；UI 禁止直讀 VS6/Firebase [D27 L6-Gateway] |
+| VS6 MUST overlap/resource-grouping 在 L5 完成 | 前端僅渲染，計算責任在 L5 Projection [D27 Timeline] |
+
+### VS3 強制規則
+
+| 規則 | 說明 |
+|------|------|
+| VS3 MUST 使用 Ledger 記帳 | XP 異動必須寫 Ledger [#13] |
+| VS3 MUST `getTier()` 只推導 | 從 `shared-kernel/skill-tier` import；禁止存入 DB [D12 #12] |
+| VS3 XP Award MUST 由 VS3 獨占寫入 | 來源只能是 VS5 的 `TaskCompleted(baseXp, semanticTagSlug)` 與 `QualityAssessed(qualityScore)` [A17] |
+
+### 分層規則
+
+| 規則 | 說明 |
+|------|------|
+| L3 → L4 | 域事件透過 OUTBOX，由 relay-worker 投遞到 IER [D1 S1] |
+| L4 → L5 | IER lane-router 分發到 event-funnel，event-funnel 是唯一 Projection 寫入路徑 [#9 #4b] |
+| L5 → L6 | Projection Bus 物化後由 Query Gateway 暴露 |
+| L2 → L3 | CBG_ROUTE 分發至 handler（CBG_ENTRY 已注入 traceId [D10]）|
+| L3 MUST NOT → firebase/* | Feature Slice 禁止跨越 L7，必須走 SK_PORTS [D24] |
+
+### Cross-cutting Authority 出口規則
+
+| 權威 | 說明 |
+|------|------|
+| `Global Search` | 唯一跨域搜尋出口；業務 Slice 禁止自建搜尋邏輯 [D26 #A12] |
+| `Notification Hub`（VS7） | 唯一副作用出口；業務 Slice 只產生事件不決定通知策略 [D26 #A13] |

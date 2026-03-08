@@ -1025,3 +1025,5 @@ class NOTIF_EXIT crossCutAuth
 | L8 | Firebase Runtime | 外部 Firebase 平台執行層 |
 | L9 | Observability | 跨切面觀測（metrics/trace/errors）；observe-only |
 | L10 | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL |
+
+> 各 Layer 對應原始碼路徑前綴請見 [`03-infra-mapping.md` § 水平層位索引（L0–L10）](./03-infra-mapping.md#水平層位索引l0l10)
