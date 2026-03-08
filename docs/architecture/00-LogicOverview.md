@@ -267,12 +267,18 @@
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  FINAL REVIEW BASELINE（最終態審查基準 · Team Gate）
 %%  ── Scope（本輪必審）──
-%%    1) VS0~VS8：每個編號域必須有明確層位與單一職責（VS0=L1+L0+L2+L4+L5+L6+L7+L8+L9；VS1~VS8=L3）
+%%    1) VS0~VS8：每個編號域必須有明確層位與單一職責（VS0=L1+L0+L2+L4+L5+L6+L7+L8+L9+L10；VS1~VS8=L3）
 %%    1a) VS0 檢核：每個 VS0 路徑必須標明 VS0-Kernel 或 VS0-Infra（不得混稱）
-%%    2) D1~D26：列為 Mandatory Gate（PR 必須全通過）
+%%    2) D1~D27：列為 Mandatory Gate（D27 為 Extension Gate，命中場景必審）
+%%    2a) E7/E8：屬 AI/Firebase Security 閉環 Gate（命中 AI flow 或受保護入口時必審）
 %%    3) TE1~TE6：語義引用必須強型別，禁止裸字串 tagSlug
 %%    4) S1~S6：契約與 SLA 僅能引用 SK_* 常數，禁止硬寫
 %%    5) L/R/A：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
+%%  ── Rule Canonicality（單一定義治理）──
+%%    Canonical Rule Body：UNIFIED DEVELOPMENT RULES（D1~D27 + E7/E8）
+%%    Secondary Sections（KEY INVARIANTS / FORBIDDEN / Quick Reference）只允許「索引引用 + 審查語句」，不得擴寫第二份規則正文
+%%    IF Secondary 與 Canonical 衝突 THEN 以 Canonical 為準，Secondary 必須在同一 PR 修正
+%%    IF 新增規則 THEN 必須先在 Canonical 定義，再回填索引（避免雙重真相）
 %%  ── D27 定位（擴展）──
 %%    D27（成本語義路由）為 Extension Gate；僅在 document-parser / finance-routing 變更時強制審查
 %%  ── No-Smell 定義（可作為 Code Review Checklist）──
@@ -1363,8 +1369,8 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  FIREBASE 隔離規則 與 Cross-cutting Authority 治理 [D24~D26]
 %%  （詳見 UNIFIED DEVELOPMENT RULES 完整定義）
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  UNIFIED DEVELOPMENT RULES [D1~D26 Mandatory + D27 Extension]
-%%  ── 規則分層：Hard Invariants (D1~D20 核心不變量) / Semantic Governance D21(D21-1~D21-10+D21-A~D21-X)/D22~D23 / Infrastructure (D24~D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) ──
+%%  UNIFIED DEVELOPMENT RULES [D1~D27 + E7/E8 Governance]
+%%  ── 規則分層：Hard Invariants (D1~D20 核心不變量) / Semantic Governance D21(D21-1~D21-10+D21-A~D21-X)/D22~D23 / Infrastructure (D24~D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) / AI & Entry Security Closure (E7/E8) ──
 %%  ── 基礎路徑約束（D1~D12）──
 %%  D1  事件傳遞只透過 shared-infra/outbox-relay；domain slice 禁止直接 import shared-infra/event-router
 %%  D2  跨切片引用：import from '@/features/{slice}/index' only；_*.ts 為私有
