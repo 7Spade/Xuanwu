@@ -10,9 +10,15 @@
 %%  ║    ⑦ VS7 僅可經 Port（IMessaging）發送通知，不得直連任何 Adapter/Runtime   ║
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  SSOT Mapping:
-%%    Architecture rules       → docs/architecture/00-LogicOverview.md  ← THIS FILE
+%%    Architecture rules       → docs/architecture/00-LogicOverview.md  ← THIS FILE（原始檔，所有規則正文在此定義）
 %%    Semantic relations       → docs/knowledge-graph.json
 %%    VS8 complete-body guide  → docs/architecture/03-Slices/VS8-SemanticBrain/D21-Body-8Layers.md  (companion spec)
+%%  ──────────────────────────────────────────────────────────────────────────
+%%  Sub-View Index（子視圖索引，從本檔抽出，供可讀性閱覽）:
+%%    邏輯流視圖 (Logical Flow)     → docs/architecture/01-logical-flow.md
+%%    治理視圖   (Governance View)  → docs/architecture/02-governance-rules.md
+%%    基礎設施視圖(Infrastructure)  → docs/architecture/03-infra-mapping.md
+%%  注意：若子視圖與本檔衝突，以本檔（00-LogicOverview.md）為準。
 %%  RULE SENTENCE TEMPLATE（規則句模板）:
 %%    MUST     : IF <條件> THEN <必須行為>
 %%    SHOULD   : IF <情境> THEN <建議行為>
