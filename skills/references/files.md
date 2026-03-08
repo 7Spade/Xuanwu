@@ -1384,6 +1384,26 @@ export type OrganizationEventKey = keyof OrganizationEventPayloadMap;
 
 ```
 
+## File: src/features/organization.slice/core/_components/account-new-form.tsx
+```typescript
+import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useApp } from "@/app-runtime/providers/app-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { Button } from "@/shadcn-ui/button";
+import { toast } from "@/shadcn-ui/hooks/use-toast";
+import { Input } from "@/shadcn-ui/input";
+import { Label } from "@/shadcn-ui/label";
+import { useOrganizationManagement } from "../_hooks/use-organization-management";
+interface AccountNewFormProps {
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+⋮----
+const handleCreate = async () =>
+⋮----
+```
+
 ## File: src/features/organization.slice/core/_components/org-settings-view.tsx
 ```typescript
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
@@ -6719,6 +6739,37 @@ interface CreateWorkspaceDialogProps {
 const onCreate = async () =>
 ```
 
+## File: src/features/workspace.slice/core/_components/shell/account-create-dialog.tsx
+```typescript
+import { Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { Button } from "@/shadcn-ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/shadcn-ui/dialog"
+import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
+import { type Account } from "@/shared-kernel"
+interface AccountCreateDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  createOrganization: (name: string) => Promise<string>
+  dispatch: React.Dispatch<AppAction>
+  accounts: Record<string, Account>
+  t: (key: string) => string
+}
+⋮----
+const handleCreate = async () =>
+⋮----
+```
+
 ## File: src/features/workspace.slice/core/_components/shell/index.ts
 ```typescript
 
@@ -10949,26 +11000,6 @@ function AccountCard(
 const handleClick = () =>
 ```
 
-## File: src/features/organization.slice/core/_components/account-new-form.tsx
-```typescript
-import { Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useApp } from "@/app-runtime/providers/app-provider";
-import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { Button } from "@/shadcn-ui/button";
-import { toast } from "@/shadcn-ui/hooks/use-toast";
-import { Input } from "@/shadcn-ui/input";
-import { Label } from "@/shadcn-ui/label";
-import { useOrganizationManagement } from "../_hooks/use-organization-management";
-interface AccountNewFormProps {
-  onSuccess: () => void;
-  onCancel: () => void;
-}
-⋮----
-const handleCreate = async () =>
-⋮----
-```
-
 ## File: src/features/organization.slice/core/_components/org-settings.tsx
 ```typescript
 import { AlertTriangle, Building2, Loader2, Upload } from "lucide-react";
@@ -11718,6 +11749,9 @@ export interface DailyLogForwardRequestedPayload {
 export interface FileSendToParserPayload {
   fileName: string
   fileType: string
+  parseMode?: "document-ai" | "genkit-ai"
+  sourceType?: "original" | "structured-sidecar"
+  triggeredFrom?: "files-table-row" | "files-expanded-panel"
   fileId?: string
   versionId?: string
   storagePath?: string
@@ -11841,37 +11875,6 @@ import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 import { useApp } from "../_hooks/use-app"
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
 import { WorkspaceList } from "./workspace-list"
-```
-
-## File: src/features/workspace.slice/core/_components/shell/account-create-dialog.tsx
-```typescript
-import { Loader2 } from "lucide-react"
-import { useState, useEffect } from "react"
-import type { AppAction } from '@/app-runtime/contexts/app-context'
-import { Button } from "@/shadcn-ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from "@/shadcn-ui/dialog"
-import { toast } from "@/shadcn-ui/hooks/use-toast"
-import { Input } from "@/shadcn-ui/input"
-import { Label } from "@/shadcn-ui/label"
-import { type Account } from "@/shared-kernel"
-interface AccountCreateDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  createOrganization: (name: string) => Promise<string>
-  dispatch: React.Dispatch<AppAction>
-  accounts: Record<string, Account>
-  t: (key: string) => string
-}
-⋮----
-const handleCreate = async () =>
-⋮----
 ```
 
 ## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
@@ -12869,8 +12872,10 @@ import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
 import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
+import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
 import { useToast } from '@/shadcn-ui/hooks/use-toast';
 import { logDomainError } from '@/shared-infra/observability';
@@ -13111,6 +13116,7 @@ export type ActionState = {
   };
   error?: string;
   fileName?: string;
+  parseMode?: 'document-ai' | 'genkit-ai';
 };
 interface ProcessDocumentFunctionResponse {
   ok?: boolean;
@@ -13126,6 +13132,8 @@ interface ProcessDocumentFunctionResponse {
     normalizedValue?: string;
   }>;
 }
+const truncateText = (value: string, maxLength: number): string
+async function readProcessDocumentPayload(response: Response): Promise<
 export interface OcrDocumentPayload {
   source: 'document-ocr-extractor';
   mimeType: string;
@@ -13195,7 +13203,15 @@ interface FilesTableProps {
   readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'processing') => void;
   readonly onDeregister: (file: WorkspaceFile) => void;
   readonly onDownload: (version?: WorkspaceFileVersion) => void;
-  readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
+  readonly onParseWithAi: (
+    file: WorkspaceFile,
+    version: WorkspaceFileVersion | undefined,
+    context: {
+      parseMode: 'document-ai' | 'genkit-ai';
+      sourceType: 'original' | 'structured-sidecar';
+      triggeredFrom: 'files-table-row' | 'files-expanded-panel';
+    },
+  ) => void;
 }
 ⋮----
 const toggleExpanded = (fileId: string) =>

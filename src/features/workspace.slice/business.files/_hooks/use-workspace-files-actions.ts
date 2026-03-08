@@ -1,3 +1,10 @@
+/**
+ * Module: use-workspace-files-actions.ts
+ * Purpose: Provide file lifecycle actions and parser navigation handoff.
+ * Responsibilities: upload/version operations, parser intent dispatch.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 "use client";
 
 import { useRouter } from 'next/navigation';
@@ -166,18 +173,29 @@ export function useWorkspaceFilesActions({
     globalThis.open(version.downloadURL, '_blank');
   }, []);
 
-  const handleParseWithAi = useCallback((file: WorkspaceFile, version?: WorkspaceFileVersion) => {
+  const handleParseWithAi = useCallback((
+    file: WorkspaceFile,
+    version: WorkspaceFileVersion | undefined,
+    context: {
+      parseMode: 'document-ai' | 'genkit-ai';
+      sourceType: 'original' | 'structured-sidecar';
+      triggeredFrom: 'files-table-row' | 'files-expanded-panel';
+    },
+  ) => {
     if (!version?.downloadURL) return;
 
     setPendingParseFile({
       fileName: file.name,
       fileType: file.type,
+      parseMode: context.parseMode,
+      sourceType: context.sourceType,
+      triggeredFrom: context.triggeredFrom,
       fileId: file.id,
       versionId: version.versionId,
       storagePath: version.storagePath,
       downloadURL: version.downloadURL,
     });
-    logAuditEvent('Sent File to Parser', file.name, 'update');
+    logAuditEvent('Sent File to Parser', `${file.name} (${context.parseMode})`, 'update');
     router.push(`${ROUTES.WORKSPACE(workspace.id)}/document-parser`);
   }, [logAuditEvent, router, setPendingParseFile, workspace.id]);
 

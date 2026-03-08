@@ -1,3 +1,10 @@
+/**
+ * Module: document-parser-view.tsx
+ * Purpose: Coordinate document OCR and semantic parsing import workflow.
+ * Responsibilities: receive parser handoff payloads and drive parser actions.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 'use client';
 
 import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle, ListChecks } from 'lucide-react';
@@ -7,8 +14,10 @@ import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
 import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
+import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
 import { useToast } from '@/shadcn-ui/hooks/use-toast';
 import { logDomainError } from '@/shared-infra/observability';
@@ -129,7 +138,7 @@ export function WorkspaceDocumentParser() {
   // Helper: trigger the AI extraction pipeline from a Firebase Storage URL.
   // The URL is passed directly to the Server Action which fetches it server-side,
   // avoiding the browser CORS restriction on Firebase Storage URLs.
-  const triggerParseFromURL = useCallback((payload: { fileName: string; fileType: string; fileId?: string; versionId?: string; storagePath?: string; downloadURL?: string }) => {
+  const triggerParseFromURL = useCallback((payload: FileSendToParserPayload) => {
     sourceFileIdRef.current = payload.fileId;
     sourceFileVersionIdRef.current = payload.versionId;
     sourceFileStoragePathRef.current = payload.storagePath;
@@ -147,6 +156,7 @@ export function WorkspaceDocumentParser() {
     if (payload.storagePath) {
       formData.append('storagePath', payload.storagePath);
     }
+    formData.append('parseMode', payload.parseMode ?? 'document-ai');
     setAiWorkItems([]);
     startOcrTransition(() => formAction(formData));
   }, [formAction, startOcrTransition, workspace.id]);
@@ -175,9 +185,10 @@ export function WorkspaceDocumentParser() {
         sourceDocument: state.fileName || 'Document',
         reason: state.error,
       });
-      logAuditEvent('Parsing Failed', `Document: ${state.fileName || 'Unknown'}`, 'create');
+      const parseModeLabel = state.parseMode ?? 'document-ai';
+      logAuditEvent('Parsing Failed', `Document: ${state.fileName || 'Unknown'} (${parseModeLabel})`, 'create');
     }
-  }, [state.error, state.fileName, eventBus, toast, logAuditEvent]);
+  }, [state.error, state.fileName, state.parseMode, eventBus, toast, logAuditEvent]);
 
   // Subscribe to files:sendToParser — handles same-tab publishes (edge case fallback).
   // The primary cross-tab path uses WorkspaceProvider pendingParseFile state.

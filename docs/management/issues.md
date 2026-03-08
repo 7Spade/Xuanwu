@@ -3,7 +3,12 @@
 > **憲法依據 / Constitutional Basis**: `docs/architecture/00-LogicOverview.md`
 > **資料來源 / Data Source**: VS5 Files + Document Parser flow review (2026-03-09)
 > **格式說明**: 每條目包含 [❗ 違規] [🔍 現狀] [🛠 修正方案] [📈 影響評估]
-> **最後更新**: 2026-03-09 — 重新聚焦 ISSUE-008~010（Files / Document Parser：DOCUMENT YOU / GENKIT YOU HAVE）。
+> **最後更新**: 2026-03-09 — 已啟動修復實作（ISSUE-008~010 程式碼已落地，待整體驗證）。
+
+> **執行進度 / Execution Progress**
+> - ISSUE-008: `IN_PROGRESS`（Files 動作來源矩陣已實作）
+> - ISSUE-009: `IN_PROGRESS`（`parseMode/sourceType/triggeredFrom` 已加入 payload）
+> - ISSUE-010: `IN_PROGRESS`（非 JSON 回應容錯已實作）
 
 ---
 

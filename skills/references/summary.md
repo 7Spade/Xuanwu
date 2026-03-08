@@ -45,15 +45,15 @@ This skill contains the following reference files:
 
 ## Statistics
 
-576 files | 10,916 lines
+576 files | 10,932 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 462 | 8,466 |
-| TypeScript (TSX) | 114 | 2,450 |
+| TypeScript | 462 | 8,472 |
+| TypeScript (TSX) | 114 | 2,460 |
 
 **Largest files:**
-- `src/features/workspace.slice/core.event-bus/_events.ts` (185 lines)
+- `src/features/workspace.slice/core.event-bus/_events.ts` (188 lines)
 - `src/features/semantic-graph.slice/core/types/index.ts` (139 lines)
 - `src/features/workspace.slice/business.document-parser/_intent-actions.ts` (138 lines)
 - `src/features/organization.slice/core.event-bus/_events.ts` (126 lines)

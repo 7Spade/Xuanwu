@@ -1,3 +1,10 @@
+/**
+ * Module: _events.ts
+ * Purpose: Define workspace event names and payload contracts.
+ * Responsibilities: provide type-safe event bus interfaces.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 // [?·責] 事件?稱??Payload ??TypeScript 類å?定義 (Contract)
 import type {
   CostItemType,
@@ -138,6 +145,12 @@ export interface DailyLogForwardRequestedPayload {
 export interface FileSendToParserPayload {
   fileName: string
   fileType: string
+  /** Distinguishes OCR extraction vs semantic parsing entry intent. */
+  parseMode?: "document-ai" | "genkit-ai"
+  /** Describes the selected source object category from Files UI. */
+  sourceType?: "original" | "structured-sidecar"
+  /** Optional UI trigger marker for audit and diagnostics. */
+  triggeredFrom?: "files-table-row" | "files-expanded-panel"
   /** The WorkspaceFile document ID ??used by the parser to record a SourcePointer in ParsingIntent. */
   fileId?: string
   /** The selected file version ID to resolve a deterministic storage object for parsing. */

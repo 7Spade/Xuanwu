@@ -1,3 +1,10 @@
+/**
+ * Module: files-table.tsx
+ * Purpose: Render workspace file rows and parser action matrix.
+ * Responsibilities: enforce source-aware action availability and emit parse context.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 "use client";
 
 import {
@@ -48,7 +55,15 @@ interface FilesTableProps {
   readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'processing') => void;
   readonly onDeregister: (file: WorkspaceFile) => void;
   readonly onDownload: (version?: WorkspaceFileVersion) => void;
-  readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
+  readonly onParseWithAi: (
+    file: WorkspaceFile,
+    version: WorkspaceFileVersion | undefined,
+    context: {
+      parseMode: 'document-ai' | 'genkit-ai';
+      sourceType: 'original' | 'structured-sidecar';
+      triggeredFrom: 'files-table-row' | 'files-expanded-panel';
+    },
+  ) => void;
 }
 
 export function FilesTable({
@@ -95,6 +110,10 @@ export function FilesTable({
               : undefined;
             const documentAiFile = file;
             const documentAiVersion = current;
+            const canRunDocumentAi = !isCurrentStructuredFile && Boolean(documentAiVersion?.downloadURL);
+            const genkitSourceType: 'original' | 'structured-sidecar' =
+              isCurrentStructuredFile ? 'structured-sidecar' : 'original';
+            const canRunGenkitAi = Boolean(genkitAiSourceVersion?.downloadURL && genkitAiSourceFile);
 
             return (
               <Fragment key={file.id}>
@@ -141,15 +160,27 @@ export function FilesTable({
                           <Download className="size-3.5 text-primary" /> {t('workspaces.download')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          disabled={!documentAiVersion?.downloadURL}
-                          onClick={() => onParseWithAi(documentAiFile, documentAiVersion)}
+                          disabled={!canRunDocumentAi}
+                          onClick={() =>
+                            onParseWithAi(documentAiFile, documentAiVersion, {
+                              parseMode: 'document-ai',
+                              sourceType: 'original',
+                              triggeredFrom: 'files-table-row',
+                            })
+                          }
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
                           <FileScan className="size-3.5 text-primary" /> {t('workspaces.documentAi')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          disabled={!genkitAiSourceVersion?.downloadURL || !genkitAiSourceFile}
-                          onClick={() => genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion)}
+                          disabled={!canRunGenkitAi}
+                          onClick={() =>
+                            genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                              parseMode: 'genkit-ai',
+                              sourceType: genkitSourceType,
+                              triggeredFrom: 'files-table-row',
+                            })
+                          }
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
                           <FileScan className="size-3.5 text-primary" /> {t('workspaces.genkitAi')}
@@ -192,8 +223,14 @@ export function FilesTable({
                             variant="secondary"
                             size="sm"
                             className="h-7 text-[10px] font-bold"
-                            disabled={!genkitAiSourceVersion?.downloadURL || !genkitAiSourceFile}
-                            onClick={() => genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion)}
+                            disabled={!canRunGenkitAi}
+                            onClick={() =>
+                              genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                                parseMode: 'genkit-ai',
+                                sourceType: genkitSourceType,
+                                triggeredFrom: 'files-expanded-panel',
+                              })
+                            }
                           >
                             {t('workspaces.genkitAi')}
                           </Button>

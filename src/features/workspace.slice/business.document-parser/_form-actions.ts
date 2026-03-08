@@ -1,3 +1,10 @@
+/**
+ * Module: _form-actions.ts
+ * Purpose: Execute server-side document OCR extraction and parser preparation.
+ * Responsibilities: call processDocument endpoint and normalize OCR payload/errors.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 'use server';
 
 import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
@@ -22,6 +29,7 @@ export type ActionState = {
   };
   error?: string;
   fileName?: string;
+  parseMode?: 'document-ai' | 'genkit-ai';
 };
 
 interface ProcessDocumentFunctionResponse {
@@ -37,6 +45,28 @@ interface ProcessDocumentFunctionResponse {
     confidence: number;
     normalizedValue?: string;
   }>;
+}
+
+const truncateText = (value: string, maxLength: number): string =>
+  value.length <= maxLength ? value : `${value.slice(0, maxLength)}...`;
+
+async function readProcessDocumentPayload(response: Response): Promise<{
+  payload: ProcessDocumentFunctionResponse | null;
+  contentType: string;
+  rawText?: string;
+}> {
+  const contentType = response.headers.get('content-type') ?? 'unknown';
+  if (contentType.toLowerCase().includes('application/json')) {
+    const payload = (await response.json()) as ProcessDocumentFunctionResponse;
+    return { payload, contentType };
+  }
+
+  const rawText = await response.text();
+  return {
+    payload: null,
+    contentType,
+    rawText,
+  };
 }
 
 export interface OcrDocumentPayload {
@@ -100,6 +130,8 @@ export async function extractDataFromDocument(
   const storagePath = formData.get('storagePath');
   const fileName = formData.get('fileName');
   const fileType = formData.get('fileType');
+  const parseModeFromForm = formData.get('parseMode');
+  const parseMode: 'document-ai' | 'genkit-ai' = parseModeFromForm === 'genkit-ai' ? 'genkit-ai' : 'document-ai';
 
   if (
     typeof workspaceId !== 'string' || workspaceId.length === 0 ||
@@ -108,6 +140,7 @@ export async function extractDataFromDocument(
   ) {
     return {
       fileName: typeof fileName === 'string' ? fileName : undefined,
+      parseMode,
       error: 'Please select a file from the Files tab before parsing.',
     };
   }
@@ -130,11 +163,23 @@ export async function extractDataFromDocument(
       cache: 'no-store',
     });
 
-    const payload = (await response.json()) as ProcessDocumentFunctionResponse;
-    if (!response.ok || payload.ok === false) {
+    const { payload, contentType, rawText } = await readProcessDocumentPayload(response);
+
+    if (!response.ok) {
+      const message = payload?.error
+        ?? (rawText ? truncateText(rawText, 240) : `Document AI request failed with status ${response.status}`);
       return {
         fileName: typeof fileName === 'string' ? fileName : undefined,
-        error: payload.error ?? `Document AI request failed with status ${response.status}`,
+        parseMode,
+        error: `[${parseMode}] status=${response.status} contentType=${contentType} endpoint=${endpoint} :: ${message}`,
+      };
+    }
+
+    if (!payload || payload.ok === false) {
+      return {
+        fileName: typeof fileName === 'string' ? fileName : undefined,
+        parseMode,
+        error: `[${parseMode}] Invalid processDocument payload (contentType=${contentType})`,
       };
     }
 
@@ -154,6 +199,7 @@ export async function extractDataFromDocument(
 
     return {
       fileName: typeof fileName === 'string' ? fileName : undefined,
+      parseMode,
       data: {
         // Document AI and AI semantic parsing are intentionally decoupled.
         // This action only executes Document AI OCR extraction.
@@ -164,7 +210,8 @@ export async function extractDataFromDocument(
   } catch (error) {
     return {
       fileName: typeof fileName === 'string' ? fileName : undefined,
-      error: error instanceof Error ? error.message : 'Unexpected parse error',
+      parseMode,
+      error: error instanceof Error ? `[${parseMode}] ${error.message}` : `[${parseMode}] Unexpected parse error`,
     };
   }
 }
