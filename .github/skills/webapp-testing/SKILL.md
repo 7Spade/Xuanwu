@@ -3,7 +3,7 @@ name: webapp-testing
 description: Toolkit for interacting with and testing local web applications using Playwright MCP tools. Use when asked to verify frontend functionality, debug UI behavior, capture browser screenshots, check for visual regressions, or view browser console logs. Supports Chrome, Firefox, and WebKit browsers.
 ---
 
-# Webapp Testing
+# Web Application Testing
 
 ## Intent
 Toolkit for interacting with and testing local web applications using Playwright MCP tools. Use when asked to verify frontend functionality, debug UI behavior, capture browser screenshots, check for visual regressions, or view browser console logs. Supports Chrome, Firefox, and WebKit browsers.
