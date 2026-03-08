@@ -4,9 +4,9 @@
 >
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 基礎設施路徑請見 [`03-infra-mapping.md`](./03-infra-mapping.md)
 
-本視圖為所有治理規則的 **可讀 Markdown 摘要**，供審查與快速查閱使用。
-所有規則正文（Canonical Rule Body）定義於 `00-LogicOverview.md` 中，
-本文件僅作索引與摘要；若有衝突以 `00-LogicOverview.md` 為準。
+本視圖為所有治理規則的 **可讀治理視圖（Governance View）**，包含完整規則正文，供審查、快速查閱與落地參照使用。
+Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見 `00-LogicOverview.md`；
+若本文件文字描述與 `00-LogicOverview.md` 有衝突，以 `00-LogicOverview.md` 為準。
 
 ---
 
@@ -15,7 +15,7 @@
 | 分類 | 代碼 | 說明 |
 |------|------|------|
 | 穩定不變量 | `R / S / A / #` | MUST — 版本演進不可破壞 |
-| 治理演進 | `D / P / T / E` | SHOULD — 可演化，以索引引用 |
+| 治理演進 | `D / P / T / E` | SHOULD — 可演化，以索引引用；不重複定義 |
 | 絕對禁止 | FORBIDDEN | MUST NOT — 任何情況均不得違反 |
 
 ---
@@ -87,7 +87,7 @@
 
 ---
 
-## 關鍵不變量 (Key Invariants — RULESET-MUST)
+## 關鍵約束索引（Hard Invariants + Governance Rule Reference）
 
 | 索引 | 規則 |
 |------|------|
@@ -96,28 +96,7 @@
 | `[S4]` | SLA 數值只能引用 `SK_STALENESS_CONTRACT`，禁止硬寫 |
 | `[D7]` | 跨切片引用只能透過 `{slice}/index.ts` 公開 API |
 | `[D21]` | VS8 四層語義引擎：Governance → Core Domain → Compute Engine → Output |
-| `[D21-A]` | 雙層註冊律：全域語義在 `VS8 core/tag-definitions.ts`；組織 task/skill-type 在 `VS4 org-semantic-registry` |
-| `[D21-B]` | Schema 鎖定：標籤元數據必須符合 `core/schemas`，禁止附加未校驗屬性 |
-| `[D21-C]` | 無孤立節點：每個新標籤必須透過 `hierarchy-manager.ts` 掛載至少一個父級節點 |
-| `[D21-D]` | 向量一致性：`embeddings/vector-store.ts` 向量必須隨標籤定義同步刷新 |
-| `[D21-E]` | 權重透明化：語義相似度與路徑權重必須由 `weight-calculator.ts` 統一產出 |
-| `[D21-F]` | 注意力隔離：`context-attention.ts` 須根據 Workspace 情境過濾無關標籤 |
-| `[D21-G]` | 演化回饋環：`learning-engine.ts` 僅能由 VS3/VS2 真實事實事件驅動 |
-| `[D21-H]` | 血腦屏障（BBB）：`invariant-guard.ts` 對語義衝突擁有最高裁決權 |
-| `[D21-I]` | 全域共識律：所有提案必須通過 `consensus-engine` 邏輯校驗 |
-| `[D21-J]` | 知識溯源：每條標籤關係建立須標註貢獻者與參考依據，具備版本回溯能力 |
-| `[D21-K]` | 語義衝突裁決：invariant-guard 偵測到違反物理邏輯的聯結時直接拒絕提案 |
-| `[D21-S]` | 同義詞重定向：合併後舊標籤成為 Alias，自動重定向至主標籤，歷史數據不斷鏈 |
-| `[D21-T]` | 命名共識律：顯示名稱由社群貢獻度決定，tagSlug 永久不變 |
-| `[D21-U]` | 禁止重複定義：新增標籤時 embeddings 必須即時提示相似標籤 |
-| `[D21-V]` | 提案鎖定：Pending-Sync 狀態標籤的路由權重凍結直到共識完成 |
-| `[D21-W]` | 跨組織透明性：標籤修改紀錄對全域公開 |
-| `[D21-X]` | 語義自動激發：用戶連結 A+B 時 causality-tracer 自動建議相關標籤 C |
-| `[D21-6]` | TagLifecycleEvent → VS8 Causality Tracer 自動推導受影響節點並發布更新事件 |
-| `[D21-7]` | 語義讀取必須經由 `projection.tag-snapshot`；寫入必須經 CMD_GWAY |
-| `[D21-8]` | TAG_STALE_GUARD ≤ 30s，所有語義查詢必須引用 `SK_STALENESS_CONTRACT` |
-| `[D21-9]` | 突觸權重不變量：`SemanticEdge.weight ∈ [0.0, 1.0]`；cost = 1/weight |
-| `[D21-10]` | 拓撲可觀測性：`findIsolatedNodes` 必須定期回報孤立節點 |
+| `[D21-*]` | VS8 語義擴展不變量（D21-1~D21-10、D21-A~D21-X，共 27 條）；完整定義見下方 §D21 各子節（一~六） |
 | `[T5]` | 業務 Slice 僅能訂閱 `projections/tag-snapshot.slice.ts`，嚴禁直接存取 `graph/adjacency-list.ts` |
 | `[D22]` | 程式碼禁止出現裸字串 tag_name；全域引用 TE1~TE6，組織自訂用 `OrgTagRef(orgId, tagSlug)` |
 | `[D27-A]` | 語義感知路由：所有分發邏輯必須先調用 `policy-mapper/` 轉換語義標籤 |

@@ -8,16 +8,15 @@
 
 ---
 
-## 三條主鏈（Infra 鏈細分 A/B 兩路，唯一排序判準）
+## 三條主鏈（Infra 鏈 A/B 前後端兩路，合計仍為三條）
 
 | 鏈路 | 流向 |
 |------|------|
 | **寫鏈（Command）** | External/L0 → L0A `COMMAND_API_GATEWAY` → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection |
 | **讀鏈（Query）** | UI/L0 → L0A `QUERY_API_GATEWAY` → L6 Query Gateway → L5 Projection（Read Model） |
-| **Infra 鏈 A（firebase-client）** | L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime |
-| **Infra 鏈 B（firebase-admin）** | L0 `EXT_WEBHOOK`（外部觸發直達，Mermaid 節點定義見下方架構圖）/ L2 `CBG_ROUTE`（高權限/批次協調入口，Mermaid 節點定義見下方架構圖）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
+| **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
 
-> **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈的前後端形態；不得把 Query/Command/FirebaseBoundary 壓成單一線性排序。
+> **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
 
 ---
 
