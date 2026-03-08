@@ -1039,7 +1039,8 @@ class NOTIF_EXIT crossCutAuth
 | L4 | Integration Event Router（IER） | 統一事件出口 [#9] |
 | L5 | Projection Bus | 投影物化（event-funnel，唯一寫路徑） |
 | L6 | Query Gateway | 統一讀取出口 |
-| L7 | Firebase Boundary（FIREBASE_ACL） | SDK Anti-Corruption Layer |
+| L7-A | Firebase Client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter 等）；Feature slice → L1 SK_PORTS → L7-A [D24] |
+| L7-B | Firebase Admin SDK（Cloud Functions） | Admin SDK 唯一容器；`firebase-admin` 一律透過 functions；禁止在 Next.js server/edge 直接使用 [D25] |
 | L8 | Firebase Runtime | 外部 Firebase 平台執行層 |
 | L9 | Observability | 跨切面觀測（metrics/trace/errors）；observe-only |
 | L10 | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL |

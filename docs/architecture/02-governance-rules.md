@@ -262,7 +262,7 @@
 
 ## 統一開發規則 (Unified Development Rules D1–D27 + E7/E8)
 
-> **規則分層**：Hard Invariants (D1–D20) / Semantic Governance D21 / Infrastructure (D24–D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) / AI & Entry Security Closure (E7/E8)
+> **規則分層**：Hard Invariants (D1–D20) / Semantic Governance D21–D23 / Infrastructure (D24–D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) / AI & Entry Security Closure (E7/E8)
 
 ### D1–D12：基礎路徑約束
 

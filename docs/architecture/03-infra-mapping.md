@@ -262,7 +262,7 @@ Firestore onSnapshot (CDC)
 |------|------|------|
 | 高頻小請求且可由 Rules 安全完成 | `frontend-firebase`（直連） | 降低 Functions 成本 [D25 SHOULD] |
 | 高扇出或可批次流程 | `backend-firebase/functions`（集中批處理） | 降低總寫入成本 [D25 SHOULD] |
-| 需要即時訂閱能力 | `frontend-firebase/realtime-database`（須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略） | [P7 D25 SHOULD] |
+| 需要即時訂閱能力 | `frontend-firebase/realtime-database`（須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略） | [D25 SHOULD] |
 | Admin 權限 / 跨租戶 / Webhook 驗簽 | `backend-firebase/functions` | 安全邊界要求 [D25 MUST] |
 | **firebase-admin SDK 任何使用場景** | **`backend-firebase/functions`（Cloud Functions 唯一容器）** | **firebase-admin 一律透過 functions [D25 MUST]** |
 | 受治理的 GraphQL 資料契約 | `backend-firebase/dataconnect` | [D25 MUST] |
