@@ -34,6 +34,10 @@ export interface ProcessDocumentResponse {
   readonly text: string;
   /** Structured entities extracted by the OCR Extractor processor */
   readonly entities: DocumentEntity[];
+  /** Optional Firebase Storage path of persisted OCR JSON artifact. */
+  readonly artifactPath?: string;
+  /** Optional gs:// URI of persisted OCR JSON artifact. */
+  readonly artifactUri?: string;
   /** [R8] Propagated traceId */
   readonly traceId: string;
 }

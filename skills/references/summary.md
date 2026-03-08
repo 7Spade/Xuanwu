@@ -45,12 +45,12 @@ This skill contains the following reference files:
 
 ## Statistics
 
-557 files | 10,643 lines
+568 files | 10,902 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 446 | 8,237 |
-| TypeScript (TSX) | 111 | 2,406 |
+| TypeScript | 457 | 8,504 |
+| TypeScript (TSX) | 111 | 2,398 |
 
 **Largest files:**
 - `src/features/workspace.slice/core.event-bus/_events.ts` (183 lines)
@@ -59,7 +59,7 @@ This skill contains the following reference files:
 - `src/features/organization.slice/core.event-bus/_events.ts` (126 lines)
 - `src/features/organization.slice/gov.semantic/_components/org-semantic-dictionary-panel.tsx` (95 lines)
 - `src/features/workforce-scheduling.slice/ports/command.port.ts` (93 lines)
-- `src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts` (88 lines)
-- `src/features/workspace.slice/core/_actions.ts` (82 lines)
+- `src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts` (91 lines)
+- `src/features/workspace.slice/core/_actions.ts` (85 lines)
 - `src/features/organization.slice/gov.semantic/_actions.ts` (78 lines)
 - `src/features/workforce-scheduling.slice/ui/components/runtime/proposal-dialog.tsx` (75 lines)

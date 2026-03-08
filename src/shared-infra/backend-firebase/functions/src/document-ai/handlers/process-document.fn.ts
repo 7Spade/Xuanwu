@@ -15,6 +15,7 @@ import * as logger from "firebase-functions/logger";
 import { createHash, randomUUID } from "crypto";
 import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
 import { DocumentAiApiError } from "../clients/document-ai.client.js";
 import { extractDocument } from "../processors/extract.processor.js";
@@ -89,6 +90,8 @@ async function persistOcrStatus(params: {
   errorMessage?: string;
   textLength?: number;
   entityCount?: number;
+  artifactPath?: string;
+  artifactUri?: string;
 }): Promise<void> {
   const sourceRef = params.sourceRef;
   if (!sourceRef?.workspaceId || !sourceRef.fileId) {
@@ -115,11 +118,57 @@ async function persistOcrStatus(params: {
           ...(typeof params.entityCount === "number"
             ? { entityCount: params.entityCount }
             : {}),
+          ...(params.artifactPath ? { artifactPath: params.artifactPath } : {}),
+          ...(params.artifactUri ? { artifactUri: params.artifactUri } : {}),
           processedAt: Timestamp.now(),
         },
       },
       { merge: true }
     );
+}
+
+async function persistOcrArtifact(params: {
+  sourceRef?: ProcessDocumentRequest["sourceRef"];
+  traceId: string;
+  mimeType: string;
+  text: string;
+  entities: ProcessDocumentResponse["entities"];
+}): Promise<{ artifactPath: string; artifactUri: string }> {
+  const date = new Date();
+  const yyyy = String(date.getUTCFullYear());
+  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(date.getUTCDate()).padStart(2, "0");
+
+  const artifactPath = params.sourceRef
+    ? `files-plugin/${params.sourceRef.workspaceId}/${params.sourceRef.fileId}/ocr/${params.traceId}.json`
+    : `document-ai-outputs/${yyyy}/${mm}/${dd}/${params.traceId}.json`;
+
+  const payload = {
+    traceId: params.traceId,
+    mimeType: params.mimeType,
+    extractedAt: new Date().toISOString(),
+    text: params.text,
+    entities: params.entities,
+  };
+
+  const bucket = getStorage().bucket();
+  const artifactFile = bucket.file(artifactPath);
+  await artifactFile.save(JSON.stringify(payload, null, 2), {
+    contentType: "application/json; charset=utf-8",
+    resumable: false,
+    metadata: {
+      cacheControl: "no-store",
+      metadata: {
+        traceId: params.traceId,
+        mimeType: params.mimeType,
+      },
+    },
+  });
+
+  return {
+    artifactPath,
+    artifactUri: `gs://${bucket.name}/${artifactPath}`,
+  };
 }
 
 if (getApps().length === 0) {
@@ -192,6 +241,13 @@ export const processDocumentFn = onRequest(
 
     try {
       const result = await extractDocument(documentUri, mimeType);
+      const artifact = await persistOcrArtifact({
+        sourceRef,
+        traceId,
+        mimeType,
+        text: result.text,
+        entities: result.entities,
+      });
 
       await persistOcrStatus({
         sourceRef,
@@ -200,6 +256,8 @@ export const processDocumentFn = onRequest(
         mimeType,
         textLength: result.text.length,
         entityCount: result.entities.length,
+        artifactPath: artifact.artifactPath,
+        artifactUri: artifact.artifactUri,
       });
 
       logger.info("PROCESS_DOCUMENT: completed", {
@@ -213,6 +271,8 @@ export const processDocumentFn = onRequest(
         success: true,
         text: result.text,
         entities: result.entities,
+        artifactPath: artifact.artifactPath,
+        artifactUri: artifact.artifactUri,
         traceId,
       };
       res.status(200).json(response);
