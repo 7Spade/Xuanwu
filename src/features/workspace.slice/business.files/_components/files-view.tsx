@@ -13,7 +13,7 @@ import { Button } from "@/shadcn-ui/button";
 import type { WorkspaceFile } from '../_types';
 import { useWorkspaceFilesActions } from '../_hooks/use-workspace-files-actions';
 import { useWorkspaceFilesQuery } from '../_hooks/use-workspace-files.query';
-import { FileHistorySheet } from './file-history-sheet';
+import { FileHistorySheet, type HistoryPanelTab } from './file-history-sheet';
 import { FilesTable } from './files-table';
 
 
@@ -25,6 +25,7 @@ export function WorkspaceFiles() {
   const { t } = useI18n();
 
   const [historyFile, setHistoryFile] = useState<WorkspaceFile | null>(null);
+  const [historyTab, setHistoryTab] = useState<HistoryPanelTab>('versions');
   const { files } = useWorkspaceFilesQuery();
   const {
     fileInputRef,
@@ -60,7 +61,10 @@ export function WorkspaceFiles() {
 
       <FilesTable
         files={files}
-        onOpenHistory={setHistoryFile}
+        onOpenHistory={(file, tab = 'versions') => {
+          setHistoryFile(file);
+          setHistoryTab(tab);
+        }}
         onDeregister={(file) => void handleDeregister(file)}
         onDownload={handleDownloadVersion}
         onParseWithAi={handleParseWithAi}
@@ -68,9 +72,11 @@ export function WorkspaceFiles() {
 
       <FileHistorySheet
         historyFile={historyFile}
+        defaultTab={historyTab}
         onClose={() => setHistoryFile(null)}
         onRestore={handleRestore}
         onDownloadVersion={handleDownloadVersion}
+        onReparse={handleParseWithAi}
       />
     </div>
   );

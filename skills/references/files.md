@@ -5243,108 +5243,6 @@ export function subscribeToParsingIntents(
 
 ```
 
-## File: src/features/workspace.slice/business.files/_components/file-history-sheet.tsx
-```typescript
-import {
-  CheckCircle2,
-  Download,
-  History,
-  RotateCcw,
-  User,
-} from 'lucide-react';
-import { useI18n } from '@/app-runtime/providers/i18n-provider';
-import { Badge } from '@/shadcn-ui/badge';
-import { Button } from '@/shadcn-ui/button';
-import { ScrollArea } from '@/shadcn-ui/scroll-area';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/shadcn-ui/sheet';
-import { cn } from '@/shadcn-ui/utils/utils';
-import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
-import { formatBytes } from './files-view.utils';
-interface FileHistorySheetProps {
-  readonly historyFile: WorkspaceFile | null;
-  readonly onClose: () => void;
-  readonly onRestore: (file: WorkspaceFile, versionId: string) => void;
-  readonly onDownloadVersion: (version?: WorkspaceFileVersion) => void;
-}
-⋮----
-<Sheet open=
-⋮----
-<SheetTitle className="text-xl font-black">
-⋮----
-className=
-```
-
-## File: src/features/workspace.slice/business.files/_components/file-type-icon.tsx
-```typescript
-import {
-  FileArchive,
-  FileCode,
-  FileJson,
-  FileText,
-  ImageIcon,
-} from 'lucide-react';
-interface FileTypeIconProps {
-  readonly fileName: string;
-}
-export function FileTypeIcon(
-```
-
-## File: src/features/workspace.slice/business.files/_components/files-table.tsx
-```typescript
-import {
-  AlertCircle,
-  Clock,
-  Download,
-  FileScan,
-  History,
-  MoreVertical,
-  Trash2,
-} from 'lucide-react';
-import { useI18n } from '@/app-runtime/providers/i18n-provider';
-import { Badge } from '@/shadcn-ui/badge';
-import { Button } from '@/shadcn-ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shadcn-ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shadcn-ui/table';
-import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
-import { FileTypeIcon } from './file-type-icon';
-import { formatBytes, getCurrentVersion } from './files-view.utils';
-interface FilesTableProps {
-  readonly files: readonly WorkspaceFile[];
-  readonly onOpenHistory: (file: WorkspaceFile) => void;
-  readonly onDeregister: (file: WorkspaceFile) => void;
-  readonly onDownload: (version?: WorkspaceFileVersion) => void;
-  readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
-}
-⋮----
-onClick=
-```
-
-## File: src/features/workspace.slice/business.files/_components/files-view.utils.ts
-```typescript
-import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
-export const getErrorMessage = (error: unknown, fallback: string)
-export const formatBytes = (bytes: number): string =>
-export const getCurrentVersion = (file: WorkspaceFile): WorkspaceFileVersion | undefined
-```
-
 ## File: src/features/workspace.slice/business.files/_hooks/use-workspace-filters.ts
 ```typescript
 import { useMemo, useDeferredValue } from "react";
@@ -7363,6 +7261,18 @@ import { getToken } from 'firebase/app-check';
 import { appCheck, initAppCheck } from './app-check.client';
 export function ensureAppCheckInitialized(): void
 export async function getAppCheckToken(): Promise<string | null>
+```
+
+## File: src/shared-infra/frontend-firebase/app-check/app-check.client.ts
+```typescript
+import {
+  ReCaptchaV3Provider,
+  initializeAppCheck,
+  type AppCheck,
+} from 'firebase/app-check';
+import { app } from '../app.client';
+⋮----
+export function initAppCheck(): AppCheck | null
 ```
 
 ## File: src/shared-infra/frontend-firebase/app-check/index.ts
@@ -11006,9 +10916,171 @@ export async function uploadTaskAttachment(
 ): Promise<string>
 ```
 
-## File: src/features/workspace.slice/business.files/_components/index.ts
+## File: src/features/workspace.slice/business.files/_components/file-history-sheet.tsx
 ```typescript
+import {
+  CheckCircle2,
+  Download,
+  History,
+  RotateCcw,
+  User,
+} from 'lucide-react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { ScrollArea } from '@/shadcn-ui/scroll-area';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/shadcn-ui/sheet';
+import { cn } from '@/shadcn-ui/utils/utils';
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import { formatBytes } from './files-view.utils';
+interface FileHistorySheetProps {
+  readonly historyFile: WorkspaceFile | null;
+  readonly onClose: () => void;
+  readonly onRestore: (file: WorkspaceFile, versionId: string) => void;
+  readonly onDownloadVersion: (version?: WorkspaceFileVersion) => void;
+}
+⋮----
+<Sheet open=
+⋮----
+<SheetTitle className="text-xl font-black">
+⋮----
+className=
+```
 
+## File: src/features/workspace.slice/business.files/_components/file-type-icon.tsx
+```typescript
+import {
+  FileArchive,
+  FileCode,
+  FileJson,
+  FileText,
+  ImageIcon,
+} from 'lucide-react';
+interface FileTypeIconProps {
+  readonly fileName: string;
+}
+export function FileTypeIcon(
+```
+
+## File: src/features/workspace.slice/business.files/_components/files-table.tsx
+```typescript
+import {
+  AlertCircle,
+  Check,
+  Clock,
+  Download,
+  FileScan,
+  History,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shadcn-ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shadcn-ui/table';
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import { FileTypeIcon } from './file-type-icon';
+import { formatBytes, getCurrentVersion, getStructuredDataSnapshot } from './files-view.utils';
+interface FilesTableProps {
+  readonly files: readonly WorkspaceFile[];
+  readonly onOpenHistory: (file: WorkspaceFile, tab?: 'versions' | 'structured' | 'processing') => void;
+  readonly onDeregister: (file: WorkspaceFile) => void;
+  readonly onDownload: (version?: WorkspaceFileVersion) => void;
+  readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
+}
+⋮----
+onClick=
+```
+
+## File: src/features/workspace.slice/business.files/_components/files-view.utils.ts
+```typescript
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+interface TimestampLike {
+  toDate?: () => Date;
+}
+interface JsonRecord {
+  [key: string]: unknown;
+}
+export interface StructuredDataSnapshot {
+  readonly summary: JsonRecord;
+  readonly full: JsonRecord;
+}
+export interface FileProcessingLogEntry {
+  readonly actor: string;
+  readonly at: string;
+}
+export const formatBytes = (bytes: number): string =>
+export const getCurrentVersion = (file: WorkspaceFile): WorkspaceFileVersion | undefined
+export const parseDateFromUnknown = (value: unknown): Date | null =>
+export const formatVersionDate = (value: unknown, locale: string): string =>
+const isJsonRecord = (value: unknown): value is JsonRecord
+const pickFirstObject = (candidates: unknown[]): JsonRecord | null =>
+export const getStructuredDataSnapshot = (
+  file: WorkspaceFile,
+  version?: WorkspaceFileVersion,
+): StructuredDataSnapshot =>
+export const getProcessingLogEntries = (
+  file: WorkspaceFile,
+  version?: WorkspaceFileVersion,
+  locale: string = 'en-US',
+): FileProcessingLogEntry[] =>
+```
+
+## File: src/features/workspace.slice/business.files/_hooks/use-workspace-files-actions.ts
+```typescript
+import { useRouter } from 'next/navigation';
+import { useCallback, useRef, useState } from 'react';
+import { useAuth } from '@/app-runtime/providers/auth-provider';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { toast } from '@/shadcn-ui/hooks/use-toast';
+import { ROUTES } from '@/shared-kernel/constants/routes';
+import {
+  addWorkspaceFileVersion,
+  createWorkspaceFile,
+  deleteVersionStorageObjects,
+  deregisterWorkspaceFile,
+  restoreWorkspaceFileVersion,
+  uploadRawFile,
+} from '../_actions';
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+const getErrorMessage = (error: unknown, fallback: string)
+interface UseWorkspaceFilesActionsArgs {
+  readonly files: readonly WorkspaceFile[];
+  readonly onRestoreSuccess?: () => void;
+}
+export function useWorkspaceFilesActions({
+  files,
+  onRestoreSuccess,
+}: UseWorkspaceFilesActionsArgs)
+```
+
+## File: src/features/workspace.slice/business.files/_hooks/use-workspace-files.query.ts
+```typescript
+import { useEffect, useState } from 'react';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import { subscribeToWorkspaceFiles } from '../_queries';
+import type { WorkspaceFile } from '../_types';
+export function useWorkspaceFilesQuery()
 ```
 
 ## File: src/features/workspace.slice/business.files/_queries/get-workspace-files.query.ts
@@ -11752,18 +11824,6 @@ async function handleFirestoreRequest(payload: FirestoreRequest)
 async function handleStorageRequest(payload: StorageRequest)
 ```
 
-## File: src/shared-infra/frontend-firebase/app-check/app-check.client.ts
-```typescript
-import {
-  ReCaptchaV3Provider,
-  initializeAppCheck,
-  type AppCheck,
-} from 'firebase/app-check';
-import { app } from '../app.client';
-⋮----
-export function initAppCheck(): AppCheck | null
-```
-
 ## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
 ```typescript
 import {
@@ -12266,6 +12326,11 @@ onClick=
 
 ```
 
+## File: src/features/workspace.slice/business.files/_components/index.ts
+```typescript
+
+```
+
 ## File: src/features/workspace.slice/business.files/_hooks/use-storage.ts
 ```typescript
 import { useCallback } from 'react';
@@ -12716,11 +12781,6 @@ export interface ParsingImport {
 }
 ```
 
-## File: src/features/workspace.slice/business.files/index.ts
-```typescript
-
-```
-
 ## File: src/features/workspace.slice/core.event-bus/_events.ts
 ```typescript
 import type {
@@ -12989,6 +13049,11 @@ export const deleteWorkspaceStorageObject = async (
 ): Promise<void> =>
 ```
 
+## File: src/features/workspace.slice/business.files/index.ts
+```typescript
+
+```
+
 ## File: src/shared-infra/backend-firebase/functions/src/index.ts
 ```typescript
 import { initializeApp, getApps } from "firebase-admin/app";
@@ -13111,34 +13176,12 @@ import {
   UploadCloud,
   Loader2,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useState } from "react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { useWorkspace } from '@/features/workspace.slice/core';
 import { Button } from "@/shadcn-ui/button";
-import { toast } from "@/shadcn-ui/hooks/use-toast";
-import { ROUTES } from "@/shared-kernel/constants/routes";
-import {
-  createWorkspaceFile,
-  addWorkspaceFileVersion,
-  deleteVersionStorageObjects,
-  deregisterWorkspaceFile,
-  restoreWorkspaceFileVersion,
-  uploadRawFile,
-} from '../_actions';
-import { subscribeToWorkspaceFiles } from '../_queries';
-import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+import type { WorkspaceFile } from '../_types';
+import { useWorkspaceFilesActions } from '../_hooks/use-workspace-files-actions';
+import { useWorkspaceFilesQuery } from '../_hooks/use-workspace-files.query';
 import { FileHistorySheet } from './file-history-sheet';
 import { FilesTable } from './files-table';
-import {
-  getErrorMessage,
-} from './files-view.utils';
-⋮----
-const handleUploadClick = () =>
-const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) =>
-const handleRestore = async (file: WorkspaceFile, versionId: string) =>
-const handleDeregister = async (file: WorkspaceFile) =>
-const handleDownloadVersion = (version?: WorkspaceFileVersion) =>
-const handleParseWithAi = (file: WorkspaceFile, version?: WorkspaceFileVersion) =>
 ```
