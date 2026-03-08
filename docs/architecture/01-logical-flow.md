@@ -35,7 +35,7 @@
 | 即時訂閱（presence / typing / live-feed） | **L7-A** `frontend-firebase/realtime-database`（RTDBAdapter） | SHOULD |
 | 受治理 GraphQL 資料契約 | **L7-B** `functions/dataconnect`（DataConnectGatewayAdapter） | **MUST** |
 | 受保護資料或可變更狀態 | 先完成 App Check 驗證（含 token 續期與失效處理）再進入 L2/L3 | **MUST [E7]** |
-| AI tool data access | 必須由 Genkit tool gateway 統一代理（role/scope/tenant 驗證 + 審計追蹤）；禁止 AI flow 直接呼叫 `firebase/*` | SHOULD [E8] |
+| AI tool data access | 必須由 Genkit tool gateway 統一代理（role/scope/tenant 驗證 + 審計追蹤）；禁止 AI flow 直接呼叫 `firebase/*` | **MUST [E8]** |
 
 > **FORBIDDEN**：Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin` [D25]
 

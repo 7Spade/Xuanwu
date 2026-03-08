@@ -430,12 +430,19 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `E7` | FORBIDDEN | Domain Slice / Feature Slice 禁止繞過 App Check 驗證直接存取受保護資源 |
 | `E7` | FORBIDDEN | 禁止在 `AppCheckAdapter` / `AdminAppCheckAdapter` 以外的位置實作 `firebase/app-check` 或 `firebase-admin/app-check` 邏輯 |
 
-### P6, E8：平行路由與 AI 治理
+### P6：平行路由與串流 UI
 
 | 規則 | 類型 | 說明 |
 |------|------|------|
 | `P6` | SHOULD | 使用 Next.js Parallel Routes 時每個 `@slot` 必須對應單一資料通道（QGWAY channel）與獨立 Suspense fallback |
 | `P6` | SHOULD | 使用 Streaming UI 必須定義可中斷/可重試策略，避免跨 slot 共享阻塞 |
+
+### E8：Genkit AI 治理（genkit-tool-governance）
+
+> E8 為 AI Runtime Security Gate；凡新增或修改 Genkit flow、AI tool calling 邏輯或 L10 元件時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
 | `E8` | MUST | Genkit flow 觸發 tool calling 必須經 Tool ACL（role/scope/tenant）與審計追蹤（traceId/toolCallId/modelId） |
 | `E8` | FORBIDDEN | AI flow 禁止直接呼叫 `firebase/*` 或跨租戶讀寫 |
 
