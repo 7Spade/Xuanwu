@@ -2,21 +2,21 @@
   "firestore": {
     "database": "(default)",
     "location": "asia-east1",
-    "rules": "\\src\\shared-infra\\frontend-firebase\\firestore\\firestore.rules",
-    "indexes": "\\src\\shared-infra\\frontend-firebase\\firestore\\firestore.indexes.json"
+    "rules": "src/shared-infra/frontend-firebase/firestore/firestore.rules",
+    "indexes": "src/shared-infra/frontend-firebase/firestore/firestore.indexes.json"
   },
   "storage": {
-    "rules": "\\src\\shared-infra\\frontend-firebase\\storage\\storage.rules"
+    "rules": "src/shared-infra/frontend-firebase/storage/storage.rules"
   },
   "hosting": {
-    "public": "out",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "i18n": {
-      "root": "\\localized-files"
+      "root": "/localized-files"
     },
     "rewrites": [
       {
