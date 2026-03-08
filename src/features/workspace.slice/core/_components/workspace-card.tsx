@@ -453,27 +453,25 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2 text-sm">
               <span>
-                You are about to permanently destroy the workspace node{" "}
+                {t('workspaces.destroyWorkspaceWarning')} {" "}
                 <span className="font-bold text-foreground">
                   &quot;{workspace.name}&quot;
                 </span>
                 .
               </span>
               <span className="mt-2 block rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-[11px] italic text-destructive">
-                This action will permanently erase this workspace and all its
-                subordinate atomic data and technical specifications. This
-                cannot be undone.
+                {t('workspaces.destroyWorkspaceIrreversible')}
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDestroying}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDestroying}>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={handleDestroyConfirm}
               disabled={isDestroying}
             >
-              {isDestroying ? "Destroying..." : "Confirm Destruction"}
+              {isDestroying ? t('workspaces.destroying') : t('workspaces.confirmDestruction')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

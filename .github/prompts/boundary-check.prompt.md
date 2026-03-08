@@ -1,17 +1,28 @@
 ---
 name: boundary-check
-description: "聚合寫入防護與跨模組通訊安全審核"
+description: 'Aggregate write-protection guard. Scans for D3 rule violations where Aggregates are mutated outside _actions.ts.'
 ---
 
-# ⚔️ Aggregate Protection Guard
+# Aggregate Write-Protection Guard
 
-## 防禦指令
-防止跨模組直接寫入與資料污染，確保單向依賴。
+## Task
 
-## 執行流程
-1. **代碼抽樣:** 透過 `tool-repomix` 抓取 Data Layer 與 Repository 的實作。
-2. **路徑追蹤:** 呼叫 `tool-thinking` 追蹤 Request 從 Entry 到 Persistence 的完整調用鏈。
-3. **規則比對:** 對齊 `persistence-model-overview.md` 與 `schema-definition.md`。
+Execute an Aggregate Write Protection Guard audit:
 
-## 警示指標
-任何未經 Command Handler 且直接操作 Firestore 集合的行為皆為嚴重違規。
+1. **Locate all D3 violations:** Identify every location that modifies an Aggregate outside of `_actions.ts`.
+2. **Locate direct Firestore writes:** Flag any location outside `_actions.ts` that calls Firestore write operations directly.
+3. **Generate a violation list:** Output a list of all non-compliant locations, including file path, line number, and violation description.
+
+## Tool Usage
+
+1. Invoke **`tool-repomix`** to scan the `src/features/` directory.
+2. Invoke **`tool-thinking`** to analyze dependency chains and confirm true violations vs. false positives.
+
+## Output Format
+
+```
+Violation: [file path:line number]
+Rule: D3 — Mutation outside _actions.ts
+Description: [brief description of the violation]
+Fix: Move this logic into the corresponding _actions.ts
+```

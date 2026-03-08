@@ -1,6 +1,6 @@
 ---
-applyTo: '*'
-description: 'The most comprehensive, practical, and engineer-authored performance optimization instructions for all languages, frameworks, and stacks. Covers frontend, backend, and database best practices with actionable guidance, scenario-based checklists, troubleshooting, and pro tips.'
+applyTo: '**'
+description: 'Performance optimization rules for frontend, backend, and database layers: measure first, prefer caching, avoid blocking I/O, paginate results, minimize bundle size.'
 ---
 
 # Performance Optimization Best Practices

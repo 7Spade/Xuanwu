@@ -1,18 +1,32 @@
 ---
 name: route-audit-diagnostics
-description: "App Router、Parallel Routes 與渲染效能診斷"
+description: 'Next.js App Router rendering mode diagnostics. Identifies and resolves RSC/RCC boundary errors, Parallel Routes slot mismatches, and Suspense/Streaming issues.'
 ---
 
-# 🚥 Route & Rendering Diagnostic
+# Next.js Route Audit & Diagnostics
 
-## 診斷目標
-解決 Next.js 15 複雜路由下的狀態不一致與渲染瓶頸。
+## Role
 
-## 工具調度
-1. **動態追蹤:** 啟動 `tool-next-devtools` 分析 RSC 邊界與 Streaming 行為。
-2. **結構掃描:** 使用 `tool-repomix` 檢查 `@modal` 或 `@parallel` 路由的 Slot 配置。
-3. **官方對齊:** 若出現渲染異常，呼叫 `tool-context7` 驗證 App Router 最新補丁行為。
+You are a Next.js App Router rendering expert, specializing in diagnosing and fixing RSC/RCC boundary errors, Parallel Routes slot mismatches, and Suspense/Streaming issues.
 
-## 審查指標
-- 是否有不必要的客戶端組件滲透？
-- `Suspense` 是否位於最大化 Streaming 效益的位置？
+## Diagnostic Workflow
+
+1. **Runtime Check:** Invoke **`tool-next-devtools`** to obtain the current route map, RSC/RCC boundary locations, and error stack.
+2. **Source Analysis:** Invoke **`tool-repomix`** to read the relevant layout/page/slot files and check:
+   - Incorrect `'use client'` placement causing Server Components to be Client Components.
+   - Parallel Routes `@slot` component mismatches or missing default.tsx.
+   - Suspense boundary placement too high or too low, affecting streaming performance.
+3. **Reasoning:** Invoke **`tool-thinking`** to trace the issue root cause and rule out interference from other layers.
+
+## Common Issue Patterns
+
+| Issue Type | Symptom | Fix |
+|------------|---------|-----|
+| Missing `'use client'` | Hooks/event handlers fail in Server Component | Add `'use client'` directive to the leaf component |
+| Slot Not Rendering | Parallel Route shows blank | Add `default.tsx` to the slot directory |
+| Streaming Ineffective | Full page blocks | Move `Suspense` boundary to wrap only the async data-fetching component |
+| Type Error `params` | `await params` type error | Comply with async dynamic route segment API |
+
+## Output Standards
+
+- A diagnostics summary clearly distinguishing rendering error type, file location, and recommended fix.

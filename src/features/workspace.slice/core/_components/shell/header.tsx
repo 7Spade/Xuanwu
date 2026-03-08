@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { GlobalSearch } from "@/features/global-search.slice";
 import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
 import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
@@ -52,6 +53,7 @@ function usePageBreadcrumbs(pathname: string) {
 }
 
 export function Header() {
+  const { t } = useI18n();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { state: appState, dispatch } = useApp();
   const pathname = usePathname();
@@ -112,7 +114,7 @@ export function Header() {
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-primary" />
-          <span className="pl-7">Search dimensions, spaces, or people...</span>
+          <span className="pl-7">{t('workspaces.searchDimensionsPlaceholder')}</span>
           <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
             <div className="ml-1 hidden items-center gap-1 rounded border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground shadow-sm md:flex">
               <Command className="size-2.5" /> K

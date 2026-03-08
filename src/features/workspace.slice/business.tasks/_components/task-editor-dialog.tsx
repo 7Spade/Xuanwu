@@ -9,6 +9,7 @@
 
 import { Loader2, Settings2 } from 'lucide-react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
@@ -47,6 +48,8 @@ export function TaskEditorDialog({
   onSave,
   onOpenChange,
 }: TaskEditorDialogProps) {
+  const { t } = useI18n();
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl overflow-hidden rounded-2xl border bg-background p-0 shadow-xl">
@@ -54,14 +57,14 @@ export function TaskEditorDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-2xl font-bold tracking-tight">
               <Settings2 className="size-6 text-primary" />
-              {editingTask?.id ? 'Calibrate WBS Node' : 'Define New Node'}
+              {editingTask?.id ? t('tasks.editNodeTitle') : t('tasks.createNodeTitle')}
             </DialogTitle>
           </DialogHeader>
         </div>
 
         <div className="grid max-h-[70vh] grid-cols-2 gap-5 overflow-y-auto p-6">
           <div className="col-span-2 space-y-1.5">
-            <Label className="ml-1 text-xs font-semibold text-foreground">Task Name</Label>
+            <Label className="ml-1 text-xs font-semibold text-foreground">{t('tasks.taskName')}</Label>
             <Input
               value={editingTask?.name || ''}
               onChange={(e) => setEditingTask({ ...editingTask, name: e.target.value })}
@@ -70,7 +73,7 @@ export function TaskEditorDialog({
           </div>
 
           <div className="col-span-2 space-y-1.5">
-            <Label className="ml-1 text-xs font-semibold text-foreground">Description & Specs</Label>
+            <Label className="ml-1 text-xs font-semibold text-foreground">{t('tasks.descriptionAndSpecs')}</Label>
             <Textarea
               value={editingTask?.description || ''}
               onChange={(e) => setEditingTask({ ...editingTask, description: e.target.value })}
@@ -79,7 +82,7 @@ export function TaskEditorDialog({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="ml-1 text-xs font-semibold text-foreground">Status</Label>
+            <Label className="ml-1 text-xs font-semibold text-foreground">{t('tasks.status')}</Label>
             <Select
               value={editingTask?.progressState}
               onValueChange={(v) =>
@@ -93,19 +96,19 @@ export function TaskEditorDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todo">To-do</SelectItem>
-                <SelectItem value="doing">Doing</SelectItem>
-                <SelectItem value="blocked">Blocked</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="verified">Verified</SelectItem>
-                <SelectItem value="accepted">Accepted</SelectItem>
+                <SelectItem value="todo">{t('tasks.toDo')}</SelectItem>
+                <SelectItem value="doing">{t('tasks.doing')}</SelectItem>
+                <SelectItem value="blocked">{t('tasks.blocked')}</SelectItem>
+                <SelectItem value="completed">{t('tasks.completed')}</SelectItem>
+                <SelectItem value="verified">{t('tasks.verified')}</SelectItem>
+                <SelectItem value="accepted">{t('tasks.accepted')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="col-span-2 grid grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="task-quantity" className="ml-1 text-xs font-semibold text-foreground">Quantity (Qty)</Label>
+              <Label htmlFor="task-quantity" className="ml-1 text-xs font-semibold text-foreground">{t('tasks.quantityWithQty')}</Label>
               <Input
                 id="task-quantity"
                 type="number"
@@ -115,7 +118,7 @@ export function TaskEditorDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="task-unitprice" className="ml-1 text-xs font-semibold text-foreground">Unit Price</Label>
+              <Label htmlFor="task-unitprice" className="ml-1 text-xs font-semibold text-foreground">{t('tasks.unitPrice')}</Label>
               <Input
                 id="task-unitprice"
                 type="number"
@@ -125,7 +128,7 @@ export function TaskEditorDialog({
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="task-discount" className="ml-1 text-xs font-semibold text-foreground">Discount</Label>
+              <Label htmlFor="task-discount" className="ml-1 text-xs font-semibold text-foreground">{t('tasks.discount')}</Label>
               <Input
                 id="task-discount"
                 type="number"
@@ -138,7 +141,7 @@ export function TaskEditorDialog({
 
           <div className="col-span-2 flex items-center justify-between rounded-xl border border-border bg-muted/20 p-4">
             <div className="space-y-1">
-              <p className="text-xs font-semibold text-muted-foreground">Estimated Subtotal</p>
+              <p className="text-xs font-semibold text-muted-foreground">{t('tasks.estimatedSubtotal')}</p>
             </div>
             <span className="font-mono text-xl font-bold text-foreground">
               ${((editingTask?.quantity || 0) * (editingTask?.unitPrice || 0) - (editingTask?.discount || 0)).toLocaleString()}
@@ -152,7 +155,7 @@ export function TaskEditorDialog({
             onClick={() => onOpenChange(false)}
             className="rounded-lg"
           >
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={onSave}
@@ -160,7 +163,11 @@ export function TaskEditorDialog({
             className="rounded-lg px-6"
           >
             {isUploading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-            {isUploading ? 'Saving...' : editingTask?.id ? 'Save Changes' : 'Create Node'}
+            {isUploading
+              ? t('common.saving')
+              : editingTask?.id
+                ? t('settings.saveChanges')
+                : t('tasks.createNode')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -4,6 +4,7 @@
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useWorkspace } from "@/features/workspace.slice/core";
 
 import { useWorkspaceDailyLog } from "../_hooks/use-workspace-daily";
@@ -13,6 +14,7 @@ import { DailyLogCard } from "./daily-log-card";
 
 
 export function WorkspaceDaily() {
+  const { t } = useI18n();
   const router = useRouter();
   const { workspace } = useWorkspace();
   const {
@@ -53,7 +55,7 @@ export function WorkspaceDaily() {
         {localLogs.length === 0 && (
           <div className="flex flex-col items-center gap-3 p-12 text-center opacity-20">
             <MessageSquare className="size-12" />
-            <p className="text-[10px] font-black uppercase tracking-widest">No activity recorded in this space yet.</p>
+            <p className="text-[10px] font-black uppercase tracking-widest">{t('workspace.noActivityInSpace')}</p>
           </div>
         )}
       </div>

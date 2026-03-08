@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useCallback, useState, useMemo } from "react";
 
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,6 +74,7 @@ const getErrorMessage = (error: unknown, fallback: string) =>
  * REFACTORED: Now derives the owner type at runtime based on the workspace's `dimensionId`.
  */
 export function WorkspaceCapabilities() {
+  const { t } = useI18n();
   const { workspace, logAuditEvent, mountCapabilities, unmountCapability } = useWorkspace();
   const { state } = useApp();
   const { capabilitySpecs, accounts } = state;
@@ -113,12 +115,12 @@ export function WorkspaceCapabilities() {
         });
         setIsAddOpen(false);
         setSelectedCaps(new Set());
-        toast({ title: `${templates.length} capabilities have been mounted` });
+        toast({ title: t('workspace.capabilitiesMounted', { count: templates.length }) });
       } catch (error: unknown) {
         console.error("Error mounting capabilities:", error);
         toast({
           variant: "destructive",
-          title: "Mounting Failed",
+          title: t('workspace.mountingFailed'),
           description: getErrorMessage(error, "You may not have the required permissions."),
         });
       } finally {
@@ -133,12 +135,12 @@ export function WorkspaceCapabilities() {
     try {
       await unmountCapability(pendingUnmount);
       logAuditEvent("Unmounted Capability", pendingUnmount.name, 'delete');
-      toast({ title: "Capability Unmounted" });
+      toast({ title: t('workspace.capabilityUnmounted') });
     } catch (error: unknown) {
       console.error("Error unmounting capability:", error);
       toast({
         variant: "destructive",
-        title: "Unmounting Failed",
+        title: t('workspace.unmountingFailed'),
         description: getErrorMessage(error, "You may not have the required permissions."),
       });
     } finally {
@@ -189,7 +191,7 @@ export function WorkspaceCapabilities() {
     <div className="space-y-6 duration-300 animate-in fade-in">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-          <Box className="size-4" /> Mounted Atomic Capabilities
+          <Box className="size-4" /> {t('workspace.mountedAtomicCapabilities')}
         </h3>
         <Button
           variant="outline"
@@ -197,7 +199,7 @@ export function WorkspaceCapabilities() {
           className="h-8 gap-2 text-[10px] font-bold uppercase tracking-widest"
           onClick={() => setIsAddOpen(true)}
         >
-          <Plus className="size-3.5" /> Mount New Capability
+          <Plus className="size-3.5" /> {t('workspace.mountNewCapability')}
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -209,7 +211,7 @@ export function WorkspaceCapabilities() {
                   {getIcon(cap.id)}
                 </div>
                 <Badge variant="outline" className="bg-background px-1.5 text-[9px] font-bold uppercase">
-                  {cap.status === 'stable' ? 'PRODUCTION' : 'BETA'}
+                  {cap.status === 'stable' ? t('workspace.production') : t('workspace.beta')}
                 </Badge>
               </div>
               <CardTitle className="font-headline text-lg transition-colors group-hover:text-primary">{cap.name}</CardTitle>
@@ -234,11 +236,11 @@ export function WorkspaceCapabilities() {
               <Box className="size-10 text-muted-foreground/50" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-bold">No capabilities mounted yet</p>
-              <p className="text-[11px] text-muted-foreground">Add your first capability to start using this workspace.</p>
+              <p className="text-sm font-bold">{t('workspace.noCapabilitiesMounted')}</p>
+              <p className="text-[11px] text-muted-foreground">{t('workspace.addFirstCapability')}</p>
             </div>
             <Button size="sm" className="gap-2" onClick={() => setIsAddOpen(true)}>
-              <Plus className="size-4" /> Mount Your First Capability
+              <Plus className="size-4" /> {t('workspace.mountFirstCapability')}
             </Button>
           </div>
         )}
@@ -248,12 +250,12 @@ export function WorkspaceCapabilities() {
       <Dialog open={isAddOpen} onOpenChange={(open) => { if (!open) setSelectedCaps(new Set()); setIsAddOpen(open); }}>
         <DialogContent className="max-w-2xl rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-2xl">Mount Atomic Capability</DialogTitle>
+            <DialogTitle className="font-headline text-2xl">{t('workspace.mountAtomicCapability')}</DialogTitle>
             <DialogDescription className="flex items-center gap-2 pt-2">
               <Info className="size-4 text-muted-foreground" />
               {ownerType === 'user' 
-                ? "Showing core capabilities available for a Personal Workspace."
-                : "Showing all available capabilities for an Organizational Workspace."}
+                ? t('workspace.personalWorkspaceCapabilitiesHint')
+                : t('workspace.orgWorkspaceCapabilitiesHint')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid max-h-[60vh] grid-cols-1 gap-4 overflow-y-auto py-4 md:grid-cols-2">
@@ -281,13 +283,13 @@ export function WorkspaceCapabilities() {
             ))}
           </div>
           <DialogFooter>
-             <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isMounting}>Cancel</Button>
+             <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isMounting}>{t('common.cancel')}</Button>
               <Button onClick={handleAddCapabilities} disabled={selectedCaps.size === 0 || isMounting}>
                 <span aria-live="polite" aria-busy={isMounting ? "true" : "false"}>
                   {isMounting ? (
-                    <><Loader2 className="mr-2 size-4 animate-spin" /> Mounting...</>
+                    <><Loader2 className="mr-2 size-4 animate-spin" /> {t('workspace.mounting')}</>
                   ) : (
-                    `Mount Selected (${selectedCaps.size})`
+                    t('workspace.mountSelected', { count: selectedCaps.size })
                   )}
                 </span>
               </Button>
@@ -299,16 +301,15 @@ export function WorkspaceCapabilities() {
       <AlertDialog open={!!pendingUnmount} onOpenChange={(open) => !open && setPendingUnmount(null)}>
         <AlertDialogContent className="max-w-sm rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Unmount Capability</AlertDialogTitle>
+            <AlertDialogTitle>{t('workspace.unmountCapability')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to unmount <span className="font-bold text-foreground">{pendingUnmount?.name}</span>?
-              The tab and all associated data will no longer be accessible from this workspace.
+              {t('workspace.unmountCapabilityDescription', { name: pendingUnmount?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmUnmount}>
-              Unmount
+              {t('workspace.unmount')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

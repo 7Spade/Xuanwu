@@ -3,6 +3,7 @@
 
 import { Bell, Trash2, Check } from "lucide-react";
 
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import type { AppAction } from '@/app-runtime/contexts/app-context'
 import { Button } from "@/shadcn-ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
@@ -15,6 +16,7 @@ interface NotificationCenterProps {
 }
 
 export function NotificationCenter({ notifications, dispatch }: NotificationCenterProps) {
+  const { t } = useI18n();
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -29,7 +31,7 @@ export function NotificationCenter({ notifications, dispatch }: NotificationCent
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b p-4">
-          <h4 className="text-sm font-bold uppercase tracking-widest">Dimension Pulse</h4>
+          <h4 className="text-sm font-bold uppercase tracking-widest">{t('workspaces.dimensionPulse')}</h4>
           <Button variant="ghost" size="icon" className="size-6" onClick={() => dispatch({ type: 'CLEAR_NOTIFICATIONS' })}>
             <Trash2 className="size-3" />
           </Button>
@@ -56,7 +58,7 @@ export function NotificationCenter({ notifications, dispatch }: NotificationCent
               </div>
             )) : (
               <div className="p-8 text-center text-xs italic text-muted-foreground">
-                No activity resonance detected yet.
+                {t('workspaces.noActivityResonance')}
               </div>
             )}
           </div>

@@ -9,6 +9,7 @@
 
 import { CalendarPlus, ChevronDown, ChevronRight, ClipboardPlus, OctagonX, Plus, Send, Settings2, Trash2 } from 'lucide-react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { Progress } from '@/shadcn-ui/progress';
@@ -54,6 +55,7 @@ export function TaskTreeNode({
   onDeleteNode,
   onSubmitForQA,
 }: TaskTreeNodeProps) {
+  const { t } = useI18n();
   const isExpanded = expandedIds.has(node.id);
   const hasChildren = node.children.length > 0;
   const isViolating = node.descendantSum > node.subtotal;
@@ -117,7 +119,7 @@ export function TaskTreeNode({
                 <span className="truncate">
                   {[node.location?.building, node.location?.floor, node.location?.room, node.location?.description]
                     .filter(Boolean)
-                    .join(' / ') || '—'}
+                    .join(' / ') || t('schedule.none')}
                 </span>
               </div>
             )}
@@ -128,13 +130,13 @@ export function TaskTreeNode({
             )}
             {visibleColumns.has('discount') && (
               <div className="text-right">
-                <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">Discount</p>
+                <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">{t('tasks.discount')}</p>
                 <p className="text-[10px] font-bold text-destructive">-${(node.discount || 0).toLocaleString()}</p>
               </div>
             )}
             {visibleColumns.has('subtotal') && (
               <div className="text-right">
-                <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">Budget</p>
+                <p className="text-[8px] font-black uppercase leading-none text-muted-foreground">{t('tasks.budget')}</p>
                 <p className={cn('text-[10px] font-bold', isViolating ? 'text-destructive' : 'text-primary')}>
                   ${node.subtotal?.toLocaleString()}
                 </p>
@@ -161,7 +163,7 @@ export function TaskTreeNode({
                     size="icon"
                     className="size-8 rounded-lg text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
                     onClick={() => onSubmitForQA(node)}
-                    title="Submit for QA"
+                    title={t('tasks.submitForQa')}
                   >
                     <Send className="size-4" />
                   </Button>
@@ -192,8 +194,8 @@ export function TaskTreeNode({
             size="icon"
             className="size-7 rounded-lg text-primary"
             onClick={() => onCreateChild(node)}
-            title="Split into sub-tasks"
-            aria-label="Split into sub-tasks"
+            title={t('tasks.splitIntoSubtasks')}
+            aria-label={t('tasks.splitIntoSubtasks')}
           >
             <Plus className="size-3.5" />
           </Button>
@@ -203,8 +205,8 @@ export function TaskTreeNode({
               size="icon"
               className="size-7 rounded-lg text-primary"
               onClick={() => onReportProgress(node)}
-              title="Report progress"
-              aria-label="Report progress"
+              title={t('tasks.progressReport')}
+              aria-label={t('tasks.progressReport')}
             >
               <ClipboardPlus className="size-3.5" />
             </Button>
@@ -214,8 +216,8 @@ export function TaskTreeNode({
             size="icon"
             className="size-7 rounded-lg text-primary"
             onClick={() => onScheduleRequest(node)}
-            title="Send schedule request"
-            aria-label="Send schedule request"
+            title={t('tasks.sendScheduleRequest')}
+            aria-label={t('tasks.sendScheduleRequest')}
           >
             <CalendarPlus className="size-3.5" />
           </Button>
@@ -225,7 +227,7 @@ export function TaskTreeNode({
               size="icon"
               className="size-7 rounded-lg text-destructive"
               onClick={() => onMarkBlocked(node)}
-              title="Mark as Blocked (B-Track)"
+              title={t('tasks.markAsBlocked')}
             >
               <OctagonX className="size-3.5" />
             </Button>
@@ -235,8 +237,8 @@ export function TaskTreeNode({
             size="icon"
             className="size-7 rounded-lg text-primary"
             onClick={() => onEditNode(node)}
-            title="Edit node"
-            aria-label="Edit node"
+            title={t('common.edit')}
+            aria-label={t('common.edit')}
           >
             <Settings2 className="size-3.5" />
           </Button>
@@ -245,8 +247,8 @@ export function TaskTreeNode({
             size="icon"
             className="size-7 rounded-lg text-destructive"
             onClick={() => onDeleteNode(node)}
-            title="Delete node"
-            aria-label="Delete node"
+            title={t('tasks.deleteNode')}
+            aria-label={t('tasks.deleteNode')}
           >
             <Trash2 className="size-3.5" />
           </Button>
