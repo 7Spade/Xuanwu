@@ -32,15 +32,15 @@
 %%    VS0 內部分層（Foundation Plane）:
 %%      src/shared-kernel                   = VS0-Kernel（L1 契約層）
 %%      src/shared-kernel/observability     = VS0-Kernel（L1 Observability Contracts only：types/interfaces，非 runtime node）
-%%      src/shared-infra/*                  = VS0-Infra Plane（L0/L2/L4/L5/L6/L7/L8/L9 執行層）
+%%      src/shared-infra/*                  = VS0-Infra Plane（L0/L2/L4/L5/L6/L7/L9/L10 執行層；L8 為外部平台執行目標）
 %%      L0/L2/L4/L5/L6 基礎設施主路徑：src/shared-infra/{external-triggers|gateway-command|event-router|outbox-relay|dlq-manager|projection-bus|gateway-query}
 %%      Legacy 相容路徑（僅過渡，不作為目標架構）：src/features/infra.*
 %%      src/shared-infra/projection-bus     = VS0-Infra（L5 Projection Bus）
 %%      src/shared-infra/observability      = VS0-Infra（L9 Observability Runtime）
-%%    命名規則：VS0=Foundation Index（L1+L0+L2+L4+L5+L6+L7+L8+L9）；VS1~VS8=業務切片編號（L3）
+%%    命名規則：VS0=Foundation Index（L1+L0+L2+L4+L5+L6+L7+L8+L9+L10）；VS1~VS8=業務切片編號（L3）
 %%    VS0 識別規格（文件/審查一律使用）:
 %%      VS0-Kernel = src/shared-kernel/*（pure contracts/constants/functions，禁止 I/O）
-%%      VS0-Infra  = src/shared-infra/*（L0/L2/L4/L5/L6/L7/L8/L9 execution plane；包含 external-trigger/gateway/projection/adapter/observability 實作）
+%%      VS0-Infra  = src/shared-infra/*（L0/L2/L4/L5/L6/L7/L9/L10 execution plane；L8 為外部 runtime target）
 %%      Observability 分層規則：L1 只允許 observability contracts；L9 runtime sink/counter/trace provider 只允許在 src/shared-infra/observability
 %%      禁止只寫「VS0」而不標註 -Kernel 或 -Infra（避免語義歧義）
 %%      VS0 視圖分拆規則：同一 VS0 會在圖中拆為「L1 VS0-Kernel」與「L0/L2/L4/L5/L6~L9 VS0-Infra」兩塊呈現；
@@ -52,15 +52,24 @@
 %%  ── Layer（系統層）──
 %%    L0=ExternalTriggers   L1=SharedKernel       L2=CommandGateway
 %%    L3=DomainSlices       L4=IER                L5=ProjectionBus
-%%    L6=QueryGateway       L7=FirebaseACL         L8=FirebaseInfra      L9=Observability
+%%    L6=QueryGateway       L7=FirebaseBoundary    L8=FirebaseInfra      L9=Observability
 %%    L10=AIRuntime&Orchestration（Genkit Flow Gateway / Prompt Policy / Tool ACL / Model Routing）
-%%    ※ L8 = 外部 Firebase 平台執行層（SDK Runtime），非本 repo 內資料夾
+%%    ※ L7 分層（責任分配）:
+%%      - L7-FE ACL  = src/shared-infra/frontend-firebase（使用者會話態 / Security Rules 可封閉）
+%%      - L7-BE-FN   = src/shared-infra/backend-firebase/functions（Admin / 跨租戶 / 觸發器 / 排程 / Webhook 驗簽）
+%%      - L7-BE-DC   = src/shared-infra/backend-firebase/dataconnect（受治理 GraphQL schema/connector 契約）
+%%    ※ L8 = 外部 Firebase 平台執行層（SDK Runtime）；在本 repo 僅以邊界模型呈現，非本地實作資料夾
 %%    ※ L10 = AI 執行與治理層（可由 src/app-runtime/ai + shared-infra/ai-* 共同實作；受 L1 契約與 L9 觀測約束）
 %%    ※ L3 Domain Slices = VS1(Identity) · VS2(Account) · VS3(Skill) ·
 %%                          VS4(Organization) · VS5(Workspace) · VS6(Workforce-Scheduling) ·
 %%                          VS7(Notification) · VS8(SemanticGraph)
 %%    ※ VS0(Foundation) 不屬於 L3 Domain Slices；其中 VS0-Kernel=L1，VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9/L10
-%%    ※ 邊界澄清：VS0-Kernel=L1（契約）；VS0-Infra=L0/L2/L4/L5/L6/L7/L8/L9/L10（執行層，含觀測）
+%%    ※ 邊界澄清：L2 Command Gateway 明確屬於 VS0-Infra（不得誤歸 L3）；L8 為外部 runtime，不代表本地 folder ownership
+%%  ── Canonical Chains（唯一排序判準）──
+%%    寫鏈（Command）: External/L0 → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection
+%%    讀鏈（Query）   : UI/L0 → L6 Query Gateway → L5 Projection(Read Model)
+%%    Infra鏈（SDK）  : L3/L5/L6 → L1 Ports/Contracts → L7 Firebase Boundary → L8 Firebase Runtime
+%%    規則：三條鏈並列，不得把 Query/Command/FirebaseBoundary 壓成單一線性排序
 %%  ── 標準目錄結構（Standard Directory Structure · 單向依賴鏈對齊）──
 %%    src/
 %%      shared-kernel/                          # VS0-Kernel / L1: contracts/constants/pure zone
@@ -77,6 +86,11 @@
 %%        dataconnect/                          # Data Connect schema/connector/operations
 %%        firestore/                            # Firestore rules/indexes deploy artifacts
 %%        storage/                              # Storage rules deploy artifacts
+%%  ── L7 Firebase Boundary Folder Ownership（避免前後端職責混淆）──
+%%    src/shared-infra/frontend-firebase/         = FE ACL（user-session / rules-guarded）
+%%    src/shared-infra/backend-firebase/functions = BE orchestration（admin/cross-tenant/triggers/scheduler/webhook）
+%%    src/shared-infra/backend-firebase/dataconnect = BE query contract（governed GraphQL schema/connector）
+%%  ── VS0-Infra Core Folders（非 L7 專屬；依 Layer 分工）──
 %%      shared-infra/external-triggers/         # VS0-Infra / L0: external triggers
 %%      shared-infra/gateway-command/           # VS0-Infra / L2: CBG_ENTRY/CBG_AUTH/CBG_ROUTE orchestration
 %%      shared-infra/event-router/              # VS0-Infra / L4: IER core + lanes
@@ -137,11 +151,11 @@
 %%      - 中變整合（adapter/gateway/observability）放 VS0-Infra
 %%      - 快變業務流程放 L3
 %%    判斷速記：先判斷邏輯層與權力歸屬，再決定路徑；不得反向以既有路徑合理化設計。
-%%  ── 依賴方向約束（對應目錄）──
+%%  ── 依賴方向約束（對應目錄，與 Canonical Chains 一致）──
 %%    寫鏈：shared-infra/external-triggers → shared-infra/gateway-command → *.slice → shared-infra/event-router → shared-infra/projection-bus
 %%    讀鏈：app/UI → shared-infra/gateway-query → shared-infra/projection-bus
-%%    Infra鏈：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/frontend-firebase(FIREBASE_ACL, Web SDK)
-%%             高權限/排程/觸發鏈：L0 or L2 API entry → backend-firebase/functions|dataconnect → Firebase Platform (L8)
+%%    Infra鏈（前端 SDK）：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/frontend-firebase(FIREBASE_ACL, Web SDK)
+%%    Infra鏈（後端高權限）：L0 or L2 API entry → shared-infra/backend-firebase/functions|dataconnect → Firebase Platform (L8)
 
 %%  ── Firebase 前後端分層與成本決策（Front/Back Decision Matrix）──
 %%    Frontend Firebase（src/shared-infra/frontend-firebase）適用：
@@ -219,10 +233,9 @@
 %%    [A17] 計算公式：awardedXp = baseXp × qualityMultiplier × policyMultiplier（含 min/max clamp）
 %%    [A17] VS8 僅提供 semanticTagSlug / policy lookup；XP ledger 寫入權限只在 VS3
 %%  ── RULESET-MUST · Layering Rules（層級通訊規則）──
-%%    External → L2 CMD_GWAY（寫） / L6 QGWAY（讀）
-%%    單向依賴鏈（寫鏈）= L0 → L2 → L3 → L4 → L5（禁止回跳）
-%%    單向依賴鏈（讀鏈）= L0/UI → L6 → L5（Read Model）
-%%    基礎設施依賴鏈 = L3/L5/L6 → L1(SK_PORTS/Contracts) → L7(FIREBASE_ACL) → L8(Firebase)
+%%    鏈路判準：以 Canonical Chains 為唯一基準（寫鏈 / 讀鏈 / Infra鏈）
+%%    External 入口分流：寫入走 L2 CMD_GWAY；讀取走 L6 QGWAY
+%%    寫鏈禁止回跳；讀鏈禁止反向驅動命令鏈；Infra鏈禁止跳過 L1 Port 與 L7 邊界
 %%    L3 Slice ↔ L3 Slice = 禁止直接 mutate；僅可透過 L4 IER 事件協作 [#2 D9]
 %%    L3 → L5 Projection 寫入 = 禁止直寫；必須經 event-funnel [#9 S2]
 %%    L3 讀取語義 = 僅可經 VS8 projection.tag-snapshot [D21-7 T5]
@@ -250,6 +263,23 @@
 %%    MUST: IF 屬跨片共用契約（如 SK_SKILL_REQ）THEN 必須集中於 L1，切片僅可引用
 %%    MUST: IF 涉及全域語義註冊 THEN 必須在 VS8 Core Domain（CTA/tag-definitions）定義；IF 涉及組織任務類型/技能類型語義 THEN 必須在 VS4 org-semantic-registry（org-task-type-registry + org-skill-type-registry）定義
 %%    SHOULD: IF 設計 L2 Command Gateway 下沉 THEN 僅下沉契約/型別到 L1；協調流程保留 L2
+%%  ── L9 OBSERVABILITY BLUEPRINT（重點雛形 · 可直接落地）──
+%%    Ownership:
+%%      - Contract Authority = L1 src/shared-kernel/observability（types/interfaces only）
+%%      - Runtime Authority  = L9 src/shared-infra/observability（metrics/errors/trace sinks）
+%%    MUST（最小可用閉環）:
+%%      - Trace: CBG_ENTRY 注入 traceId 一次；其餘節點唯讀 [R8]
+%%      - Metrics: 至少覆蓋 command_count, command_latency_ms, query_count, query_latency_ms,
+%%                 relay_lag_ms [R1], projection_apply_latency_ms, dlq_count_by_tier [R5]
+%%      - Errors: 統一寫入 DomainErrorEntry；至少分類 validation / auth / conflict / infra / security
+%%      - Correlation: commandId/eventId/correlationId 必須可反查到對應 error 與 metrics 時序
+%%    SHOULD（告警分級）:
+%%      - P1: SECURITY_BLOCK DLQ、trace 斷鏈、AppCheck 失效率異常（立即告警）
+%%      - P2: relay_lag 超過 SLA、projection 延遲超標、query p95 異常（值班告警）
+%%      - P3: background lane 積壓、單切片錯誤率升高（工作時段處理）
+%%    Gate（合併前最低驗收）:
+%%      - 每個新增 L2/L4/L5/L6 路徑都必須帶 traceId、至少 1 個 counter、1 個 latency、1 個 error mapping
+%%      - 無法提供觀測的路徑視為未完成（不得宣告 Done）
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  ARCHITECTURE CONTROL PLANE（四大治理視圖 · 規則句版）
 %%  ── CP1 MUST：Hard Invariants（系統穩定基石）──
@@ -585,7 +615,13 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             APPCHK_ADP["app-check.adapter.ts\nAppCheckAdapter\nClient attestation token 初始化/續期/驗證\n未通過不得進入 L2/L3\n[D24 D25 E7] 唯一合法 firebase/app-check 呼叫點"]
         end
 
-        subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；無本地資料夾）"]
+        subgraph FIREBASE_BACKEND["🔌 L7 · Backend Firebase Gateways（VS0-Infra · src/shared-infra/backend-firebase）[D25]"]
+            direction LR
+            BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\n對外 HTTP/Callable API 入口"]
+            BDC_GW["dataconnect-gateway\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
+        end
+
+        subgraph FIREBASE_EXT["☁️ L8 · Firebase Infrastructure（外部平台 SDK Runtime；本 repo 僅邊界映射）"]
             direction LR
             F_AUTH[("Firebase Auth\nfirebase/auth")]
             F_DB[("Firestore\nfirebase/firestore")]
@@ -1119,8 +1155,10 @@ AUDIT_COL -.->|"跨片稽核"| AUDIT_V
 %% ── Connectivity A: Query Spine（L5 → L6）──
 READ_REG -.->|"版本目錄"| QGWAY
 ORG_ELIG_V -.-> QGWAY_SCHED
-CAL_PROJ -.-> QGWAY_CAL
-TL_PROJ -.-> QGWAY_TL
+CAL_PROJ -.-> QGWAY_CAL_DAY
+CAL_PROJ -.-> QGWAY_CAL_ALL
+TL_PROJ -.-> QGWAY_TL_MEMBER
+TL_PROJ -.-> QGWAY_TL_ALL
 ACC_PROJ_V -.-> QGWAY_NOTIF
 WS_SCOPE_V -.-> QGWAY_SCOPE
 WALLET_V -.-> QGWAY_WALLET
@@ -1135,6 +1173,7 @@ FSTORE_ADP -.->|"implements [S2]"| I_REPO
 FCM_ADP -.->|"implements [R8]"| I_MSG
 STORE_ADP -.->|"implements"| I_STORE
 SK_INFRA -.->|"S2/R8/S4 規則約束"| FIREBASE_ACL
+SK_INFRA -.->|"D25 高權限/跨租戶/排程"| FIREBASE_BACKEND
 AUTH_ADP --> F_AUTH
 FSTORE_ADP --> F_DB
 RTDB_ADP --> F_RTDB
@@ -1142,8 +1181,14 @@ FCM_ADP --> F_FCM
 STORE_ADP --> F_STORE
 ANALYTICS_ADP --> F_ANALYTICS
 APPCHK_ADP --> F_APPCHK
+BFN_GW --> F_DB
+BFN_GW --> F_STORE
+BDC_GW --> F_DB
 
 EXT_CLIENT -.->|"UI 行為遙測（GA events）"| ANALYTICS_ADP
+EXT_WEBHOOK --> BFN_GW
+CBG_ROUTE -.->|"高權限/批次協調入口"| BFN_GW
+QGWAY -.->|"治理化 GraphQL 查詢契約"| BDC_GW
 
 %% ── Connectivity C: Observability（L2/L4/L5 → L9）──
 CBG_ENTRY --> TRACE_ID
@@ -1273,7 +1318,7 @@ class DLQ dlqNode
 class DLQ_S dlqSafe
 class DLQ_R dlqReview
 class DLQ_B dlqBlock
-class GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL,QGWAY_TL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH qgway
+class GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV qgway
 class PROJ_BUS,FUNNEL,PROJ_VER,READ_REG stdProj
 class CRIT_PROJ,WS_SCOPE_V,ORG_ELIG_V,WALLET_V critProj
 class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V stdProj
@@ -1284,6 +1329,7 @@ class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_ACL,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
 class APPCHK_ADP aclAdapter
+class FIREBASE_BACKEND,BFN_GW,BDC_GW aclAdapter
 class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
