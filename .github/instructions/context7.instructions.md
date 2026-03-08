@@ -5,25 +5,13 @@ applyTo: '**'
 
 # Context7-aware development
 
-Use Context7 proactively whenever the task depends on **authoritative, current, version-specific external documentation** that is not present in the workspace context.
-
-This instruction exists so you **do not require the user to type** “use context7” to get up-to-date docs.
+Use Context7 whenever the task requires authoritative, current, version-specific external documentation not present in the workspace.
 
 ## When to use Context7
 
-Use Context7 before making decisions or writing code when you need any of the following:
-
-- **Framework/library API details** (method signatures, configuration keys, expected behaviors).
-- **Version-sensitive guidance** (breaking changes, deprecations, new defaults).
-- **Correctness or security-critical patterns** (auth flows, crypto usage, deserialization rules).
-- **Interpreting unfamiliar error messages** that likely come from third-party tools.
-- **Best-practice implementation constraints** (rate limits, quotas, required headers, supported formats).
-
-Also use Context7 when:
-
-- The user references **a specific framework/library version** (e.g., “Next.js 15”, “React 19”, “AWS SDK v3”).
-- You’re about to recommend **non-trivial configuration** (CLI flags, config files, auth flows).
-- You’re unsure whether an API exists, changed names, or got deprecated.
+- MUST use Context7 for API signatures, config keys, version-sensitive behavior, or security-critical integration patterns.
+- MUST use Context7 when the user names a specific framework/library version.
+- SHOULD use Context7 when third-party error interpretation or non-trivial configuration is required.
 
 Skip Context7 for:
 
@@ -32,54 +20,23 @@ Skip Context7 for:
 
 ## What to fetch
 
-When using Context7, prefer **primary sources** and narrow queries:
-
-- Official docs (vendor/framework documentation)
-- Reference/API pages
-- Release notes / migration guides
-- Security advisories (when relevant)
-
-Gather only what you need to proceed. If multiple candidates exist, pick the most authoritative/current.
-
-Prefer fetching:
-
-- The exact method/type/option you will use
-- The minimal surrounding context needed to avoid misuse (constraints, default behaviors, migration notes)
+- MUST prioritize primary sources (official docs, API references, release notes, migration guides, security advisories).
+- MUST fetch only the minimum context needed to implement safely.
+- SHOULD fetch exact methods/options plus defaults, constraints, and migration caveats.
 
 ## How to incorporate results
 
-- Translate findings into concrete code/config changes.
-- **Cite sources** with title + URL when the decision relies on external facts.
-- If docs conflict or are ambiguous, present the tradeoffs briefly and choose the safest default.
-
-When the answer requires specific values (flags, config keys, headers), prefer:
-
-- stating the exact value from docs
-- calling out defaults and caveats
-- providing a quick validation step (e.g., “run `--help`”, or a minimal smoke test)
+- MUST translate findings into concrete code or config changes.
+- MUST cite title and URL when decisions rely on external facts.
+- MUST choose the safest default when sources conflict and briefly state trade-offs.
+- SHOULD include quick validation steps for exact flags/keys/headers.
 
 ## How to use Context7 MCP tools (auto)
 
-When Context7 is available as an MCP server, use it automatically as follows.
-
-### Tool workflow
-
-1) **If the user provides a library ID**, use it directly.
-  - Valid forms: `/owner/repo` or `/owner/repo/version` (for pinned versions).
-
-2) Otherwise, **resolve the library ID** using:
-  - Tool: `resolve-library-id`
-  - Inputs:
-	  - `libraryName`: the library/framework name (e.g., “next.js”, “supabase”, “prisma”)
-	  - `query`: the user’s task (used to rank matches)
-
-3) **Fetch relevant documentation** using:
-  - Tool: `query-docs`
-  - Inputs:
-	  - `libraryId`: the resolved (or user-supplied) library ID
-	  - `query`: the exact task/question you are answering
-
-4) Only after docs are retrieved: **write the code/steps** based on those docs.
+1. If user supplies `libraryId`, MUST use it directly (`/owner/repo` or `/owner/repo/version`).
+2. Otherwise, MUST resolve ID with `resolve-library-id` using `libraryName` and task query.
+3. MUST fetch docs with `query-docs` using resolved ID and exact task query.
+4. MUST write code only after documentation is retrieved.
 
 ### Efficiency limits
 

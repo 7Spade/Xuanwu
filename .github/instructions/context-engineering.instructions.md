@@ -3,43 +3,36 @@ description: 'Guidelines for structuring code and projects to maximize GitHub Co
 applyTo: '**'
 ---
 
-# Context Engineering
+# Context Engineering Rules
 
-Principles for helping GitHub Copilot understand your codebase and provide better suggestions.
+Use these rules to maximize codebase context quality for Copilot.
 
-## Project Structure
+## Structure Rules
 
-- **Use descriptive file paths**: `src/auth/middleware.ts` > `src/utils/m.ts`. Copilot uses paths to infer intent.
-- **Colocate related code**: Keep components, tests, types, and hooks together. One search pattern should find everything related.
-- **Export public APIs from index files**: What's exported is the contract; what's not is internal. This helps Copilot understand boundaries.
+- MUST use descriptive file paths that reveal feature intent.
+- MUST colocate related code, tests, and types so one search pattern finds the full slice.
+- MUST export only public contracts from index files and keep internals unexported.
 
-## Code Patterns
+## Code Context Rules
 
-- **Prefer explicit types over inference**: Type annotations are context. `function getUser(id: string): Promise<User>` tells Copilot more than `function getUser(id)`.
-- **Use semantic names**: `activeAdultUsers` > `x`. Self-documenting code is AI-readable code.
-- **Define constants**: `MAX_RETRY_ATTEMPTS = 3` > magic number `3`. Named values carry meaning.
+- SHOULD prefer explicit types on public functions and module boundaries.
+- MUST use semantic names for variables, functions, and types.
+- SHOULD replace magic numbers and strings with named constants.
 
-## Working with Copilot
+## Prompting Rules
 
-- **Keep relevant files open in tabs**: Copilot uses open tabs as context signals. Working on auth? Open auth-related files.
-- **Position cursor intentionally**: Copilot prioritizes code near your cursor. Put cursor where context matters.
-- **Use Copilot Chat for complex tasks**: Inline completions have minimal context. Chat mode sees more files.
+- SHOULD keep the most relevant files open while working on a feature.
+- SHOULD place the cursor near the code area where help is needed.
+- MUST describe multi-file scope before requesting complex changes.
+- SHOULD reference an existing file pattern when asking for similar implementation.
 
-## Context Hints
+## Change Execution Rules
 
-- **Add a COPILOT.md file**: Document architecture decisions, patterns, and conventions Copilot should follow.
-- **Use strategic comments**: At the top of complex modules, briefly describe the flow or purpose.
-- **Reference patterns explicitly**: "Follow the same pattern as `src/api/users.ts`" gives Copilot a concrete example.
+- MUST complete dependency chains by architecture slice, not by tiny isolated diffs.
+- MUST prioritize correctness and boundary compliance over minimal patch size.
+- SHOULD ask for missing context before attempting high-risk refactors.
 
-## Multi-File Changes
+## Recovery Rules
 
-- **Describe scope first**: Tell Copilot all files involved before asking for changes. "I need to update the User model, API endpoint, and tests."
-- **Work by architecture slice**: Complete the full dependency chain for the change (contract, gateway, domain, projection/query, tests/docs) instead of optimizing for tiny diffs.
-- **Correctness over patch size**: If layer/boundary/ownership rules require multi-file updates, do the complete set in one coherent change.
-- **Check understanding**: Ask "What files would you need to see?" before complex refactors.
-
-## When Copilot Struggles
-
-- **Missing context**: Open the relevant files in tabs, or explicitly paste code snippets.
-- **Stale suggestions**: Copilot may not see recent changes. Re-open files or restart the session.
-- **Generic answers**: Be more specific. Add constraints, mention frameworks, reference existing code.
+- If output is generic, MUST add constraints, frameworks, and concrete file references.
+- If suggestions are stale, SHOULD reopen related files and restate current intent.
