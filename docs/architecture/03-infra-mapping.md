@@ -4,7 +4,7 @@
 >
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md)
 
-本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、Firebase 決策矩陣、AI 平台控制面** 與 **L9 可觀測性藍圖**，
+本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、L7 Firebase Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
 供落地實作與基礎設施對接時快速定位目標路徑。
 
 ---
@@ -263,23 +263,6 @@ Firestore onSnapshot (CDC)
 | `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
 | `AdminAppCheckAdapter` | — | `.../functions/src/` | sole `firebase-admin/app-check` 呼叫點（服務端 App Check token 驗簽）[D25 E7] |
 | `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
-
----
-
-## Firebase 前後端分層決策矩陣
-
-> **核心原則**：`firebase-client` SDK（瀏覽器端） → L7-A 前端 Adapters；`firebase-admin` SDK → L7-B 後端 Adapters 且一律透過 Cloud Functions
-
-| 情境 | 選擇 | 原因 |
-|------|------|------|
-| 高頻小請求且可由 Rules 安全完成 | `frontend-firebase`（直連） | 降低 Functions 成本 [D25 SHOULD] |
-| 高扇出或可批次流程 | `backend-firebase/functions`（集中批處理） | 降低總寫入成本 [D25 SHOULD] |
-| 需要即時訂閱能力 | `frontend-firebase/realtime-database`（須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略） | [D25 SHOULD] |
-| Admin 權限 / 跨租戶 / Webhook 驗簽 | `backend-firebase/functions` | 安全邊界要求 [D25 MUST] |
-| **firebase-admin SDK 任何使用場景** | **`backend-firebase/functions`（Cloud Functions 唯一容器）** | **firebase-admin 一律透過 functions [D25 MUST]** |
-| 受治理的 GraphQL 資料契約 | `backend-firebase/dataconnect` | [D25 MUST] |
-| 受保護資料或可變更狀態 | 必須先完成 App Check 驗證（含 token 續期與失效處理）| [E7 D25 MUST] |
-| AI tool data access | 必須由 Genkit tool gateway 統一檢查租戶邊界 | [E8 D25 SHOULD] |
 
 ---
 

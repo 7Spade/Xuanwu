@@ -329,7 +329,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 | 規則 | 說明 |
 |------|------|
-| `D21-7` | 讀寫分離原則：寫入必須經 CMD_GWAY；讀取嚴禁直連資料庫，必須經 `projection.tag-snapshot` |
+| `D21-7` | 讀寫分離原則：寫入必須經 L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）；讀取嚴禁直連資料庫，必須經 `projection.tag-snapshot` |
 | `D21-8` | 新鮮度防禦：所有基於語義的查詢必須引用 `SK_STALENESS_CONTRACT`，TAG_STALE_GUARD ≤ 30 秒 |
 
 **五、圖關係物理約束（VS8_SL · Graph Physics）**

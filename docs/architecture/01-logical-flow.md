@@ -17,7 +17,7 @@
 | **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
 
 > **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
-> **CQRS Gateway**：Command Layer（入口防護後）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
+> **CQRS Gateway**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
 
 ---
 
@@ -35,6 +35,7 @@
 | 即時訂閱（presence / typing / live-feed） | **L7-A** `frontend-firebase/realtime-database`（RTDBAdapter） | SHOULD |
 | 受治理 GraphQL 資料契約 | **L7-B** `functions/dataconnect`（DataConnectGatewayAdapter） | **MUST** |
 | 受保護資料或可變更狀態 | 先完成 App Check 驗證（含 token 續期與失效處理）再進入 L2/L3 | **MUST [E7]** |
+| AI tool data access | 必須由 Genkit tool gateway 統一代理（role/scope/tenant 驗證 + 審計追蹤）；禁止 AI flow 直接呼叫 `firebase/*` | SHOULD [E8] |
 
 > **FORBIDDEN**：Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin` [D25]
 
