@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, ChevronsUpDown, Globe, Plus } from "lucide-react"
+import { Check, ChevronsUpDown, Globe, Loader2, Plus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
@@ -31,6 +31,7 @@ import { ROUTES } from "@/shared-kernel/constants/routes"
 interface AccountSwitcherProps {
   user: Account | null
   accounts: Record<string, Account>
+  accountsHydrated: boolean
   activeAccount: Account | null
   dispatch: React.Dispatch<AppAction>
   createOrganization: (name: string) => Promise<string>
@@ -77,6 +78,7 @@ function AccountSwitcherItem({
 export function AccountSwitcher({
   user,
   accounts,
+  accountsHydrated,
   activeAccount,
   dispatch,
   createOrganization: _createOrganization,
@@ -93,6 +95,7 @@ export function AccountSwitcher({
   }, [user, accounts])
 
   const accountLabel = activeAccount?.name ?? t('sidebar.selectAccount')
+  const isAccountsLoading = Boolean(user) && !accountsHydrated && availableAccounts.length <= 1
 
   return (
     <>
@@ -125,10 +128,10 @@ export function AccountSwitcher({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{accountLabel}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {activeAccount?.accountType === 'organization' ? 'Organization' : 'Personal'}
+                    {isAccountsLoading ? 'Syncing Accounts' : (activeAccount?.accountType === 'organization' ? 'Organization' : 'Personal')}
                   </span>
                 </div>
-                <ChevronsUpDown className="ml-auto" />
+                {isAccountsLoading ? <Loader2 className="ml-auto size-4 animate-spin" /> : <ChevronsUpDown className="ml-auto" />}
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent

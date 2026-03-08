@@ -14,6 +14,7 @@ import { type Account, type Notification } from '@/shared-kernel'
 
 export interface AppState {
   accounts: Record<string, Account>
+  accountsHydrated: boolean
   activeAccount: Account | null
   notifications: Notification[]
   capabilitySpecs: CapabilitySpec[]
@@ -21,6 +22,8 @@ export interface AppState {
 }
 
 export type AppAction =
+  | { type: 'SET_ACCOUNTS_LOADING' }
+  | { type: 'HYDRATE_ACCOUNTS_CACHE'; payload: { accounts: Record<string, Account>; user: Account; lastActiveAccountId: string | null } }
   | { type: 'SET_ACCOUNTS'; payload: { accounts: Record<string, Account>; user: Account } }
   | { type: 'SET_ACTIVE_ACCOUNT'; payload: Account | null }
   | { type: 'RESET_STATE' }

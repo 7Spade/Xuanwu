@@ -51,7 +51,7 @@ export function DashboardSidebar() {
   const { user } = authState
   const { profile } = useUser()
   const { state: appState, dispatch } = useApp()
-  const { accounts, activeAccount } = appState
+  const { accounts, activeAccount, accountsHydrated } = appState
   const visibleWorkspaces = useVisibleWorkspaces()
   const { createOrganization } = useOrganizationManagement()
 
@@ -68,6 +68,7 @@ export function DashboardSidebar() {
         <AccountSwitcher
           user={currentUser}
           accounts={accounts}
+          accountsHydrated={accountsHydrated}
           activeAccount={activeAccount}
           dispatch={dispatch}
           createOrganization={createOrganization}

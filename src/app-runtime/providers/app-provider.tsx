@@ -28,6 +28,7 @@ import { initTagChangedSubscriber } from '@/features/notification-hub.slice'
 
 import { AppContext, type AppAction, type AppState } from '../contexts/app-context'
 
+import { readAccountsCache, writeAccountsCache } from './app-provider.cache'
 import { subscribeToAccountsForUser } from './app-provider.queries'
 import { useAuth } from './auth-provider'
 
@@ -37,6 +38,7 @@ import { useAuth } from './auth-provider'
 
 const initialState: AppState = {
   accounts: {},
+  accountsHydrated: false,
   activeAccount: null,
   notifications: [],
   capabilitySpecs: [
@@ -62,6 +64,24 @@ const initialState: AppState = {
 
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
+    case 'SET_ACCOUNTS_LOADING':
+      return { ...state, accountsHydrated: false }
+
+    case 'HYDRATE_ACCOUNTS_CACHE': {
+      const { accounts, user, lastActiveAccountId } = action.payload
+      const cachedActiveAccount =
+        lastActiveAccountId && lastActiveAccountId !== user.id && accounts[lastActiveAccountId]
+          ? { ...accounts[lastActiveAccountId], accountType: 'organization' as const }
+          : user
+
+      return {
+        ...state,
+        accounts,
+        accountsHydrated: true,
+        activeAccount: cachedActiveAccount,
+      }
+    }
+
     case 'SET_ACTIVE_ACCOUNT':
       if (state.activeAccount?.id === action.payload?.id) return state
       return { ...state, activeAccount: action.payload }
@@ -79,7 +99,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         // Refresh optimistic organization payload with canonical snapshot data.
         newActiveAccount = { ...accounts[newActiveAccount.id], accountType: 'organization' }
       }
-      return { ...state, accounts, activeAccount: newActiveAccount }
+      return { ...state, accounts, accountsHydrated: true, activeAccount: newActiveAccount }
     }
 
     case 'ADD_NOTIFICATION': {
@@ -123,6 +143,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     let unsubscribe: (() => void) | null = null
 
     if (user?.id) {
+      const cached = readAccountsCache(user.id)
+
+      if (cached) {
+        dispatch({
+          type: 'HYDRATE_ACCOUNTS_CACHE',
+          payload: {
+            accounts: cached.accounts,
+            user,
+            lastActiveAccountId: cached.lastActiveAccountId,
+          },
+        })
+      } else {
+        dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: user })
+        dispatch({ type: 'SET_ACCOUNTS_LOADING' })
+      }
+
       unsubscribe = subscribeToAccountsForUser(user.id, (accounts) =>
         dispatch({ type: 'SET_ACCOUNTS', payload: { accounts, user } }),
       )
@@ -134,6 +170,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       if (unsubscribe) unsubscribe()
     }
   }, [authInitialized, user])
+
+  useEffect(() => {
+    if (!user?.id || !state.accountsHydrated) return
+
+    writeAccountsCache(user.id, state.accounts, state.activeAccount?.id ?? null)
+  }, [user?.id, state.accountsHydrated, state.accounts, state.activeAccount])
 
   useEffect(() => {
     return initTagChangedSubscriber()

@@ -78,7 +78,7 @@
     "matrix": "矩陣",
     "schedule": "排程",
     "daily": "每日",
-    "audit": "稽核",
+    "audit": "日誌",
     "orgSchedule": "HR 排程治理",
     "demandBoard": "需求看板"
   },
@@ -215,7 +215,7 @@
     "scheduleDescription": "規劃和協調專案時程。",
     "dailyTitle": "每日活動",
     "dailyDescription": "監控日常活動和更新。",
-    "auditTitle": "稽核記錄",
+    "auditTitle": "日誌",
     "auditDescription": "查看所有變更和存取歷史記錄。"
   },
   "tasks": {

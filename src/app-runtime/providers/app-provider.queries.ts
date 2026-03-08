@@ -8,6 +8,7 @@
 import { db } from '@/shared-infra/frontend-firebase'
 import {
   collection,
+  getDocs,
   onSnapshot,
   query,
   type Unsubscribe,
@@ -25,5 +26,20 @@ export function subscribeToAccountsForUser(
     where('memberIds', 'array-contains', userId),
   )
 
-  return onSnapshot(accountQuery, (snap) => onUpdate(snapshotToRecord<Account>(snap)))
+  let hasEmitted = false
+  const emit = (accounts: Record<string, Account>) => {
+    hasEmitted = true
+    onUpdate(accounts)
+  }
+
+  // Warm-up read to avoid a blank switcher while waiting for the realtime stream.
+  void getDocs(accountQuery)
+    .then((snap) => {
+      if (!hasEmitted) emit(snapshotToRecord<Account>(snap))
+    })
+    .catch(() => {
+      // Realtime listener below remains the source of truth; ignore warm-up failures.
+    })
+
+  return onSnapshot(accountQuery, (snap) => emit(snapshotToRecord<Account>(snap)))
 }
