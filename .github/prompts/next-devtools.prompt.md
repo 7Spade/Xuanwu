@@ -1,15 +1,21 @@
 ---
 name: tool-next-devtools
-description: 'Use next-devtools to analyze routes and rendering. Diagnose RSC boundaries, Parallel Routes slots, and Streaming/Suspense behavior.'
-tools: [next-devtools]
+description: 'Use next-devtools MCP for Next.js runtime diagnostics: routes, RSC boundaries, and rendering behavior.'
+tools: ['next-devtools']
+agent: 'agent'
 ---
 
 # Next.js Route Diagnostics
 
-## Task
+Use next-devtools MCP to inspect runtime behavior.
 
-Invoke `next-devtools` to analyze:
+## Focus
+1. Route map and build/runtime errors
+2. RSC vs Client boundary correctness
+3. Parallel route slot rendering
+4. Suspense/streaming behavior
 
-1. **RSC Boundaries:** Check whether the Server/Client Component split is optimized.
-2. **Route Slots:** Verify that Parallel Routes `@slot` configurations are rendering correctly.
-3. **Suspense Performance:** Analyze whether Streaming is achieving the expected effect.
+## Output
+- Diagnosed issue list
+- Root cause per issue
+- Minimal fix steps

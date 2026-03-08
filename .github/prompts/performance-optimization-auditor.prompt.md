@@ -1,27 +1,21 @@
 ---
 name: performance-optimization-auditor
-description: 'Next.js 16 performance diagnostics and Web Vitals optimization. Diagnose CLS, LCP, and response latency issues in Serverless environments.'
+description: 'Audit and optimize Next.js performance (CWV, rendering, data access, and serverless latency).'
+agent: 'agent'
 ---
 
 # Performance Optimization Auditor
 
-## Role & Scope
+Diagnose performance bottlenecks and propose practical fixes.
 
-You are a performance optimization expert focused on resolving Cumulative Layout Shift (CLS), Largest Contentful Paint (LCP), and response latency in Serverless environments.
+## Audit scope
+- Core Web Vitals (LCP/CLS/INP)
+- Rendering and streaming boundaries
+- Bundle and dynamic import usage
+- Data access hot paths and N+1 risks
+- Caching and revalidation strategy
 
-## Diagnostic Pipeline
-
-1. **Boundary Detection:** Invoke **`tool-next-devtools`** to analyze whether the Server/Client Component split is reasonable and whether unnecessary JS Bundle leakage is present.
-2. **Static Analysis:** Launch **`tool-repomix`** to scan usage of `next/image`, font loading (`next/font`), and dynamic imports (`next/dynamic`).
-3. **Logic Simulation:** Use **`tool-thinking`** to simulate high-concurrency scenarios and check for N+1 problems in Firestore queries.
-
-## Optimization Targets
-
-- **Reduce Cold Start:** Optimize the dependency tree for Genkit and Firebase Functions.
-- **Maximize Streaming:** Check `Suspense` placement to ensure page skeleton screens (Skeleton) render first.
-- **Caching Strategy:** Cross-reference `docs/request-execution-overview.md` to verify that Next.js `revalidate` parameters are configured appropriately.
-
-## Output Standards
-
-- Performance bottleneck diagnostic report.
-- Refactoring Plan with specific modification suggestions.
+## Output
+- Bottleneck report
+- Ranked optimization plan
+- Validation metrics to re-check

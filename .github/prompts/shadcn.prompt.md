@@ -1,39 +1,21 @@
 ---
 name: tool-shadcn
-description: 'shadcn/ui component implementation guide. Ensure correct usage of component variants, theme tokens, and accessibility attributes for project components.'
-tools: [shadcn]
+description: 'shadcn/ui implementation guard for component reuse, theme token consistency, and accessibility.'
+tools: ['shadcn']
+agent: 'agent'
 ---
 
 # shadcn/ui Component Implementation Guide
 
-## Usage Principles
+Ensure UI work follows project shadcn conventions.
 
-1. **Prioritize Existing Components:** Before creating new UI elements, search the shadcn registry for existing components.
-2. **Theme Token Compliance:** Use CSS Variables (`--background`, `--foreground`, etc.) for colors; hardcoded hex values are not allowed.
-3. **Accessibility First:** Each interactive component must include appropriate `aria-*` attributes.
+## Rules
+- Reuse existing shadcn components first
+- Use theme tokens (no hardcoded brand colors)
+- Keep interactive elements accessible (`aria-*`, role, keyboard)
+- Use project import paths from `@/shadcn-ui/*`
 
-## Project Import Path
-
-All shadcn components in this project must be imported from `@/shadcn-ui/`:
-
-```typescript
-// ✅ Correct
-import { Button } from "@/shadcn-ui/button";
-
-// ❌ Wrong
-import { Button } from "@/components/ui/button";
-```
-
-## Component Customization Standards
-
-When customizing `className`, use `cn()` utility:
-
-```typescript
-import { cn } from "@/lib/utils";
-```
-
-## Common Pattern Reference
-
-- **Form:** `Form` + `FormField` + `FormControl` + `FormMessage`
-- **Table:** `Table` + `TableHeader` + `TableRow` + `TableCell`
-- **Dialog:** `Dialog` + `DialogContent` + `DialogHeader` + `DialogFooter`
+## Output
+- Component choice rationale
+- Any customization notes
+- Accessibility and style compliance checks
