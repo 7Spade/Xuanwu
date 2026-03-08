@@ -1,38 +1,35 @@
 ---
-description: 'Guidelines for structuring code and projects to maximize GitHub Copilot effectiveness through better context management'
-applyTo: '**'
+description: "Context engineering rules for producing precise, architecture-aligned Copilot outputs."
+applyTo: "**/*"
 ---
 
 # Context Engineering Rules
 
-Use these rules to maximize codebase context quality for Copilot.
+## Repository Structure
 
-## Structure Rules
+- MUST use descriptive paths that communicate feature intent.
+- MUST colocate code, tests, and types for each architecture slice.
+- MUST export only public contracts from index files.
 
-- MUST use descriptive file paths that reveal feature intent.
-- MUST colocate related code, tests, and types so one search pattern finds the full slice.
-- MUST export only public contracts from index files and keep internals unexported.
+## Code Context Quality
 
-## Code Context Rules
+- MUST use semantic names for variables, types, and functions.
+- SHOULD add explicit types on public boundaries.
+- SHOULD replace magic values with named constants.
 
-- SHOULD prefer explicit types on public functions and module boundaries.
-- MUST use semantic names for variables, functions, and types.
-- SHOULD replace magic numbers and strings with named constants.
+## Prompt and Task Framing
 
-## Prompting Rules
+- MUST describe multi-file scope before requesting complex edits.
+- SHOULD reference an existing in-repo implementation pattern.
+- SHOULD keep relevant files open and place cursor near target code.
 
-- SHOULD keep the most relevant files open while working on a feature.
-- SHOULD place the cursor near the code area where help is needed.
-- MUST describe multi-file scope before requesting complex changes.
-- SHOULD reference an existing file pattern when asking for similar implementation.
+## Change Execution
 
-## Change Execution Rules
+- MUST complete dependency chains by slice, not by disconnected micro-diffs.
+- MUST prioritize correctness and boundary compliance over tiny patch size.
+- SHOULD ask for missing context before high-risk refactors.
 
-- MUST complete dependency chains by architecture slice, not by tiny isolated diffs.
-- MUST prioritize correctness and boundary compliance over minimal patch size.
-- SHOULD ask for missing context before attempting high-risk refactors.
+## Recovery
 
-## Recovery Rules
-
-- If output is generic, MUST add constraints, frameworks, and concrete file references.
-- If suggestions are stale, SHOULD reopen related files and restate current intent.
+- MUST add explicit constraints and file references when output is generic.
+- SHOULD restate current intent and reopen related files when suggestions become stale.

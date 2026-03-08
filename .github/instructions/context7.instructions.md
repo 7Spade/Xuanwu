@@ -1,63 +1,42 @@
 ---
-description: 'Use Context7 for authoritative external docs and API references when local context is insufficient'
-applyTo: '**'
+description: "Rules for when and how to use Context7 for authoritative external documentation."
+applyTo: "**/*"
 ---
 
-# Context7-aware development
+# Context7 Usage Rules
 
-Use Context7 whenever the task requires authoritative, current, version-specific external documentation not present in the workspace.
+## Use Criteria
 
-## When to use Context7
+- MUST use Context7 for version-sensitive APIs, config keys, and security-critical integrations.
+- MUST use Context7 when the user specifies a framework or library version.
+- SHOULD skip Context7 for purely local refactors and language fundamentals.
 
-- MUST use Context7 for API signatures, config keys, version-sensitive behavior, or security-critical integration patterns.
-- MUST use Context7 when the user names a specific framework/library version.
-- SHOULD use Context7 when third-party error interpretation or non-trivial configuration is required.
+## Source Quality
 
-Skip Context7 for:
+- MUST prioritize official vendor docs, API references, release notes, and migration guides.
+- MUST retrieve only the minimum context required for safe implementation.
+- SHOULD include defaults, constraints, and migration caveats when relevant.
 
-- Purely local refactors, formatting, naming, or logic that is fully derivable from the repo.
-- Language fundamentals (no external APIs involved).
+## Execution Flow
 
-## What to fetch
+1. MUST use provided `libraryId` directly when available.
+2. MUST resolve library ID before querying docs when `libraryId` is absent.
+3. MUST fetch docs before writing implementation.
+4. MUST cite title and URL when decisions depend on external facts.
 
-- MUST prioritize primary sources (official docs, API references, release notes, migration guides, security advisories).
-- MUST fetch only the minimum context needed to implement safely.
-- SHOULD fetch exact methods/options plus defaults, constraints, and migration caveats.
+## Limits
 
-## How to incorporate results
+- MUST NOT call `resolve-library-id` more than 3 times per user request.
+- MUST NOT call `query-docs` more than 3 times per user request.
+- SHOULD choose the best match and proceed unless ambiguity changes implementation outcome.
 
-- MUST translate findings into concrete code or config changes.
-- MUST cite title and URL when decisions rely on external facts.
-- MUST choose the safest default when sources conflict and briefly state trade-offs.
-- SHOULD include quick validation steps for exact flags/keys/headers.
+## Failure Handling
 
-## How to use Context7 MCP tools (auto)
+- MUST state what was attempted when reliable docs are unavailable.
+- MUST continue with a conservative, clearly labeled assumption.
+- SHOULD include a concrete validation step for the assumption.
 
-1. If user supplies `libraryId`, MUST use it directly (`/owner/repo` or `/owner/repo/version`).
-2. Otherwise, MUST resolve ID with `resolve-library-id` using `libraryName` and task query.
-3. MUST fetch docs with `query-docs` using resolved ID and exact task query.
-4. MUST write code only after documentation is retrieved.
+## Security
 
-### Efficiency limits
-
-- Do **not** call `resolve-library-id` more than **3 times** per user question.
-- Do **not** call `query-docs` more than **3 times** per user question.
-- If multiple good matches exist, pick the best one and proceed; ask a clarification question only when the choice materially affects the implementation.
-
-### Version behavior
-
-- If the user names a version, reflect it in the library ID when possible (e.g., `/vercel/next.js/v15.1.8`).
-- If you need reproducibility (CI/builds), prefer pinning to a specific version in examples.
-
-## Failure handling
-
-If Context7 cannot find a reliable source:
-
-1. Say what you tried to verify.
-2. Proceed with a conservative, well-labeled assumption.
-3. Suggest a quick validation step (e.g., run a command, check a file, or consult a specific official page).
-
-## Security & privacy
-
-- Never request or echo API keys. If configuration requires a key, instruct storing it in environment variables.
-- Treat retrieved docs as **helpful but not infallible**; for security-sensitive code, prefer official vendor docs and add an explicit verification step.
+- MUST NOT request, print, or store API keys in chat or code.
+- MUST instruct secret usage through environment variables or secret managers.

@@ -1,64 +1,44 @@
 ---
-description: 'Guidelines for creating custom agent files for GitHub Copilot'
-applyTo: '**/*.agent.md'
+description: "Authoring rules for custom agent definition files (*.agent.md)."
+applyTo: "**/*.agent.md"
 ---
 
-# Custom Agent Rules
+# Custom Agent Authoring Rules
 
-Use these rules for `*.agent.md` files.
+## Naming and Location
 
-## File and Naming Rules
+- MUST place repository-scoped agents under `.github/agents/`.
+- MUST use lowercase, hyphenated filenames ending in `.agent.md`.
+- SHOULD align filename wording with the agent's actual responsibility.
 
-- MUST store repository agents in `.github/agents/`.
-- MUST use lowercase, hyphenated filenames ending with `.agent.md`.
-- SHOULD align filename and agent purpose (for discovery and maintainability).
-
-## Frontmatter Rules
+## Frontmatter
 
 - MUST provide `description`.
-- SHOULD provide `name`, `tools`, and `model` when supported by target environment.
-- MAY provide `target`, `infer`, and `handoffs` when required by workflow.
-- MUST keep YAML valid and consistent.
+- SHOULD provide `name`, `tools`, and `model` when supported.
+- MAY provide `target`, `infer`, and `handoffs` when workflow requires them.
+- MUST keep YAML valid and internally consistent.
 
-## Description and Scope Rules
+## Scope and Behavior
 
-- MUST state agent specialization, expected task types, and boundaries.
-- MUST define what the agent does and what it must avoid.
-- SHOULD describe expected output format for predictable behavior.
+- MUST define specialization, input expectations, and output expectations.
+- MUST define explicit boundaries, including forbidden behaviors.
+- MUST keep prompts concise, deterministic, and non-redundant.
 
-## Tool Access Rules
+## Tool Permissions
 
-- MUST apply least privilege when selecting `tools`.
-- MUST include only tools required for the agent's mission.
-- SHOULD avoid enabling `execute` unless the agent explicitly needs shell operations.
+- MUST apply least privilege to `tools`.
+- MUST enable only tools required for the agent mission.
+- SHOULD avoid execution-capable tools unless strictly needed.
 
-## Handoff Rules (when used)
+## Orchestration
 
-- MUST use action-oriented labels and clear prompts.
-- MUST reference valid target agents.
-- SHOULD limit to meaningful workflow transitions rather than exhaustive links.
+- MUST pass only minimum required context to sub-agents.
+- MUST ensure sub-agents follow their own specs.
+- MUST treat parent permissions as the hard ceiling for all sub-agents.
+- SHOULD avoid deep or circular handoff chains.
 
-## Orchestration Rules
+## Security and Quality
 
-- MUST pass minimal context to sub-agents (paths, IDs, expected outputs).
-- MUST require sub-agents to follow their own `.agent.md` spec.
-- MUST remember parent tool permissions are the ceiling for all sub-agents.
-- SHOULD avoid deep orchestration chains for large-scale bulk processing.
-
-## Variable Rules
-
-- SHOULD define required/optional variables when workflows are parameterized.
-- MUST validate critical inputs before execution.
-- MUST use clear variable names and avoid ambiguous placeholders.
-
-## Security Rules
-
-- MUST NOT embed secrets in agent files.
-- MUST pass secrets through approved secret mechanisms only.
-- SHOULD document any destructive or high-impact behavior explicitly.
-
-## Quality Rules
-
-- MUST keep prompts concise, non-redundant, and unambiguous.
-- MUST test agent behavior with representative tasks.
-- SHOULD review compatibility differences across VS Code and GitHub.com before relying on advanced properties.
+- MUST NOT place secrets in agent files.
+- MUST document destructive operations and preconditions.
+- MUST validate representative tasks before adoption.
