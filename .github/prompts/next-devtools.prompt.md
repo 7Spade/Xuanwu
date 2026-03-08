@@ -1,13 +1,15 @@
 ---
 name: tool-next-devtools
-description: "使用 next-devtools 分析路由與渲染"
+description: 'Use next-devtools to analyze routes and rendering. Diagnose RSC boundaries, Parallel Routes slots, and Streaming/Suspense behavior.'
 tools: [next-devtools]
 ---
 
-# 🚥 Next.js Route Diagnostics
+# Next.js Route Diagnostics
 
-## 任務
-調用 `next-devtools` 分析：
-1. **RSC 邊界：** 檢查 Server/Client Component 的切分是否優化。
-2. **路由槽位：** 驗證 Parallel Routes 的 `@slot` 是否正確渲染。
-3. **Suspense 效能：** 分析 Streaming 是否達到預期效果。
+## Task
+
+Invoke `next-devtools` to analyze:
+
+1. **RSC Boundaries:** Check whether the Server/Client Component split is optimized.
+2. **Route Slots:** Verify that Parallel Routes `@slot` configurations are rendering correctly.
+3. **Suspense Performance:** Analyze whether Streaming is achieving the expected effect.
