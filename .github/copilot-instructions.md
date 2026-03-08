@@ -11,6 +11,14 @@ Project-wide always-on instructions for GitHub Copilot Chat.
 - Entity semantics: `docs/knowledge-graph.json`
 - Codebase map: `skills/SKILL.md`
 
+> All project facts (Single Source of Truth) must come from:
+>
+> - `docs/knowledge-graph.json`
+> - `docs/architecture/00-LogicOverview.md`
+> - `docs/ai/repomix-output.context.md`
+>
+> Any inference, process definition, task decomposition, or AI judgment must be grounded in these three documents. Do not make unsupported assumptions.
+
 ## Mandatory Rules (Highest Priority)
 - Use UTF-8 (no BOM) for all created/updated text files.
 - Do not hardcode UI strings in pages/components.
