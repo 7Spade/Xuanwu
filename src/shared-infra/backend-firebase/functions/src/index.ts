@@ -36,6 +36,7 @@ export {
 export { commandGateway } from "./gateway/command-gateway.fn";
 export { webhook }        from "./gateway/webhook.fn";
 export { backupCrud }     from "./gateway/backup-crud.fn";
+export { processDocument } from "./document-ai/process-document.fn";
 
 // ── L4 Outbox Relay ───────────────────────────────────────────────────────────
 export { outboxRelay } from "./relay/outbox-relay.fn";
