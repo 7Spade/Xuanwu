@@ -16,6 +16,9 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
     value: "xuanwu-i-00708880-4e2d8.firebaseapp.com"
 
+  - variable: NEXT_PUBLIC_FIREBASE_DATABASE_URL
+    value: "https://xuanwu-i-00708880-4e2d8-default-rtdb.asia-southeast1.firebasedatabase.app"
+
   - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
     value: "xuanwu-i-00708880-4e2d8"
 
@@ -26,7 +29,7 @@ env:
     value: "65970295651"
 
   - variable: NEXT_PUBLIC_FIREBASE_APP_ID
-    value: "1:65970295651:web:0f5d7e391eff98e8c93956"
+    value: "1:65970295651:web:e97e482f1444afbdc93956"
 
   # --- Web Push (VAPID) ---
   - variable: NEXT_PUBLIC_VAPID_PUBLIC_KEY

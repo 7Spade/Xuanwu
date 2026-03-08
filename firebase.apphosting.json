@@ -1,6 +1,6 @@
 {
   "apphosting": {
-    "backendId": "studio",
+    "backendId": "xuanwu",
     "rootDir": "/",
     "ignore": [
       "node_modules",
