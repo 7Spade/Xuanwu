@@ -71,6 +71,6 @@ export async function uploadRawFile(
   fileId: string,
   versionId: string,
   file: File
-): Promise<string> {
+): Promise<{ downloadURL: string; storagePath: string }> {
   return uploadWorkspaceDocument(workspaceId, fileId, versionId, file)
 }

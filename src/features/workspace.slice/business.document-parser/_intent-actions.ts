@@ -135,6 +135,8 @@ export async function saveParsingIntent(
   options?: {
     sourceFileDownloadURL?: SourcePointer
     sourceFileId?: string
+    sourceFileVersionId?: string
+    sourceFileStoragePath?: string
     skillRequirements?: SkillRequirement[]
     intentVersion?: number
     parserVersion?: string
@@ -205,6 +207,8 @@ export async function saveParsingIntent(
     sourceFileName,
     sourceFileDownloadURL: options?.sourceFileDownloadURL,
     sourceFileId: options?.sourceFileId,
+    sourceFileVersionId: options?.sourceFileVersionId,
+    sourceFileStoragePath: options?.sourceFileStoragePath,
     intentVersion: options?.intentVersion ?? INITIAL_PARSING_INTENT_VERSION,
     lineItems,
     skillRequirements: options?.skillRequirements,

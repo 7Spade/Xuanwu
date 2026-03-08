@@ -49,6 +49,8 @@ export const createParsingIntent = async (
     // Optional fields — omitted when undefined so Firestore never sees undefined.
     ...(intentData.sourceFileDownloadURL !== undefined ? { sourceFileDownloadURL: intentData.sourceFileDownloadURL } : {}),
     ...(intentData.sourceFileId !== undefined ? { sourceFileId: intentData.sourceFileId } : {}),
+    ...(intentData.sourceFileVersionId !== undefined ? { sourceFileVersionId: intentData.sourceFileVersionId } : {}),
+    ...(intentData.sourceFileStoragePath !== undefined ? { sourceFileStoragePath: intentData.sourceFileStoragePath } : {}),
     ...(intentData.supersededByIntentId !== undefined ? { supersededByIntentId: intentData.supersededByIntentId } : {}),
     ...(intentData.baseIntentId !== undefined ? { baseIntentId: intentData.baseIntentId } : {}),
     ...(intentData.parserVersion !== undefined ? { parserVersion: intentData.parserVersion } : {}),

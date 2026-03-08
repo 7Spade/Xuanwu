@@ -67,6 +67,8 @@ export function WorkspaceDocumentParser() {
   const { toast } = useToast();
   // Tracks the WorkspaceFile ID when a file is sent from the Files tab for full traceability
   const sourceFileIdRef = useRef<string | undefined>(undefined);
+  const sourceFileVersionIdRef = useRef<string | undefined>(undefined);
+  const sourceFileStoragePathRef = useRef<string | undefined>(undefined);
   // Tracks the original download URL (SourcePointer) for the Digital Twin ParsingIntent
   const sourceFileDownloadURLRef = useRef<string | undefined>(undefined);
   // Tracks the last saved intentId so that re-parses supersede the prior intent [#A4]
@@ -122,16 +124,23 @@ export function WorkspaceDocumentParser() {
   // Helper: trigger the AI extraction pipeline from a Firebase Storage URL.
   // The URL is passed directly to the Server Action which fetches it server-side,
   // avoiding the browser CORS restriction on Firebase Storage URLs.
-  const triggerParseFromURL = useCallback((payload: { fileName: string; downloadURL: string; fileType: string; fileId?: string }) => {
+  const triggerParseFromURL = useCallback((payload: { fileName: string; fileType: string; fileId?: string; versionId?: string; storagePath?: string; downloadURL?: string }) => {
     sourceFileIdRef.current = payload.fileId;
+    sourceFileVersionIdRef.current = payload.versionId;
+    sourceFileStoragePathRef.current = payload.storagePath;
     sourceFileDownloadURLRef.current = payload.downloadURL;
     const formData = new FormData();
-    formData.append('downloadURL', payload.downloadURL);
     formData.append('fileName', payload.fileName);
     formData.append('fileType', payload.fileType || '');
     formData.append('workspaceId', workspace.id);
     if (payload.fileId) {
       formData.append('fileId', payload.fileId);
+    }
+    if (payload.versionId) {
+      formData.append('versionId', payload.versionId);
+    }
+    if (payload.storagePath) {
+      formData.append('storagePath', payload.storagePath);
     }
     startTransition(() => formAction(formData));
   }, [formAction, startTransition, workspace.id]);
@@ -246,6 +255,8 @@ export function WorkspaceDocumentParser() {
         lineItems,
         {
           sourceFileId: sourceFileIdRef.current,
+          sourceFileVersionId: sourceFileVersionIdRef.current,
+          sourceFileStoragePath: sourceFileStoragePathRef.current,
           // SourcePointer: immutable link to the original file in Firebase Storage
           sourceFileDownloadURL: sourceFileDownloadURLRef.current as SourcePointer | undefined,
           // Supersede the prior intent when re-parsing the same session [#A4]
@@ -326,6 +337,8 @@ export function WorkspaceDocumentParser() {
     previousIntentIdRef.current = intentId;
     // Reset source file references after successful import
     sourceFileIdRef.current = undefined;
+    sourceFileVersionIdRef.current = undefined;
+    sourceFileStoragePathRef.current = undefined;
     sourceFileDownloadURLRef.current = undefined;
     logAuditEvent('Triggered Task Import', `From document: ${state.fileName}`, 'create');
   }

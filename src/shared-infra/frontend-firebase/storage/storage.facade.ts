@@ -118,8 +118,11 @@ export const uploadWorkspaceDocument = async (
   fileId: string,
   versionId: string,
   file: File
-): Promise<string> => {
+): Promise<{ downloadURL: string; storagePath: string }> => {
   const storagePath = `files-plugin/${workspaceId}/${fileId}/${versionId}/${file.name}`;
   await uploadFile(storagePath, file);
-  return getFileDownloadURL(storagePath);
+  return {
+    storagePath,
+    downloadURL: await getFileDownloadURL(storagePath),
+  };
 };

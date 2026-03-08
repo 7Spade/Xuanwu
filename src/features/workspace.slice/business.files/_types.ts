@@ -8,6 +8,7 @@ export interface WorkspaceFileVersion {
   uploadedBy: string;
   createdAt: Timestamp | Date; // Can be Date for client-side, becomes Timestamp on server
   downloadURL: string;
+  storagePath?: string;
 }
 
 export interface WorkspaceFile {

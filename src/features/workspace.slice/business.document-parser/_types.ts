@@ -74,6 +74,10 @@ export interface ParsingIntent {
   sourceFileDownloadURL?: SourcePointer;
   /** Reference to the WorkspaceFile document that was parsed (for full traceability). */
   sourceFileId?: string;
+  /** Reference to the exact WorkspaceFileVersion that was parsed. */
+  sourceFileVersionId?: string;
+  /** Immutable pointer to the storage object path used for parsing. */
+  sourceFileStoragePath?: string;
   intentVersion: number;
   /** Old intent points to the newer intent that superseded it. */
   supersededByIntentId?: IntentID;

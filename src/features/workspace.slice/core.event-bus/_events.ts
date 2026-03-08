@@ -137,10 +137,15 @@ export interface DailyLogForwardRequestedPayload {
 
 export interface FileSendToParserPayload {
   fileName: string
-  downloadURL: string
   fileType: string
   /** The WorkspaceFile document ID ??used by the parser to record a SourcePointer in ParsingIntent. */
   fileId?: string
+  /** The selected file version ID to resolve a deterministic storage object for parsing. */
+  versionId?: string
+  /** Optional persisted storage path for the selected version. */
+  storagePath?: string
+  /** Optional legacy URL kept for backwards compatibility and user-side open/download actions. */
+  downloadURL?: string
 }
 
 export interface WorkspaceIssueResolvedPayload {

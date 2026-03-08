@@ -127,7 +127,7 @@ export function WorkspaceFiles() {
         const nextVer = (existingFile.versions?.length || 0) + 1;
         const versionId = Math.random().toString(36).slice(-6);
 
-        const downloadURL = await uploadRawFile(workspace.id, existingFile.id, versionId, file);
+        const uploadResult = await uploadRawFile(workspace.id, existingFile.id, versionId, file);
 
         const newVersion: WorkspaceFileVersion = {
           versionId: versionId,
@@ -136,7 +136,8 @@ export function WorkspaceFiles() {
           size: file.size,
           uploadedBy: user.name,
           createdAt: new Date(),
-          downloadURL: downloadURL
+          downloadURL: uploadResult.downloadURL,
+          storagePath: uploadResult.storagePath,
         };
 
         const result = await addWorkspaceFileVersion(workspace.id, existingFile.id, newVersion, versionId);
@@ -153,7 +154,7 @@ export function WorkspaceFiles() {
         const fileId = Math.random().toString(36).slice(2, 11);
         const versionId = Math.random().toString(36).slice(-6);
 
-        const downloadURL = await uploadRawFile(workspace.id, fileId, versionId, file);
+        const uploadResult = await uploadRawFile(workspace.id, fileId, versionId, file);
 
         const newFileData: Omit<WorkspaceFile, 'id' | 'updatedAt'> = {
           name: file.name,
@@ -166,7 +167,8 @@ export function WorkspaceFiles() {
             size: file.size,
             uploadedBy: user.name,
             createdAt: new Date(),
-            downloadURL: downloadURL
+            downloadURL: uploadResult.downloadURL,
+            storagePath: uploadResult.storagePath,
           }]
         };
 
@@ -279,9 +281,11 @@ export function WorkspaceFiles() {
                             // (same @businesstab slot), so we bridge the gap via context state.
                             setPendingParseFile({
                               fileName: file.name,
-                              downloadURL: current.downloadURL,
                               fileType: file.type,
                               fileId: file.id,
+                              versionId: current.versionId,
+                              storagePath: current.storagePath,
+                              downloadURL: current.downloadURL,
                             });
                             logAuditEvent('Sent File to Parser', file.name, 'update');
                             router.push(`${ROUTES.WORKSPACE(workspace.id)}/document-parser`);
