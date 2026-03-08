@@ -1,6 +1,6 @@
 ---
-applyTo: '**'
-description: 'Performance optimization rules for frontend, backend, and database layers: measure first, prefer caching, avoid blocking I/O, paginate results, minimize bundle size.'
+description: "Performance optimization rules for frontend, backend, and data layers."
+applyTo: "**/*"
 ---
 
 # Performance Optimization Rules

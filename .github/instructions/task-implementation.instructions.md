@@ -1,6 +1,6 @@
 ---
-applyTo: '**/.copilot-tracking/changes/*.md'
-description: 'Instructions for implementing task plans with progressive tracking and change record.'
+description: "Rules for implementing tracked task plans and maintaining change records."
+applyTo: "**/.copilot-tracking/**/*.md"
 ---
 
 # Task Plan Implementation Rules

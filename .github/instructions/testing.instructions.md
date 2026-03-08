@@ -1,6 +1,6 @@
 ---
-applyTo: '**/*.{ts,tsx,js,jsx}'
-description: 'Testing workflow: Playwright MCP (playwright-browser_* tools) for browser/UI/E2E, next-devtools MCP (nextjs_index/nextjs_call) for RSC/route diagnostics. Use each for its purpose; never call browser_eval(action:evaluate) during a Playwright snapshot flow.'
+description: "Testing workflow split: Playwright MCP for browser flows, next-devtools MCP for Next.js diagnostics."
+applyTo: "**/*.{ts,tsx,js,jsx}"
 ---
 
 # Testing Rules: Playwright MCP + next-devtools MCP

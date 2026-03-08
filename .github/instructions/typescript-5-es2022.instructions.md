@@ -1,6 +1,6 @@
 ---
-description: 'Guidelines for TypeScript Development targeting TypeScript 5.x and ES2022 output'
-applyTo: '**/*.ts'
+description: "TypeScript 5.x and ES2022 development rules for typing, module boundaries, and correctness."
+applyTo: "**/*.{ts,tsx}"
 ---
 
 # TypeScript 5 / ES2022 Rules
@@ -33,9 +33,7 @@ Apply these rules to all `.ts` files.
 
 ## Security and Configuration Rules
 
-- MUST validate untrusted input with schema validation or type guards.
-- MUST use parameterized queries for data access.
-- MUST NOT hardcode secrets; load from secure configuration sources.
+- MUST validate unknown input with type guards or schema validation at boundaries.
 
 ## Testing and Quality Rules
 
@@ -46,4 +44,3 @@ Apply these rules to all `.ts` files.
 ## Documentation Rules
 
 - SHOULD add concise JSDoc for public APIs and non-obvious contracts.
-- MUST update relevant docs when behavior, configuration, or architecture changes.

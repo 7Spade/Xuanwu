@@ -1,51 +1,43 @@
 ---
-description: "Best practices for building Next.js (App Router) apps with modern caching, tooling, and server/client boundaries (aligned with Next.js 16.1.1)."
-applyTo: '**/*.tsx, **/*.ts, **/*.jsx, **/*.js, **/*.css'
+description: "Best practices for Next.js App Router code, Server/Client boundaries, and Cache Components usage."
+applyTo: "**/*.{ts,tsx,js,jsx,css}"
 ---
 
-# Next.js App Router Rules (Next.js 16.1.1)
+# Next.js App Router Rules
 
-Apply these rules to Next.js code.
+## Architecture
 
-## Architecture Rules
+- MUST use App Router (`app/`) conventions for new routes.
+- MUST keep Server Components as default.
+- MUST add `'use client'` only for browser APIs, stateful interactivity, or event handlers.
+- SHOULD keep route and layout files thin and push logic into feature modules.
 
-- MUST use App Router patterns (`app/`) for new routes and features.
-- MUST keep Server Components as default; add `'use client'` only for interactivity or browser APIs.
-- MUST keep route/layout files thin and move feature logic into feature modules.
+## Server and Client Boundaries
 
-## Server/Client Boundary Rules
+- MUST isolate client-only code in explicit Client Components.
+- MUST NOT use `next/dynamic(..., { ssr: false })` inside Server Components.
+- MUST treat `cookies()`, `headers()`, `params`, and `searchParams` as async-capable APIs.
 
-- MUST NOT use `next/dynamic` with `{ ssr: false }` inside Server Components.
-- MUST isolate client-only code into dedicated Client Components and import them from Server Components.
-- MUST treat `cookies()`, `headers()`, `draftMode()`, `params`, and `searchParams` as async-capable in Next.js 16 contexts.
+## Route Handlers and Actions
 
-## Data and Route Handler Rules
-
-- MUST place Route Handlers under `app/api/**/route.ts` and validate all input.
+- MUST place Route Handlers under `app/api/**/route.ts`.
+- MUST validate untrusted input at Route Handler and Server Action boundaries.
 - MUST return explicit status codes and stable response shapes.
-- MUST NOT call own Route Handlers from Server Components for internal reuse; call shared modules directly.
+- MUST NOT call internal Route Handlers from Server Components; call shared domain modules directly.
 
-## Caching Rules (Cache Components)
+## Caching
 
-- SHOULD prefer Cache Components with `cacheComponents: true` and `use cache` for new caching work.
-- SHOULD use `cacheTag(...)` and `cacheLife(...)` intentionally.
-- SHOULD prefer `revalidateTag(tag, 'max')`; treat `revalidateTag(tag)` single-arg form as legacy.
-- SHOULD use `updateTag(...)` in Server Actions when immediate read-your-writes is required.
+- SHOULD prefer Cache Components for new caching work.
+- SHOULD use `cacheTag(...)` and `cacheLife(...)` with explicit intent.
+- SHOULD use `revalidateTag(tag, 'max')` for SWR-style invalidation.
+- SHOULD use `updateTag(...)` when read-your-writes behavior is required.
 
-## Performance and Security Rules
+## Rendering and UX
 
-- MUST keep most logic server-side to reduce client bundle size.
-- SHOULD use `next/image`, `next/font`, `Suspense`, and route-level loading/error boundaries.
-- MUST enforce server-side authorization in Server Actions and Route Handlers.
-- MUST handle secrets with environment variables; NEVER commit secrets.
+- SHOULD use `next/image` and `next/font` for critical assets.
+- SHOULD use route-level `loading.tsx` and `error.tsx` boundaries.
+- SHOULD use `Suspense` for progressive rendering paths.
 
-## Tooling and Quality Rules
+## Decision Quality
 
-- MUST use TypeScript and project lint/test standards.
-- SHOULD use ESLint CLI in Next.js 16 workflows.
-- SHOULD use `typedRoutes` when TypeScript routing safety is needed.
-
-## Documentation Rules
-
-- MUST consult current official Next.js docs before non-trivial framework decisions.
-- MUST avoid creating demo/example files unless user explicitly requests them.
+- MUST consult current official Next.js documentation for version-sensitive framework behavior.
