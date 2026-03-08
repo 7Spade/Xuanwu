@@ -5,7 +5,7 @@ flowchart LR
 %% B) Domain has one side-effect egress only.
 %% C) IER decides lanes; consumers cannot bypass lane policy.
 %% D) VS7 is notification authority and only consumes STANDARD_LANE.
-%% E) Runtime access is modeled by SDK responsibility: firebase vs firebase-admin.
+%% E) Runtime access is modeled by three responsibilities: firebase, firebase-admin, dataconnect-gateway.
 
 subgraph Z0["Ingress Zone"]
   EXT_UI["UI or Server Action Entry"]
@@ -17,6 +17,7 @@ subgraph VS0["VS0 Foundation"]
 
   subgraph L1["L1 Kernel Contracts"]
     SK_PORTS["SK Contracts\nenvelope, ports, invariants"]
+    I_MSG["IMessaging Port\nnotification delivery contract"]
   end
 
   subgraph L0["L0 Validation Gates"]
@@ -69,7 +70,7 @@ subgraph VS0["VS0 Foundation"]
     subgraph FE_STACK["Frontend SDK Path"]
       FE_ROOT["src/shared-infra/frontend-firebase"]
       FE_SDK["firebase SDK adapters\nclient auth/firestore/rtdb/messaging/storage/analytics/app-check"]
-      FE_ROOT --> FE_SDK
+      FE_ROOT -. module ownership .-> FE_SDK
     end
 
     subgraph BE_STACK["Backend SDK Path"]
@@ -78,11 +79,13 @@ subgraph VS0["VS0 Foundation"]
       ADMIN_SDK["firebase-admin adapters\nadmin auth/firestore/messaging/storage/app-check"]
       BE_DC["src/shared-infra/backend-firebase/dataconnect"]
 
-      BE_ROOT --> BE_FN --> ADMIN_SDK
-      BE_ROOT --> BE_DC
+      BE_ROOT -. module ownership .-> BE_FN
+      BE_FN -. module ownership .-> ADMIN_SDK
+      BE_ROOT -. module ownership .-> BE_DC
     end
 
     AC_GATE --> FE_SDK
+    AC_GATE --> BE_FN
     AC_GATE --> ADMIN_SDK
     AC_GATE --> BE_DC
   end
@@ -111,13 +114,12 @@ subgraph L8["L8 External Firebase Runtime Services"]
   F_AUTH[(Auth)]
   F_DB[(Firestore)]
   F_RTDB[(RTDB)]
-  F_FCM[(Messaging)]
+  F_FCM[(Firebase Cloud Messaging)]
   F_STORE[(Storage)]
   F_ANALYTICS[(Analytics)]
   F_APPCHECK[(App Check)]
   F_FUNCTIONS[(Cloud Functions)]
   F_DATACONNECT[(Data Connect)]
-  F_CSQL[(Cloud SQL PostgreSQL)]
 end
 
 %% Inbound validation
@@ -148,6 +150,8 @@ CMD_PIPE -. uses contracts .-> SK_PORTS
 QGWAY -. uses contracts .-> SK_PORTS
 PROJ_BUS -. uses contracts .-> SK_PORTS
 NOTIF_ROUTER -. uses envelope contract .-> SK_PORTS
+NOTIF_EXIT -. uses port .-> I_MSG
+I_MSG -. contract in .-> SK_PORTS
 SK_PORTS --> AC_GATE
 
 %% L7 SDK to L8 runtime mappings
@@ -167,13 +171,14 @@ ADMIN_SDK --> F_STORE
 ADMIN_SDK --> F_APPCHECK
 
 BE_DC --> F_DATACONNECT
-F_DATACONNECT --> F_CSQL
 
 %% App Check lifecycle
 FE_SDK -. token init and refresh .-> APPCHK_VERIFY
 
 %% VS7 runtime egress via SDK boundary
-NOTIF_EXIT -. server push path .-> ADMIN_SDK
+I_MSG -. implemented by .-> FE_SDK
+I_MSG -. implemented by .-> ADMIN_SDK
+NOTIF_EXIT -. runtime dispatch via I_MSG only .-> I_MSG
 
 %% Cross-cutting observability
 CMD_PIPE --> OBS
@@ -190,9 +195,20 @@ AI_GW --> READ_GW
 
 %% Forbidden paths (governance invariants)
 L3_DOMAIN -. forbidden direct sdk call .-x F_DB
+L3_DOMAIN -. forbidden direct sdk call .-x F_AUTH
+L3_DOMAIN -. forbidden direct sdk call .-x F_RTDB
+L3_DOMAIN -. forbidden direct sdk call .-x F_FCM
+L3_DOMAIN -. forbidden direct sdk call .-x F_STORE
+L3_DOMAIN -. forbidden direct sdk call .-x F_ANALYTICS
+L3_DOMAIN -. forbidden direct sdk call .-x F_APPCHECK
+L3_DOMAIN -. forbidden direct sdk call .-x F_FUNCTIONS
+L3_DOMAIN -. forbidden direct sdk call .-x F_DATACONNECT
 L3_DOMAIN -. forbidden direct sdk call .-x FE_SDK
 L3_DOMAIN -. forbidden direct sdk call .-x ADMIN_SDK
 L3_DOMAIN -. forbidden direct notify call .-x NOTIF_EXIT
+NOTIF_EXIT -. forbidden direct adapter dependency .-x FE_SDK
+NOTIF_EXIT -. forbidden direct adapter dependency .-x ADMIN_SDK
+VS7 -. forbidden own Firebase runtime resource .-x F_FCM
 UNIFIED_EXIT -. forbidden bypass IER .-x NOTIF_ROUTER
 QGWAY -. forbidden reverse drive .-x WRITE_GW
 
