@@ -37,7 +37,9 @@ import { FileTypeIcon } from './file-type-icon';
 import {
   formatBytes,
   getCurrentVersion,
+  getRelatedStructuredFile,
   getStructuredDataSnapshot,
+  isStructuredSidecarFile,
   type WorkspaceFileWithRelations,
 } from './files-view.utils';
 
@@ -83,6 +85,14 @@ export function FilesTable({
             const summary = getStructuredDataSnapshot(file, current);
             const summaryText = JSON.stringify(summary.summary, null, 2);
             const isExpanded = Boolean(expandedFileIds[file.id]);
+            const relatedStructuredFile = getRelatedStructuredFile(file);
+            const isCurrentStructuredFile = isStructuredSidecarFile(file.name);
+            const aiSourceFile = isCurrentStructuredFile
+              ? file
+              : relatedStructuredFile;
+            const aiSourceVersion = aiSourceFile
+              ? getCurrentVersion(aiSourceFile)
+              : undefined;
 
             return (
               <Fragment key={file.id}>
@@ -129,8 +139,8 @@ export function FilesTable({
                           <Download className="size-3.5 text-primary" /> {t('workspaces.download')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          disabled={!current?.downloadURL}
-                          onClick={() => onParseWithAi(file, current)}
+                          disabled={!aiSourceVersion?.downloadURL || !aiSourceFile}
+                          onClick={() => aiSourceFile && onParseWithAi(aiSourceFile, aiSourceVersion)}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
                           <FileScan className="size-3.5 text-primary" /> {t('workspaces.parseWithAi')}
@@ -180,8 +190,8 @@ export function FilesTable({
                             variant="secondary"
                             size="sm"
                             className="h-7 text-[10px] font-bold"
-                            disabled={!current?.downloadURL}
-                            onClick={() => onParseWithAi(file, current)}
+                            disabled={!aiSourceVersion?.downloadURL || !aiSourceFile}
+                            onClick={() => aiSourceFile && onParseWithAi(aiSourceFile, aiSourceVersion)}
                           >
                             {t('workspaces.parseWithAi')}
                           </Button>
