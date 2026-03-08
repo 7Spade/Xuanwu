@@ -15,6 +15,7 @@
       "entityType": "System_Layer",
       "observations": [
         "Layer pipeline: L0 External Triggers → L1 Shared Kernel → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection Bus → L6 Query Gateway → L7 Firebase ACL → L8 Firebase Infra → L9 Observability.",
+        "L6 Query Gateway schedule routes use single-shape contracts: SCHEDULE_CALENDAR_DAY, SCHEDULE_CALENDAR_ALL, SCHEDULE_TIMELINE_MEMBER, SCHEDULE_TIMELINE_ALL (replacing ambiguous mixed-shape routes).",
         "Infrastructure note: L5 ProjectionBus and L9 Observability are infrastructure layers (no VS designation).",
         "Runtime stack snapshot: Next.js 15 App Router + React 19 + TypeScript 5 + Tailwind CSS 3 + Firebase SDK; dev server runs with Turbopack.",
         "Routing architecture snapshot: route groups ((public)/(shell)) + parallel routes (@modal/@header/@sidebar/@panel/@businesstab) + intercepting routes ((.)*) for overlay flows.",
@@ -44,7 +45,7 @@
       "observations": [
         "Hard invariants = R/S/(A#)/(#N). Index semantics: #N = consistency/design invariant, A# = atomicity/transaction invariant.",
         "Critical retained references: #9 replay rebuildability, #12 getTier(xp) purity, #14 scheduling reads ORG_ELIGIBLE_MEMBER_VIEW, #19 monotonic aggregateVersion guard, A8 one-command-one-aggregate TX, A9 scope-guard re-source.",
-        "SSOT fallback: use docs\architecture\00-LogicOverview.md for full definitions and implementation details.",
+        "SSOT fallback: use docs\\architecture\\00-LogicOverview.md for full definitions and implementation details.",
         "A11 Occam's Razor: Simplicity is a hard constraint. Do not multiply entities or abstractions beyond necessity. Use 'sequential-thinking mcp' to validate the simplest path before implementation.",
         "A12 Global Search Authority: Global Search = cross-slice authority (語義門戶). Sole cross-domain search outlet; all slices are forbidden from building their own search logic.",
         "A13 Notification Hub Authority: Notification Hub = cross-slice authority (反應中樞). Sole side-effect outlet; business slices only produce events, they do not decide notification strategy.",
@@ -207,7 +208,8 @@
       "observations": [
         "VS6 = Scheduling business vertical slice. Full autonomy achieved [2026-03-02].",
         "QGWAY_SCHED [#14 #15 #16]: scheduling.slice/_queries.ts exposes getEligibleMembersForSchedule + getEligibleMemberForSchedule that route through projection.org-eligible-member-view via projection.bus. No direct Firestore reads for member eligibility.",
-        "A5 Saga [WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned] uses getOrgEligibleMembersWithTier from projection.bus, now also accessible via the typed QGWAY_SCHED wrappers in _queries.ts.",
+        "Schedule read routes are split by shape at L6: calendar(day/all) and timeline(member/all), so each route has a single deterministic return contract.",
+        "A5 Saga [WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned] uses getOrgEligibleMembersWithTier from projection.bus and preserves projection-first eligibility checks.",
         "D7 compliance verified: no imports from workspace.slice internals."
       ]
     }
