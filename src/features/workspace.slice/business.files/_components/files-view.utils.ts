@@ -18,6 +18,12 @@ export interface FileProcessingLogEntry {
   readonly at: string;
 }
 
+export interface WorkspaceFileWithRelations extends WorkspaceFile {
+  readonly relatedStructuredFile?: WorkspaceFile;
+}
+
+const STRUCTURED_SIDECAR_SUFFIX = '.document-ai.json';
+
 export const formatBytes = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -28,6 +34,22 @@ export const formatBytes = (bytes: number): string => {
 
 export const getCurrentVersion = (file: WorkspaceFile): WorkspaceFileVersion | undefined =>
   file.versions?.find((version) => version.versionId === file.currentVersionId) ?? file.versions?.[0];
+
+export const isStructuredSidecarFile = (fileName: string): boolean =>
+  fileName.toLowerCase().endsWith(STRUCTURED_SIDECAR_SUFFIX);
+
+export const getStructuredRelationKey = (fileName: string): string => {
+  const normalized = fileName.trim().toLowerCase();
+  if (isStructuredSidecarFile(normalized)) {
+    return normalized.slice(0, -STRUCTURED_SIDECAR_SUFFIX.length);
+  }
+  const dotIndex = normalized.lastIndexOf('.');
+  if (dotIndex <= 0) return normalized;
+  return normalized.slice(0, dotIndex);
+};
+
+export const getRelatedStructuredFile = (file: WorkspaceFile): WorkspaceFile | undefined =>
+  (file as WorkspaceFileWithRelations).relatedStructuredFile;
 
 export const parseDateFromUnknown = (value: unknown): Date | null => {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
@@ -69,7 +91,8 @@ export const getStructuredDataSnapshot = (
   file: WorkspaceFile,
   version?: WorkspaceFileVersion,
 ): StructuredDataSnapshot => {
-  const targetVersion = version ?? getCurrentVersion(file);
+  const sourceFile = getRelatedStructuredFile(file) ?? file;
+  const targetVersion = version ?? getCurrentVersion(sourceFile);
   const source = targetVersion as unknown as JsonRecord;
 
   const extracted = pickFirstObject([
@@ -83,6 +106,7 @@ export const getStructuredDataSnapshot = (
 
   const fallback: JsonRecord = {
     fileName: file.name,
+    structuredSourceFileName: sourceFile.name,
     fileType: file.type,
     versionId: targetVersion?.versionId ?? null,
     versionNumber: targetVersion?.versionNumber ?? null,
@@ -109,7 +133,8 @@ export const getProcessingLogEntries = (
   version?: WorkspaceFileVersion,
   locale: string = 'en-US',
 ): FileProcessingLogEntry[] => {
-  const targetVersion = version ?? getCurrentVersion(file);
+  const sourceFile = getRelatedStructuredFile(file) ?? file;
+  const targetVersion = version ?? getCurrentVersion(sourceFile);
   if (!targetVersion) return [];
 
   const source = targetVersion as unknown as JsonRecord;

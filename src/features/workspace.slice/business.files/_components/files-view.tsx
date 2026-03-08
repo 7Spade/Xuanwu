@@ -10,11 +10,11 @@ import { useState } from "react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
-import type { WorkspaceFile } from '../_types';
 import { useWorkspaceFilesActions } from '../_hooks/use-workspace-files-actions';
 import { useWorkspaceFilesQuery } from '../_hooks/use-workspace-files.query';
 import { FileHistorySheet, type HistoryPanelTab } from './file-history-sheet';
 import { FilesTable } from './files-table';
+import type { WorkspaceFileWithRelations } from './files-view.utils';
 
 
 /**
@@ -24,9 +24,9 @@ import { FilesTable } from './files-table';
 export function WorkspaceFiles() {
   const { t } = useI18n();
 
-  const [historyFile, setHistoryFile] = useState<WorkspaceFile | null>(null);
+  const [historyFile, setHistoryFile] = useState<WorkspaceFileWithRelations | null>(null);
   const [historyTab, setHistoryTab] = useState<HistoryPanelTab>('versions');
-  const { files } = useWorkspaceFilesQuery();
+  const { files, displayFiles } = useWorkspaceFilesQuery();
   const {
     fileInputRef,
     isUploading,
@@ -60,7 +60,7 @@ export function WorkspaceFiles() {
       </div>
 
       <FilesTable
-        files={files}
+        files={displayFiles}
         onOpenHistory={(file, tab = 'versions') => {
           setHistoryFile(file);
           setHistoryTab(tab);

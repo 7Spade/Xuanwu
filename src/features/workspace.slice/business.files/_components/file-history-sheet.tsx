@@ -32,13 +32,15 @@ import {
   formatVersionDate,
   getCurrentVersion,
   getProcessingLogEntries,
+  getRelatedStructuredFile,
   getStructuredDataSnapshot,
+  type WorkspaceFileWithRelations,
 } from './files-view.utils';
 
 export type HistoryPanelTab = 'versions' | 'structured' | 'processing';
 
 interface FileHistorySheetProps {
-  readonly historyFile: WorkspaceFile | null;
+  readonly historyFile: WorkspaceFileWithRelations | null;
   readonly defaultTab?: HistoryPanelTab;
   readonly onClose: () => void;
   readonly onRestore: (file: WorkspaceFile, versionId: string) => void;
@@ -73,6 +75,14 @@ export function FileHistorySheet({
   const processingLogs = useMemo(
     () => (historyFile ? getProcessingLogEntries(historyFile, currentVersion, 'en-US') : []),
     [currentVersion, historyFile],
+  );
+  const relatedStructuredFile = useMemo(
+    () => (historyFile ? getRelatedStructuredFile(historyFile) : undefined),
+    [historyFile],
+  );
+  const relatedStructuredVersion = useMemo(
+    () => (relatedStructuredFile ? getCurrentVersion(relatedStructuredFile) : undefined),
+    [relatedStructuredFile],
   );
 
   return (
@@ -178,6 +188,10 @@ export function FileHistorySheet({
                     size="sm"
                     className="h-7 text-[10px] font-bold"
                     onClick={() => {
+                      if (relatedStructuredVersion?.downloadURL) {
+                        onDownloadVersion(relatedStructuredVersion);
+                        return;
+                      }
                       if (!structuredSnapshot) return;
                       const json = JSON.stringify(structuredSnapshot.full, null, 2);
                       const blob = new Blob([json], { type: 'application/json' });

@@ -31,11 +31,11 @@ import {
 import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
 
 import { FileTypeIcon } from './file-type-icon';
-import { formatBytes, getCurrentVersion, getStructuredDataSnapshot } from './files-view.utils';
+import { formatBytes, getCurrentVersion, getStructuredDataSnapshot, type WorkspaceFileWithRelations } from './files-view.utils';
 
 interface FilesTableProps {
-  readonly files: readonly WorkspaceFile[];
-  readonly onOpenHistory: (file: WorkspaceFile, tab?: 'versions' | 'structured' | 'processing') => void;
+  readonly files: readonly WorkspaceFileWithRelations[];
+  readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'structured' | 'processing') => void;
   readonly onDeregister: (file: WorkspaceFile) => void;
   readonly onDownload: (version?: WorkspaceFileVersion) => void;
   readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
