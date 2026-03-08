@@ -1,60 +1,30 @@
-# AI Agents — Start Here
+# Xuanwu
 
-> **GitHub Copilot, Codex, and all AI agents**: Begin by reading
-> **[`docs/AI_AGENT_README.md`](./docs/AI_AGENT_README.md)**
-> for the recommended architecture reading order and key code-generation rules.
+A modern workspace platform built with Next.js and TypeScript.
 
----
+## Development
 
-# Repo Layering Rules
-
-* **src/app** → Next.js App Router, routing, layouts, pages. Only composition, no business logic or runtime wiring.
-* **src/app-runtime** → Application runtime layer. Holds providers, runtime hooks, AI flows, and dependency wiring. Initializes SDKs and injects context. No domain logic.
-* **src/config** → Static configuration: environment variables, feature flags, i18n, themes. Pure data, no runtime side effects.
-* **src/shared-kernel** → VS0 global contract center (data contracts, infra contracts, infrastructure ports). Canonical cross-slice contract entry.
-* **src/features** → Business domain slices, rules, feature-specific logic. Depends on shared contracts and app-runtime, never on infra directly.
-* **src/shared** → Contracts, interfaces, constants, pure utilities, shared types. No runtime side effects or business logic.
-* **src/shared-infra** → External system adapters: Firebase, APIs, storage, messaging. Implements shared contracts. Features and app-runtime may depend on this, never the other way around.
-
-> Legacy compatibility note: `src/features/shared-kernel` is a historical path kept for gradual migration. New code should import from `@/shared-kernel`.
-
----
-
-# Dependency Direction
-
-```
-app
- ↓
-app-runtime
- ↓
-features
- ↓
-shared
- ↓
-shared-infra
+```bash
+npm install
+npm run dev
 ```
 
-* Flow is strictly downward.
-* app-runtime may import shared or shared-infra, but never features.
-* Features may import shared and shared-infra, but never app or app-runtime providers.
-* Shared and shared-infra are leaf layers; they do not import anything higher.
+## AI Instruction System
 
----
+This repository uses VS Code Copilot custom instructions:
+- Global workspace instructions: `.github/copilot-instructions.md`
+- Multi-agent shared conventions: `AGENTS.md`
+- File-scoped rules: `.github/instructions/*.instructions.md`
 
-# Layer Principles
+## i18n Requirement
 
-1. **Separation of Concerns**: runtime, business, infrastructure, and config are strictly separated.
-2. **No Runtime in Shared**: shared holds pure contracts, constants, types, and utils only.
-3. **No Business Logic in Runtime**: app-runtime wires systems, initializes SDKs, and injects providers/hooks only.
-4. **Infra Isolation**: shared-infra implements adapters but never contains domain logic.
-5. **Feature Independence**: each feature depends only on shared contracts or infra, never on other features.
+Do not hardcode UI text in components/pages.
+When UI text changes, update both locale files with identical keys:
+- `public/localized-files/en.json`
+- `public/localized-files/zh-TW.json`
 
----
+## Architecture Sources
 
-# One-Line Summary
-
-Each folder has a single responsibility: app = UI, app-runtime = runtime wiring, config = static config, shared-kernel = global contracts, features = business logic, shared = contracts/utils, shared-infra = external adapters.
-
-repomix --skill-generate xuanwu-skill --skill-output ./skills --force
-
-Generated output under `skills/` is the skill artifact and should be used directly as the repository skill package.
+- `docs/architecture/00-LogicOverview.md`
+- `docs/knowledge-graph.json`
+- `skills/SKILL.md`
