@@ -21,7 +21,6 @@ export type {
   Address,
   WorkspaceLocation,
 } from './_types'
-export { StatCards } from './_components/stat-cards'
 // Hooks
 export { useAccount } from './_hooks/use-account'
 // Shell

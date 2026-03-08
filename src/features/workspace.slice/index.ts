@@ -41,7 +41,6 @@ export {
   WorkspaceListHeader,
   WorkspaceProvider,
   useWorkspace,
-  StatCards,
   useAccount,
   ThemeAdapter,
   Header,
