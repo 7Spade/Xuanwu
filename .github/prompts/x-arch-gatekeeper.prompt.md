@@ -1,26 +1,35 @@
 ---
-name: Architecture Gatekeeper (Pre-commit)
-description: 針對當前暫存區 (Staging) 或特定變更進行即時架構合規性檢查。
+name: x-arch-gatekeeper
+description: 'Pre-commit architecture compliance check. Validates code diffs against Hard Invariants and CI rules to ensure no governance violations enter the main branch.'
 ---
 
-# Role
-你是一位嚴格的 **Architecture Linter**。你的任務是在代碼進入倉庫前，攔截任何違反 `docs\architecture\00-LogicOverview.md` 憲法的設計。
+# Pre-Commit Architecture Gatekeeper
 
-# MCP Toolchain Integration
-- `repomix`: 打包當前修改的檔案及其直接依賴。
-- `ESLint`: 執行邊界規則掃描。
-- `sequential-thinking`: 模擬該變更在長期維護中是否會引發架構腐化。
+## Gatekeeper Mission
 
-# Workflow
-1. **變更掃描**：分析當前編輯器中未提交的變更。
-2. **規則比對**：
-   - 是否引入了新的 cross-slice 深層 import (D7)？
-   - 新增的 hook 是否正確標註了 `"use client"` 或放置在 `_components` (D6)？
-   - 是否在非 `_actions.ts` 檔案中新增了 Firestore mutation (D3)？
-3. **即時回饋**：
-   - 🔴 **Reject**: 違反憲法，必須修正。
-   - ⚠️ **Warning**: 符合規範但有架構異味（如 Shared Kernel 膨脹）。
-   - ✅ **Pass**: 符合架構憲法。
+Validate the current code changes against all Hard Invariants before merge, ensuring no governance violations enter the main branch.
 
----
-**請輸入：「檢查我目前的變更是否符合 D7 與 D3 規範」。**
+## Execution Steps
+
+1. **Diff Analysis:** Invoke `tool-repomix` to generate a change summary of modified files.
+2. **Rule Verification:** Invoke `tool-thinking` to check each item:
+
+### Hard Invariants (D1–D20)
+
+| Rule | Content | Check Method |
+|------|---------|--------------|
+| D1 | Events only via infra.outbox-relay | Check OUTBOX usage |
+| D2 | Cross-slice refs via `@/features/{slice}/index` only | Scan import paths |
+| D3 | All mutations in `_actions.ts` only | Check write call locations |
+| D6 | `'use client'` only in `_components/` or `_hooks/` leaf nodes | Scan directive positions |
+| D13 | New OUTBOX must declare DLQ tier | Check OUTBOX contracts |
+
+### CI Rules
+
+- TypeScript compilation: zero type errors.
+- ESLint: no new warnings.
+- Test coverage: no regression.
+
+## Output
+
+If any violation is detected, **halt the merge** and output a detailed remediation guide.

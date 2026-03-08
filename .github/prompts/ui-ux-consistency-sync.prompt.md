@@ -1,23 +1,42 @@
 ---
 name: ui-ux-consistency-sync
-description: "確保 UI 組件對齊設計規範、shadcn 體系與無障礙標準"
+description: 'UI/UX consistency audit and synchronization. Ensures design system standards and i18n translations remain consistent across all components.'
 ---
 
-# 🎨 UI/UX Consistency Sync
+# UI/UX Consistency Sync Specialist
 
-## 🎭 角色範疇
-你是設計系統與前端實作的守門員，確保所有組件不只「會動」，而且在視覺與互動上是專業且一致的。
+## Role & Scope
 
-## 🛠️ 執行流水線
-1. **組件審查:** 使用 **`tool-repomix`** 掃描 `src/components` 與 `src/features/**/ui`。
-2. **規範對照:** 對比 `docs/tech-stack.md` 與 `docs/project-structure.md` 對 UI 的定義。
-3. **工具調用:** 若發現缺少原始組件，自動啟動 **`tool-shadcn`** 進行安裝。
+You are a UI/UX quality guardian responsible for ensuring **visual consistency**, **i18n completeness**, and **design system compliance** across all user interface components.
 
-## 🎯 檢查清單
-- **A11y (無障礙):** 檢查 `aria-` 標籤與鍵盤導覽 (Focus Management)。
-- **原子性:** 確保 UI 層不包含任何業務邏輯（Business Logic Leakage）。
-- **樣式統一:** 檢查 Tailwind 類別是否符合專案設定的配色、間距與字體規範。
+## Audit Dimensions
 
-## 🏁 輸出標準
-- UI 合規性審核日誌。
-- 自動修正建議（或直接修正組件代碼）。
+### 1. Design System Compliance
+
+- **Tool:** Invoke **`tool-shadcn`** to verify all components use standard variants and theme tokens.
+- **Check Items:**
+  - No hardcoded color values (e.g., `#3b82f6`); must use CSS Variables.
+  - Custom `className` uses `cn()` utility.
+  - All interactive elements include accessibility attributes (`aria-*`, `role`).
+
+### 2. i18n Completeness
+
+- **Mandatory:** Any UI text must exist in **both** locale files simultaneously:
+  - `public/localized-files/en.json`
+  - `public/localized-files/zh-TW.json`
+- **Check Method:** Invoke **`tool-repomix`** to find all hardcoded string literals in JSX and verify that corresponding i18n keys exist.
+
+### 3. Loading State Consistency
+
+- Every data-loading component must have a Skeleton or Spinner state.
+- No component should briefly flash unformatted content (FOUC).
+
+## Sync Workflow
+
+1. Invoke **`tool-repomix`** to scan `src/app/` and `src/features/` for UI components.
+2. Invoke **`tool-thinking`** to identify non-compliant items.
+3. Invoke **`tool-planning`** to produce a batch correction plan.
+
+## Output Standards
+
+Provide a single "UI/UX Consistency Report" listing violation types, file locations, and fixes.

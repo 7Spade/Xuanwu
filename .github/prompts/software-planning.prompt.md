@@ -1,16 +1,38 @@
 ---
-name: tool-planning
-description: "使用 software-planning 建立架構藍圖"
+name: tool-software-planning
+description: 'Use software-planning to break down complex feature implementations into task checklists. Required for multi-day development tasks to avoid scope creep.'
 tools: [software-planning]
 ---
 
-# 🗺️ Macro Architecture Planning
+# Software Planning
 
-## 任務
-針對新功能需求，調用 `software-planning` 產出 Blueprint：
-1. **模組拆解：** 根據垂直切片原則定義檔案配置。
-2. **流程設計：** 規劃從 Request 到 Persistence 的完整路徑。
-3. **責任分配：** 標註哪些部分屬於 Domain，哪些屬於 Infrastructure。
+## When To Use This Tool
 
-## 輸出
-- 完整的實作任務清單 (Milestones)。
+Invoke `software-planning` when a task meets any of the following criteria:
+
+1. **Estimated > 4 hours:** The feature spans multiple layers or multiple files.
+2. **Risk of Cascading Changes:** Modifying shared infrastructure (Events, Projections, Aggregates).
+3. **Uncertainty:** The implementation direction needs to be confirmed before starting.
+
+## Standard Planning Steps
+
+### Phase 1: Objective Definition
+
+Use `start_planning` to establish the main goal. The goal must be specific, measurable, and bounded.
+
+### Phase 2: Task Decomposition
+
+Use `add_todo` to break down each sub-task:
+
+- Complexity 1–3: Small isolated changes (single file)
+- Complexity 4–6: Medium changes (cross-layer)
+- Complexity 7–10: Complex changes (require design review)
+
+### Phase 3: Execution Tracking
+
+Use `update_todo_status` to update completion status in real time and avoid scope creep.
+
+## Integration With Other Tools
+
+- **Before planning:** Use `tool-repomix` to scan the codebase and understand existing implementation.
+- **Before high-complexity tasks:** Use `tool-thinking` to validate technical feasibility.

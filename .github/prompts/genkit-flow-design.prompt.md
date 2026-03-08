@@ -1,17 +1,20 @@
 ---
 name: genkit-flow-design
-description: "Genkit AI Flow 與可觀測性設計"
+description: 'Genkit AI Flow and observability design under Serverless constraints. Design evolvable AI Flows that decouple from the data layer.'
 ---
 
-# 🤖 Genkit Flow Architect
+# Genkit Flow Architect
 
-## 設計原則
-在 Serverless 前提下設計可演化的 AI Flow，必須與資料層解耦。
+## Design Principles
 
-## 工具協作
-1. **文檔同步:** 強制呼叫 `tool-context7` 查詢最新的 Genkit 插件與 Zod Schema 規範。
-2. **架構規劃:** 使用 `tool-planning` 定義 Flow 的輸入輸出邊界。
-3. **邏輯驗證:** 呼叫 `tool-thinking` 確保 AI 邏輯不會直接越權操作資料庫。
+Design evolvable AI Flows under Serverless constraints; the Flow must be decoupled from the data layer.
 
-## 硬性約束
-AI Flow 必須透過 Application Layer 觸發 Command，不得繞過 BC 邊界。
+## Tool Collaboration
+
+1. **Documentation Sync:** Mandatory invocation of `tool-context7` to query the latest Genkit plugin and Zod Schema specifications.
+2. **Architecture Planning:** Use `tool-planning` to define the input/output boundaries of the Flow.
+3. **Logic Validation:** Invoke `tool-thinking` to ensure AI logic does not directly and unauthorizedly operate the database.
+
+## Hard Constraints
+
+AI Flows must trigger Commands through the Application Layer. Bypassing BC boundaries is not allowed.
