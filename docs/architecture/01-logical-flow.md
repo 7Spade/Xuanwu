@@ -14,7 +14,8 @@
 |------|------|
 | **寫鏈（Command）** | External/L0 → L0A `COMMAND_API_GATEWAY` → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection |
 | **讀鏈（Query）** | UI/L0 → L0A `QUERY_API_GATEWAY` → L6 Query Gateway → L5 Projection（Read Model） |
-| **Infra 鏈（SDK）** | L3/L5/L6 → L1 Ports/Contracts → L7 Firebase Boundary → L8 Firebase Runtime |
+| **Infra 鏈 A（firebase-client）** | L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime |
+| **Infra 鏈 B（firebase-admin）** | L0/L2 API Entry → L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
 
 > **規則**：三條鏈並列，不得把 Query/Command/FirebaseBoundary 壓成單一線性排序。
 

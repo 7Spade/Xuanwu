@@ -138,6 +138,7 @@
 - `SECURITY_BLOCK` DLQ → 禁止自動 Replay，必須人工審查
 - B-track 禁止回呼 A-track → 只能透過 Domain Event 溝通
 - Feature slice 禁止直接 `import firebase/*` [D24]
+- **Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin`**；`firebase-admin` 一律透過 `src/shared-infra/backend-firebase/functions`（Cloud Functions）[D25]
 - Feature slice 禁止直接 `import @/shared-infra/*`；僅可依賴 `SK_PORTS` / Query Gateway / slice public API
 - Notification Hub 禁止直接依賴 L7 具體 Adapter；必須經 Port 或 Gateway 公開介面
 - Feature slice 禁止自建搜尋邏輯，必須透過 Global Search [D26 #A12]

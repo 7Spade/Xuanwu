@@ -62,7 +62,8 @@ VS8 = src/features/semantic-graph.slice
 | `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway | 統一讀取出口（read-model-registry） | `src/shared-infra/gateway-query/` |
-| `L7` | Firebase Boundary（FIREBASE_ACL） | SDK Anti-Corruption Layer（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter） | `src/shared-infra/frontend-firebase/` |
+| `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/frontend-firebase/` |
+| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
 | `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
 | `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
 | `L10` | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL [E8] | `src/shared-infra/ai-orchestration/` |
