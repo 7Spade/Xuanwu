@@ -1,6 +1,9 @@
+"use client";
+
 import {
   AlertCircle,
-  Check,
+  ChevronDown,
+  ChevronRight,
   Clock,
   Download,
   FileScan,
@@ -9,6 +12,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Fragment } from 'react';
+import { useState } from 'react';
 
 import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Badge } from '@/shadcn-ui/badge';
@@ -49,6 +53,14 @@ export function FilesTable({
   onParseWithAi,
 }: FilesTableProps) {
   const { t } = useI18n();
+  const [expandedFileIds, setExpandedFileIds] = useState<Record<string, boolean>>({});
+
+  const toggleExpanded = (fileId: string) => {
+    setExpandedFileIds((prev) => ({
+      ...prev,
+      [fileId]: !prev[fileId],
+    }));
+  };
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/40 shadow-sm backdrop-blur-md">
@@ -66,6 +78,7 @@ export function FilesTable({
             const current = getCurrentVersion(file);
             const summary = getStructuredDataSnapshot(file, current);
             const summaryText = JSON.stringify(summary.summary, null, 2);
+            const isExpanded = Boolean(expandedFileIds[file.id]);
 
             return (
               <Fragment key={file.id}>
@@ -73,7 +86,14 @@ export function FilesTable({
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-4">
                       <div className="flex size-6 items-center justify-center rounded border border-primary/30 bg-primary/10 text-primary">
-                        <Check className="size-3.5" />
+                        <button
+                          type="button"
+                          aria-label={isExpanded ? t('common.collapse') : t('common.expand')}
+                          onClick={() => toggleExpanded(file.id)}
+                          className="flex size-5 items-center justify-center rounded hover:bg-primary/15"
+                        >
+                          {isExpanded ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
+                        </button>
                       </div>
                       <div className="rounded-xl border bg-background p-2.5 text-primary shadow-sm transition-all group-hover:bg-primary group-hover:text-white">
                         <FileTypeIcon fileName={file.name} />
@@ -134,35 +154,37 @@ export function FilesTable({
                   </TableCell>
                 </TableRow>
 
-                <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={4} className="pt-0">
-                    <div className="ml-10 rounded-xl border border-primary/20 bg-primary/5 p-3">
-                      <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-primary">
-                        {t('workspaces.structuredSummary')}
-                      </p>
-                      <pre className="overflow-x-auto rounded-md bg-background/70 p-3 text-[10px] leading-relaxed text-foreground/90">{summaryText}</pre>
-                      <div className="mt-3 flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-[10px] font-bold"
-                          onClick={() => onOpenHistory(file, 'structured')}
-                        >
-                          {t('workspaces.viewFullJson')}
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="h-7 text-[10px] font-bold"
-                          disabled={!current?.downloadURL}
-                          onClick={() => onParseWithAi(file, current)}
-                        >
-                          {t('workspaces.reparse')}
-                        </Button>
+                {isExpanded && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={4} className="pt-0">
+                      <div className="ml-10 rounded-xl border border-primary/20 bg-primary/5 p-3">
+                        <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-primary">
+                          {t('workspaces.structuredSummary')}
+                        </p>
+                        <pre className="overflow-x-auto rounded-md bg-background/70 p-3 text-[10px] leading-relaxed text-foreground/90">{summaryText}</pre>
+                        <div className="mt-3 flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-[10px] font-bold"
+                            onClick={() => onOpenHistory(file, 'structured')}
+                          >
+                            {t('workspaces.viewFullJson')}
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-7 text-[10px] font-bold"
+                            disabled={!current?.downloadURL}
+                            onClick={() => onParseWithAi(file, current)}
+                          >
+                            {t('workspaces.reparse')}
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                  </TableRow>
+                )}
               </Fragment>
             );
           })}
