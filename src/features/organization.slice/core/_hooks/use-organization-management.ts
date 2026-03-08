@@ -23,7 +23,14 @@ export function useOrganizationManagement() {
 
   const createOrganization = useCallback(async (organizationName: string): Promise<string> => {
     if (!user) throw new Error("User must be authenticated to create an organization.");
-    const result = await createOrganizationAction(organizationName, user);
+    const result = await createOrganizationAction({
+      organizationName,
+      owner: {
+        id: user.id,
+        name: user.name,
+        email: user.email ?? '',
+      },
+    });
     if (!result.success) throw new Error(result.error.message);
     return result.aggregateId;
   }, [user]);

@@ -21,6 +21,12 @@ import type {
   ThemeConfig,
 } from '@/shared-kernel'
 
+export interface OrganizationOwnerRef {
+  readonly id: string
+  readonly name: string
+  readonly email: string
+}
+
 import { db } from '../firestore.client'
 import { updateDocument, addDocument, setDocument } from '../firestore.write.adapter'
 
@@ -42,10 +48,10 @@ export const createUserAccount = async (userId: string, name: string, email: str
 /**
  * Creates an organization account in the accounts collection.
  * @param organizationName The name of the organization.
- * @param owner The owner's account information.
+ * @param owner The owner's reference information.
  * @returns The ID of the newly created organization.
  */
-export const createOrganization = async (organizationName: string, owner: Account): Promise<string> => {
+export const createOrganization = async (organizationName: string, owner: OrganizationOwnerRef): Promise<string> => {
   const organizationData: Omit<Account, 'id' | 'createdAt'> = {
     name: organizationName,
     accountType: 'organization',

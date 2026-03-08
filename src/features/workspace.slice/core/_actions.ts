@@ -35,18 +35,25 @@ import {
   commandSuccess,
   commandFailureFrom,
 } from '@/shared-kernel';
-import type { Account } from "@/shared-kernel"
 
 import type { WorkspaceRole } from "../gov.role/_types"
 
 import type { Capability, WorkspaceLifecycleState, WorkspaceLocation, Address, WorkspacePersonnel } from "./_types"
 
+export interface CreateWorkspaceCommand {
+  readonly name: string
+  readonly accountId: string
+  readonly accountType: "user" | "organization"
+}
+
 export async function createWorkspace(
-  name: string,
-  account: Account
+  input: CreateWorkspaceCommand
 ): Promise<CommandResult> {
   try {
-    const workspaceId = await createWorkspaceFacade(name, account);
+    const workspaceId = await createWorkspaceFacade(input.name, {
+      accountId: input.accountId,
+      accountType: input.accountType,
+    });
     return commandSuccess(workspaceId, Date.now());
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

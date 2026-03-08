@@ -24,7 +24,11 @@ export async function createWorkspaceWithCapabilities(
   account: Account,
   capabilities: Capability[] = []
 ): Promise<CommandResult> {
-  const result = await createWorkspace(name, account);
+  const result = await createWorkspace({
+    name,
+    accountId: account.id,
+    accountType: account.accountType,
+  });
   if (!result.success) return result;
   const workspaceId = result.aggregateId;
   if (capabilities.length > 0) {
@@ -44,7 +48,11 @@ export const handleCreateWorkspace = async (
     toast({ variant: "destructive", title: t("workspaces.creationFailed"), description: t("workspaces.accountNotFound") })
     return
   }
-  const result = await createWorkspace(name, activeAccount);
+  const result = await createWorkspace({
+    name,
+    accountId: activeAccount.id,
+    accountType: activeAccount.accountType,
+  });
   if (!result.success) {
     toast({ variant: "destructive", title: t("workspaces.failedToCreateSpace"), description: result.error.message })
     return

@@ -16,7 +16,6 @@ import {
   type FieldValue,
 } from 'firebase/firestore';
 
-import type { Account } from '@/shared-kernel';
 import type {
   Workspace,
   WorkspaceRole,
@@ -36,21 +35,26 @@ import {
   deleteDocument,
 } from '../firestore.write.adapter';
 
+export interface WorkspaceAccountRef {
+  readonly accountId: string;
+  readonly accountType: 'user' | 'organization';
+}
+
 /**
  * Creates a new workspace with default values, based on the active account context.
  * @param name The name of the new workspace.
- * @param account The active account (user or organization) creating the workspace.
+ * @param accountRef The active account reference creating the workspace.
  * @returns The ID of the newly created workspace.
  */
 export const createWorkspace = async (
   name: string,
-  account: Account
+  accountRef: WorkspaceAccountRef
 ): Promise<string> => {
   const workspaceData: Omit<Workspace, 'id' | 'createdAt'> & { createdAt: FieldValue } = {
     name: name.trim(),
-    dimensionId: account.id, // The single source of truth for ownership.
+    dimensionId: accountRef.accountId, // The single source of truth for ownership.
     lifecycleState: 'preparatory',
-    visibility: account.accountType === 'organization' ? 'visible' : 'hidden',
+    visibility: accountRef.accountType === 'organization' ? 'visible' : 'hidden',
     protocol: 'Standard Access Protocol',
     scope: ['Authentication', 'Compute'],
     capabilities: [],

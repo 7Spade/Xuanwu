@@ -274,6 +274,7 @@
 %%    3) TE1~TE6：語義引用必須強型別，禁止裸字串 tagSlug
 %%    4) S1~S6：契約與 SLA 僅能引用 SK_* 常數，禁止硬寫
 %%    5) L/R/A：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
+%%    6) Boundary Serialization Gate：Client -> Server action 僅允許 Command DTO（plain object）
 %%  ── Rule Canonicality（單一定義治理）──
 %%    Canonical Rule Body：UNIFIED DEVELOPMENT RULES（D1~D27 + E7/E8）
 %%    Secondary Sections（KEY INVARIANTS / FORBIDDEN / Quick Reference）只允許「索引引用 + 審查語句」，不得擴寫第二份規則正文
@@ -1445,6 +1446,16 @@ class NOTIF_HUB_SVC crossCutAuth
 %%  D24 MUST: IF 屬前端使用者態 Firebase 呼叫 THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/frontend-firebase/{auth|firestore|realtime-database|messaging|storage|analytics}）
 %%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
 %%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
+%%  D24-A MUST: IF 呼叫 Server Function / Server Action（Client -> Server 邊界）
+%%         THEN 輸入/輸出必須是 Plain Object（JSON-serializable）；
+%%         MUST NOT 傳遞 class instance、Firestore Timestamp/FieldValue、Date、含 toJSON 的 runtime object
+%%  D24-B MUST: IF 位於 feature slice 定義 mutation action
+%%         THEN 必須同時定義 Command DTO（最小必要欄位）；
+%%         禁止直接使用 Aggregate/Projection 型別作為 action 參數
+%%  D24-C MUST: IF Firestore snapshot 進入 client state
+%%         THEN 必須先經 normalizer 轉為 Client Model（plain values）再存入 context/store
+%%  D24-D FORBIDDEN: IF 為 Client 端呼叫 action
+%%         THEN MUST NOT 直接傳遞 Account/Workspace 等 rich entity 到 Server Function
 %%  D25 MUST: IF 新增 Firebase 前端能力 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
 %%  D25 MUST: IF 入口涉及受保護資料或可變更狀態 THEN 必須先完成 App Check 驗證（含 token 續期與失效處理）[E7]
 %%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/backend-firebase/functions

@@ -23,14 +23,24 @@ import {
   commandSuccess,
   commandFailureFrom,
 } from "@/shared-kernel";
-import type { Account, ThemeConfig } from "@/shared-kernel";
+import type { ThemeConfig } from "@/shared-kernel";
+
+export interface OrganizationOwnerRef {
+  readonly id: string;
+  readonly name: string;
+  readonly email: string;
+}
+
+export interface CreateOrganizationCommand {
+  readonly organizationName: string;
+  readonly owner: OrganizationOwnerRef;
+}
 
 export async function createOrganization(
-  organizationName: string,
-  owner: Account
+  input: CreateOrganizationCommand
 ): Promise<CommandResult> {
   try {
-    const orgId = await createOrganizationFacade(organizationName, owner);
+    const orgId = await createOrganizationFacade(input.organizationName, input.owner);
     return commandSuccess(orgId, Date.now());
   } catch (err) {
     return commandFailureFrom(
@@ -75,13 +85,12 @@ export async function deleteOrganization(organizationId: string): Promise<Comman
 }
 
 export async function setupOrganizationWithTeam(
-  organizationName: string,
-  owner: Account,
+  input: CreateOrganizationCommand,
   teamName: string,
   teamType: "internal" | "external" = "internal"
 ): Promise<CommandResult> {
   try {
-    const organizationId = await createOrganizationFacade(organizationName, owner);
+    const organizationId = await createOrganizationFacade(input.organizationName, input.owner);
     await createTeamFacade(organizationId, teamName, teamType);
     return commandSuccess(organizationId, Date.now());
   } catch (err) {
