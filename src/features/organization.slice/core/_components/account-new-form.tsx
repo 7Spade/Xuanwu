@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
@@ -22,32 +22,32 @@ export function AccountNewForm({ onSuccess, onCancel }: AccountNewFormProps) {
   const { t } = useI18n();
   const { createOrganization } = useOrganizationManagement();
   const { state: appState, dispatch } = useApp();
-  const { activeAccount } = appState;
+  const { accounts } = appState;
 
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [pendingOrganizationId, setPendingOrganizationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pendingOrganizationId && accounts[pendingOrganizationId]) {
+      const organization = accounts[pendingOrganizationId];
+      dispatch({ type: "SET_ACTIVE_ACCOUNT", payload: { ...organization, accountType: "organization" } });
+      setPendingOrganizationId(null);
+      setIsLoading(false);
+      onSuccess();
+    }
+  }, [pendingOrganizationId, accounts, dispatch, onSuccess]);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
     setIsLoading(true);
     try {
-      const organizationName = name.trim();
-      const newOrganizationId = await createOrganization(organizationName);
-      dispatch({
-        type: "SET_ACTIVE_ACCOUNT",
-        payload: {
-          id: newOrganizationId,
-          name: organizationName,
-          accountType: "organization",
-          ownerId: activeAccount?.id,
-        },
-      });
+      const newOrganizationId = await createOrganization(name.trim());
+      setPendingOrganizationId(newOrganizationId);
       toast({ title: t("dimension.newDimensionCreated") });
-      onSuccess();
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : "Unknown error";
       toast({ variant: "destructive", title: t("dimension.failedToCreate"), description: msg });
-    } finally {
       setIsLoading(false);
     }
   };

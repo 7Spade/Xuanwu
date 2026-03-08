@@ -17,12 +17,14 @@ import {
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { Input } from "@/shadcn-ui/input"
 import { Label } from "@/shadcn-ui/label"
+import { type Account } from "@/shared-kernel"
 
 interface AccountCreateDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   createOrganization: (name: string) => Promise<string>
   dispatch: React.Dispatch<AppAction>
+  accounts: Record<string, Account>
   t: (key: string) => string
 }
 
@@ -31,17 +33,30 @@ export function AccountCreateDialog({
   onOpenChange,
   createOrganization,
   dispatch,
+  accounts,
   t,
 }: AccountCreateDialogProps) {
   const [newOrganizationName, setNewOrganizationName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [pendingOrganizationId, setPendingOrganizationId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) {
       setNewOrganizationName("")
       setIsLoading(false)
+      setPendingOrganizationId(null)
     }
   }, [open])
+
+  useEffect(() => {
+    if (pendingOrganizationId && accounts[pendingOrganizationId]) {
+      const organization = accounts[pendingOrganizationId]
+      dispatch({ type: "SET_ACTIVE_ACCOUNT", payload: { ...organization, accountType: "organization" } })
+      setPendingOrganizationId(null)
+      setIsLoading(false)
+      onOpenChange(false)
+    }
+  }, [pendingOrganizationId, accounts, dispatch, onOpenChange])
 
   const handleCreate = async () => {
     if (!newOrganizationName.trim()) return
@@ -49,19 +64,10 @@ export function AccountCreateDialog({
     try {
       const organizationName = newOrganizationName.trim()
       const newOrganizationId = await createOrganization(organizationName)
-      dispatch({
-        type: "SET_ACTIVE_ACCOUNT",
-        payload: {
-          id: newOrganizationId,
-          name: organizationName,
-          accountType: "organization",
-        },
-      })
-      onOpenChange(false)
+      setPendingOrganizationId(newOrganizationId)
       toast({ title: t('dimension.newDimensionCreated') })
     } catch (error: unknown) {
       toast({ variant: "destructive", title: t('dimension.failedToCreate'), description: error instanceof Error ? error.message : String(error) })
-    } finally {
       setIsLoading(false)
     }
   }

@@ -75,6 +75,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
       const availableAccountIds = [user.id, ...Object.keys(accounts)]
       if (!newActiveAccount || !availableAccountIds.includes(newActiveAccount.id)) {
         newActiveAccount = user
+      } else if (newActiveAccount.accountType === 'organization' && accounts[newActiveAccount.id]) {
+        // Refresh optimistic organization payload with canonical snapshot data.
+        newActiveAccount = { ...accounts[newActiveAccount.id], accountType: 'organization' }
       }
       return { ...state, accounts, activeAccount: newActiveAccount }
     }
