@@ -1,19 +1,47 @@
 ---
 name: compliance-audit
-description: "全域文檔對齊與專案規範合規性審查"
+description: 'Systematic project-wide compliance audit. Validates code, naming, and architectural decisions against core governance documents and Hard Invariants.'
 ---
 
-# ⚖️ Full-Docs Compliance Auditor
+# Compliance Audit
 
-## 審核目標
-確保開發成果與 7 份核心文件（`docs/*.md`）高度一致。
+## Pre-Audit: Load Context
 
-## 執行邏輯
-1. **全域掃描:** 使用 `tool-repomix` 同步程式碼與文檔上下文。
-2. **深度比對:** 呼叫 `tool-thinking` 逐一檢查：
-   - 是否引入 `tech-stack.md` 未定義技術？
-   - 請求流向是否符合 `00-LogicOverview.md`？
-   - 基礎設施是否超出 `00-LogicOverview.md` 定義？
+```
+MANDATORY: Before proceeding, invoke tool-repomix to load all architecture documents.
+```
 
-## 終極準則
-若程式碼與 `00-LogicOverview.md` 衝突，以文檔為準並提出重構計畫。
+## Audit Matrix
+
+| Dimension | Standard Source | Tool |
+|-----------|----------------|------|
+| Architecture | `docs/architecture/00-LogicOverview.md` | `tool-thinking` |
+| Naming | `docs/domain-glossary.md` | `tool-repomix` |
+| Data Model | `docs/persistence-model-overview.md` | `tool-thinking` |
+| File Structure | `docs/project-structure.md` | `tool-repomix` |
+| Tech Stack | `docs/tech-stack.md` | `tool-repomix` |
+
+## Hard Invariant Checklist
+
+- **D1:** Events only dispatched via `infra.outbox-relay` ✓
+- **D2:** Cross-slice refs only via `@/features/{slice}/index` ✓
+- **D3:** All mutations only in `_actions.ts` ✓
+- **D5:** `src/app/` and UI must not import `src/shared/infra/firestore` ✓
+- **D6:** `'use client'` only in `_components/` or `_hooks/` leaf nodes ✓
+- **D13:** New OUTBOX must declare DLQ tier ✓
+- **D24:** Feature slices/shared/types/app must not import `firebase/*` directly ✓
+
+## Report Format
+
+```markdown
+## Compliance Audit Report
+
+### Passed ✅
+- [List of compliant items]
+
+### Violations ❌
+- **[Rule ID]** `[File Path:Line]` — [Description] → [Recommended Fix]
+
+### Recommendations
+- [Improvement suggestions not constituting violations]
+```

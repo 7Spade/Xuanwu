@@ -1,12 +1,39 @@
 ---
 name: tool-shadcn
-description: "使用 shadcn MCP 管理 UI 組件"
+description: 'shadcn/ui component implementation guide. Ensure correct usage of component variants, theme tokens, and accessibility attributes for project components.'
 tools: [shadcn]
 ---
 
-# 🎨 UI Primitive Management
+# shadcn/ui Component Implementation Guide
 
-## 任務
-1. **組件安裝：** 根據設計需求，調用 `shadcn` 安裝必要的 Radix primitives。
-2. **結構組合：** 確保 UI 實作不引入任何非專案定義的第三方 UI 庫。
-3. **樣式對齊：** 檢查 Tailwind CSS 配置是否符合專案視覺規範。
+## Usage Principles
+
+1. **Prioritize Existing Components:** Before creating new UI elements, search the shadcn registry for existing components.
+2. **Theme Token Compliance:** Use CSS Variables (`--background`, `--foreground`, etc.) for colors; hardcoded hex values are not allowed.
+3. **Accessibility First:** Each interactive component must include appropriate `aria-*` attributes.
+
+## Project Import Path
+
+All shadcn components in this project must be imported from `@/shadcn-ui/`:
+
+```typescript
+// ✅ Correct
+import { Button } from "@/shadcn-ui/button";
+
+// ❌ Wrong
+import { Button } from "@/components/ui/button";
+```
+
+## Component Customization Standards
+
+When customizing `className`, use `cn()` utility:
+
+```typescript
+import { cn } from "@/lib/utils";
+```
+
+## Common Pattern Reference
+
+- **Form:** `Form` + `FormField` + `FormControl` + `FormMessage`
+- **Table:** `Table` + `TableHeader` + `TableRow` + `TableCell`
+- **Dialog:** `Dialog` + `DialogContent` + `DialogHeader` + `DialogFooter`
