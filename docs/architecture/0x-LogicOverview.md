@@ -18,6 +18,7 @@ subgraph VS0["VS0 Foundation"]
   subgraph L1["L1 Kernel Contracts"]
     SK_PORTS["SK Contracts\nenvelope, ports, invariants"]
     I_MSG["IMessaging Port\nnotification delivery contract"]
+    I_DC["IDataConnect Port\ngoverned GraphQL and connector contract"]
   end
 
   subgraph L0["L0 Validation Gates"]
@@ -86,7 +87,6 @@ subgraph VS0["VS0 Foundation"]
 
     AC_GATE --> FE_SDK
     AC_GATE --> BE_FN
-    AC_GATE --> ADMIN_SDK
     AC_GATE --> BE_DC
   end
 
@@ -103,10 +103,12 @@ subgraph VS7["VS7 Notification Hub"]
   NOTIF_ROUTER["notification-router\nconsume STANDARD_LANE only"]
   CHANNEL_POLICY["channel-policy resolver\nroute by event semantics"]
   NOTIF_EXIT["notification side-effect exit\nsole delivery authority"]
+  DELIVERY_SELECTOR["delivery-selector\nprimary admin, fallback frontend"]
   USER_NOTIF["user-notification-view\nseen and unseen projection"]
   DEVICE_PROFILE["user-device-profile\nFCM token profile"]
 
   NOTIF_ROUTER --> CHANNEL_POLICY --> NOTIF_EXIT --> USER_NOTIF
+  NOTIF_EXIT --> DELIVERY_SELECTOR
   DEVICE_PROFILE -. read token .-> NOTIF_EXIT
 end
 
@@ -152,6 +154,7 @@ PROJ_BUS -. uses contracts .-> SK_PORTS
 NOTIF_ROUTER -. uses envelope contract .-> SK_PORTS
 NOTIF_EXIT -. uses port .-> I_MSG
 I_MSG -. contract in .-> SK_PORTS
+I_DC -. contract in .-> SK_PORTS
 SK_PORTS --> AC_GATE
 
 %% L7 SDK to L8 runtime mappings
@@ -171,13 +174,15 @@ ADMIN_SDK --> F_STORE
 ADMIN_SDK --> F_APPCHECK
 
 BE_DC --> F_DATACONNECT
+BE_DC -. implements .-> I_DC
 
 %% App Check lifecycle
 FE_SDK -. token init and refresh .-> APPCHK_VERIFY
 
 %% VS7 runtime egress via SDK boundary
-I_MSG -. implemented by .-> FE_SDK
-I_MSG -. implemented by .-> ADMIN_SDK
+I_MSG --> DELIVERY_SELECTOR
+DELIVERY_SELECTOR --> ADMIN_SDK
+DELIVERY_SELECTOR -. fallback .-> FE_SDK
 NOTIF_EXIT -. runtime dispatch via I_MSG only .-> I_MSG
 
 %% Cross-cutting observability
