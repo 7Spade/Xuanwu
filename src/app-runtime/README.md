@@ -79,6 +79,11 @@ src/app-runtime/
 - `extractInvoiceItems`
 - `adaptUIColorToAccountContext`
 
+`extractInvoiceItems` 現在採用「OCR-first」輸入契約：
+- 先由 `Document OCR Extractor` 產生 `Document Object`（text + entities + trace metadata）
+- 再將該結構化 JSON 傳入 Genkit flow 做 line-item 與 semantic tag 抽取
+- 不再直接把原始檔案 data URI 丟給 LLM prompt
+
 ## Dependency Boundaries
 
 - ✅ 允許：`src/app-runtime` → `src/config`

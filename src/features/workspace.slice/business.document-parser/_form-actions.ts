@@ -4,9 +4,11 @@ import { z } from 'zod';
 
 import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
 import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
+import { extractDocumentObjectWithOcr } from '@/shared-infra/document-ai/ocr-extractor.client';
 
 const actionInputSchema = z.object({
   documentDataUri: z.string().startsWith('data:'),
+  mimeType: z.string().min(1),
 });
 
 // [SEC-3] Allowlist for server-side file fetches to prevent SSRF.
@@ -90,12 +92,20 @@ export async function extractDataFromDocument(
     const base64String = Buffer.from(fileBuffer).toString('base64');
     const documentDataUri = `data:${mimeType};base64,${base64String}`;
 
-    const validatedInput = actionInputSchema.safeParse({ documentDataUri });
+    const validatedInput = actionInputSchema.safeParse({ documentDataUri, mimeType });
     if (!validatedInput.success) {
       return { error: 'Invalid file data URI.' };
     }
 
-    const result = await extractInvoiceItems(validatedInput.data);
+    const documentObject = await extractDocumentObjectWithOcr(validatedInput.data);
+
+    if (documentObject.text.trim().length === 0) {
+      return {
+        error: 'Document OCR Extractor did not return readable text for this file.',
+      };
+    }
+
+    const result = await extractInvoiceItems({ documentObject });
 
     if (!result || !result.workItems) {
       return {

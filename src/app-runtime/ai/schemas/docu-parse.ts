@@ -31,12 +31,35 @@ export const ParsedWorkItemSchema = z.object({
 export const WorkItemSchema = ParsedWorkItemSchema;
 export type WorkItem = z.infer<typeof ParsedWorkItemSchema>;
 
-export const ExtractInvoiceItemsInputSchema = z.object({
-  documentDataUri: z
+export const OcrDocumentEntitySchema = z.object({
+  type: z.string().describe('Entity type recognized by Document OCR Extractor.'),
+  mentionText: z.string().describe('Raw text span for this entity.'),
+  confidence: z.number().describe('Confidence score between 0 and 1.'),
+  normalizedValue: z
     .string()
-    .describe(
-      "The document (invoice, quote) as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
+    .describe('Normalized canonical value for the entity when available.')
+    .optional(),
+});
+
+export const OcrDocumentObjectSchema = z.object({
+  source: z
+    .literal('document-ocr-extractor')
+    .describe('Pipeline source marker indicating OCR extractor output.'),
+  mimeType: z.string().describe('Original MIME type of the uploaded document.'),
+  text: z.string().describe('Full OCR text from Document OCR Extractor.'),
+  entities: z
+    .array(OcrDocumentEntitySchema)
+    .describe('Structured entity extraction from Document OCR Extractor.'),
+  traceId: z.string().describe('Trace ID propagated from OCR processing.'),
+  extractedAt: z
+    .string()
+    .describe('ISO timestamp when the OCR document object was produced.'),
+});
+
+export const ExtractInvoiceItemsInputSchema = z.object({
+  documentObject: OcrDocumentObjectSchema.describe(
+    'Structured Document Object produced by the Document OCR Extractor before AI parsing.'
+  ),
 });
 
 export const ExtractInvoiceItemsOutputSchema = z.object({

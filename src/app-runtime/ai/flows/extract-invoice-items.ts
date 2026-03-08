@@ -10,13 +10,19 @@
  * @fileOverview Extracts line items from an invoice or quote document.
  */
 
-import { type z } from 'genkit';
+import { z } from 'genkit';
 
 import { ai } from '@/app-runtime/ai/genkit';
 import {
   ExtractInvoiceItemsInputSchema,
   ExtractInvoiceItemsOutputSchema,
 } from '@/app-runtime/ai/schemas/docu-parse';
+
+const ExtractInvoiceItemsPromptInputSchema = z.object({
+  documentObjectJson: z
+    .string()
+    .describe('Structured OCR Document Object JSON serialized as a string.'),
+});
 
 export async function extractInvoiceItems(
   input: z.infer<typeof ExtractInvoiceItemsInputSchema>
@@ -26,11 +32,11 @@ export async function extractInvoiceItems(
 
 const extractInvoiceItemsPrompt = ai.definePrompt({
   name: 'extractInvoiceItemsPrompt',
-  input: { schema: ExtractInvoiceItemsInputSchema },
+  input: { schema: ExtractInvoiceItemsPromptInputSchema },
   output: { schema: ExtractInvoiceItemsOutputSchema },
   prompt: `You are an expert AI assistant for parsing financial documents like quotes and invoices.
 
-Analyze the provided document and extract every single work item. For each item, extract the following:
+Analyze the provided structured OCR Document Object JSON and extract every single work item. For each item, extract the following:
 - The item description (料號/品名).
 - The quantity (數量).
 - The unit price (單價).
@@ -39,7 +45,8 @@ Analyze the provided document and extract every single work item. For each item,
 - A semantic tag slug as 'semanticTagSlug' by matching the item's cost intent to the semantic graph tag taxonomy.
 - The original row index as 'sourceIntentIndex' (0-based) to preserve stable ordering.
 
-Document: {{media url=documentDataUri}}
+OCR Document Object JSON:
+{{documentObjectJson}}
   
 Follow these rules:
 - The 'price' field should be the final amount after any discount.
@@ -60,7 +67,9 @@ const extractInvoiceItemsFlow = ai.defineFlow(
     outputSchema: ExtractInvoiceItemsOutputSchema,
   },
   async (input) => {
-    const { output } = await extractInvoiceItemsPrompt(input);
+    const { output } = await extractInvoiceItemsPrompt({
+      documentObjectJson: JSON.stringify(input.documentObject, null, 2),
+    });
     if (!output) {
       throw new Error('No output from AI');
     }
