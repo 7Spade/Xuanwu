@@ -10,6 +10,7 @@
  * DLQ:             dlqSafe, dlqReview, dlqBlock
  * L5 Projection:   eventFunnel, criticalProj, standardProj
  * L9 Observability: domainMetrics, domainErrors, domainErrorWatcher
+ * Document AI:      classifyDocumentFn, processDocumentFn  (asia-southeast1)
  */
 
 import { initializeApp, getApps } from "firebase-admin/app";
@@ -61,3 +62,6 @@ export { standardProj } from "./projection/standard-proj.fn";
 // ── L9 Observability ──────────────────────────────────────────────────────────
 export { domainMetrics }                    from "./observability/domain-metrics.fn";
 export { domainErrors, domainErrorWatcher } from "./observability/domain-errors.fn";
+
+// ── Document AI (asia-southeast1) ─────────────────────────────────────────────
+export { classifyDocumentFn, processDocumentFn } from "./document-ai/index";
