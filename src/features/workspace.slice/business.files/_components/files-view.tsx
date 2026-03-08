@@ -76,7 +76,6 @@ export function WorkspaceFiles() {
         onClose={() => setHistoryFile(null)}
         onRestore={handleRestore}
         onDownloadVersion={handleDownloadVersion}
-        onReparse={handleParseWithAi}
       />
     </div>
   );

@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   Download,
   History,
-  ListChecks,
   Sparkles,
   RotateCcw,
   User,
@@ -32,12 +31,10 @@ import {
   formatVersionDate,
   getCurrentVersion,
   getProcessingLogEntries,
-  getRelatedStructuredFile,
-  getStructuredDataSnapshot,
   type WorkspaceFileWithRelations,
 } from './files-view.utils';
 
-export type HistoryPanelTab = 'versions' | 'structured' | 'processing';
+export type HistoryPanelTab = 'versions' | 'processing';
 
 interface FileHistorySheetProps {
   readonly historyFile: WorkspaceFileWithRelations | null;
@@ -45,7 +42,6 @@ interface FileHistorySheetProps {
   readonly onClose: () => void;
   readonly onRestore: (file: WorkspaceFile, versionId: string) => void;
   readonly onDownloadVersion: (version?: WorkspaceFileVersion) => void;
-  readonly onReparse: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
 }
 
 export function FileHistorySheet({
@@ -54,7 +50,6 @@ export function FileHistorySheet({
   onClose,
   onRestore,
   onDownloadVersion,
-  onReparse,
 }: FileHistorySheetProps) {
   const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<HistoryPanelTab>(defaultTab);
@@ -68,21 +63,9 @@ export function FileHistorySheet({
     () => (historyFile ? getCurrentVersion(historyFile) : undefined),
     [historyFile],
   );
-  const structuredSnapshot = useMemo(
-    () => (historyFile ? getStructuredDataSnapshot(historyFile, currentVersion) : null),
-    [currentVersion, historyFile],
-  );
   const processingLogs = useMemo(
     () => (historyFile ? getProcessingLogEntries(historyFile, currentVersion, 'en-US') : []),
     [currentVersion, historyFile],
-  );
-  const relatedStructuredFile = useMemo(
-    () => (historyFile ? getRelatedStructuredFile(historyFile) : undefined),
-    [historyFile],
-  );
-  const relatedStructuredVersion = useMemo(
-    () => (relatedStructuredFile ? getCurrentVersion(relatedStructuredFile) : undefined),
-    [relatedStructuredFile],
   );
 
   return (
@@ -102,9 +85,8 @@ export function FileHistorySheet({
 
         <ScrollArea className="flex-1 p-8">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as HistoryPanelTab)} className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3 text-[10px] font-bold uppercase">
+            <TabsList className="grid w-full grid-cols-2 text-[10px] font-bold uppercase">
               <TabsTrigger value="versions">{t('workspaces.versionHistory')}</TabsTrigger>
-              <TabsTrigger value="structured">{t('workspaces.structuredData')}</TabsTrigger>
               <TabsTrigger value="processing">{t('workspaces.aiProcessingLog')}</TabsTrigger>
             </TabsList>
 
@@ -168,49 +150,6 @@ export function FileHistorySheet({
                     </div>
                   </div>
                 ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="structured" className="mt-0">
-              <div className="space-y-4 rounded-2xl border border-border/60 bg-background/60 p-4">
-                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-foreground">
-                  <ListChecks className="size-4 text-primary" /> {t('workspaces.structuredDataStatus')}
-                </div>
-                <Badge variant="outline" className="text-[10px] font-bold uppercase">
-                  {t('workspaces.enabled')}
-                </Badge>
-                <pre className="max-h-64 overflow-auto rounded-md bg-muted/40 p-3 text-[10px] leading-relaxed">
-                  {JSON.stringify(structuredSnapshot?.full ?? {}, null, 2)}
-                </pre>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-[10px] font-bold"
-                    onClick={() => {
-                      if (relatedStructuredVersion?.downloadURL) {
-                        onDownloadVersion(relatedStructuredVersion);
-                        return;
-                      }
-                      if (!structuredSnapshot) return;
-                      const json = JSON.stringify(structuredSnapshot.full, null, 2);
-                      const blob = new Blob([json], { type: 'application/json' });
-                      const url = globalThis.URL.createObjectURL(blob);
-                      globalThis.open(url, '_blank');
-                      globalThis.setTimeout(() => globalThis.URL.revokeObjectURL(url), 1000);
-                    }}
-                  >
-                    {t('workspaces.downloadStructuredData')}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-7 text-[10px] font-bold"
-                    onClick={() => historyFile && onReparse(historyFile, currentVersion)}
-                  >
-                    {t('workspaces.reparse')}
-                  </Button>
-                </div>
               </div>
             </TabsContent>
 

@@ -4,7 +4,6 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronRight,
-  Clock,
   Download,
   FileScan,
   History,
@@ -35,11 +34,16 @@ import {
 import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
 
 import { FileTypeIcon } from './file-type-icon';
-import { formatBytes, getCurrentVersion, getStructuredDataSnapshot, type WorkspaceFileWithRelations } from './files-view.utils';
+import {
+  formatBytes,
+  getCurrentVersion,
+  getStructuredDataSnapshot,
+  type WorkspaceFileWithRelations,
+} from './files-view.utils';
 
 interface FilesTableProps {
   readonly files: readonly WorkspaceFileWithRelations[];
-  readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'structured' | 'processing') => void;
+  readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'processing') => void;
   readonly onDeregister: (file: WorkspaceFile) => void;
   readonly onDownload: (version?: WorkspaceFileVersion) => void;
   readonly onParseWithAi: (file: WorkspaceFile, version?: WorkspaceFileVersion) => void;
@@ -129,19 +133,20 @@ export function FilesTable({
                           onClick={() => onParseWithAi(file, current)}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
-                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.reparse')}
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.parseWithAi')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={!current?.downloadURL}
+                          onClick={() => onParseWithAi(file, current)}
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
+                        >
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.structurize')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => onOpenHistory(file, 'versions')}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
                           <History className="size-3.5 text-primary" /> {t('workspaces.versionHistory')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onOpenHistory(file, 'structured')}
-                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
-                        >
-                          <Clock className="size-3.5 text-primary" /> {t('workspaces.structuredData')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => onDeregister(file)}
@@ -167,7 +172,7 @@ export function FilesTable({
                             variant="outline"
                             size="sm"
                             className="h-7 text-[10px] font-bold"
-                            onClick={() => onOpenHistory(file, 'structured')}
+                            onClick={() => onOpenHistory(file, 'versions')}
                           >
                             {t('workspaces.viewFullJson')}
                           </Button>
@@ -178,7 +183,7 @@ export function FilesTable({
                             disabled={!current?.downloadURL}
                             onClick={() => onParseWithAi(file, current)}
                           >
-                            {t('workspaces.reparse')}
+                            {t('workspaces.parseWithAi')}
                           </Button>
                         </div>
                       </div>
