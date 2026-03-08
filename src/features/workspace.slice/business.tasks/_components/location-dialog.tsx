@@ -9,6 +9,7 @@
 
 import { Loader2, MapPin } from 'lucide-react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
@@ -40,21 +41,23 @@ export function LocationDialog({
   isSaving,
   onOpenChange,
 }: LocationDialogProps) {
+  const { t } = useI18n();
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md rounded-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MapPin className="size-4 text-primary" />
-            Location
+            {t('schedule.location')}
           </DialogTitle>
-          <DialogDescription>Edit location directly from WBS Governance.</DialogDescription>
+          <DialogDescription>{t('tasks.locationDescription')}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
-              <Label className="text-xs">Building</Label>
+              <Label className="text-xs">{t('tasks.locationBuilding')}</Label>
               <Input
                 value={draft.building || ''}
                 onChange={(event) => onDraftChange('building', event.target.value)}
@@ -62,7 +65,7 @@ export function LocationDialog({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Floor</Label>
+              <Label className="text-xs">{t('tasks.locationFloor')}</Label>
               <Input
                 value={draft.floor || ''}
                 onChange={(event) => onDraftChange('floor', event.target.value)}
@@ -70,7 +73,7 @@ export function LocationDialog({
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Room</Label>
+              <Label className="text-xs">{t('tasks.locationRoom')}</Label>
               <Input
                 value={draft.room || ''}
                 onChange={(event) => onDraftChange('room', event.target.value)}
@@ -80,7 +83,7 @@ export function LocationDialog({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">Description</Label>
+            <Label className="text-xs">{t('settings.dimensionDescription')}</Label>
             <Textarea
               rows={3}
               value={draft.description || ''}
@@ -91,7 +94,7 @@ export function LocationDialog({
           <div className="flex justify-end">
             <Button onClick={onSave} disabled={isSaving} className="rounded-lg">
               {isSaving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-              {isSaving ? 'Saving...' : 'Save Location'}
+              {isSaving ? t('common.saving') : t('tasks.saveLocation')}
             </Button>
           </div>
         </div>

@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 
 import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
@@ -79,6 +80,7 @@ const formatBytes = (bytes: number): string => {
  * Features: Smart type detection, version history visualization, and instant sovereignty restoration.
  */
 export function WorkspaceFiles() {
+  const { t } = useI18n();
   const { workspace, logAuditEvent, setPendingParseFile } = useWorkspace();
   const { state: { user } } = useAuth();
   const router = useRouter();
@@ -139,12 +141,12 @@ export function WorkspaceFiles() {
 
         const result = await addWorkspaceFileVersion(workspace.id, existingFile.id, newVersion, versionId);
         if (!result.success) {
-          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error.message });
+          toast({ variant: "destructive", title: t('workspaces.failedToUploadFile'), description: result.error.message });
           return;
         }
         
         logAuditEvent("File Version Iterated", `${file.name} (v${nextVer})`, 'update');
-        toast({ title: "Version Iterated", description: `${file.name} has been upgraded to v${nextVer}.` });
+        toast({ title: t('workspaces.versionIterated'), description: t('workspaces.versionIteratedDescription', { name: file.name, version: nextVer }) });
 
       } else {
         // --- New File Logic ---
@@ -170,17 +172,17 @@ export function WorkspaceFiles() {
 
         const result = await createWorkspaceFile(workspace.id, newFileData);
         if (!result.success) {
-          toast({ variant: "destructive", title: "Failed to Upload File", description: result.error.message });
+          toast({ variant: "destructive", title: t('workspaces.failedToUploadFile'), description: result.error.message });
           return;
         }
         logAuditEvent("Mounted New Document", file.name, 'create');
-        toast({ title: "Document Uploaded", description: `${file.name} has been mounted to the space.` });
+        toast({ title: t('workspaces.documentUploaded'), description: t('workspaces.documentUploadedDescription', { name: file.name }) });
       }
     } catch (error: unknown) {
       console.error("Error uploading file:", error);
       toast({
         variant: "destructive",
-        title: "Failed to Upload File",
+        title: t('workspaces.failedToUploadFile'),
         description: getErrorMessage(error, "An unknown error occurred."),
       });
     } finally {
@@ -196,13 +198,13 @@ export function WorkspaceFiles() {
       console.error("Error restoring version:", result.error.message);
       toast({
         variant: "destructive",
-        title: "Failed to Restore Version",
+        title: t('workspaces.failedToRestoreVersion'),
         description: result.error.message,
       });
       return;
     }
     logAuditEvent("Restored File State", `${file.name} to a previous version`, 'update');
-    toast({ title: "Version Restored", description: "File sovereignty has been restored to the specified point in time." });
+    toast({ title: t('workspaces.versionRestored'), description: t('workspaces.versionRestoredDescription') });
     setHistoryFile(null);
   };
 
@@ -211,7 +213,7 @@ export function WorkspaceFiles() {
       <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" />
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-          <FileText className="size-3.5" /> Space File Sovereignty
+          <FileText className="size-3.5" /> {t('workspaces.spaceFileSovereignty')}
         </h3>
         <Button 
             size="sm" 
@@ -220,7 +222,7 @@ export function WorkspaceFiles() {
             disabled={isUploading}
         >
           {isUploading ? <Loader2 className="size-4 animate-spin" /> : <UploadCloud className="size-4" />}
-          {isUploading ? "Uploading..." : "Upload Document"}
+          {isUploading ? t('workspaces.uploading') : t('workspaces.uploadDocument')}
         </Button>
       </div>
 
@@ -228,11 +230,11 @@ export function WorkspaceFiles() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[50%]">File</TableHead>
-              <TableHead className="text-center">Version</TableHead>
-              <TableHead>Size</TableHead>
-              <TableHead>Last Synced</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[50%]">{t('workspaces.file')}</TableHead>
+              <TableHead className="text-center">{t('workspaces.version')}</TableHead>
+              <TableHead>{t('workspaces.size')}</TableHead>
+              <TableHead>{t('workspaces.lastSynced')}</TableHead>
+              <TableHead className="text-right">{t('workspaces.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -255,7 +257,7 @@ export function WorkspaceFiles() {
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold">{current?.uploadedBy}</span>
-                      <span className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground"><Clock className="size-2.5" /> SYNCED</span>
+                      <span className="flex items-center gap-1 text-[9px] font-medium text-muted-foreground"><Clock className="size-2.5" /> {t('workspaces.synced')}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
@@ -265,7 +267,7 @@ export function WorkspaceFiles() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48 rounded-xl">
                          <DropdownMenuItem onClick={() => window.open(current?.downloadURL, '_blank')} disabled={!current?.downloadURL} className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase">
-                          <Download className="size-3.5 text-primary" /> Download
+                          <Download className="size-3.5 text-primary" /> {t('workspaces.download')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           disabled={!current?.downloadURL}
@@ -286,13 +288,13 @@ export function WorkspaceFiles() {
                           }}
                           className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
                         >
-                          <FileScan className="size-3.5 text-primary" /> Parse with AI
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.parseWithAi')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setHistoryFile(file)} className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase">
-                          <History className="size-3.5 text-primary" /> Version History
+                          <History className="size-3.5 text-primary" /> {t('workspaces.versionHistory')}
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase text-destructive">
-                          <Trash2 className="size-3.5" /> Deregister File
+                          <Trash2 className="size-3.5" /> {t('workspaces.deregisterFile')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -306,7 +308,7 @@ export function WorkspaceFiles() {
         {(!files || files.length === 0) && (
             <div className="flex flex-col items-center gap-3 p-20 text-center opacity-20">
               <AlertCircle className="size-12" />
-              <p className="text-[10px] font-black uppercase tracking-widest">No technical documents in this space</p>
+              <p className="text-[10px] font-black uppercase tracking-widest">{t('workspaces.noTechnicalDocuments')}</p>
             </div>
         )}
       </div>
@@ -317,7 +319,7 @@ export function WorkspaceFiles() {
             <SheetHeader>
               <div className="mb-2 flex items-center gap-3">
                 <History className="size-5 text-primary" />
-                <SheetTitle className="text-xl font-black">Version History</SheetTitle>
+                <SheetTitle className="text-xl font-black">{t('workspaces.versionHistory')}</SheetTitle>
               </div>
               <SheetDescription className="font-mono text-[10px] uppercase tracking-widest">{historyFile?.name}</SheetDescription>
             </SheetHeader>
@@ -339,7 +341,7 @@ export function WorkspaceFiles() {
                       <p className="text-xs font-black">{v.versionName}</p>
                       {historyFile.currentVersionId === v.versionId && (
                         <Badge className="gap-1 bg-primary text-[8px] font-black uppercase">
-                          <CheckCircle2 className="size-2.5" /> Active
+                          <CheckCircle2 className="size-2.5" /> {t('workspaces.active')}
                         </Badge>
                       )}
                     </div>
@@ -349,11 +351,11 @@ export function WorkspaceFiles() {
                     </div>
                      <div className="mt-4 flex items-center justify-end gap-2 border-t border-border/10 pt-3">
                         <Button variant="ghost" size="sm" className="h-7 text-[9px] font-bold" onClick={() => window.open(v.downloadURL, '_blank')} disabled={!v.downloadURL}>
-                            <Download className="mr-1 size-3" /> Download
+                            <Download className="mr-1 size-3" /> {t('workspaces.download')}
                         </Button>
                         {historyFile.currentVersionId !== v.versionId && (
                           <Button variant="outline" size="sm" className="h-7 bg-background text-[9px] font-black uppercase transition-all hover:bg-primary hover:text-white" onClick={() => handleRestore(historyFile!, v.versionId)}>
-                            <RotateCcw className="mr-2 size-3" /> Restore
+                            <RotateCcw className="mr-2 size-3" /> {t('workspaces.restore')}
                           </Button>
                         )}
                     </div>

@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
 import { useStorage } from '@/features/workspace.slice/business.files';
 import { useWorkspace } from '@/features/workspace.slice/core';
@@ -55,6 +56,7 @@ const getErrorMessage = (error: unknown, fallback: string) =>
  * ARCHITECTURE REFACTORED: Now consumes state from context.
  */
 export function WorkspaceTasks() {
+  const { t } = useI18n();
   const router = useRouter();
   const { workspace, logAuditEvent, eventBus, createTask, updateTask, deleteTask } = useWorkspace();
   const { uploadTaskAttachment } = useStorage(workspace.id);
@@ -135,8 +137,8 @@ export function WorkspaceTasks() {
           if (currentChildrenSum + subtotal > (parent.subtotal || 0)) {
             toast({
               variant: 'destructive',
-              title: 'Budget Overflow Intercepted',
-              description: `Sum of child items cannot exceed the budget limit of "${parent.name}".`,
+              title: t('toast.budgetOverflow'),
+              description: t('toast.budgetOverflowDescription', { name: parent.name }),
             });
             setIsUploading(false);
             return;
@@ -151,8 +153,11 @@ export function WorkspaceTasks() {
         if (subtotal < childSum) {
           toast({
             variant: 'destructive',
-            title: 'Budget Sovereignty Conflict',
-            description: `Budget limit ($${subtotal}) cannot be less than the sum of existing child items ($${childSum}).`,
+            title: t('toast.budgetConflict'),
+            description: t('tasks.budgetConflictDescription', {
+              subtotal,
+              childSum,
+            }),
           });
           setIsUploading(false);
           return;
@@ -201,7 +206,7 @@ export function WorkspaceTasks() {
       console.error('Error saving task:', error);
       toast({
         variant: 'destructive',
-        title: 'Failed to Save Task',
+        title: t('tasks.failedToSaveTask'),
         description: getErrorMessage(error, 'An unknown error occurred.'),
       });
     } finally {
@@ -212,7 +217,7 @@ export function WorkspaceTasks() {
   const handleReportProgress = async (taskId: string, newCompletedQuantity: number) => {
     try {
       await updateTask(taskId, { completedQuantity: newCompletedQuantity });
-      toast({ title: "Progress Updated" });
+      toast({ title: t('tasks.progressUpdated') });
       setReportingTask(null);
     } catch (error: unknown) {
       console.error("Error reporting progress:", error);
@@ -238,14 +243,14 @@ export function WorkspaceTasks() {
       eventBus.publish('workspace:tasks:completed', { task: updatedTaskForEvent });
       logAuditEvent('Submitted for QA', task.name, 'update');
       toast({
-        title: 'Task Submitted for QA',
-        description: `"${task.name}" is now in the QA queue.`,
+        title: t('tasks.taskSubmittedForQa'),
+        description: t('tasks.taskSubmittedForQaDescription', { name: task.name }),
       });
     } catch (error: unknown) {
       console.error('Error submitting for QA:', error);
       toast({
         variant: 'destructive',
-        title: 'Submission Failed',
+        title: t('tasks.submissionFailed'),
         description: getErrorMessage(error, 'An unknown error occurred.'),
       });
     }
@@ -253,14 +258,14 @@ export function WorkspaceTasks() {
 
 
   const handleDeleteTask = async (node: TaskWithChildren) => {
-    if (confirm('Confirm destruction of this node and all its descendants?')) {
+    if (confirm(t('tasks.confirmDestroyNode'))) {
       try {
         await deleteTask(node.id);
       } catch (error: unknown) {
         console.error('Error deleting task:', error);
         toast({
           variant: 'destructive',
-          title: 'Failed to Delete Task',
+          title: t('tasks.failedToDeleteTask'),
           description: getErrorMessage(error, 'An unknown error occurred.'),
         });
       }
@@ -280,9 +285,16 @@ export function WorkspaceTasks() {
       const updatedTask: WorkspaceTask = { ...task, progressState: 'blocked' as WorkspaceTask['progressState'] };
       eventBus.publish('workspace:tasks:blocked', { task: updatedTask });
       logAuditEvent('Task Blocked', task.name, 'update');
-      toast({ title: 'Task Blocked', description: `"${task.name}" is blocked. A B-track issue will be created.` });
+      toast({
+        title: t('tasks.taskBlocked'),
+        description: t('tasks.taskBlockedDesc', { name: task.name }),
+      });
     } catch (error: unknown) {
-      toast({ variant: 'destructive', title: 'Failed to Block Task', description: getErrorMessage(error, 'Unknown error.') });
+      toast({
+        variant: 'destructive',
+        title: t('tasks.failedToBlock'),
+        description: getErrorMessage(error, t('common.unknownError')),
+      });
     }
   };
 
@@ -297,13 +309,13 @@ export function WorkspaceTasks() {
     <div className="space-y-6 pb-20 duration-500 animate-in fade-in">
       <PageHeader
         size="compact"
-        title="WBS Governance"
-        description="Real-time budget and topology monitoring"
+        title={t('tasks.wbsTitle')}
+        description={t('tasks.wbsDescription')}
         badge={
           <div className="inline-flex items-center gap-2 rounded-lg border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground">
             <BarChart3 className="size-3.5 text-primary" />
             <Clock className="size-3.5" />
-            Task Engineering
+            {t('tasks.taskEngineering')}
           </div>
         }
       >
@@ -314,19 +326,19 @@ export function WorkspaceTasks() {
                 size="sm"
                 className="h-9 gap-2 rounded-xl text-[10px] font-black uppercase"
               >
-                <View className="size-3.5" /> View Options
+                <View className="size-3.5" /> {t('tasks.viewOptions')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 rounded-xl">
               <DropdownMenuLabel className="text-[10px] font-bold uppercase">
-                Visible Columns
+                {t('tasks.visibleColumns')}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('type')}
                 onCheckedChange={() => toggleColumn('type')}
               >
-                Task Type
+                {t('tasks.taskType')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('priority')}
@@ -338,37 +350,37 @@ export function WorkspaceTasks() {
                 checked={visibleColumns.has('location')}
                 onCheckedChange={() => toggleColumn('location')}
               >
-                Location
+                {t('schedule.location')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('attachments')}
                 onCheckedChange={() => toggleColumn('attachments')}
               >
-                Attachments
+                {t('tasks.attachments')}
               </DropdownMenuCheckboxItem>
                <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('discount')}
                 onCheckedChange={() => toggleColumn('discount')}
               >
-                Discount
+                {t('tasks.discount')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('subtotal')}
                 onCheckedChange={() => toggleColumn('subtotal')}
               >
-                Budget
+                {t('tasks.budget')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('progress')}
                 onCheckedChange={() => toggleColumn('progress')}
               >
-                Progress
+                {t('tasks.progress')}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={visibleColumns.has('status')}
                 onCheckedChange={() => toggleColumn('status')}
               >
-                Status
+                {t('tasks.status')}
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -391,7 +403,7 @@ export function WorkspaceTasks() {
               setIsAddOpen(true);
             }}
           >
-            <Plus className="size-3.5" /> Create Root Node
+            <Plus className="size-3.5" /> {t('tasks.createRootNode')}
           </Button>
       </PageHeader>
 
@@ -405,12 +417,12 @@ export function WorkspaceTasks() {
       <Dialog open={!!previewingImage} onOpenChange={(open) => !open && setPreviewingImage(null)}>
         <DialogContent className="max-w-4xl border-none bg-transparent p-1 shadow-none">
           <DialogHeader>
-            <DialogTitle className="sr-only">Image Preview</DialogTitle>
-            <DialogDescription className="sr-only">A larger view of the attached image.</DialogDescription>
+            <DialogTitle className="sr-only">{t('tasks.imagePreviewTitle')}</DialogTitle>
+            <DialogDescription className="sr-only">{t('tasks.imagePreviewDescription')}</DialogDescription>
           </DialogHeader>
             {previewingImage && (
                 <div className="relative aspect-video h-auto w-full">
-                    <Image src={previewingImage} alt="Attachment preview" fill sizes="100vw" className="rounded-lg object-contain" />
+                    <Image src={previewingImage} alt={t('tasks.attachmentPreviewAlt')} fill sizes="100vw" className="rounded-lg object-contain" />
                 </div>
             )}
         </DialogContent>
@@ -486,8 +498,8 @@ export function WorkspaceTasks() {
               <EmptyMedia variant="icon">
                 <Coins className="size-5" />
               </EmptyMedia>
-              <EmptyTitle>Awaiting Engineering Node Definition</EmptyTitle>
-              <EmptyDescription>Create your first root task to start WBS planning.</EmptyDescription>
+              <EmptyTitle>{t('tasks.awaitingDefinition')}</EmptyTitle>
+              <EmptyDescription>{t('tasks.createFirstTask')}</EmptyDescription>
             </EmptyHeader>
           </Empty>
         )}

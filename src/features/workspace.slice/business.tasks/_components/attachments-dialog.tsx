@@ -10,6 +10,7 @@
 import { Loader2, UploadCloud, X } from 'lucide-react';
 import Image from 'next/image';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
@@ -42,12 +43,14 @@ export function AttachmentsDialog({
   onOpenChange,
   onPreviewImage,
 }: AttachmentsDialogProps) {
+  const { t } = useI18n();
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl rounded-xl">
         <DialogHeader>
-          <DialogTitle>Attachments</DialogTitle>
-          <DialogDescription>Upload and manage attachments directly in WBS Governance.</DialogDescription>
+          <DialogTitle>{t('tasks.attachments')}</DialogTitle>
+          <DialogDescription>{t('tasks.attachmentsDescription')}</DialogDescription>
         </DialogHeader>
 
         <input
@@ -61,7 +64,7 @@ export function AttachmentsDialog({
 
         <Button asChild variant="outline" className="h-10 w-full cursor-pointer rounded-lg border-dashed">
           <label htmlFor="attachments-upload">
-            <UploadCloud className="mr-2 size-4" /> Upload Images
+            <UploadCloud className="mr-2 size-4" /> {t('tasks.uploadImages')}
           </label>
         </Button>
 
@@ -72,13 +75,25 @@ export function AttachmentsDialog({
               onClick={() => onPreviewImage(url)}
               className="relative aspect-square overflow-hidden rounded-lg border transition-opacity hover:opacity-80"
             >
-              <Image src={url} alt={`Attachment ${index + 1}`} fill sizes="200px" className="object-cover" />
+              <Image
+                src={url}
+                alt={t('tasks.attachmentImageAlt', { index: index + 1 })}
+                fill
+                sizes="200px"
+                className="object-cover"
+              />
             </button>
           ))}
 
           {files.map((file, index) => (
             <div key={`new-${index}`} className="group relative aspect-square overflow-hidden rounded-lg border">
-              <Image src={URL.createObjectURL(file)} alt={`New attachment ${index + 1}`} fill sizes="200px" className="object-cover" />
+              <Image
+                src={URL.createObjectURL(file)}
+                alt={t('tasks.newAttachmentImageAlt', { index: index + 1 })}
+                fill
+                sizes="200px"
+                className="object-cover"
+              />
               <Button
                 variant="destructive"
                 size="icon"
@@ -94,7 +109,7 @@ export function AttachmentsDialog({
         <div className="flex justify-end">
           <Button onClick={onSave} disabled={isSaving} className="rounded-lg">
             {isSaving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-            {isSaving ? 'Saving...' : 'Save Attachments'}
+            {isSaving ? t('common.saving') : t('tasks.saveAttachments')}
           </Button>
         </div>
       </DialogContent>

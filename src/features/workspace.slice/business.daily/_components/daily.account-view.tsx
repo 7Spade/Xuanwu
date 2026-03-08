@@ -16,6 +16,7 @@ import { useState } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
 import { useAuth } from "@/app-runtime/providers/auth-provider";
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { WorkspaceProvider } from "@/features/workspace.slice/core";
 
 import { useAggregatedLogs } from "../_hooks/use-aggregated-logs";
@@ -25,6 +26,7 @@ import { DailyLogCard } from "./daily-log-card";
 import { DailyLogDialog } from "./daily-log-dialog";
 
 export function AccountDailyComponent() {
+  const { t } = useI18n();
   const { state: appState } = useApp();
   const { state: authState } = useAuth();
   const { user } = authState;
@@ -37,9 +39,9 @@ export function AccountDailyComponent() {
     return (
       <div className="flex flex-col items-center gap-4 p-8 text-center">
         <AlertCircle className="size-10 text-muted-foreground" />
-        <h3 className="font-bold">Activity Log Not Available</h3>
+        <h3 className="font-bold">{t('workspace.activityLogNotAvailable')}</h3>
         <p className="text-sm text-muted-foreground">
-          Daily activity logs are only available within an organization dimension.
+          {t('workspace.activityLogNotAvailableDescription')}
         </p>
       </div>
     )
@@ -67,7 +69,7 @@ export function AccountDailyComponent() {
           <div className="rounded-full border-2 border-dashed bg-muted/20 p-6">
             <MessageSquare className="size-16 text-muted-foreground" />
           </div>
-          <p className="text-xl font-bold uppercase tracking-[0.2em]">Activity Void</p>
+          <p className="text-xl font-bold uppercase tracking-[0.2em]">{t('workspace.activityVoid')}</p>
         </div>
       )}
 

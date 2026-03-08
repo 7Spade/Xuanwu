@@ -4,6 +4,7 @@ import { Eye, EyeOff, Shield, Trash2, ArrowUpRight, Terminal } from "lucide-reac
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Badge } from "@/shadcn-ui/badge";
 import { Button } from "@/shadcn-ui/button";
 import { ROUTES } from "@/shared-kernel/constants/routes";
@@ -16,10 +17,11 @@ interface WorkspaceListItemProps {
 }
 
 function WorkspaceListItem({ workspace, onDelete }: WorkspaceListItemProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const isVisible = workspace.visibility === "visible";
-  const visibilityLabel = isVisible ? "Visible" : "Hidden";
-  const protocolLabel = workspace.protocol || "Default Protocol";
+  const visibilityLabel = isVisible ? t('common.visible') : t('common.hidden');
+  const protocolLabel = workspace.protocol || t('workspaces.defaultProtocol');
 
   return (
     <button
@@ -44,7 +46,7 @@ function WorkspaceListItem({ workspace, onDelete }: WorkspaceListItemProps) {
       </div>
       <div className="flex items-center gap-4">
         <div className="hidden text-right md:block">
-          <p className="mb-1 text-[9px] font-bold uppercase leading-none tracking-widest text-muted-foreground">Access Protocol</p>
+          <p className="mb-1 text-[9px] font-bold uppercase leading-none tracking-widest text-muted-foreground">{t('workspaces.accessProtocol')}</p>
           <p className="text-[11px] font-medium">{protocolLabel}</p>
         </div>
         <div className="flex items-center gap-1">
@@ -66,20 +68,21 @@ function WorkspaceListItem({ workspace, onDelete }: WorkspaceListItemProps) {
 }
 
 export function WorkspaceList({ workspaces }: { workspaces: Workspace[] }) {
+  const { t } = useI18n();
   const router = useRouter();
   const recentOnes = useMemo(() => workspaces.slice(0, 4), [workspaces]);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="font-headline text-xl font-bold tracking-tight">Recent Workspaces</h2>
+        <h2 className="font-headline text-xl font-bold tracking-tight">{t('workspaces.recentWorkspaces')}</h2>
         <Button 
           variant="ghost" 
           size="sm"
           onClick={() => router.push(ROUTES.WORKSPACES)}
           className="text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5"
         >
-          View All <ArrowUpRight className="ml-1 size-3" />
+          {t('workspaces.viewAll')} <ArrowUpRight className="ml-1 size-3" />
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-3">
@@ -88,13 +91,13 @@ export function WorkspaceList({ workspaces }: { workspaces: Workspace[] }) {
         )) : (
           <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/40 bg-muted/5 p-8 text-center">
             <Terminal className="mb-3 size-8 text-muted-foreground opacity-20" />
-            <p className="text-sm text-muted-foreground">No workspace nodes have been created yet.</p>
+            <p className="text-sm text-muted-foreground">{t('workspaces.noWorkspaceNodes')}</p>
             <Button 
               variant="link"
               onClick={() => router.push(ROUTES.WORKSPACES)}
               className="mt-2 text-xs font-bold uppercase tracking-widest text-primary"
             >
-              + Create First Node
+              + {t('workspaces.createFirstNode')}
             </Button>
           </div>
         )}

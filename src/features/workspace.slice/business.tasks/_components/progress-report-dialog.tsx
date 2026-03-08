@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { Button } from '@/shadcn-ui/button';
 import {
   Dialog,
@@ -28,6 +29,7 @@ export function ProgressReportDialog({
   onClose,
   onSubmit,
 }: ProgressReportDialogProps) {
+  const { t } = useI18n();
   const [submissionQuantity, setSubmissionQuantity] = useState<number | string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,13 +48,13 @@ export function ProgressReportDialog({
   const handleSubmit = async () => {
     const submitted = Number(submissionQuantity);
     if (Number.isNaN(submitted) || submitted <= 0) {
-      toast({ variant: 'destructive', title: 'Invalid quantity' });
+      toast({ variant: 'destructive', title: t('tasks.invalidQuantity') });
       return;
     }
 
     const newTotal = currentCompleted + submitted;
     if (newTotal > totalQuantity) {
-      toast({ variant: 'destructive', title: 'Quantity exceeds total' });
+      toast({ variant: 'destructive', title: t('tasks.quantityExceedsTotal') });
       return;
     }
 
@@ -65,25 +67,31 @@ export function ProgressReportDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Report Progress</DialogTitle>
+          <DialogTitle>{t('tasks.submitProgress')}</DialogTitle>
           <DialogDescription>
-            Submit completed quantity for &quot;{task.name}&quot;. Current: {currentCompleted} / {totalQuantity}
+            {t('tasks.submitProgressDescription', {
+              name: task.name,
+              current: currentCompleted,
+              total: totalQuantity,
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <Label htmlFor="submission-quantity">Quantity for this submission</Label>
+          <Label htmlFor="submission-quantity">{t('tasks.quantityForSubmission')}</Label>
           <Input
             id="submission-quantity"
             type="number"
             value={submissionQuantity}
             onChange={(e) => setSubmissionQuantity(e.target.value)}
-            placeholder={`e.g., 15 (max: ${totalQuantity - currentCompleted})`}
+            placeholder={t('tasks.submissionQuantityPlaceholder', {
+              max: totalQuantity - currentCompleted,
+            })}
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="outline" onClick={onClose}>{t('common.cancel')}</Button>
           <Button onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? 'Submitting...' : 'Submit Progress'}
+            {isSubmitting ? t('tasks.submittingProgress') : t('tasks.submitProgress')}
           </Button>
         </DialogFooter>
       </DialogContent>

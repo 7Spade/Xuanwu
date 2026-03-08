@@ -78,10 +78,10 @@ export function DashboardView() {
           <div className="flex items-center gap-6 rounded-2xl border border-border/50 bg-muted/40 p-4 shadow-sm backdrop-blur-sm">
             <div className="border-r border-border/50 px-4 text-center">
               <p className="font-headline text-2xl font-bold">{dimensionWorkspaces.length}</p>
-              <p className="text-[10px] font-bold uppercase text-muted-foreground">Workspace Nodes</p>
+              <p className="text-[10px] font-bold uppercase text-muted-foreground">{t('workspaces.workspaceNodes')}</p>
             </div>
             <div className="px-4 text-center">
-              <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">Your Role</p>
+              <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">{t('workspaces.yourRole')}</p>
               <Badge className="border-primary/20 bg-primary/10 font-headline text-primary">
                 {currentUserRoleInOrganization}
               </Badge>
@@ -93,10 +93,9 @@ export function DashboardView() {
       {!isOrganizationContext && (
         <div className="flex flex-col items-center rounded-3xl border-2 border-dashed border-accent/20 bg-accent/5 p-8 text-center">
           <UserIcon className="mb-4 size-16 text-accent/50" />
-          <h3 className="font-headline text-xl font-bold">Personal Dimension</h3>
+          <h3 className="font-headline text-xl font-bold">{t('workspaces.personalDimension')}</h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Manage your private projects and logical spaces. To collaborate with others, switch to or
-            create an organization dimension using the switcher in the sidebar.
+            {t('workspaces.personalDimensionHelp')}
           </p>
         </div>
       )}

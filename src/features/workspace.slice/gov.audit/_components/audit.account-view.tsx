@@ -3,6 +3,7 @@
 
 import { AlertCircle, Terminal } from "lucide-react";
 
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useAccountAudit } from "../_hooks/use-account-audit";
 
 import { AuditDetailSheet } from "./audit-detail-sheet";
@@ -11,15 +12,16 @@ import { AuditTimeline } from "./audit-timeline";
 
 
 export function AccountAuditComponent() {
+  const { t } = useI18n();
   const { logs, isOrganizationContext, selectedLog, setSelectedLog, clearSelection } = useAccountAudit();
 
   if (!isOrganizationContext) {
     return (
       <div className="flex flex-col items-center gap-4 p-8 text-center">
         <AlertCircle className="size-10 text-muted-foreground" />
-        <h3 className="font-bold">Audit Log Not Available</h3>
+        <h3 className="font-bold">{t('workspace.auditLogNotAvailable')}</h3>
         <p className="text-sm text-muted-foreground">
-          Audit logs are only available within an organization dimension.
+          {t('workspace.auditLogNotAvailableDescription')}
         </p>
       </div>
     );
@@ -36,7 +38,7 @@ export function AccountAuditComponent() {
       ) : (
         <div className="flex flex-col items-center justify-center space-y-4 p-32 text-center opacity-30">
           <Terminal className="size-12" />
-          <p className="text-sm font-black uppercase tracking-widest">No technical specification changes recorded</p>
+          <p className="text-sm font-black uppercase tracking-widest">{t('workspace.noSpecChangesRecorded')}</p>
         </div>
       )}
 
