@@ -38,6 +38,7 @@ export function PartnersView() {
   const [mounted, setMounted] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [newTeamName, setNewTeamName] = useState("")
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -67,9 +68,9 @@ export function PartnersView() {
 
   const handleCreateTeam = async () => {
     if (!newTeamName.trim()) return
-    
+    setIsCreatingTeam(true)
     try {
-      await createPartnerGroup(newTeamName)
+      await createPartnerGroup(newTeamName.trim())
       setNewTeamName("")
       setIsCreateOpen(false)
       toast({ title: "Partner Team created" })
@@ -80,6 +81,8 @@ export function PartnersView() {
         title: "Failed to Create Team",
         description: (e instanceof Error ? e.message : null) || "An unknown error occurred.",
       })
+    } finally {
+      setIsCreatingTeam(false)
     }
   }
 
@@ -142,11 +145,11 @@ export function PartnersView() {
           </DialogHeader>
           <div className="space-y-4 py-6">
             <Label className="text-xs font-bold uppercase tracking-widest">{t('account.teamName')}</Label>
-            <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder={t('account.partnerTeamNamePlaceholder')} className="h-11 rounded-xl" />
+            <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder={t('account.partnerTeamNamePlaceholder')} className="h-11 rounded-xl" disabled={isCreatingTeam} />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="rounded-xl">{t('common.cancel')}</Button>
-            <Button onClick={handleCreateTeam} className="rounded-xl bg-accent px-8 shadow-lg shadow-accent/20 hover:bg-accent/90">{t('account.createPartnerTeam')}</Button>
+            <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="rounded-xl" disabled={isCreatingTeam}>{t('common.cancel')}</Button>
+            <Button onClick={handleCreateTeam} className="rounded-xl bg-accent px-8 shadow-lg shadow-accent/20 hover:bg-accent/90" disabled={isCreatingTeam || !newTeamName.trim()}>{isCreatingTeam ? t('common.creating') : t('account.createPartnerTeam')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

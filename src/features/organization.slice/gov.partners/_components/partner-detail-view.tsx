@@ -52,6 +52,8 @@ export function PartnerDetailView() {
   const [invites, setInvites] = useState<PartnerInvite[]>([])
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
+  const [isSendingInvite, setIsSendingInvite] = useState(false)
+  const [dismissingMemberId, setDismissingMemberId] = useState<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
@@ -86,9 +88,9 @@ export function PartnerDetailView() {
 
   const handleSendInvite = async () => {
     if (!inviteEmail.trim()) return
-
+    setIsSendingInvite(true)
     try {
-      await sendPartnerInvite(team.id, inviteEmail)
+      await sendPartnerInvite(team.id, inviteEmail.trim())
       setInviteEmail("")
       setIsInviteOpen(false)
       toast({ title: "Recruitment protocol sent", description: `${inviteEmail} will receive a resonance request.` })
@@ -99,12 +101,14 @@ export function PartnerDetailView() {
         title: "Failed to Send Invite",
         description: (e instanceof Error ? e.message : null) || "An unknown error occurred.",
       })
+    } finally {
+      setIsSendingInvite(false)
     }
   }
   
   const handleDismissMember = async (member: MemberReference) => {
     if (!activeOrganization) return
-
+    setDismissingMemberId(member.id)
     try {
       await dismissPartnerMember(team.id, member)
       toast({ title: "Partner relationship terminated" })
@@ -115,6 +119,8 @@ export function PartnerDetailView() {
         title: "Failed to Dismiss Partner",
         description: (e instanceof Error ? e.message : null) || "An unknown error occurred.",
       })
+    } finally {
+      setDismissingMemberId(null)
     }
   }
 
@@ -162,6 +168,7 @@ export function PartnerDetailView() {
                     size="icon" 
                     className="ml-auto size-7 text-muted-foreground transition-colors hover:text-destructive"
                     onClick={() => handleDismissMember(member)}
+                    disabled={dismissingMemberId === member.id}
                   >
                     <Trash2 className="size-3.5" />
                   </Button>
@@ -220,6 +227,7 @@ export function PartnerDetailView() {
                 onChange={(e) => setInviteEmail(e.target.value)} 
                 placeholder="partner@external-corp.io" 
                 className="h-12 rounded-2xl border-muted-foreground/20 focus-visible:ring-accent/30"
+                disabled={isSendingInvite}
               />
             </div>
             <div className="flex items-start gap-3 rounded-2xl border border-accent/10 bg-accent/5 p-4">
@@ -233,8 +241,8 @@ export function PartnerDetailView() {
             </div>
           </div>
           <DialogFooter className="border-t bg-muted/30 p-6">
-            <Button variant="ghost" onClick={() => setIsInviteOpen(false)} className="rounded-xl text-[10px] font-bold uppercase tracking-widest">Cancel</Button>
-            <Button onClick={handleSendInvite} className="rounded-xl bg-accent px-8 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-accent/20 hover:bg-accent/90">Initiate Recruitment</Button>
+            <Button variant="ghost" onClick={() => setIsInviteOpen(false)} className="rounded-xl text-[10px] font-bold uppercase tracking-widest" disabled={isSendingInvite}>Cancel</Button>
+            <Button onClick={handleSendInvite} className="rounded-xl bg-accent px-8 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-accent/20 hover:bg-accent/90" disabled={isSendingInvite || !inviteEmail.trim()}>{isSendingInvite ? "Sending..." : "Initiate Recruitment"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

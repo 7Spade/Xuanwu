@@ -22,6 +22,8 @@ export function MembersView() {
   const { state } = useApp()
   const { accounts, activeAccount } = state
   const { recruitMember, dismissMember } = useMemberManagement()
+  const [isRecruiting, setIsRecruiting] = useState(false)
+  const [dismissingMemberId, setDismissingMemberId] = useState<string | null>(null)
 
   // FR-W1: eligible status map
   const [eligibilityMap, setEligibilityMap] = useState<Record<string, boolean>>({})
@@ -69,6 +71,7 @@ export function MembersView() {
   const members = activeOrganization.members || []
 
   const handleRecruitMember = async () => {
+    setIsRecruiting(true)
     const newId = `m-${Math.random().toString(36).slice(-4)}`
     const name = "New Researcher"
     const email = `user-${newId}@orgverse.io`
@@ -84,10 +87,13 @@ export function MembersView() {
         title: t('account.failedToRecruitMember'),
         description: message,
       })
+    } finally {
+      setIsRecruiting(false)
     }
   }
 
   const handleDismissMember = async (member: MemberReference) => {
+    setDismissingMemberId(member.id)
     try {
       await dismissMember(member)
       toast({ title: t('account.identityDeregistered'), description: t('account.memberRemoved', { name: member.name }), variant: "destructive" })
@@ -99,6 +105,8 @@ export function MembersView() {
         title: t('account.failedToDismissMember'),
         description: message,
       })
+    } finally {
+      setDismissingMemberId(null)
     }
   }
 
@@ -108,8 +116,8 @@ export function MembersView() {
         title={t('account.membersTitle')} 
         description={t('account.membersDescription', { name: activeOrganization.name })}
       >
-        <Button className="flex h-10 items-center gap-2 px-6 text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20" onClick={handleRecruitMember}>
-          <UserPlus className="size-4" /> {t('account.recruitNewMember')}
+        <Button className="flex h-10 items-center gap-2 px-6 text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-primary/20" onClick={handleRecruitMember} disabled={isRecruiting}>
+          <UserPlus className="size-4" /> {isRecruiting ? t('common.creating') : t('account.recruitNewMember')}
         </Button>
       </PageHeader>
 
@@ -159,7 +167,7 @@ export function MembersView() {
                   variant="outline" 
                   size="sm" 
                   onClick={() => handleDismissMember(member)}
-                  disabled={member.role === 'Owner'}
+                  disabled={member.role === 'Owner' || dismissingMemberId === member.id}
                   className="h-8 hover:bg-destructive/5 hover:text-destructive"
                 >
                   <Trash2 className="size-3.5" />

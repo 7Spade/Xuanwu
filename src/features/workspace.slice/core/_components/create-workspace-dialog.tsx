@@ -33,12 +33,16 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: CreateWorkspaceDia
   const [loading, setLoading] = useState(false);
 
   const onCreate = async () => {
+    if (!name.trim()) return;
     setLoading(true);
-    await handleCreateWorkspace(name, activeAccount, () => {
-      setName("");
-      onOpenChange(false);
-    }, t);
-    setLoading(false);
+    try {
+      await handleCreateWorkspace(name.trim(), activeAccount, () => {
+        setName("");
+        onOpenChange(false);
+      }, t);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,7 +75,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: CreateWorkspaceDia
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={onCreate} className="rounded-xl shadow-lg shadow-primary/20" disabled={loading}>
+          <Button onClick={onCreate} className="rounded-xl shadow-lg shadow-primary/20" disabled={loading || !name.trim()}>
             {loading ? t('common.creating') : t("common.confirmCreation")}
           </Button>
         </DialogFooter>

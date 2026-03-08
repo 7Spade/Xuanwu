@@ -35,6 +35,7 @@ export function TeamsView() {
   const [mounted, setMounted] = useState(false)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [newTeamName, setNewTeamName] = useState("")
+  const [isCreatingTeam, setIsCreatingTeam] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -63,9 +64,9 @@ export function TeamsView() {
 
   const handleCreateTeam = async () => {
     if (!newTeamName.trim()) return
-    
+    setIsCreatingTeam(true)
     try {
-      await createTeam(newTeamName, 'internal')
+      await createTeam(newTeamName.trim(), 'internal')
       setNewTeamName("")
       setIsCreateOpen(false)
       toast({ title: t('account.internalTeamCreated') })
@@ -77,6 +78,8 @@ export function TeamsView() {
         title: t('account.failedToCreateTeam'),
         description: message,
       })
+    } finally {
+      setIsCreatingTeam(false)
     }
   }
 
@@ -132,11 +135,11 @@ export function TeamsView() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Label>{t('account.teamName')}</Label>
-            <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder={t('account.teamNamePlaceholder')} />
+            <Input value={newTeamName} onChange={(e) => setNewTeamName(e.target.value)} placeholder={t('account.teamNamePlaceholder')} disabled={isCreatingTeam} />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>{t('common.cancel')}</Button>
-            <Button onClick={handleCreateTeam}>{t('account.createInternalTeam')}</Button>
+            <Button variant="outline" onClick={() => setIsCreateOpen(false)} disabled={isCreatingTeam}>{t('common.cancel')}</Button>
+            <Button onClick={handleCreateTeam} disabled={isCreatingTeam || !newTeamName.trim()}>{isCreatingTeam ? t('common.creating') : t('account.createInternalTeam')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
