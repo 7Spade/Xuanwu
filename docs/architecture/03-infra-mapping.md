@@ -203,6 +203,9 @@ Firestore onSnapshot (CDC)
 
 ## L6 Query Gateway 路由清單
 
+> **範圍說明**：以下為具有特定治理規則的**命名路由**（Governance-Named Routes），非 L6 全量路由清單。
+> 其餘 L5 Projection 透過 `READ_REG` 版本目錄在 Query Gateway 均可一般性存取，無需獨立條目。
+
 | 路由 | 說明 | 合規要求 |
 |------|------|----------|
 | `org-eligible-member-view` | 排班/組織成員快照 | [#14 #15 #16] |

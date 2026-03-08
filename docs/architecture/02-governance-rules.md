@@ -18,9 +18,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | 治理演進 | `D / P / T / E` | SHOULD — 可演化，以索引引用；不重複定義 |
 | 絕對禁止 | FORBIDDEN | MUST NOT — 任何情況均不得違反 |
 
+> **治理視圖說明**：SHOULD（D/P/T/E）規則可在特定控制面語境中視同 MUST 執行——這是**治理視圖選擇**，非正式 RULESET 重分類。
+> 代表案例：`D7`（CP1 系統穩定基石）、`E7/E8`（Security Gate 閉環）。
+
 ---
 
 ## 架構控制面 (Architecture Control Plane)
+
+> **CP1–CP4 定性說明**：CP1–CP4 為依執行優先序分組的**治理視圖**，非正式 RULESET 分類（正式分類見 § 規則分類說明）。CP 分組供實際審查與重構時快速判準使用。
 
 ### CP1 MUST：Hard Invariants（系統穩定基石）
 
@@ -96,7 +101,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[S4]` | SLA 數值只能引用 `SK_STALENESS_CONTRACT`，禁止硬寫 |
 | `[D7]` | 跨切片引用只能透過 `{slice}/index.ts` 公開 API |
 | `[D21]` | VS8 四層語義引擎：Governance → Core Domain → Compute Engine → Output |
-| `[D21-*]` | VS8 語義擴展不變量（D21-1~D21-10、D21-A~D21-X，共 27 條）；完整定義見下方 §D21 各子節（一~六） |
+| `[D21-*]` | VS8 語義擴展不變量（D21-1~D21-10、D21-A~D21-K、D21-S~D21-X，共 27 條）；完整定義見下方 §D21 各子節（一~六） |
 | `[T5]` | 業務 Slice 僅能訂閱 `projections/tag-snapshot.slice.ts`，嚴禁直接存取 `graph/adjacency-list.ts` |
 | `[D22]` | 程式碼禁止出現裸字串 tag_name；全域引用 TE1~TE6，組織自訂用 `OrgTagRef(orgId, tagSlug)` |
 | `[D27-A]` | 語義感知路由：所有分發邏輯必須先調用 `policy-mapper/` 轉換語義標籤 |
@@ -334,7 +339,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D21-9` | 突觸權重不變量：`SemanticEdge.weight ∈ [0.0, 1.0]`；cost = 1.0 / max(weight, MIN_EDGE_WEIGHT) |
 | `D21-10` | 拓撲可觀測性：`findIsolatedNodes(slugs[])` 為 VS8_NG 唯一拓撲健康探針；每次 addEdge/removeEdge 後必須非同步觸發 |
 
-**六、擴展不變量（D21-A~D21-X）**
+**六、擴展不變量（D21-A~D21-K、D21-S~D21-X）**
 
 | 規則 | 說明 |
 |------|------|
