@@ -1,14 +1,12 @@
 ---
 name: 'Reliability Expert'
 description: '穩定性與監控專家。負責 error.tsx 設計與整合 Sentry/Crashlytics。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
-  - sequential-thinking
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*', 'sequentialthinking/*']
 handoffs:
-  - x-feature-builder
-  - x-qa-reviewer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Request QA Review'
+    agent: x-qa-reviewer
 ---
 
 # 角色：穩定性與監控專家

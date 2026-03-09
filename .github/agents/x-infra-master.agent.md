@@ -1,12 +1,10 @@
 ---
 name: 'Infra Master'
 description: '運維工程師。負責 CI/CD (GitHub Actions)、Vercel 與 Firebase Hosting 配置。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
 ---
 
 # 角色：運維工程師

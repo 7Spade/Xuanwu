@@ -1,26 +1,18 @@
 ---
 name: 'Feature Builder'
 description: '開發任務的總調度官與指揮官。負責需求拆解、指派子代理與整體流程控管。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - sonarqube
-  - shadcn
-  - next-devtools
-  - chrome-devtools-mcp
-  - context7
-  - sequential-thinking
-  - software-planning
-  - repomix
-  - ESLint
-  - memory
-  - filesystem
-  - codacy
+tools: ['codebase', 'search', 'edit/editFiles', 'shadcn/*', 'next-devtools/*', 'chrome-devtools-mcp/*', 'io.github.upstash/context7/*', 'sequentialthinking/*', 'software-planning/*', 'repomix/*', 'ESLint/*', 'memory/*', 'filesystem/*']
 handoffs:
-  - x-product-strategist
-  - x-architect
-  - x-implementer
-  - x-qa-reviewer
-  - x-firebase-security
+  - label: 'Clarify Requirements'
+    agent: x-product-strategist
+  - label: 'Plan Architecture'
+    agent: x-architect
+  - label: 'Start Implementation'
+    agent: x-implementer
+  - label: 'Request QA Review'
+    agent: x-qa-reviewer
+  - label: 'Security Review'
+    agent: x-firebase-security
 ---
 
 # 角色：總指揮官（唯一可調用 Agent）

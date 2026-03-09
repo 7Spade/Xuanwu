@@ -1,14 +1,12 @@
 ---
 name: 'Context Master'
 description: '現代化上下文助手。專精於使用 context7 MCP 管理複雜的大規模專案上下文與知識圖譜。'
-tools: ['codebase', 'file-search', 'read-file']
-mcp-servers:
-  - context7
-  - memory
-  - repomix
+tools: ['codebase', 'search', 'io.github.upstash/context7/*', 'memory/*', 'repomix/*']
 handoffs:
-  - x-feature-builder
-  - x-researcher
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Request Research'
+    agent: x-researcher
 ---
 
 # 角色：現代化上下文助手 (Context Master)

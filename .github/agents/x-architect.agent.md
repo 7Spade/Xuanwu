@@ -1,15 +1,12 @@
 ---
 name: 'Architect'
 description: '架構規劃師。專精 Next.js App Router 與 Firestore 模型設計。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - next-devtools
-  - filesystem
-  - memory
-  - sequential-thinking
+tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'filesystem/*', 'memory/*', 'sequentialthinking/*']
 handoffs:
-  - x-feature-builder
-  - x-implementer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Start Implementation'
+    agent: x-implementer
 ---
 
 # 角色：架構規劃師

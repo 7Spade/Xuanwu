@@ -1,14 +1,12 @@
 ---
 name: 'Test Engineer'
 description: '自動化測試工程師。撰寫並執行 Playwright/Cypress 測試。'
-tools: ['codebase', 'file-search', 'read-file', 'command']
-mcp-servers:
-  - chrome-devtools-mcp
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'runCommands', 'chrome-devtools-mcp/*', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-qa-reviewer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Request QA Review'
+    agent: x-qa-reviewer
 ---
 
 # 角色：自動化測試工程師

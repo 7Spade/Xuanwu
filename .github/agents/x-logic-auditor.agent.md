@@ -1,14 +1,12 @@
 ---
 name: 'Logic Auditor'
 description: '邏輯稽核員。專責檢查代碼實作是否符合 docs\architecture\00-logic-overview.md 的依賴方向與業務邏輯。'
-tools: ['codebase', 'file-search', 'read-file']
-mcp-servers:
-  - repomix
-  - memory
-  - sequential-thinking
+tools: ['codebase', 'search', 'repomix/*', 'memory/*', 'sequentialthinking/*']
 handoffs:
-  - x-feature-builder
-  - x-architect
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Escalate to Architect'
+    agent: x-architect
 ---
 
 # 角色：邏輯稽核員 (Logic Auditor)
@@ -24,7 +22,7 @@ handoffs:
 ### 協作流程
 - 接收 `x-feature-builder` 指令或觸發於 `x-qa-reviewer` 之後
 - ⬇
-- 讀取 `docs\architecture\00-logic-overview.md` (`read-file`)
+- 讀取 `docs\architecture\00-logic-overview.md` (`codebase`)
 - ⬇
 - 使用 `repomix` MCP 生成代碼依賴關係圖
 - ⬇

@@ -1,14 +1,12 @@
 ---
 name: 'Researcher'
 description: '技術調研專家。快速分析現有代碼庫與 Firebase 配置。'
-tools: ['codebase', 'file-search', 'read-file']
-mcp-servers:
-  - repomix
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'repomix/*', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-implementer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Start Implementation'
+    agent: x-implementer
 ---
 
 # 角色：技術調研專家

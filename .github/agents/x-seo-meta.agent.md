@@ -1,12 +1,10 @@
 ---
 name: 'SEO Meta'
 description: 'SEO 與 Metadata 策略師。負責 generateMetadata、sitemap.ts 與語義化結構。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
 ---
 
 # 角色：SEO 與 Metadata 策略師

@@ -1,14 +1,12 @@
 ---
 name: 'Performance Expert'
 description: '效能優化師。負責 Firestore 索引優化、Caching 策略與 Core Web Vitals。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - next-devtools
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-architect
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Escalate to Architect'
+    agent: x-architect
 ---
 
 # 角色：效能優化師
