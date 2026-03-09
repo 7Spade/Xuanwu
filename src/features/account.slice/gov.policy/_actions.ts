@@ -25,7 +25,7 @@ import {
   commandFailureFrom,
 } from '@/shared-kernel';
 
-import { enqueueAccountLifecycleOutboxEvent } from '../acc-outbox';
+import { enqueueAccountLifecycleOutboxEvent } from '../_acc-outbox';
 
 // ---------------------------------------------------------------------------
 // TOKEN_REFRESH_SIGNAL helper [S6]

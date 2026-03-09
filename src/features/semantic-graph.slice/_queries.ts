@@ -22,16 +22,16 @@ import {
   rankAffectedNodes,
   buildDownstreamEvents,
   buildCausalityChain,
-} from './domain.reasoning/causality/causality-tracer';
-import { getEdgesByType } from './domain.graph/edges/semantic-edge-store';
+} from './domain.reasoning/_causality/_causality-tracer';
+import { getEdgesByType } from './domain.graph/_edges/_semantic-edge-store';
 import {
   computeSemanticDistance,
   computeSemanticDistanceMatrix,
   findIsolatedNodes,
-} from './domain.reasoning/semantic-distance';
+} from './domain.reasoning/_semantic-distance';
 import type { SemanticEdge, StaleTagWarning } from './core/types';
-import { detectStaleTagWarnings } from './domain.routing/tag-lifecycle.workflow';
-import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './domain.output/projections/graph-selectors';
+import { detectStaleTagWarnings } from './domain.routing/_tag-lifecycle.workflow';
+import { getEligibleTags, satisfiesSemanticRequirement, buildEligibilityMatrix } from './domain.output/_projections/_graph-selectors';
 
 
 // ??? Tag eligibility reads (VS6 / VS4) ???????????????????????????????????????

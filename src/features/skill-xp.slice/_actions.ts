@@ -28,7 +28,7 @@ import {
 
 import { addXp, deductXp } from './_aggregate';
 import { addSkillTagToPool, removeSkillTagFromPool } from './_tag-pool';
-import { enqueueSkillOutboxEvent } from './skill-outbox';
+import { enqueueSkillOutboxEvent } from './_skill-outbox';
 
 export interface AddXpInput {
   accountId: string;

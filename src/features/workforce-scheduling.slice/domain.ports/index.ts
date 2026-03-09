@@ -9,18 +9,18 @@ export type {
   SchedulingCommandPort,
   CreateScheduleItemInput,
   ManualAssignOptions,
-} from './command.port';
+} from './_command.port';
 
 export type {
   SchedulingQueryPort,
   QueryUnsubscribe,
   OrgEligibleMemberView,
   OrgMemberSkillWithTier,
-} from './query.port';
+} from './_query.port';
 
 export type {
   SchedulingEventPort,
   SchedulingOutboxLane,
   SchedulingOutboxRouting,
   SchedulingOutboxAck,
-} from './event.port';
+} from './_event.port';

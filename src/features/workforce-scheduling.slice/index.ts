@@ -9,7 +9,7 @@
  */
 
 // Layered API surfaces. Keep this file as the single import entry for consumers.
-export * from './domain.core';
+export * from './core';
 export * from './domain.application';
 export * from './domain.ui';
 

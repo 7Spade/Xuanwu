@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-export { executeWriteOp } from './commands/write-op';
+export { executeWriteOp } from './_commands/_write-op';
 
 export {
   createScheduleItem,
@@ -17,7 +17,7 @@ export {
   manualAssignScheduleMember,
   cancelScheduleProposalAction,
   completeOrgScheduleAction,
-} from './commands/index';
+} from './_commands/index';
 
 export {
   getScheduleItems,
@@ -31,8 +31,8 @@ export {
   subscribeToWorkspaceScheduleItems,
   getEligibleMemberForSchedule,
   getEligibleMembersForSchedule,
-} from './queries/index';
-export type { OrgEligibleMemberView, OrgMemberSkillWithTier } from './queries/index';
+} from './_queries/index';
+export type { OrgEligibleMemberView, OrgMemberSkillWithTier } from './_queries/index';
 
 export {
   selectAllScheduleItems,
@@ -40,14 +40,14 @@ export {
   selectDecisionHistory,
   selectUpcomingEvents,
   selectPresentEvents,
-} from './selectors/index';
-export type { ScheduleItemWithWorkspace, ScheduleItemWithMembers } from './selectors/index';
+} from './_selectors/index';
+export type { ScheduleItemWithWorkspace, ScheduleItemWithMembers } from './_selectors/index';
 
-export { startSchedulingSaga, getSagaState } from './sagas/index';
-export type { SagaState, SagaStep, SagaStatus } from './sagas/index';
+export { startSchedulingSaga, getSagaState } from './_sagas/index';
+export type { SagaState, SagaStep, SagaStatus } from './_sagas/index';
 
 // Legacy compatibility: projector handlers are implemented in VS0 projection bus.
 export type {
   AccountScheduleProjection,
   AccountScheduleAssignment,
-} from './projectors/runtime/account-schedule';
+} from './_projectors/_runtime/_account-schedule';

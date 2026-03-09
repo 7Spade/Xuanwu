@@ -34,7 +34,7 @@ import {
 import {
   enqueueAccountLifecycleOutboxEvent,
   enqueueAccountOutboxEvent,
-} from '../acc-outbox';
+} from '../_acc-outbox';
 
 export interface AccountRoleRecord {
   accountId: string;

@@ -34,7 +34,7 @@ import {
 } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { findSkill } from '@/shared-kernel/constants/skills';
 
-import { enqueueSkillOutboxEvent } from './skill-outbox';
+import { enqueueSkillOutboxEvent } from './_skill-outbox';
 
 // ---------------------------------------------------------------------------
 // Types

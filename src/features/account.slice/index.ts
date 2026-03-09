@@ -59,10 +59,10 @@ export { isOwner, getUserTeams, getUserTeamIds } from './_account.rules';
 // =================================================================
 // Account Event Bus (account-event-bus)
 // =================================================================
-export { onAccountEvent, publishAccountEvent } from './account-event-bus';
+export { onAccountEvent, publishAccountEvent } from './_account-event-bus';
 export type {
 	AccountEventPayloadMap,
 	AccountEventKey,
 	AccountRoleChangedPayload,
 	AccountPolicyChangedPayload,
-} from './account-event-bus';
+} from './_account-event-bus';

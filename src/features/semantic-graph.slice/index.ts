@@ -133,21 +133,21 @@ export {
 // Tag Entity Node Factory ??centralized-nodes [D21]
 // Builds TE1~TE6 nodes; exposed so composition-root can seed nodes.
 // =================================================================
-export { buildTagEntity } from './core/nodes/tag-entity.factory';
-export type { TagEntityFactoryInput } from './core/nodes/tag-entity.factory';
+export { buildTagEntity } from './core/_nodes/_tag-entity.factory';
+export type { TagEntityFactoryInput } from './core/_nodes/_tag-entity.factory';
 
 // =================================================================
 // Embedding Port ??centralized-embeddings [D24][D26]
 // IEmbeddingPort is exposed so the composition root can inject an adapter.
 // buildTagEmbedding and batch variant are exposed for projection integration.
 // =================================================================
-export type { IEmbeddingPort } from './core/embeddings/embedding-port';
+export type { IEmbeddingPort } from './core/_embeddings/_embedding-port';
 export {
   injectEmbeddingPort,
   NOOP_EMBEDDING_PORT,
   buildTagEmbedding,
   buildTagEmbeddingsBatch,
-} from './core/embeddings/embedding-port';
+} from './core/_embeddings/_embedding-port';
 
 // =================================================================
 // Cost Item Classification ??Layer-2 Semantic Classification [D8][D21]
@@ -176,12 +176,12 @@ export type {
 export {
   getTagSnapshotPresentation,
   getTagSnapshotPresentationMap,
-} from './domain.output/projections/tag-snapshot.slice';
+} from './domain.output/_projections/_tag-snapshot.slice';
 export type {
   TagSnapshotPresentation,
   TagSnapshotColorToken,
   TagSnapshotIconToken,
-} from './domain.output/projections/tag-snapshot.slice';
+} from './domain.output/_projections/_tag-snapshot.slice';
 
 // =================================================================
 // CTA Operations ??Centralized Tag Aggregate [D3][D8]
@@ -213,13 +213,13 @@ export type {
 // BEFORE addEdge() to enforce all graph invariants at the BBB layer.
 // External slices must never bypass this guard to write edges directly.
 // =================================================================
-export { validateEdgeProposal } from './gov.governance/guards/invariant-guard';
+export { validateEdgeProposal } from './gov.governance/_guards/_invariant-guard';
 export type {
   EdgeProposal,
   SemanticGuardDecision,
   SemanticGuardRejectionCode,
   SemanticGuardResult,
-} from './gov.governance/guards/invariant-guard';
+} from './gov.governance/_guards/_invariant-guard';
 
 // =================================================================
 // L8 Global Consensus Engine ??ConsensusEngine [D21-I D21-K]
@@ -227,9 +227,9 @@ export type {
 // forwarding to the L5 BBB InvariantGuard.  Call validateConsensus()
 // BEFORE validateEdgeProposal() in the proposal-stream pipeline.
 // =================================================================
-export { validateConsensus } from './gov.governance/semantic-governance-portal/consensus-engine';
+export { validateConsensus } from './gov.governance/_semantic-governance-portal/consensus-engine';
 export type {
   ConsensusDecision,
   ConsensusRejectionCode,
   ConsensusResult,
-} from './gov.governance/semantic-governance-portal/consensus-engine';
+} from './gov.governance/_semantic-governance-portal/consensus-engine';
