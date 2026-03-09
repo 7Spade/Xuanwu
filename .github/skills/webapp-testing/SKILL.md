@@ -19,6 +19,15 @@ Toolkit for interacting with and testing local web applications using Playwright
 - Current local dev values: `test@demo.com` / `123456`.
 - Keep credentials out of `.github/copilot-instructions.md`.
 
+## Login Test Procedure (Mandatory)
+1. Start from landing page `/`.
+2. Verify top-right language switcher and sign-in button both exist.
+3. Close/select language menu before clicking sign-in to prevent overlay click blocking.
+4. Open sign-in dialog, input `TEST_AUTH_EMAIL` and `TEST_AUTH_PASSWORD`.
+5. Submit and wait for route transition.
+6. Assert final page is `/dashboard` with visible dashboard shell nodes (navigation + content area).
+7. Record result with one post-login snapshot and key console/network anomalies if any.
+
 ## Workflow
 1. Confirm scope and ask targeted clarifying questions when required.
 2. Produce a concise, execution-ready plan focused on the stated goal.

@@ -22,6 +22,16 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 - Current local dev values: `test@demo.com` / `123456`.
 - Do not place credentials in `.github/copilot-instructions.md`.
 
+## Login verification flow
+1. Open `/` and confirm top-right controls are visible: language switcher + sign-in button.
+2. If language menu is open, close/select an item first to avoid click interception.
+3. Click sign-in to open auth dialog.
+4. Fill email/password from `.env.local` using `TEST_AUTH_EMAIL` and `TEST_AUTH_PASSWORD`.
+5. Submit login and wait for navigation.
+6. Verify final URL is `/dashboard` and dashboard shell content is rendered (sidebar + main content), not only URL change.
+7. Capture one snapshot after login as evidence.
+8. If login fails, collect console errors + failed requests + screenshot before attempting fixes.
+
 ## Output
 - Repro steps
 - Evidence (errors/screenshots)

@@ -14,6 +14,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { completeRegistration, signIn } from "@/features/identity.slice/_actions";
 import { LoginForm, RegisterForm, ResetPasswordForm } from "@/features/identity.slice";
 import { Button } from "@/shadcn-ui/button";
+import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
 import {
 	Dialog,
 	DialogContent,
@@ -105,13 +106,14 @@ export default function LandingPage() {
 
 	return (
 		<div className="relative flex min-h-screen w-full items-center justify-center bg-background">
-			<div className="absolute right-4 top-4">
+			<div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+				<LanguageSwitcher />
 				<Button
 					aria-label="Sign in"
 					variant="outline"
 					onClick={() => setIsLoginOpen(true)}
 				>
-					Sign in
+					{t("auth.enterDimension")}
 				</Button>
 			</div>
 
@@ -126,16 +128,16 @@ export default function LandingPage() {
 				<DialogContent className="max-w-md rounded-[2rem] border-border/40 bg-card/90 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
 					<DialogHeader>
 						<DialogTitle className="text-xl font-black tracking-wide">
-							Sign in
+							{t("auth.enterDimension")}
 						</DialogTitle>
 					</DialogHeader>
 					<Tabs defaultValue="signin" className="pt-2">
 						<TabsList className="mb-4 grid h-11 w-full grid-cols-2 rounded-xl bg-muted/30 p-1">
 							<TabsTrigger value="signin" className="rounded-lg text-xs font-bold">
-								Sign in
+								{t("auth.enterDimension")}
 							</TabsTrigger>
 							<TabsTrigger value="register" className="rounded-lg text-xs font-bold">
-								Create a free account
+								{t("auth.registerSovereignty")}
 							</TabsTrigger>
 						</TabsList>
 

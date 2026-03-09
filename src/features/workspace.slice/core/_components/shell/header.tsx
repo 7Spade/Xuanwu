@@ -1,4 +1,10 @@
 
+/**
+ * Module: header.tsx
+ * Purpose: render shared shell top header across dashboard and workspace routes
+ * Responsibilities: breadcrumb/search/actions composition and global header controls
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client";
 
 import { Search, Command, BookOpen } from "lucide-react";
@@ -19,6 +25,7 @@ import {
   BreadcrumbSeparator,
 } from "@/shadcn-ui/breadcrumb";
 import { Button } from "@/shadcn-ui/button";
+import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 import type { Account } from '@/shared-kernel'
@@ -123,6 +130,7 @@ export function Header() {
         </Button>
       </div>
       <div className="flex items-center gap-3 pr-4">
+        <LanguageSwitcher />
         <Button asChild variant="ghost" size="sm" className="gap-1.5">
           <Link href="/wiki">
             <BookOpen className="size-4" />
