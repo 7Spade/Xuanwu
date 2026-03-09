@@ -18,6 +18,7 @@ user-invocable: true
 ## Mission
 
 Execute `/xuanwu-serena` requests end-to-end with architecture correctness first and deterministic edits.
+Ensure repository customization coverage remains explicit for React, Next.js (including parallel routes), Firebase (Firestore and Storage), and development/testing workflows when relevant.
 
 ## Required Execution Order
 

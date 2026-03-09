@@ -64,3 +64,7 @@ Use this exact section order:
 - Workspace instructions: [copilot-instructions](../copilot-instructions.md)
 - Serena autonomy rules: [xuanwu-serena-autonomy.instructions.md](../instructions/xuanwu-serena-autonomy.instructions.md)
 - Bootstrap skill: [xuanwu-serena-bootstrap](../skills/xuanwu-serena-bootstrap/SKILL.md)
+- VS Code custom instructions: https://code.visualstudio.com/docs/copilot/customization/custom-instructions
+- VS Code prompt files: https://code.visualstudio.com/docs/copilot/customization/prompt-files
+- VS Code custom agents: https://code.visualstudio.com/docs/copilot/customization/custom-agents
+- VS Code agent skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
