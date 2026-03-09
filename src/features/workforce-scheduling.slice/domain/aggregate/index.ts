@@ -4,7 +4,7 @@
  * organization.schedule Aggregate Root - manages the Schedule lifecycle:
  *   draft -> proposed -> confirmed | cancelled
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   WORKSPACE_OUTBOX -> ScheduleProposed (cross-layer handoff) -> ORGANIZATION_SCHEDULE
  *   ORGANIZATION_SCHEDULE -> ORGANIZATION_EVENT_BUS -> ACCOUNT_NOTIFICATION_ROUTER (FCM Layer 2+)
  *

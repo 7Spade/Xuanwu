@@ -2,15 +2,15 @@
 
 ## Primary SSOT
 
-- `docs/architecture/00-LogicOverview.md` (authoritative architecture logic)
+- `docs/architecture/00-logic-overview.md` (authoritative architecture logic)
 
 ## Navigation And Supporting Docs
 
-- `docs/architecture/00-Index.md` (entry map)
+- `docs/architecture/00-index.md` (entry map)
 - `docs/architecture/01-logical-flow.md` (write/read/infra path flows)
 - `docs/architecture/02-governance-rules.md` (D/S/R/A/# rules)
 - `docs/architecture/03-infra-mapping.md` (infra/projection mapping)
-- `docs/architecture/99-Checklist.md` (review checklist)
+- `docs/architecture/99-checklist.md` (review checklist)
 
 ## Topic Routing
 

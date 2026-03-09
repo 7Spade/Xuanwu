@@ -4,7 +4,7 @@
  * SemanticGuard is the **supreme arbiter** of semantic-graph validity.
  * It intercepts EdgeProposals BEFORE they enter the SemanticEdgeStore and
  * rejects any proposal that would violate the graph invariants defined in
- * 00-LogicOverview.md [D21].
+ * 00-logic-overview.md [D21].
  *
  * Rules enforced:
  *   [D21-H] 銵?血?????invariant-guard owns final veto over all edge proposals.
@@ -19,7 +19,7 @@
  * Dependency rule: reads from centralized-edges for cycle detection and
  * duplicate checking ONLY.  ZERO infrastructure imports (no Firebase, no React).
  *
- * 甇文祕雿歇鈭文???INDEX.md 銝衣泵??00-LogicOverview.md 銋?[D21-H D21-K D21-9 D21-3] 閬?
+ * 甇文祕雿歇鈭文???INDEX.md 銝衣泵??00-logic-overview.md 銋?[D21-H D21-K D21-9 D21-3] 閬?
  */
 
 import { getAllEdges } from '../../graph/edges/semantic-edge-store';

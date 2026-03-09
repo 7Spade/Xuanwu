@@ -1,6 +1,6 @@
 # 邏輯流視圖 (Logical Flow View)
 
-> **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則定義請見 [`00-LogicOverview.md`](./00-LogicOverview.md)
+> **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則定義請見 [`00-logic-overview.md`](./00-logic-overview.md)
 >
 > 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md) · 基礎設施路徑請見 [`03-infra-mapping.md`](./03-infra-mapping.md)
 

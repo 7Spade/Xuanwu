@@ -1,12 +1,12 @@
 # 治理視圖 (Governance View)
 
-> **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則的正式定義請見 [`00-LogicOverview.md`](./00-LogicOverview.md)
+> **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則的正式定義請見 [`00-logic-overview.md`](./00-logic-overview.md)
 >
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 基礎設施路徑請見 [`03-infra-mapping.md`](./03-infra-mapping.md)
 
 本視圖為所有治理規則的 **可讀治理視圖（Governance View）**，包含完整規則正文，供審查、快速查閱與落地參照使用。
-Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見 `00-LogicOverview.md`；
-若本文件文字描述與 `00-LogicOverview.md` 有衝突，以 `00-LogicOverview.md` 為準。
+Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見 `00-logic-overview.md`；
+若本文件文字描述與 `00-logic-overview.md` 有衝突，以 `00-logic-overview.md` 為準。
 
 ---
 

@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority ??Server actions for the sole side-effect outlet. [D3]
  *
- * Per 00-LogicOverview.md [D26]:
+ * Per 00-logic-overview.md [D26]:
  *   notification-hub = sole side-effect outlet.
  *   All notification dispatch MUST route through these actions.
  *

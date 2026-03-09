@@ -7,7 +7,7 @@
  * FCM + RTDB delivery layer.
  * Receives routed notifications, stores them in Realtime Database, and pushes FCM.
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   ACCOUNT_USER_NOTIFICATION ??FCM_GATEWAY ??USER_DEVICE
  *   USER_ACCOUNT_PROFILE -.->|read FCM token (read-only)| ACCOUNT_USER_NOTIFICATION
  *

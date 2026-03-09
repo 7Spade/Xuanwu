@@ -9,7 +9,7 @@ agent: 'agent'
 Run a compliance audit against project governance documents.
 
 ## Required references
-- [docs/architecture/00-LogicOverview.md](../../docs/architecture/00-LogicOverview.md)
+- [docs/architecture/00-logic-overview.md](../../docs/architecture/00-logic-overview.md)
 - [docs/domain-glossary.md](../../docs/domain-glossary.md)
 - [docs/project-structure.md](../../docs/project-structure.md)
 

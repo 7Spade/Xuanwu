@@ -2,7 +2,7 @@
  * projection.schedule-timeline-view — _queries.ts
  *
  * Read-side queries for the per-member schedule timeline view.
- * Per 00-LogicOverview.md (VS6 → STD_PROJ_LANE):
+ * Per 00-logic-overview.md (VS6 → STD_PROJ_LANE):
  *   QGWAY_TL["→ .schedule-timeline-view\n資源維度（overlap/grouping 已預計算）"]
  *
  * Overlap and resource-grouping are pre-computed by the projector [L5]; callers

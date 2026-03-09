@@ -10,7 +10,7 @@
  * │  All other slices import from HERE — never from centralized-tag directly.  │
  * └────────────────────────────────────────────────────────────────────────────┘
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *
  * [#17][T1] READ-ONLY REFERENCE RULES:
  *   T1 — New slices subscribe to TagLifecycleEvent; MUST NOT maintain their own tag data.

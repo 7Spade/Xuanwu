@@ -3,7 +3,7 @@
  *
  * Maintains the per-org/per-day calendar-dimension read model for schedule items.
  *
- * Per 00-LogicOverview.md (VS6 → STD_PROJ_LANE):
+ * Per 00-logic-overview.md (VS6 → STD_PROJ_LANE):
  *   CAL_PROJ["projection.schedule-calendar-view\n日期維度 Read Model [L5-Bus]\napplyVersionGuard() [S2]"]
  *   QGWAY_CAL["→ .schedule-calendar-view\n日期維度（UI 禁止直讀 VS6/Firebase）"]
  *

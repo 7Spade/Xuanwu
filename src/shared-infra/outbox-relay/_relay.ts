@@ -3,7 +3,7 @@
  *
  * OUTBOX_RELAY_WORKER [R1] shared Relay Worker used by ALL outbox collections.
  *
- * Per 00-LogicOverview.md [R1] OUTBOX_RELAY_WORKER and tree.md:
+ * Per 00-logic-overview.md [R1] OUTBOX_RELAY_WORKER and tree.md:
  *   infra.outbox-relay = [R1] shared relay worker (OUTBOX -> IER)
  *
  *   - Scan strategy: Firestore onSnapshot (CDC), listens for `pending` entries

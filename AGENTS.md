@@ -17,7 +17,7 @@ Shared always-on guidance for multi-agent workflows in this repository.
 
 ## Required Behavior
 - Follow architecture SSOT:
-  - `docs/architecture/00-LogicOverview.md`
+  - `docs/architecture/00-logic-overview.md`
   - `docs/knowledge-graph.json`
   - `skills/SKILL.md`
 - Enforce i18n for all UI text.

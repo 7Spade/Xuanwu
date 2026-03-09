@@ -3,7 +3,7 @@
  *
  * [VS6] Scheduling orchestration saga.
  *
- * Per 00-LogicOverview.md VS6:
+ * Per 00-logic-overview.md VS6:
  *   WorkspaceScheduleProposed -> OrgEligibilityCheck -> ScheduleAssigned
  *
  * State machine:

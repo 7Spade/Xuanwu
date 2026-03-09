@@ -2,7 +2,7 @@
  * projection.schedule-calendar-view — _queries.ts
  *
  * Read-side queries for the schedule calendar day view.
- * Per 00-LogicOverview.md (VS6 → STD_PROJ_LANE):
+ * Per 00-logic-overview.md (VS6 → STD_PROJ_LANE):
  *   QGWAY_CAL["→ .schedule-calendar-view\n日期維度（UI 禁止直讀 VS6/Firebase）"]
  *
  * [S4] PROJ_STALE_STANDARD ≤10s — standard projection staleness budget.

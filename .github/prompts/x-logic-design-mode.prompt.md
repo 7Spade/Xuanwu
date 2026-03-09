@@ -16,7 +16,7 @@ agent: agent
 
 把需求轉成可直接落地的修復結果，並維持與專案 SSOT 一致：
 
-- `docs/architecture/00-LogicOverview.md`
+- `docs/architecture/00-logic-overview.md`
 - `docs/knowledge-graph.json`
 - `skills/SKILL.md`
 

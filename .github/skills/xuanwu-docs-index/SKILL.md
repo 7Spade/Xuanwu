@@ -24,12 +24,12 @@ Use this skill when you need to:
 
 ### 1. Architecture lookup (`docs/architecture`)
 
-1. Read `docs/architecture/00-LogicOverview.md` as primary SSOT.
-2. Use `docs/architecture/00-Index.md` for navigation.
+1. Read `docs/architecture/00-logic-overview.md` as primary SSOT.
+2. Use `docs/architecture/00-index.md` for navigation.
 3. For flow/path questions, read `docs/architecture/01-logical-flow.md`.
 4. For rule constraints, read `docs/architecture/02-governance-rules.md`.
 5. For infra/projection mapping, read `docs/architecture/03-infra-mapping.md`.
-6. For review gates, read `docs/architecture/99-Checklist.md`.
+6. For review gates, read `docs/architecture/99-checklist.md`.
 
 ### 2. Management lookup (`docs/management`)
 
@@ -64,14 +64,14 @@ Resolved/closed items MUST be migrated to:
 
 ## Guardrails
 
-- Treat `docs/architecture/00-LogicOverview.md` as architecture SSOT.
+- Treat `docs/architecture/00-logic-overview.md` as architecture SSOT.
 - Do not invent statuses not defined by target archive process.
 - Preserve existing entry format when moving records.
 
 ## Source of Truth
 
-- `docs/architecture/00-LogicOverview.md`
-- `docs/architecture/00-Index.md`
+- `docs/architecture/00-logic-overview.md`
+- `docs/architecture/00-index.md`
 - `references/architecture-index.md`
 - `references/management-index.md`
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

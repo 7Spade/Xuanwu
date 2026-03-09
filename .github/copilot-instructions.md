@@ -7,7 +7,7 @@ Project-wide always-on instructions for GitHub Copilot Chat.
 - Use file-based instructions in `.github/instructions/*.instructions.md` for language or feature-specific rules.
 
 ## Single Sources of Truth
-- Business logic: `docs/architecture/00-LogicOverview.md`
+- Business logic: `docs/architecture/00-logic-overview.md`
 - Entity semantics and knowledge structure: `docs/knowledge-graph.json`
 - AI analysis and task decomposition baseline: `skills/SKILL.md`
 
@@ -17,7 +17,7 @@ Reference material (non-SSOT):
 > All project facts (Single Source of Truth) must come from:
 >
 > - `docs/knowledge-graph.json`
-> - `docs/architecture/00-LogicOverview.md`
+> - `docs/architecture/00-logic-overview.md`
 > - `skills/SKILL.md`
 >
 > Any inference, process definition, task decomposition, or AI judgment must be grounded in these three documents. Do not make unsupported assumptions.
@@ -37,7 +37,7 @@ Reference material (non-SSOT):
 ## Operational Rule Set
 ```rules
 IF task involves business logic
-  THEN read docs/architecture/00-LogicOverview.md first
+  THEN read docs/architecture/00-logic-overview.md first
 
 IF task involves entity relationships
   THEN inspect docs/knowledge-graph.json
@@ -59,7 +59,7 @@ Forbidden:
 
 ## Core Fact Source Rules (Mandatory)
 ```rules
-1. All business logic must follow docs/architecture/00-LogicOverview.md.
+1. All business logic must follow docs/architecture/00-logic-overview.md.
 2. All entity relations and knowledge structure must follow docs/knowledge-graph.json.
 3. All AI judgments and task decomposition must follow skills/SKILL.md.
 4. Do not generate logic without checking these documents.
@@ -118,7 +118,7 @@ flowchart TD
 
 A[Receive Task] --> B{Existing Logic?}
 
-B -- Yes --> C[Read docs/architecture/00-LogicOverview.md]
+B -- Yes --> C[Read docs/architecture/00-logic-overview.md]
 C --> D[Read docs/knowledge-graph.json]
 D --> E[Use memory MCP if needed]
 E --> F[Produce solution]
@@ -166,7 +166,7 @@ When creating or editing a `.ts` or `.tsx` file:
 - Missing either locale key means the task is incomplete.
 
 ## Decision Workflow
-1. Read `docs/architecture/00-LogicOverview.md` for business logic decisions.
+1. Read `docs/architecture/00-logic-overview.md` for business logic decisions.
 2. Confirm entities and relations in `docs/knowledge-graph.json`.
 3. Reuse existing code patterns from `skills/SKILL.md` and referenced files.
 4. If logic is undefined, update knowledge first, then implement.

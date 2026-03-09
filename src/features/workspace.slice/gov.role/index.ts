@@ -4,7 +4,7 @@
  * Workspace-level role management (split from workspace-governance.members).
  * Does NOT sign CUSTOM_CLAIMS — that is account-governance.role's responsibility.
  *
- * Per 00-LogicOverview.md: WORKSPACE_ROLE — workspace access control only.
+ * Per 00-logic-overview.md: WORKSPACE_ROLE — workspace access control only.
  */
 
 export { assignWorkspaceRole, revokeWorkspaceRole } from './_actions';

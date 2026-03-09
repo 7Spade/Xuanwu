@@ -4,7 +4,7 @@
  * Maintains the organization projection read model.
  * Stored at: organizationView/{orgId}
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   EVENT_FUNNEL_INPUT ??ORGANIZATION_PROJECTION_VIEW
  */
 

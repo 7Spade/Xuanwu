@@ -7,7 +7,7 @@ description: 'Architecture compliance audit. Cross-checks against project docume
 
 ## Audit Workflow
 
-1. **Load Truth:** Invoke `tool-repomix` to simultaneously load `docs/architecture/00-LogicOverview.md` and the target code directory.
+1. **Load Truth:** Invoke `tool-repomix` to simultaneously load `docs/architecture/00-logic-overview.md` and the target code directory.
 2. **Run Analysis:** Invoke `tool-thinking` to iterate through each check item:
    - Layer violation: Does UI directly call Infrastructure?
    - Naming drift: Do identifiers deviate from `domain-glossary.md`?

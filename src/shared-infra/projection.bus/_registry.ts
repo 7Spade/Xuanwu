@@ -3,7 +3,7 @@
  *
  * Event stream offset + read model version table.
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  * - EVENT_FUNNEL_INPUT updates the latest stream offset in PROJECTION_VERSION
  * - PROJECTION_VERSION tracks read-model version alignment for READ_MODEL_REGISTRY
  */

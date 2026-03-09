@@ -3,7 +3,7 @@
  *
  * Organization domain event contracts.
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   ORGANIZATION_EVENT_BUS → ORGANIZATION_SCHEDULE (ScheduleAssigned)
  *   ORGANIZATION_EVENT_BUS → |政策變更| WORKSPACE_ORG_POLICY_CACHE
  *   ORGANIZATION_EVENT_BUS → |ScheduleAssigned 含 TargetAccountID| ACCOUNT_NOTIFICATION_ROUTER
@@ -122,7 +122,7 @@ export interface ScheduleAssignRejectedPayload {
 
 /**
  * Fired by ORG_SKILL_RECOGNITION when an organization grants skill recognition
- * to a member.  Per 00-LogicOverview.md:
+ * to a member.  Per 00-logic-overview.md:
  *   ORG_SKILL_RECOGNITION →|SkillRecognitionGranted| ORGANIZATION_EVENT_BUS
  */
 export interface SkillRecognitionGrantedPayload {
@@ -136,7 +136,7 @@ export interface SkillRecognitionGrantedPayload {
 
 /**
  * Fired by ORG_SKILL_RECOGNITION when an organization revokes a skill recognition.
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   ORG_SKILL_RECOGNITION →|SkillRecognitionRevoked| ORGANIZATION_EVENT_BUS
  */
 export interface SkillRecognitionRevokedPayload {
@@ -195,7 +195,7 @@ export interface ScheduleAssignmentCancelledPayload {
  * Mirrors ScheduleAssignRejectedPayload but represents a deliberate governance action
  * rather than an automatic skill-check failure.
  *
- * Per 00-LogicOverview.md VS6:
+ * Per 00-logic-overview.md VS6:
  *   SCHEDULE_SAGA["scheduling-saga\nScheduleAssignRejected\nScheduleProposalCancelled"]
  *   SCHEDULE_SAGA -.->|"#A5 compensating event"| ORG_EVENT_BUS
  */

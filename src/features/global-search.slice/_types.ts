@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority ??Domain Types for the system's sole search portal.
  *
- * Per 00-LogicOverview.md [D26]:
+ * Per 00-logic-overview.md [D26]:
  *   global-search.slice = sole search authority.
  *   All cross-domain search MUST route through this slice.
  *

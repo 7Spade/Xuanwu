@@ -3,7 +3,7 @@
  *
  * CLAIMS_HANDLER ??single Claims refresh trigger point [E6][S6]
  *
- * Per 00-LogicOverview.md [S6]:
+ * Per 00-logic-overview.md [S6]:
  *   RoleChanged | PolicyChanged ??IER CRITICAL_LANE ??CLAIMS_HANDLER
  *   CLAIMS_HANDLER emits TOKEN_REFRESH_SIGNAL on success.
  *   Failure routes to DLQ SECURITY_BLOCK ??DOMAIN_ERRORS alert.

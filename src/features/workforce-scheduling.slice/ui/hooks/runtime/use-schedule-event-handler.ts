@@ -9,7 +9,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast";
 /**
  * Subscribes to B-track `IssueResolved` events via the workspace event bus.
  *
- * Per 00-LogicOverview.md (AB dual-track discrete recovery):
+ * Per 00-logic-overview.md (AB dual-track discrete recovery):
  *   TRACK_B_ISSUES →|IssueResolved 事件| WORKSPACE_EVENT_BUS
  *   W_B_SCHEDULE subscribes (not direct coupling) and may resume blocked items.
  *
