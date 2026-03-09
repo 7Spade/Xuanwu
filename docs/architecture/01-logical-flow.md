@@ -665,7 +665,7 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
 
     subgraph VS5_GOV["🛡️ Workspace Governance（src/features/workspace.slice/gov.role + gov.audit + gov.members + gov.partners + gov.teams）"]
         WS_ROLE["workspace-governance.role\n繼承 org-policy [#18]\n→ tag::role [TE_RL]"]
-        WS_PCHK["policy-eligible-check [P4]\nvia Query Gateway"]
+        WS_PCHK["policy-eligible-check [#14]\nvia Query Gateway"]
         WS_AUDIT["workspace-governance.audit"]
         AUDIT_COL["audit-event-collector\n訂閱 IER BACKGROUND_LANE\n→ GLOBAL_AUDIT_VIEW"]
         WS_ROLE -.->|"[#18] eligible 查詢"| WS_PCHK
@@ -725,9 +725,8 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
         FIN_CLAIM_PREP --> FIN_CLAIM_SUB
         FIN_CLAIM_SUB --> FIN_CLAIM_APV
         FIN_CLAIM_APV --> FIN_INV_REQ
-        FIN_INV_REQ --> FIN_TERM
-        FIN_TERM --> FIN_PAY_RECV
         FIN_INV_REQ -.->|"啟動 Payment Term 計時 [#A16]"| FIN_TERM
+        FIN_TERM --> FIN_PAY_RECV
         FIN_PAY_RECV --> FIN_BALANCE
         FIN_BALANCE -->|"是：仍有可請款餘額 [#A16]"| FIN_CLAIM_PREP
         FIN_BALANCE -->|"否：本輪後已結清 [#A16]"| FIN_EXIT
@@ -751,7 +750,7 @@ end
 W_FILES -.->|"uses IFileStore"| I_STORE
 WS_EBUS -.->|"事件契約"| SK_ENV
 WS_ROLE -.->|"role tag 語義"| TE_RL
-WS_PCHK -.->|"[P4]"| QGWAY_SCHED
+WS_PCHK -.->|"[#14]"| QGWAY_SCHED
 WS_CMD_H -.->|"執行結果"| SK_CMD_RESULT
 W_SCHED -.->|"tagSlug T4"| TAG_RO
 W_SCHED -.->|"人力需求契約"| SK_SKILL_REQ

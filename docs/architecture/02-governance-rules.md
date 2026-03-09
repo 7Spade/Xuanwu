@@ -483,6 +483,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `A15` | finance-lifecycle-gate |
 | `A16` | multi-claim-cycle |
 | `A17` | skill-xp-award-contract |
+| `A18` | org-semantic-extension |
 
 ### E 類（Security Gate 閉環）
 
@@ -494,6 +495,16 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 ---
 
 ## 跨切片 RULESET-MUST（分類整理）
+
+### VS5 強制規則
+
+| 規則 | 說明 |
+|------|------|
+| VS5 MUST document-parser 三層閉環 | Layer-1 原始解析 → Layer-2 呼叫 VS8 `classifyCostItem()` 語義分類 → Layer-3 `shouldMaterializeAsTask()` 唯一物化閘門 [D27 #A14] |
+| VS5 MUST 保留 sourceIntentIndex | 任務物化必須寫入 `sourceIntentIndex`；`tasks-view` 按 `createdAt`（批次間）→ `sourceIntentIndex`（批次內）排序 [D27-Order] |
+| VS5 MUST Finance 階段閘與多輪循環 | Acceptance=OK 前禁止進入 Finance；循環直到 `outstandingClaimableAmount = 0` 才允許標記 Completed [#A15 #A16] |
+| VS5 MUST XP 只透過 IER 傳遞至 VS3 | 任務/品質流程禁止直接 mutate VS3 XP；事件 `TaskCompleted` / `QualityAssessed` 必須經 IER 傳入 VS3 [D9 #A17] |
+| VS5 MUST 語義讀取僅經 L6 | VS5 語義讀取必須經 L6 Query Gateway；禁止直連 DB 或跨越 VS8 圖結構邊界 [D21-7 T5] |
 
 ### VS6 強制規則
 

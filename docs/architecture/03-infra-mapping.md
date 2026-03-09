@@ -191,6 +191,7 @@ Firestore onSnapshot (CDC)
 | Projection | 說明 |
 |------------|------|
 | `workspace-view` | 工作空間概覽 |
+| `tasks-view` | 任務清單（按 `createdAt` 批次間 → `sourceIntentIndex` 批次內排序）[D27-Order] |
 | `account-schedule` | 帳戶排班快照 |
 | `schedule-calendar-view` | 日曆視圖 |
 | `schedule-timeline-view` | 時間軸視圖（overlap/grouping 在 L5 預計算） |
