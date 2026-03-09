@@ -10,11 +10,13 @@ Instructions for file governance and parser handoff in `src/features/workspace.s
 
 ## Core Responsibility
 - `DOCUMENT-AI` responsibility in this domain:
-  - Trigger OCR/Document extraction flow from the selected original file version.
-  - Produce/track structured sidecar output (`*.document-ai.json`) as a derived artifact.
+  - Input: original document version (PDF/PNG/JPG).
+  - Output: structured sidecar JSON (`*.document-ai.json`).
+  - Rule: `DOCUMENT-AI` is the producer of `.json`.
 - `GENKIT-AI` responsibility in this domain:
-  - Do NOT run OCR directly from raw files.
-  - Hand off existing structured sidecar (`*.document-ai.json`) context to parser flow for semantic enrichment.
+  - Input: existing `*.document-ai.json`.
+  - Output: parser handoff for semantic tagging/import flow.
+  - Rule: `GENKIT-AI` is the consumer of `.json`, not the producer.
 
 ## Contract Rules
 - Files actions must preserve explicit `parseMode` and `sourceType`.
@@ -25,9 +27,10 @@ Instructions for file governance and parser handoff in `src/features/workspace.s
 ## Forbidden
 - Do not collapse `DOCUMENT-AI` and `GENKIT-AI` into one undifferentiated action path.
 - Do not treat sidecar JSON as raw upload input for OCR.
+- Do not trigger `GENKIT-AI` from raw files when no `*.document-ai.json` exists.
 - Do not bypass `useWorkspaceFilesActions` contract with ad-hoc router pushes.
 
 ## Verification
 - Validate from UI flow: `Workspaces -> Files -> Actions`.
-- `document-ai` should enter OCR extraction path.
-- `genkit-ai` should use structured JSON context for AI tagging/enrichment flow.
+- `document-ai` must create/update `*.document-ai.json`.
+- `genkit-ai` must use `*.document-ai.json` as input.
