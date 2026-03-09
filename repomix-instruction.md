@@ -10,7 +10,7 @@
 | Artefact | Purpose |
 |---|---|
 | `docs/architecture/00-logic-overview.md` | Architecture SSOT — layer definitions, dependency rules, invariants |
-| `docs/knowledge-graph.json` | Semantic entity relationships |
+| `.memory/knowledge-graph.json` | Semantic entity relationships |
 | `eslint.config.mts` | Enforces D1–D26 rules as ESLint errors |
 
 **Always read `docs/architecture/00-logic-overview.md` before proposing any structural change.**

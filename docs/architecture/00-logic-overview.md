@@ -14,7 +14,7 @@
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  SSOT Mapping:
 %%    Architecture rules       → docs/architecture/00-logic-overview.md  ← THIS FILE（原始檔，所有規則正文在此定義）
-%%    Semantic relations       → docs/knowledge-graph.json
+%%    Semantic relations       → .memory/knowledge-graph.json
 %%    VS8 complete-body guide  → docs/architecture/03-Slices/VS8-SemanticBrain/01-d21-body-8layers.md  (companion spec)
 %%  ──────────────────────────────────────────────────────────────────────────
 %%  Sub-View Index（子視圖索引，從本檔抽出，供可讀性閱覽）:

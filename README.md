@@ -79,5 +79,5 @@ When UI text changes, update both locale files with identical keys:
 ## Architecture Sources
 
 - `docs/architecture/00-logic-overview.md`
-- `docs/knowledge-graph.json`
+- `.memory/knowledge-graph.json`
 - `skills/SKILL.md`

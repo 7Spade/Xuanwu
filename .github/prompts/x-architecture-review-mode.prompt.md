@@ -23,7 +23,7 @@ agent: agent
 審查時必須比對下列 SSOT：
 
 - `docs/architecture/00-logic-overview.md`
-- `docs/knowledge-graph.json`
+- `.memory/knowledge-graph.json`
 - `.github/copilot-instructions.md`
 
 ## 審查流程

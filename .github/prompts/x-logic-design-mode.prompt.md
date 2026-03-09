@@ -17,7 +17,7 @@ agent: agent
 把需求轉成可直接落地的修復結果，並維持與專案 SSOT 一致：
 
 - `docs/architecture/00-logic-overview.md`
-- `docs/knowledge-graph.json`
+- `.memory/knowledge-graph.json`
 - `skills/SKILL.md`
 
 若目標是審查某檔案，必須輸出具體 findings（含嚴重度與檔案行號），並在同一流程完成修復與驗證。
