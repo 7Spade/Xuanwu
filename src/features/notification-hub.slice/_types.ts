@@ -59,7 +59,7 @@ export interface TagRoutingDecision {
 
 /**
  * Source event that the notification hub subscribes to.
- * Typically emitted by projection.bus or domain event buses.
+ * Typically emitted by projection-bus or domain event buses.
  */
 export interface NotificationSourceEvent {
   readonly eventKey: string;

@@ -1824,7 +1824,7 @@ function _buildLifecycleMap(): Map<string, TagLifecycleRecord>
 
 ## File: src/features/semantic-graph.slice/output/projections/tag-snapshot.slice.ts
 ```typescript
-import { getTagSnapshot } from '@/shared-infra/projection.bus';
+import { getTagSnapshot } from '@/shared-infra/projection-bus';
 export type TagSnapshotColorToken = 'neutral' | 'warning' | 'info' | 'success';
 export type TagSnapshotIconToken = 'hammer' | 'briefcase' | 'shield' | 'coins';
 export interface TagSnapshotPresentation {
@@ -5641,7 +5641,7 @@ import {
   getOrgEligibleMembersWithTier,
   type OrgEligibleMemberView,
   type OrgMemberSkillWithTier,
-} from '@/shared-infra/projection.bus';
+} from '@/shared-infra/projection-bus';
 import { db } from '@/shared-infra/frontend-firebase';
 import { fetchScheduleItems } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
 import {
@@ -5720,7 +5720,7 @@ export function createTraceContext(source?: string): TraceContext
 
 ```
 
-## File: src/shared-infra/projection.bus/_funnel.shared.ts
+## File: src/shared-infra/projection-bus/_funnel.shared.ts
 ```typescript
 import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 export async function executeAggregateWriteOp(op: {
@@ -5731,7 +5731,7 @@ export async function executeAggregateWriteOp(op: {
 export function createVersionStamp():
 ```
 
-## File: src/shared-infra/projection.bus/_organization-funnel.ts
+## File: src/shared-infra/projection-bus/_organization-funnel.ts
 ```typescript
 import { onOrgEvent } from '@/features/organization.slice';
 import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.slice';
@@ -5755,7 +5755,7 @@ import { applyMemberJoined, applyMemberLeft } from './organization-view';
 export function registerOrganizationFunnel(): () => void
 ```
 
-## File: src/shared-infra/projection.bus/_tag-funnel.ts
+## File: src/shared-infra/projection-bus/_tag-funnel.ts
 ```typescript
 import { onTagEvent } from '@/features/semantic-graph.slice';
 import {
@@ -5769,7 +5769,7 @@ import { applyTagCreated, applyTagDeleted, applyTagDeprecated, applyTagUpdated }
 export function registerTagFunnel(): () => void
 ```
 
-## File: src/shared-infra/projection.bus/_workspace-funnel.ts
+## File: src/shared-infra/projection-bus/_workspace-funnel.ts
 ```typescript
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
 import { createVersionStamp } from './_funnel.shared';
@@ -5781,7 +5781,7 @@ import {
 export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
 ```
 
-## File: src/shared-infra/projection.bus/account-audit/_queries.ts
+## File: src/shared-infra/projection-bus/account-audit/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { createConverter } from '@/shared-infra/frontend-firebase/firestore/firestore.converter';
@@ -5794,7 +5794,7 @@ export async function getAccountAuditEntries(
 ): Promise<AuditProjectionEntry[]>
 ```
 
-## File: src/shared-infra/projection.bus/account-schedule/_queries.ts
+## File: src/shared-infra/projection-bus/account-schedule/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { AccountScheduleProjection, AccountScheduleAssignment } from './_projector';
@@ -5806,7 +5806,7 @@ export async function getAccountActiveAssignments(
 ): Promise<AccountScheduleAssignment[]>
 ```
 
-## File: src/shared-infra/projection.bus/account-view/_queries.ts
+## File: src/shared-infra/projection-bus/account-view/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
@@ -5820,7 +5820,7 @@ export async function getAccountMembershipTag(
 ): Promise<'internal' | 'external' | null>
 ```
 
-## File: src/shared-infra/projection.bus/demand-board/_projector.ts
+## File: src/shared-infra/projection-bus/demand-board/_projector.ts
 ```typescript
 import type {
   ScheduleAssignedPayload,
@@ -5859,12 +5859,12 @@ async function _closeScheduleItem(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/demand-board/index.ts
+## File: src/shared-infra/projection-bus/demand-board/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/organization-view/_queries.ts
+## File: src/shared-infra/projection-bus/organization-view/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { OrganizationViewRecord } from './_projector';
@@ -5872,7 +5872,7 @@ export async function getOrganizationView(orgId: string): Promise<OrganizationVi
 export async function getOrganizationMemberIds(orgId: string): Promise<string[]>
 ```
 
-## File: src/shared-infra/projection.bus/wallet-balance/_queries.ts
+## File: src/shared-infra/projection-bus/wallet-balance/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { WalletBalanceView } from './_projector';
@@ -5882,7 +5882,7 @@ export async function getWalletBalanceView(
 export async function getDisplayWalletBalance(accountId: string): Promise<number>
 ```
 
-## File: src/shared-infra/projection.bus/workspace-scope-guard/_projector.ts
+## File: src/shared-infra/projection-bus/workspace-scope-guard/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -5904,7 +5904,7 @@ export async function applyGrantEvent(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/workspace-scope-guard/_queries.ts
+## File: src/shared-infra/projection-bus/workspace-scope-guard/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
@@ -5919,7 +5919,7 @@ export async function queryWorkspaceAccess(
 ): Promise<
 ```
 
-## File: src/shared-infra/projection.bus/workspace-scope-guard/_read-model.ts
+## File: src/shared-infra/projection-bus/workspace-scope-guard/_read-model.ts
 ```typescript
 import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { Timestamp } from '@/shared-kernel/ports';
@@ -5945,7 +5945,7 @@ export function buildAuthoritySnapshot(
 function derivePermissions(roles: string[]): string[]
 ```
 
-## File: src/shared-infra/projection.bus/workspace-view/_projector.ts
+## File: src/shared-infra/projection-bus/workspace-view/_projector.ts
 ```typescript
 import type { Workspace } from '@/features/workspace.slice';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -5978,7 +5978,7 @@ export async function applyCapabilityUpdate(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/workspace-view/_queries.ts
+## File: src/shared-infra/projection-bus/workspace-view/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { WorkspaceViewRecord } from './_projector';
@@ -9013,7 +9013,7 @@ export async function executeCommand<T>(
 ```typescript
 import type { OrgPolicyChangedPayload } from '@/features/organization.slice';
 import { onOrgEvent } from '@/features/organization.slice';
-import { upsertProjectionVersion } from '@/shared-infra/projection.bus';
+import { upsertProjectionVersion } from '@/shared-infra/projection-bus';
 export interface OrgPolicyEntry {
   policyId: string;
   orgId: string;
@@ -9091,7 +9091,7 @@ export function evaluatePolicy(role: WorkspaceRole, action: string): PolicyDecis
 
 ## File: src/features/workspace.slice/application/_scope-guard.ts
 ```typescript
-import { queryWorkspaceAccess } from '@/shared-infra/projection.bus';
+import { queryWorkspaceAccess } from '@/shared-infra/projection-bus';
 export interface ScopeGuardResult {
   allowed: boolean;
   role?: string;
@@ -11713,7 +11713,7 @@ async function routeToDlq(
 
 ```
 
-## File: src/shared-infra/projection.bus/_funnel.ts
+## File: src/shared-infra/projection-bus/_funnel.ts
 ```typescript
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
 import { registerOrganizationFunnel as registerOrganizationFunnelImpl } from './_organization-funnel';
@@ -11728,7 +11728,7 @@ export async function replayWorkspaceProjections(
 ): Promise<
 ```
 
-## File: src/shared-infra/projection.bus/_query-registration.ts
+## File: src/shared-infra/projection-bus/_query-registration.ts
 ```typescript
 import { registerQuery, QUERY_ROUTES } from '@/shared-infra/gateway-query';
 import { getAccountView } from './account-view';
@@ -11741,7 +11741,7 @@ import { queryWorkspaceAccess } from './workspace-scope-guard';
 export function registerAllQueryHandlers(): Array<() => void>
 ```
 
-## File: src/shared-infra/projection.bus/_registry.ts
+## File: src/shared-infra/projection-bus/_registry.ts
 ```typescript
 import {
   getProjectionVersion as getProjectionVersionRepo,
@@ -11759,7 +11759,7 @@ export async function upsertProjectionVersion(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/account-audit/_projector.ts
+## File: src/shared-infra/projection-bus/account-audit/_projector.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { doc, collection } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -11783,12 +11783,12 @@ export async function appendAuditEntry(
 ): Promise<string>
 ```
 
-## File: src/shared-infra/projection.bus/account-audit/index.ts
+## File: src/shared-infra/projection-bus/account-audit/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/account-schedule/_projector.ts
+## File: src/shared-infra/projection-bus/account-schedule/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -11825,12 +11825,12 @@ export async function applyScheduleCompleted(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/account-schedule/index.ts
+## File: src/shared-infra/projection-bus/account-schedule/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/account-skill-view/_projector.ts
+## File: src/shared-infra/projection-bus/account-skill-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -11865,7 +11865,7 @@ export async function applySkillXpDeducted(params: {
 }): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/account-skill-view/_queries.ts
+## File: src/shared-infra/projection-bus/account-skill-view/_queries.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import type { AccountSkillEntry, AccountSkillView } from './_projector';
@@ -11881,12 +11881,12 @@ export async function getAllAccountSkills(
 ): Promise<AccountSkillEntry[]>
 ```
 
-## File: src/shared-infra/projection.bus/account-skill-view/index.ts
+## File: src/shared-infra/projection-bus/account-skill-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/account-view/_projector.ts
+## File: src/shared-infra/projection-bus/account-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -11930,12 +11930,12 @@ export async function applyAuthoritySnapshot(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/account-view/index.ts
+## File: src/shared-infra/projection-bus/account-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/demand-board/_queries.ts
+## File: src/shared-infra/projection-bus/demand-board/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import {
@@ -11961,7 +11961,7 @@ export async function getDemandBoardItemsByStatus(
 ): Promise<ScheduleItem[]>
 ```
 
-## File: src/shared-infra/projection.bus/global-audit-view/_projector.ts
+## File: src/shared-infra/projection-bus/global-audit-view/_projector.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -11988,7 +11988,7 @@ export async function applyAuditEvent(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/global-audit-view/_queries.ts
+## File: src/shared-infra/projection-bus/global-audit-view/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { collection, getDocs, where, limit, query as firestoreQuery } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -12002,17 +12002,17 @@ export async function getGlobalAuditEventsByWorkspace(
 ): Promise<GlobalAuditRecord[]>
 ```
 
-## File: src/shared-infra/projection.bus/global-audit-view/index.ts
+## File: src/shared-infra/projection-bus/global-audit-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/index.ts
+## File: src/shared-infra/projection-bus/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/org-eligible-member-view/_projector.ts
+## File: src/shared-infra/projection-bus/org-eligible-member-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -12059,7 +12059,7 @@ export async function updateOrgMemberEligibility(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/org-eligible-member-view/_queries.ts
+## File: src/shared-infra/projection-bus/org-eligible-member-view/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -12098,12 +12098,12 @@ export async function getOrgEligibleMembersWithTier(
 ): Promise<OrgEligibleMemberView[]>
 ```
 
-## File: src/shared-infra/projection.bus/org-eligible-member-view/index.ts
+## File: src/shared-infra/projection-bus/org-eligible-member-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/organization-view/_projector.ts
+## File: src/shared-infra/projection-bus/organization-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -12143,12 +12143,12 @@ export async function applyMemberLeft(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/organization-view/index.ts
+## File: src/shared-infra/projection-bus/organization-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/schedule-calendar-view/_projector.ts
+## File: src/shared-infra/projection-bus/schedule-calendar-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
@@ -12202,7 +12202,7 @@ export async function applyScheduleCalendarRemove(params: {
 }): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/schedule-calendar-view/_queries.ts
+## File: src/shared-infra/projection-bus/schedule-calendar-view/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import {
@@ -12221,12 +12221,12 @@ export async function getAllScheduleCalendarDays(
 ): Promise<ScheduleCalendarDayView[]>
 ```
 
-## File: src/shared-infra/projection.bus/schedule-calendar-view/index.ts
+## File: src/shared-infra/projection-bus/schedule-calendar-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/schedule-timeline-view/_projector.ts
+## File: src/shared-infra/projection-bus/schedule-timeline-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
@@ -12282,7 +12282,7 @@ export async function applyTimelineRemove(params: {
 }): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/schedule-timeline-view/_queries.ts
+## File: src/shared-infra/projection-bus/schedule-timeline-view/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import {
@@ -12301,12 +12301,12 @@ export async function getAllScheduleTimelines(
 ): Promise<ScheduleTimelineMemberView[]>
 ```
 
-## File: src/shared-infra/projection.bus/schedule-timeline-view/index.ts
+## File: src/shared-infra/projection-bus/schedule-timeline-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/semantic-governance-view/_projector.ts
+## File: src/shared-infra/projection-bus/semantic-governance-view/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import {
@@ -12366,7 +12366,7 @@ export async function applyTagRelationshipsUpdated(params: {
 }): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/semantic-governance-view/_queries.ts
+## File: src/shared-infra/projection-bus/semantic-governance-view/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import {
@@ -12392,12 +12392,12 @@ export async function getTagRelationships(
 export async function getAllSemanticGovernanceViews(): Promise<SemanticGovernanceTagView[]>
 ```
 
-## File: src/shared-infra/projection.bus/semantic-governance-view/index.ts
+## File: src/shared-infra/projection-bus/semantic-governance-view/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/tag-snapshot/_projector.ts
+## File: src/shared-infra/projection-bus/tag-snapshot/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -12427,7 +12427,7 @@ export async function applyTagDeprecated(
 export async function applyTagDeleted(payload: TagDeletedPayload): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/tag-snapshot/_queries.ts
+## File: src/shared-infra/projection-bus/tag-snapshot/_queries.ts
 ```typescript
 import { db } from '@/shared-infra/frontend-firebase';
 import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
@@ -12438,12 +12438,12 @@ export async function getAllTagSnapshots(): Promise<TagSnapshotEntry[]>
 export async function getActiveTagSnapshots(): Promise<TagSnapshotEntry[]>
 ```
 
-## File: src/shared-infra/projection.bus/tag-snapshot/index.ts
+## File: src/shared-infra/projection-bus/tag-snapshot/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/wallet-balance/_projector.ts
+## File: src/shared-infra/projection-bus/wallet-balance/_projector.ts
 ```typescript
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
@@ -12479,17 +12479,17 @@ export async function syncWalletBalanceFromAggregate(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/projection.bus/wallet-balance/index.ts
+## File: src/shared-infra/projection-bus/wallet-balance/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/workspace-scope-guard/index.ts
+## File: src/shared-infra/projection-bus/workspace-scope-guard/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/projection.bus/workspace-view/index.ts
+## File: src/shared-infra/projection-bus/workspace-view/index.ts
 ```typescript
 
 ```
@@ -12633,8 +12633,8 @@ import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
 import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
-import type { OrgEligibleMemberView } from "@/shared-infra/projection.bus"
-import { getAllOrgMembersView } from "@/shared-infra/projection.bus"
+import type { OrgEligibleMemberView } from "@/shared-infra/projection-bus"
+import { getAllOrgMembersView } from "@/shared-infra/projection-bus"
 import { type MemberReference } from "@/shared-kernel"
 import { useMemberManagement } from '../_hooks/use-member-management'
 ⋮----

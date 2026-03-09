@@ -8,7 +8,7 @@
  *   VS7 enhanced — sole side-effect outlet with tag-aware routing via VS8
  *
  * All notification dispatch in the system MUST route through this slice.
- * Event subscriber monitors projection.bus tag changes and domain events,
+ * Event subscriber monitors projection-bus tag changes and domain events,
  * then routes via VS8 tag semantics to appropriate delivery channels.
  *
  * Architecture:

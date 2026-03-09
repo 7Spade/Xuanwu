@@ -2,12 +2,12 @@
  * workforce-scheduling.slice/_projectors ??account-schedule.ts
  *
  * Type definitions for the account schedule projection read model.
- * Projection write logic has been migrated to projection.bus/account-schedule/_projector.ts
+ * Projection write logic has been migrated to projection-bus/account-schedule/_projector.ts
  * per 00-logic-overview.md (ACC_SCHED_V is a PROJ_BUS Standard Projection).
  *
  * These type exports are retained here so that workforce-scheduling.slice/_queries.ts
  * can type its read functions without introducing a cross-slice dependency
- * on projection.bus.
+ * on projection-bus.
  */
 
 type ProjectionUpdatedAt = unknown;

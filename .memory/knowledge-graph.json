@@ -207,9 +207,9 @@
       "entityType": "Vertical_Slice",
       "observations": [
         "VS6 = Scheduling business vertical slice. Full autonomy achieved [2026-03-02].",
-        "QGWAY_SCHED [#14 #15 #16]: scheduling.slice/_queries.ts exposes getEligibleMembersForSchedule + getEligibleMemberForSchedule that route through projection.org-eligible-member-view via projection.bus. No direct Firestore reads for member eligibility.",
+        "QGWAY_SCHED [#14 #15 #16]: scheduling.slice/_queries.ts exposes getEligibleMembersForSchedule + getEligibleMemberForSchedule that route through projection.org-eligible-member-view via projection-bus. No direct Firestore reads for member eligibility.",
         "Schedule read routes are split by shape at L6: calendar(day/all) and timeline(member/all), so each route has a single deterministic return contract.",
-        "A5 Saga [WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned] uses getOrgEligibleMembersWithTier from projection.bus and preserves projection-first eligibility checks.",
+        "A5 Saga [WorkspaceScheduleProposed → OrgEligibilityCheck → ScheduleAssigned] uses getOrgEligibleMembersWithTier from projection-bus and preserves projection-first eligibility checks.",
         "D7 compliance verified: no imports from workspace.slice internals."
       ]
     }

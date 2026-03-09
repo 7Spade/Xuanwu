@@ -10,8 +10,8 @@ import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
 import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
-import type { OrgEligibleMemberView } from "@/shared-infra/projection.bus"
-import { getAllOrgMembersView } from "@/shared-infra/projection.bus"
+import type { OrgEligibleMemberView } from "@/shared-infra/projection-bus"
+import { getAllOrgMembersView } from "@/shared-infra/projection-bus"
 import { type MemberReference } from "@/shared-kernel"
 
 import { useMemberManagement } from '../_hooks/use-member-management'

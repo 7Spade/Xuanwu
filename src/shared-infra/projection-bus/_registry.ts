@@ -1,5 +1,5 @@
 /**
- * projection.bus ??_registry.ts
+ * projection-bus ??_registry.ts
  *
  * Event stream offset + read model version table.
  *

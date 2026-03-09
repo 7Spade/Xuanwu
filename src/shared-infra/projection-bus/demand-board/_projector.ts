@@ -1,5 +1,5 @@
 /**
- * projection.bus/demand-board ??_projector.ts
+ * projection-bus/demand-board ??_projector.ts
  *
  * Maintains the Demand Board read model.
  * Per docs/prd-schedule-workforce-skills.md FR-W0 / FR-W6:
@@ -19,7 +19,7 @@
  * Invariant #1 (cross-BC): this projector only writes to accounts/{orgId}/schedule_items
  *   ??the ScheduleItem SSOT. It does NOT write to any other BC's aggregate.
  *
- * [D3] Projectors in projection.bus are architecturally sanctioned to call updateDocument
+ * [D3] Projectors in projection-bus are architecturally sanctioned to call updateDocument
  *   directly ??they are the read-model write layer, not an aggregate.
  */
 

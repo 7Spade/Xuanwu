@@ -1,5 +1,5 @@
 /**
- * projection.bus ??_funnel.ts
+ * projection-bus ??_funnel.ts
  *
  * EVENT_FUNNEL_INPUT: unified entry point for the Projection Layer.
  *

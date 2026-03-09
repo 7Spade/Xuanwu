@@ -1,5 +1,5 @@
 /**
- * projection.bus — Public API
+ * projection-bus — Public API
  *
  * VS8 Projection Bus: the unified entry point, version registry, and home for
  * all projection view sub-slices.
@@ -28,7 +28,7 @@
  *   WORKSPACE_EVENT_BUS + ORGANIZATION_EVENT_BUS + TAG_LIFECYCLE_BUS
  *     → EVENT_FUNNEL_INPUT → all projection slices
  *
- * External consumers import from '@/shared-infra/projection.bus'.
+ * External consumers import from '@/shared-infra/projection-bus'.
  * Consumers call once at app startup:
  *   registerWorkspaceFunnel(bus)
  *   registerOrganizationFunnel()

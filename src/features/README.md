@@ -17,7 +17,7 @@ L0 External Triggers
               ├── notification-hub.slice
               ├── semantic-graph.slice
               ├── global-search.slice
-              ├── (projection bus in src/shared-infra/projection.bus)
+              ├── (projection bus in src/shared-infra/projection-bus)
               ├── infra.*          (shared infra runners)
               └── shared-kernel    (cross-cutting contracts only)
 ```
@@ -37,7 +37,7 @@ L0 External Triggers
 | `notification-hub.slice` | VS8 | Push notification routing, FCM |
 | `semantic-graph.slice` | VS9 | Semantic tag graph, indexed search backend |
 | `global-search.slice` | — | Cross-slice semantic search (Cmd+K) [D26] |
-| `projection.bus` | — | Event projections → read-model views [L5] |
+| `projection-bus` | — | Event projections → read-model views [L5] |
 | `infra.event-router` | — | Integration Event Router (IER) [L4] |
 | `infra.gateway-command` | — | Command Boundary Gateway (CBG) [L1] |
 | `infra.gateway-query` | — | Query Gateway [L6] |

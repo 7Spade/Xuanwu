@@ -25,7 +25,7 @@ L1  Shared Kernel          src/features/shared-kernel/   Contracts, ports, pure 
 L2  Command Gateway        src/features/*/core/_actions.ts
 L3  Domain Slices          src/features/{slice}/   VS1–VS8 business verticals
 L4  IER (Event Router)     src/features/*/core.event-bus/
-L5  Projection Bus         src/shared-infra/projection.bus/
+L5  Projection Bus         src/shared-infra/projection-bus/
 L6  Query Gateway          src/features/*/core/_queries.ts
 L7  Firebase ACL           src/shared/infra/{auth,firestore,messaging,storage}/
 L8  Firebase Infra         src/shared-infra/backend-firebase/

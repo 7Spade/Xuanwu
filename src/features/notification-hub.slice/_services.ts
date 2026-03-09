@@ -3,13 +3,13 @@
  *
  * Cross-cutting Authority ??Event subscriber and tag-aware routing engine.
  *
- * Listens to projection.bus tag change events and domain events,
+ * Listens to projection-bus tag change events and domain events,
  * evaluates tag-based routing rules via VS8 semantics, and triggers
  * delivery channels accordingly.
  *
  * Per 00-logic-overview.md (VS7 enhanced):
  *   Notification Hub = 反應中樞 (Reaction Hub)
- *   - Monitors projection.bus for tag lifecycle events
+ *   - Monitors projection-bus for tag lifecycle events
  *   - Routes via VS8 tag semantics to appropriate channels
  *   - Sole side-effect outlet [D26]
  *
@@ -182,7 +182,7 @@ export async function processNotificationEvent(
 // =================================================================
 
 /**
- * Event key for tag lifecycle events from projection.bus.
+ * Event key for tag lifecycle events from projection-bus.
  * The notification hub subscribes to these events for tag-aware routing.
  */
 export const TAG_CHANGED_EVENT_KEY = 'projection:tag:changed';
@@ -195,11 +195,11 @@ export type ProjectionBusListener = (event: NotificationSourceEvent) => void;
 const busListeners = new Map<string, ProjectionBusListener[]>();
 
 /**
- * Subscribe to a projection.bus event key.
+ * Subscribe to a projection-bus event key.
  * Returns an unsubscribe function.
  *
  * Per 00-logic-overview.md (VS7):
- *   Notification Hub monitors projection.bus for tag lifecycle events
+ *   Notification Hub monitors projection-bus for tag lifecycle events
  *   and evaluates tag-aware routing to decide delivery channels.
  */
 export function subscribeToProjectionBus(
@@ -225,7 +225,7 @@ export function subscribeToProjectionBus(
 
 /**
  * Emit an event to all registered projection bus listeners.
- * Used by projection.bus adapters to forward domain events.
+ * Used by projection-bus adapters to forward domain events.
  */
 export function emitProjectionBusEvent(event: NotificationSourceEvent): void {
   const listeners = busListeners.get(event.eventKey) ?? [];
@@ -235,7 +235,7 @@ export function emitProjectionBusEvent(event: NotificationSourceEvent): void {
 }
 
 /**
- * Initialize the TAG_CHANGED subscription ??connects projection.bus
+ * Initialize the TAG_CHANGED subscription ??connects projection-bus
  * tag lifecycle events to the notification routing pipeline.
  *
  * Returns an unsubscribe function for cleanup.

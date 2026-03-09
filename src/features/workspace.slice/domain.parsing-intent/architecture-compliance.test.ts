@@ -293,7 +293,7 @@ describe('[Architecture] VS5?VS6 integration compliance', () => {
   // ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
   // [QGWAY_SCHED] Scheduling queries route through projection.org-eligible-member-view
   // ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
-  describe('[QGWAY_SCHED] Scheduling eligible-member queries use projection.bus', () => {
+  describe('[QGWAY_SCHED] Scheduling eligible-member queries use projection-bus', () => {
     it('scheduling _queries.ts exports getEligibleMembersForSchedule', () => {
       const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
       const content = fs.readFileSync(queriesPath, 'utf8');
@@ -306,7 +306,7 @@ describe('[Architecture] VS5?VS6 integration compliance', () => {
       expect(content).toMatch(/getEligibleMemberForSchedule/);
     });
 
-    it('scheduling _queries.ts imports eligible members from projection.bus (QGWAY_SCHED channel)', () => {
+    it('scheduling _queries.ts imports eligible members from projection-bus (QGWAY_SCHED channel)', () => {
       const queriesPath = path.join(SRC_ROOT, 'features', 'scheduling.slice', '_queries.ts');
       const content = fs.readFileSync(queriesPath, 'utf8');
       expect(content).toMatch(/@\/features\/projection\.bus/);

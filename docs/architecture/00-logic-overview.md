@@ -117,7 +117,7 @@
 %%        infra.outbox-relay/                   # legacy alias only（遷移期相容）
 %%        infra.dlq-manager/                    # legacy alias only（遷移期相容）
 %%        infra.gateway-query/                  # legacy alias only（遷移期相容）
-%%        projection.bus/                       # legacy alias only（遷移期相容；目標 src/shared-infra/projection-bus）
+%%        projection-bus/                       # legacy alias only（遷移期相容；目標 src/shared-infra/projection-bus）
 %%        identity.slice/                       # L3 VS1
 %%        account.slice/                        # L3 VS2
 %%        skill-xp.slice/                       # L3 VS3
