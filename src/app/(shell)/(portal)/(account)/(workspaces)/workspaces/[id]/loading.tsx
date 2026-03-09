@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 import { Skeleton } from "@/shadcn-ui/skeleton";
-import { RouteStreamShell } from "@/app/(shell)/(portal)/(account)/_components/route-stream-shell";
+import { RouteStreamShell } from "@/shadcn-ui/custom-ui/route-stream-shell";
 
 export default function WorkspaceDetailRouteLoading() {
   return (
