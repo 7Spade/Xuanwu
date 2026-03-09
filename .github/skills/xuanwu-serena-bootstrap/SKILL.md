@@ -26,8 +26,6 @@ Use this skill when users request `/xuanwu-serena` setup, repair, or optimizatio
    - `initial_instructions` first.
    - `check_onboarding_performed` second.
    - onboarding and/or memory checks third.
-   - `initial_instructions` first.
-   - onboarding and/or memory checks second.
 6. Apply focused, minimal diffs.
 7. Validate and report:
    - Run `get_errors` on modified files.
