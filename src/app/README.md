@@ -95,6 +95,24 @@ Authenticated routes wrapped in shell + portal layering.
 
 Slots follow Next.js parallel routes semantics — they render independently alongside their sibling `page.tsx`. Use `default.tsx` to render `null` when the slot is not active.
 
+### Route-Level Loading Boundaries
+
+To reduce visual jank during parallel segment streaming, route groups now provide dedicated `loading.tsx` boundaries:
+
+- `(dashboard)/dashboard/loading.tsx`
+- `(workspaces)/workspaces/loading.tsx`
+- `(workspaces)/workspaces/[id]/loading.tsx`
+
+These boundaries keep shell chrome visible and render low-noise skeletons while slot/page payloads stream.
+
+### Portal Bootstrap UX
+
+Portal bootstrap is non-blocking by design:
+
+- Sidebar/header shell remains mounted during account bootstrap.
+- "Restoring dimension sovereignty..." appears only in the portal content region when app bootstrap phase is `idle` and no `activeAccount` exists.
+- Once cache or stream hydration sets an active account, content resumes without full-screen interruption.
+
 ---
 
 ## Metadata Convention

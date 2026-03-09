@@ -33,6 +33,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
   const pathname = usePathname();
   const isPublicRoot = pathname === "/";
   const isAppBootstrapIdle = appState.bootstrapPhase === "idle";
+  const hasActiveAccount = Boolean(appState.activeAccount);
 
   useEffect(() => {
     if (status === "unauthenticated" && !isPublicRoot) {
@@ -40,7 +41,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
     }
   }, [isPublicRoot, router, status]);
 
-  if (!isPublicRoot && status !== "unauthenticated" && isAppBootstrapIdle) {
+  if (!isPublicRoot && status !== "unauthenticated" && isAppBootstrapIdle && !hasActiveAccount) {
     return (
       <div className="mx-auto flex w-full max-w-4xl items-center gap-3 rounded-2xl bg-background/75 px-6 py-5 ring-1 ring-border/60 backdrop-blur-sm">
         <Loader2 className="size-4 animate-spin text-muted-foreground" />
