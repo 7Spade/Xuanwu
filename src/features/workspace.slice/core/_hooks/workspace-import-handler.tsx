@@ -6,9 +6,9 @@ import {
   markParsingIntentFailed,
   markParsingIntentImported,
   startParsingImport,
-} from '@/features/workspace.slice/business.document-parser';
-import { createTask, hasTasksForSourceIntent, reconcileIntentTasks } from '@/features/workspace.slice/business.tasks';
-import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
+} from '@/features/workspace.slice/domain.document-parser';
+import { createTask, hasTasksForSourceIntent, reconcileIntentTasks } from '@/features/workspace.slice/domain.tasks';
+import type { WorkspaceTask } from '@/features/workspace.slice/domain.tasks/_types';
 import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
 import { ToastAction } from '@/shadcn-ui/toast';

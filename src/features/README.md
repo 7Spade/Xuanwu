@@ -65,7 +65,7 @@ Each feature slice is a **self-contained vertical unit**. The following rules en
 
 ```
 // ❌ account.slice must NOT reach into workspace.slice internals
-import { _workflowReducer } from '@/features/workspace.slice/business.workflow/_reducer'
+import { _workflowReducer } from '@/features/workspace.slice/domain.workflow/_reducer'
 
 // ✅ Correct: consume workspace.slice's public API
 import { WorkspacePublicAPI } from '@/features/workspace.slice'

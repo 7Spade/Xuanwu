@@ -10,15 +10,15 @@ import {
   createIssue as createIssueAction,
   addCommentToIssue as addCommentToIssueAction,
   resolveIssue as resolveIssueAction,
-} from '@/features/workspace.slice/business.issues'
+} from '@/features/workspace.slice/domain.issues'
 import { 
   createTask as createTaskAction,
   updateTask as updateTaskAction,
   deleteTask as deleteTaskAction,
   getWorkspaceTask as getWorkspaceTaskAction,
-} from '@/features/workspace.slice/business.tasks'
-import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
-import { listWorkflowStates } from '@/features/workspace.slice/business.workflow'
+} from '@/features/workspace.slice/domain.tasks'
+import type { WorkspaceTask } from '@/features/workspace.slice/domain.tasks/_types';
+import { listWorkflowStates } from '@/features/workspace.slice/domain.workflow'
 import { WorkspaceEventBus , WorkspaceEventContext, registerWorkspaceFunnel, registerOrganizationFunnel, type WorkspaceEventName, type FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import { writeAuditLog } from '@/features/workspace.slice/gov.audit/_actions';
 import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
@@ -197,7 +197,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
     // Schedule trigger chain: task assignment change → workspace:tasks:assigned → W_B_SCHEDULE.
     // Only publish when a non-empty assigneeId is provided (assignment, not un-assignment).
     if (updates.assigneeId) {
-      // Fetch task data from workspace-business.tasks BC boundary (not from workspace aggregate).
+      // Fetch task data from workspace-domain.tasks BC boundary (not from workspace aggregate).
       const taskData = await getWorkspaceTaskAction(workspaceId, taskId);
       eventBus.publish('workspace:tasks:assigned', {
         taskId,

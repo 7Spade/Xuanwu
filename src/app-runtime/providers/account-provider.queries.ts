@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { DailyLog } from '@/features/workspace.slice/business.daily/_types'
+import type { DailyLog } from '@/features/workspace.slice/domain.daily/_types'
 import type { Workspace } from '@/features/workspace.slice/core/_types'
 import type { AuditLog } from '@/features/workspace.slice/gov.audit/_types'
 import { db } from '@/shared-infra/frontend-firebase'

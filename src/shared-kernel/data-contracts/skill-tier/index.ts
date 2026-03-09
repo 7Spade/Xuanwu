@@ -15,7 +15,7 @@
  *   — skill-xp.slice         (SkillXpAdded / SkillXpDeducted events)
  *   — projection.org-eligible-member-view  (eligibility computed at query time)
  *   — scheduling.slice       (skill-tier eligibility gate)
- *   — workspace.slice/business.parsing-intent  (skill requirements from documents)
+ *   — workspace.slice/domain.parsing-intent  (skill requirements from documents)
  *
  * Dependency rule: ZERO infrastructure imports (no Firebase, no React, no I/O).
  * [D19] Canonical type definitions live here. Import from `@/shared-kernel`.

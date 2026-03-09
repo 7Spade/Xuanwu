@@ -3,7 +3,7 @@
  *
  * All Firestore read and write operations for the `tasks` sub-collection
  * under a workspace. Stored at: workspaces/{workspaceId}/tasks/{taskId}
- * Corresponds to the `workspace-business.tasks` feature slice.
+ * Corresponds to the `workspace-domain.tasks` feature slice.
  */
 
 import {

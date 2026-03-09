@@ -3,7 +3,7 @@
  *
  * All Firestore read and write operations for the `parsingIntents` sub-collection
  * under a workspace. Stored at: workspaces/{workspaceId}/parsingIntents/{intentId}
- * Corresponds to the `workspace-business.document-parser` feature slice.
+ * Corresponds to the `workspace-domain.document-parser` feature slice.
  *
  * ParsingIntent is a Digital Twin (解析合約) produced by the document-parser.
  * Tasks reference it via `sourceIntentId` as an immutable SourcePointer.

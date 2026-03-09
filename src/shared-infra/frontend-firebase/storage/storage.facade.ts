@@ -103,7 +103,7 @@ export const uploadWorkspaceAvatar = async (
  * Uploads a raw workspace document to Firebase Storage under a versioned path.
  * Returns both the download URL and the storage path for external reference.
  *
- * This is the single-responsibility upload boundary for workspace-business.files.
+ * This is the single-responsibility upload boundary for workspace-domain.files.
  * Firestore metadata writes remain the caller's responsibility so they can use
  * atomic operations (arrayUnion, serverTimestamp).
  *

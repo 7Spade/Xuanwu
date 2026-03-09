@@ -1,7 +1,7 @@
 /**
  * workspace.slice — VS5 Workspace Slice Public API
  *
- * Consolidated workspace business domain. All VS5 sub-slices are re-exported
+ * Consolidated workspace domain modules. All VS5 sub-slices are re-exported
  * from this single entry point. External consumers import from '@/features/workspace.slice'.
  *
  * Sub-slices:
@@ -15,16 +15,16 @@
  *   gov.members       — workspace member grants + UI
  *   gov.partners      — stub (views at account.slice/org.partner)
  *   gov.teams         — stub (views at account.slice)
- *   business.files    — workspace file storage
- *   business.document-parser — document parsing [A4]
- *   business.parsing-intent  — ParsingIntent digital twin contract
- *   business.tasks    — workspace task management
- *   business.daily    — 施工日誌 (A-track daily log)
- *   business.workflow — workflow aggregate + state machine [R6]
- *   business.quality-assurance — QA capability
- *   business.acceptance        — acceptance capability
- *   business.finance           — finance capability
- *   business.issues            — B-track issues [A3]
+ *   domain.files    — workspace file storage
+ *   domain.document-parser — document parsing [A4]
+ *   domain.parsing-intent  — ParsingIntent digital twin contract
+ *   domain.tasks    — workspace task management
+ *   domain.daily    — 施工日誌 (A-track daily log)
+ *   domain.workflow — workflow aggregate + state machine [R6]
+ *   domain.quality-assurance — QA capability
+ *   domain.acceptance        — acceptance capability
+ *   domain.finance           — finance capability
+ *   domain.issues            — B-track issues [A3]
  */
 
 // ─── core ────────────────────────────────────────────────────────────────────
@@ -180,7 +180,7 @@ export { WorkspaceMembers } from './gov.members'
 // Note: getWorkspaceGrants is already exported from gov.role; gov.members re-exports it too
 // Avoiding duplicate export — consumers use gov.role or gov.members via workspace.slice
 
-// ─── business.files ──────────────────────────────────────────────────────────
+// ─── domain.files ────────────────────────────────────────────────────────────
 export {
   WorkspaceFiles,
   useStorage,
@@ -190,16 +190,16 @@ export {
   uploadProfilePicture,
   uploadRawFile,
   subscribeToWorkspaceFiles,
-} from './business.files'
-export type { WorkspaceFileVersion, WorkspaceFile } from './business.files'
+} from './domain.files'
+export type { WorkspaceFileVersion, WorkspaceFile } from './domain.files'
 
-// ─── business.document-parser ────────────────────────────────────────────────
+// ─── domain.document-parser ──────────────────────────────────────────────────
 export {
   WorkspaceDocumentParser,
   saveParsingIntent,
   markParsingIntentImported,
   subscribeToParsingIntents,
-} from './business.document-parser'
+} from './domain.document-parser'
 export type {
   IntentID,
   SourcePointer,
@@ -209,23 +209,23 @@ export type {
   ParsingIntent,
   ParsingImportStatus,
   ParsingImport,
-} from './business.document-parser'
+} from './domain.document-parser'
 
-// ─── business.parsing-intent ─────────────────────────────────────────────────
+// ─── domain.parsing-intent ───────────────────────────────────────────────────
 // Note: markParsingIntentImported (pure function) is exported as markParsingIntentContract
-// to avoid collision with the server action of the same name in business.document-parser.
+// to avoid collision with the server action of the same name in domain.document-parser.
 export {
   createParsingIntentContract,
   markParsingIntentImported as markParsingIntentContract,
   supersedeParsingIntent,
-} from './business.parsing-intent'
+} from './domain.parsing-intent'
 export type {
   ParsingIntentContract,
   ParsingIntentStatus,
   CreateParsingIntentInput,
-} from './business.parsing-intent'
+} from './domain.parsing-intent'
 
-// ─── business.tasks ──────────────────────────────────────────────────────────
+// ─── domain.tasks ────────────────────────────────────────────────────────────
 export {
   WorkspaceTasks,
   createTask,
@@ -234,10 +234,10 @@ export {
   batchImportTasks,
   getWorkspaceTasks,
   getWorkspaceTask,
-} from './business.tasks'
-export type { Location, WorkspaceTask, TaskWithChildren } from './business.tasks'
+} from './domain.tasks'
+export type { Location, WorkspaceTask, TaskWithChildren } from './domain.tasks'
 
-// ─── business.daily ──────────────────────────────────────────────────────────
+// ─── domain.daily ────────────────────────────────────────────────────────────
 export {
   WorkspaceDaily,
   AccountDailyComponent,
@@ -250,11 +250,11 @@ export {
   useBookmarkActions,
   useDailyUpload,
   getDailyLogs,
-} from './business.daily'
-export type { DailyLogComment, DailyLog } from './business.daily'
-export { default as AccountDailyView } from './business.daily'
+} from './domain.daily'
+export type { DailyLogComment, DailyLog } from './domain.daily'
+export { default as AccountDailyView } from './domain.daily'
 
-// ─── business.workflow ───────────────────────────────────────────────────────
+// ─── domain.workflow ─────────────────────────────────────────────────────────
 export {
   WORKFLOW_STAGE_ORDER,
   createWorkflowAggregate,
@@ -268,33 +268,33 @@ export {
   findWorkflowsBlockedByIssue,
   findWorkflowsByStage,
   handleIssueResolvedForWorkflow,
-} from './business.workflow'
-export type { WorkflowStage, WorkflowAggregateState } from './business.workflow'
+} from './domain.workflow'
+export type { WorkflowStage, WorkflowAggregateState } from './domain.workflow'
 
-// ─── business.quality-assurance ──────────────────────────────────────────────
-export { WorkspaceQualityAssurance } from './business.quality-assurance'
+// ─── domain.quality-assurance ────────────────────────────────────────────────
+export { WorkspaceQualityAssurance } from './domain.quality-assurance'
 
-// ─── business.acceptance ─────────────────────────────────────────────────────
-export { WorkspaceAcceptance } from './business.acceptance'
+// ─── domain.acceptance ───────────────────────────────────────────────────────
+export { WorkspaceAcceptance } from './domain.acceptance'
 
-// ─── business.finance ────────────────────────────────────────────────────────
+// ─── domain.finance ──────────────────────────────────────────────────────────
 export {
   WorkspaceFinance,
   getFinanceAggregateState,
   saveFinanceAggregateState,
-} from './business.finance'
-export type { FinanceAggregateState } from './business.finance'
+} from './domain.finance'
+export type { FinanceAggregateState } from './domain.finance'
 
-// ─── business.issues ─────────────────────────────────────────────────────────
+// ─── domain.issues ───────────────────────────────────────────────────────────
 export {
   WorkspaceIssues,
   createIssue,
   addCommentToIssue,
   resolveIssue,
-} from './business.issues'
-export type { IssueComment, WorkspaceIssue } from './business.issues'
+} from './domain.issues'
+export type { IssueComment, WorkspaceIssue } from './domain.issues'
 
-// ─── domain rules ────────────────────────────────────────────────────────────
+// ─── workspace rules ─────────────────────────────────────────────────────────
 export {
   filterVisibleWorkspaces,
   hasWorkspaceAccess,

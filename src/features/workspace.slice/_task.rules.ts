@@ -3,7 +3,7 @@
  * No async, no I/O, no React, no Firebase.
  */
 
-import type { WorkspaceTask, TaskWithChildren } from "./business.tasks/_types";
+import type { WorkspaceTask, TaskWithChildren } from "./domain.tasks/_types";
 
 /** A task is considered "divisible" (quantity-based) when its quantity exceeds this threshold. */
 const MULTI_QUANTITY_THRESHOLD = 1;

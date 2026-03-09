@@ -16,8 +16,8 @@ import {
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils';
 
-import type { WorkspaceIssue } from '../business.issues/_types';
-import type { WorkspaceTask } from '../business.tasks/_types';
+import type { WorkspaceIssue } from '../domain.issues/_types';
+import type { WorkspaceTask } from '../domain.tasks/_types';
 // ---------------------------------------------------------------------------
 // Workspace subcollection subscriptions
 // ---------------------------------------------------------------------------

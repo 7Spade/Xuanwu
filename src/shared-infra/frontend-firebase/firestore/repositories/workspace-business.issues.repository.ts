@@ -3,7 +3,7 @@
  *
  * All Firestore read and write operations for the `issues` sub-collection
  * under a workspace. Stored at: workspaces/{workspaceId}/issues/{issueId}
- * Corresponds to the `workspace-business.issues` feature slice.
+ * Corresponds to the `workspace-domain.issues` feature slice.
  */
 
 import {

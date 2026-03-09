@@ -3,7 +3,7 @@
  *
  * All Firestore read and write operations for the `files` sub-collection
  * under a workspace. Stored at: workspaces/{workspaceId}/files/{fileId}
- * Corresponds to the `workspace-business.files` feature slice.
+ * Corresponds to the `workspace-domain.files` feature slice.
  */
 
 import {

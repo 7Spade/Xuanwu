@@ -14,8 +14,8 @@ import type {
 } from "@/features/semantic-graph.slice"
 import type { SkillRequirement, WorkspaceScheduleProposedPayload } from "@/shared-kernel"
 
-import type { DailyLog } from "../business.daily/_types"
-import type { WorkspaceTask } from "../business.tasks/_types"
+import type { DailyLog } from "../domain.daily/_types"
+import type { WorkspaceTask } from "../domain.tasks/_types"
 
 // WorkspaceScheduleProposedPayload is a cross-BC contract ??defined in shared-kernel.
 // Re-exported for consumers that import from workspace-core.event-bus.

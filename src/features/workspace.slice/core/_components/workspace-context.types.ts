@@ -6,7 +6,7 @@
  */
 
 
-import type { WorkspaceTask } from '@/features/workspace.slice/business.tasks/_types';
+import type { WorkspaceTask } from '@/features/workspace.slice/domain.tasks/_types';
 import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import type { WorkspaceRole } from '@/features/workspace.slice/gov.role/_types';
 import type { ScheduleItem, CommandResult } from '@/shared-kernel';
