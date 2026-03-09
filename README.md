@@ -30,7 +30,7 @@ To ensure nested instructions are applied in VS Code:
 
 ### Prompt Command Table（`/指令`）
 
-Use the table below to invoke each prompt in Copilot Chat with `/command`.
+Use the table below to invoke specialized prompts in Copilot Chat with `/command` syntax. Each command activates a specific architectural, testing, or development workflow.
 
 | Command | Prompt File |
 | --- | --- |
