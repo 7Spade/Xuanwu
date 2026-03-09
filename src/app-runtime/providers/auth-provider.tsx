@@ -17,6 +17,15 @@ import { AuthContext, type AuthAction, type AuthState } from '../contexts/auth-c
 type FirebaseUser = NonNullable<ReturnType<typeof authAdapter.getCurrentUser>>;
 const AUTH_BOOTSTRAP_TIMEOUT_MS = 6000;
 
+function toAuthStateUser(user: FirebaseUser) {
+  return {
+    id: user.uid,
+    name: user.displayName || 'Dimension Member',
+    email: user.email || '',
+    accountType: 'user' as const,
+  };
+}
+
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'SET_AUTH_STATE':
@@ -34,10 +43,16 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-const initialState: AuthState = {
-  user: null,
-  status: 'initializing',
-};
+const bootstrapSnapshot = authAdapter.getCurrentUser();
+const initialState: AuthState = bootstrapSnapshot
+  ? {
+      user: toAuthStateUser(bootstrapSnapshot),
+      status: 'authenticated',
+    }
+  : {
+      user: null,
+      status: 'initializing',
+    };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
@@ -63,12 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         dispatch({
           type: 'SET_AUTH_STATE',
           payload: {
-            user: { 
-              id: firebaseUser.uid, 
-              name: firebaseUser.displayName || 'Dimension Member', 
-              email: firebaseUser.email || '',
-              accountType: 'user',
-            },
+            user: toAuthStateUser(firebaseUser),
             status: 'authenticated',
           }
         });

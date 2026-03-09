@@ -34,11 +34,10 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
   useEffect(() => {
     if (status === "unauthenticated" && !isPublicRoot) {
       router.replace("/");
-      window.location.replace("/");
     }
   }, [isPublicRoot, router, status]);
 
-  if (status === "initializing" && !isPublicRoot) {
+  if (status === "initializing" && !user && !isPublicRoot) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center space-y-4 bg-background">
         <div className="animate-bounce text-4xl">🐢</div>
