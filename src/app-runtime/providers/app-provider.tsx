@@ -185,6 +185,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, [status, user])
 
   useEffect(() => {
+    if (status !== 'authenticated' || !user) return
+    if (state.activeAccount) return
+
+    // Guard against post-auth stream lag by seeding a deterministic personal account context.
+    dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: user })
+    dispatch({ type: 'SET_BOOTSTRAP_PHASE', payload: 'cache-ready' })
+  }, [status, user, state.activeAccount])
+
+  useEffect(() => {
     if (!user?.id || !state.accountsHydrated) return
 
     writeAccountsCache(user.id, state.accounts, state.activeAccount?.id ?? null)
