@@ -24,36 +24,21 @@ type PortalLayoutProps = {
   children: ReactNode;
 };
 
-const AUTH_RESTORE_TIMEOUT_MS = 8000;
-
 export default function PortalLayout({ children }: PortalLayoutProps) {
   const { state } = useAuth();
-  const { user, authInitialized } = state;
+  const { user, status } = state;
   const router = useRouter();
   const pathname = usePathname();
   const isPublicRoot = pathname === "/";
 
   useEffect(() => {
-    if (authInitialized && !user && !isPublicRoot) {
+    if (status === "unauthenticated" && !isPublicRoot) {
       router.replace("/");
-    }
-  }, [user, authInitialized, isPublicRoot, router]);
-
-  useEffect(() => {
-    if (authInitialized || isPublicRoot) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
       window.location.replace("/");
-    }, AUTH_RESTORE_TIMEOUT_MS);
+    }
+  }, [isPublicRoot, router, status]);
 
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [authInitialized, isPublicRoot]);
-
-  if (!authInitialized && !isPublicRoot) {
+  if (status === "initializing" && !isPublicRoot) {
     return (
       <div className="flex h-screen w-full flex-col items-center justify-center space-y-4 bg-background">
         <div className="animate-bounce text-4xl">🐢</div>
@@ -64,15 +49,8 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
     );
   }
 
-  if (!user && !isPublicRoot) {
-    return (
-      <div className="flex h-screen w-full flex-col items-center justify-center space-y-4 bg-background">
-        <div className="animate-bounce text-4xl">🐢</div>
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" /> Restoring dimension sovereignty...
-        </div>
-      </div>
-    );
+  if (status === "unauthenticated" && !isPublicRoot) {
+    return null;
   }
 
   return children;

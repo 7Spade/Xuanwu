@@ -11,13 +11,15 @@ import { createContext, type Dispatch } from 'react'
 
 import { type Account } from '@/shared-kernel'
 
+export type AuthStatus = 'initializing' | 'authenticated' | 'unauthenticated'
+
 export interface AuthState {
   user: Account | null
-  authInitialized: boolean
+  status: AuthStatus
 }
 
 export type AuthAction =
-  | { type: 'SET_AUTH_STATE'; payload: { user: Account | null; initialized: boolean } }
+  | { type: 'SET_AUTH_STATE'; payload: { user: Account | null; status: AuthStatus } }
   | { type: 'UPDATE_USER_PROFILE'; payload: Partial<Account> }
 
 export interface AuthContextValue {

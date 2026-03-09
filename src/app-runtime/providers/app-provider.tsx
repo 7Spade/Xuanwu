@@ -134,11 +134,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { state: authState } = useAuth()
-  const { user, authInitialized } = authState
+  const { user, status } = authState
   const [state, dispatch] = useReducer(appReducer, initialState)
 
   useEffect(() => {
-    if (!authInitialized) return
+    if (status === 'initializing') return
 
     let unsubscribe: (() => void) | null = null
 
@@ -169,7 +169,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       if (unsubscribe) unsubscribe()
     }
-  }, [authInitialized, user])
+  }, [status, user])
 
   useEffect(() => {
     if (!user?.id || !state.accountsHydrated) return
