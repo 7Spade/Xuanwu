@@ -25,6 +25,16 @@ Apply these rules to all `.ts` files.
 - MUST use semantic names for types, functions, and variables.
 - MUST follow project naming conventions (`PascalCase` for types/classes, `camelCase` for values/functions).
 - SHOULD keep files and modules single-purpose with explicit public boundaries.
+- MUST add a module header comment at the top of every new `.ts`/`.tsx` file using this format (use the bare filename without path, e.g. `user-service.ts`):
+
+```ts
+/**
+ * Module: <file-name>
+ * Purpose: <describe module responsibility>
+ * Responsibilities: <primary responsibilities>
+ * Constraints: deterministic logic, respect module boundaries
+ */
+```
 
 ## Error and Async Rules
 
