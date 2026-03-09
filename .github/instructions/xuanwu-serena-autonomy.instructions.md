@@ -13,5 +13,6 @@ applyTo: ".github/{agents,instructions,prompts,skills}/**/*.{md}"
   - `oraios/serena` `initial_instructions`
   - `oraios/serena` `check_onboarding_performed` and onboarding or memory checks
 - MUST keep edits focused, deterministic, and UTF-8 (no BOM).
+- MUST preserve explicit guidance coverage for React, Next.js (including parallel routes), Firebase (Firestore and Storage), and development/testing workflows across `.github/agents`, `.github/instructions`, `.github/prompts`, and `.github/skills` when optimizing `/xuanwu-serena` assets.
 - MUST validate changed files using `get_errors`.
 - SHOULD verify customization load using VS Code Chat Diagnostics when behavior is unexpected.

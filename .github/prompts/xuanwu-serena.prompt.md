@@ -7,6 +7,7 @@ model: GPT-5.3-Codex
 tools:
   - io.github.upstash/context7/*
   - sequentialthinking/*
+  - software-planning/*
   - oraios/serena/*
 ---
 
@@ -34,6 +35,7 @@ Run this workflow in order and do not skip steps.
 5. Implement:
    - Apply focused edits only.
    - Respect Xuanwu architecture and i18n constraints.
+   - Ensure guidance coverage is explicit for React, Next.js (including parallel routes), Firebase (Firestore and Storage), and development/testing workflows across `.github/agents`, `.github/instructions`, `.github/prompts`, and `.github/skills` when relevant.
 6. Validate:
    - Check changed files for errors.
    - Include follow-up validation commands if needed.
@@ -54,6 +56,7 @@ Use this exact section order:
 
 - Confirm `.vscode/mcp.json` has `io.github.upstash/context7`, `sequentialthinking`, and `oraios/serena`.
 - Confirm `initial_instructions` and `check_onboarding_performed` are callable.
+- Confirm guidance coverage remains explicit for React, Next.js (including parallel routes), Firebase (Firestore and Storage), and development/testing workflows across `.github/agents`, `.github/instructions`, `.github/prompts`, and `.github/skills` when relevant.
 - If any required tool is unavailable, report failed call and continue with a conservative fallback.
 
 ## References

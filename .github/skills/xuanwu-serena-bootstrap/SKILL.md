@@ -22,12 +22,13 @@ Use this skill when users request `/xuanwu-serena` setup, repair, or optimizatio
    - Current-state findings.
    - Candidate solutions.
    - Chosen solution and risk rationale.
-5. Execute Serena initialization chain:
+5. If available, use `software-planning` to structure multi-step execution and dependency order.
+6. Execute Serena initialization chain:
    - `initial_instructions` first.
    - `check_onboarding_performed` second.
    - onboarding and/or memory checks third.
-6. Apply focused, minimal diffs.
-7. Validate and report:
+7. Apply focused, minimal diffs, preserving explicit guidance coverage for React, Next.js (including parallel routes), Firebase (Firestore and Storage), and development/testing workflows across `.github/agents`, `.github/instructions`, `.github/prompts`, and `.github/skills` when relevant.
+8. Validate and report:
    - Run `get_errors` on modified files.
    - Include concrete file references and residual risks.
 
@@ -43,6 +44,7 @@ Use this skill when users request `/xuanwu-serena` setup, repair, or optimizatio
 - Serena init chain attempted before major structural edits.
 - Prompt, agent, instruction, and skill files pass `get_errors`.
 - MCP server naming aligns with `.vscode/mcp.json`.
+- React/Next.js (including parallel routes), Firebase (Firestore/Storage), and development/testing guidance remains explicit across `.github/agents`, `.github/instructions`, `.github/prompts`, and `.github/skills` when relevant.
 - VS Code Chat Diagnostics can load the customized assets.
 
 ## References
