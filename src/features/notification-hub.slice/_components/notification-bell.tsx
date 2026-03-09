@@ -30,7 +30,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
 import { cn } from '@/shadcn-ui/utils/utils';
 
 import type { HubNotification, NotificationCategory } from '../_contract';
-import { useUserNotifications } from '../user.notification/_hooks/use-user-notifications';
+import { useUserNotifications } from '../domain.notification/_hooks/use-user-notifications';
 
 type FilterTab = 'all' | NotificationCategory;
 

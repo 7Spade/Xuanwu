@@ -9,9 +9,9 @@
  */
 
 // Layered API surfaces. Keep this file as the single import entry for consumers.
-export * from './domain';
-export * from './application';
-export * from './ui';
+export * from './domain.core';
+export * from './domain.application';
+export * from './domain.ui';
 
 // Ports are exported for boundary-aligned migration to L2/L6/L4 adapters.
-export type * from './ports';
+export type * from './domain.ports';
