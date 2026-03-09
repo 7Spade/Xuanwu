@@ -1,16 +1,11 @@
-import { Skeleton } from "@/shadcn-ui/skeleton"
+/**
+ * Module: members-loading
+ * Purpose: Render members tab loading boundary.
+ * Responsibilities: delegate to shared loading preset for consistent skeleton optics.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+import { WorkspaceBusinessTabLoading } from "@/shadcn-ui/custom-ui/workspace-businesstab-loading"
 
 export default function Loading() {
-  return (
-    <div className="space-y-4 pt-4">
-      <Skeleton className="h-9 w-72" />
-      <div className="space-y-3">
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-        <Skeleton className="h-14 w-full" />
-      </div>
-    </div>
-  )
+  return <WorkspaceBusinessTabLoading preset="members" />
 }
