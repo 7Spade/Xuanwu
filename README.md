@@ -28,11 +28,11 @@ To ensure nested instructions are applied in VS Code:
 - Enable `chat.useAgentsMdFile`
 - Enable `chat.useNestedAgentsMdFiles` (experimental)
 
-### Prompt 指令表（`/指令`）
+### Prompt Command Table（`/指令`）
 
-下表可直接用於 Copilot Chat 以 `/指令` 呼叫對應 prompt：
+Use the table below to invoke each prompt in Copilot Chat with `/command`.
 
-| 指令 | Prompt 檔案 |
+| Command | Prompt File |
 | --- | --- |
 | `/ai-architecture-governance` | `.github/prompts/ai-architecture-governance.prompt.md` |
 | `/architectural-audit-and-design-specialist` | `.github/prompts/architectural-audit-and-design-specialist.prompt.md` |
