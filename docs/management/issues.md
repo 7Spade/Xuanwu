@@ -3,12 +3,13 @@
 > **憲法依據 / Constitutional Basis**: `docs/architecture/00-LogicOverview.md`
 > **資料來源 / Data Source**: VS5 Files + Document Parser flow review (2026-03-09)
 > **格式說明**: 每條目包含 [❗ 違規] [🔍 現狀] [🛠 修正方案] [📈 影響評估]
-> **最後更新**: 2026-03-09 — 已啟動修復實作（ISSUE-008~010 程式碼已落地，待整體驗證）。
+> **最後更新**: 2026-03-09 — ISSUE-009、ISSUE-010 已確認修復並移至 `issues-archive.md`。
 
 > **執行進度 / Execution Progress**
 > - ISSUE-008: `IN_PROGRESS`（Files 動作來源矩陣已實作）
-> - ISSUE-009: `IN_PROGRESS`（`parseMode/sourceType/triggeredFrom` 已加入 payload）
-> - ISSUE-010: `IN_PROGRESS`（非 JSON 回應容錯已實作）
+> - ISSUE-009: `RESOLVED`（已歸檔至 `issues-archive.md`）
+> - ISSUE-010: `RESOLVED`（已歸檔至 `issues-archive.md`）
+> - ISSUE-011: `OPEN`（待導入非同步 landing + request 去重與重入保護）
 
 ---
 
@@ -19,8 +20,8 @@
 - 依 D27 / #A14，解析入口應維持語義單向與明確分流，不可讓錯誤來源進入錯誤流程。
 
 [🔍 現狀]
-- `document-ai` 目前對當前列檔案可直接觸發；若列本身是 `.document-ai.json` sidecar 也可能被送入同一流程。
-- `genkit-ai` 依關聯 sidecar 推導來源，但規則僅存在程式邏輯，UI 沒有明確顯示來源。
+- 來源矩陣邏輯已部分落地：sidecar 列已禁用 `document-ai`，且 `genkit-ai` 依關聯來源可用。
+- 仍缺：UI 明確來源標記（`source: original` / `source: structured-sidecar`）與對應整合測試覆蓋。
 - 現場語義需求：
   - `DOCUMENT YOU`: 原始文件走 `document-ai`
   - `GENKIT YOU HAVE`: 有結構化 sidecar 才能走 `genkit-ai`
@@ -38,50 +39,27 @@
 
 ---
 
-## ISSUE-009 · HIGH — `document-ai` / `genkit-ai` 缺少 parseMode 追蹤，無法精確審計
+## ISSUE-011 · HIGH — `document-ai` / `genkit-ai` 缺少非同步 landing，導致重複觸發與重入風險
 
 [❗ 違規]
-- 兩個 UI 動作都走同一路徑，但 payload 未攜帶 `parseMode`，導致 Document Parser 無法判定觸發語義。
+- 目前 Files -> Parser 互動是「同步直送 + 立即跳頁」，沒有非同步 landing（queued/submitted/processing/completed）狀態。
+- 缺少 request 去重與重入保護，違反操作可觀測與一次提交語義，容易造成重複解析。
 
 [🔍 現狀]
-- Files 兩個按鈕皆透過同一 handler 導向 `/document-parser`。
-- `pendingParseFile` 未包含：
-  - `parseMode: 'document-ai' | 'genkit-ai'`
-  - `sourceType: 'original' | 'structured-sidecar'`
-  - `triggeredFrom`
-- 異常回報時，無法回答是 DOCUMENT 路徑或 GENKIT 路徑失敗。
+- `use-workspace-files-actions.ts` 的 `handleParseWithAi` 直接 `setPendingParseFile(...)` 後 `router.push('/document-parser')`，沒有 pending lock 或 submit token。
+- `files-table.tsx` 的 `Document AI / Genkit AI` 動作在送件後未進入「送件中」狀態，使用者可連續重點造成多次送件。
+- `document-parser-view.tsx` 採 mount 時自動觸發 `triggerParseFromURL(...)`，目前未檢查「同 sourceFileId/sourceVersionId/parseMode 是否已在執行」。
 
 [🛠 修正方案]
-- 擴充 `pendingParseFile` 契約：`parseMode`、`sourceType`、`triggeredFrom`。
-- Document Parser 首屏顯示當前模式與來源，並寫入 audit/event。
-- 錯誤訊息統一前綴 parseMode，提升排查效率。
+- 導入「非同步 landing」：Files 端只建立 parse request（或 intent）並導向 landing，顯示 `queued -> processing -> completed/failed`。
+- 導入去重鍵：`{workspaceId, sourceFileId, sourceVersionId, parseMode}`，同鍵在有效期間內僅允許一個 in-flight request。
+- UI 防重複：按鈕送出後 disabled + spinner，直到 request 進入可追蹤狀態（queued）再解除；同時提供「查看既有任務」入口而非再次提交。
+- Parser 端加入重入檢查：若命中 in-flight key，直接回傳既有 requestId/intentId，不再重跑 OCR。
+- 增加整合測試：連點 2~5 次 `document-ai`/`genkit-ai`，驗證只產生單一 parse request 與單一 OCR 執行紀錄。
 
 [📈 影響評估]
-- 影響層級：可觀測性、審計追溯與除錯效率。
-- 風險：不同語義事件混流，造成誤診與重複修復。
-
----
-
-## ISSUE-010 · HIGH — Document Parser 對非 JSON 上游錯誤缺乏韌性
-
-[❗ 違規]
-- `extractDataFromDocument` 直接假設上游回應為 JSON；遇到 text/plain 錯誤時，前端會拋 `Unexpected token ... is not valid JSON`。
-
-[🔍 現狀]
-- `process-document.fn.ts` 內部回應分支是 JSON。
-- 實際前端仍曾收到非 JSON（疑似 upstream/proxy 層回應）。
-- 目前錯誤訊息缺少 `status/content-type/endpoint/parseMode`，診斷資訊不足。
-
-[🛠 修正方案]
-- 在 `_form-actions.ts` 依 `content-type` 分支處理：
-  - `application/json` → `response.json()`
-  - 其他 → `response.text()` 並標準化為可讀錯誤。
-- 錯誤模型統一帶出：`status`, `contentType`, `endpoint`, `traceId?`, `parseMode`。
-- 增加最小整合測試：模擬 text/plain 500，確認 UI 不再出現 JSON parse exception。
-
-[📈 影響評估]
-- 影響層級：VS5 Document Parser 可用性與穩定性。
-- 風險：網路或 gateway 異常時，前台訊息不可解釋，延遲修復。
+- 影響層級：VS5 Files / Document Parser 交互一致性、成本控制與可觀測性。
+- 風險：重複操作會造成重複 OCR 呼叫、重複解析成本、審計噪音與使用者混淆（不確定是否已送出）。
 
 ---
 

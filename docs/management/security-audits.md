@@ -10,64 +10,7 @@
 
 | ID     | 模組                               | 規則        | 嚴重程度 | 狀態  |
 |--------|------------------------------------|-------------|----------|-------|
-| SA-001 | `semantic-edge-store.ts`           | D21-9, D21-H | CRITICAL | OPEN  |
 | SA-002 | `SK_STALENESS_CONTRACT` 雙重定義    | D4          | MEDIUM   | OPEN  |
-
----
-
-## SA-001 · CRITICAL — BBB Guard Bypass 允許零權重邊注入
-
-**嚴重程度**: CRITICAL · **狀態**: OPEN · **CVSS 類比評分**: 9.1 (Critical)
-> ⚠️ CVSS 評分說明：評分依據為「無需身份驗證、直接導致核心資料完整性喪失（圖結構污染）」，
-> 屬 CVSS v3.1 Integrity Impact=HIGH / Availability Impact=HIGH，達 Critical (9.0+) 範圍。
-**關聯規則**: D21-9 (Synaptic Weight Invariant), D21-H (Blood-Brain Barrier)
-**關聯 Issue**: ISSUE-001
-
-### 漏洞描述
-
-`semantic-edge-store.ts` 的 `addEdge()` 函數在存儲語義邊前**完全不呼叫** BBB 守衛層
-（`centralized-guards/semantic-guard.ts` 的 `validateEdgeProposal()`）。
-`_clampWeight()` 的數學範圍是 `[0.0, 1.0]`，允許 `weight = 0` 的邊被靜默寫入。
-
-### 攻擊向量分析
-
-1. **直接注入**: 任何有 `addEdge()` 呼叫權限的 command path（`_actions.ts`）均可注入
-   `weight = 0` 的語義邊，無任何驗證阻擋
-2. **Dijkstra 毒化**: 零權重邊在加權最短路徑算法中等效為「零成本捷徑」，
-   可使得任意節點對之間的語義距離被人為壓縮至 0，污染 VS6 排班資格計算結果
-3. **資格欺詐**: 透過注入 `IS_A` 零權重邊，可使低技能標籤看起來「繼承」了高技能標籤的能力，
-   導致不具資格的人員通過排班資格檢查
-
-### 受影響的業務場景
-
-| 場景                | 影響                                        |
-|---------------------|---------------------------------------------|
-| VS6 排班資格查詢    | 零距離邊可使不具資格成員通過資格過濾         |
-| VS4 Workspace 查詢  | 語義相似度計算結果被污染                    |
-| 報表與分析          | 基於語義圖的成本/技能分析數據失真           |
-
-### 修復方案（參見 ISSUE-001）
-
-**立即緩解（Mitigation）**: 在 `addEdge()` 頂部加入 weight > 0 的防禦性斷言：
-```typescript
-if (weight <= 0 || weight > 1) {
-  throw new Error(`[D21-9 SECURITY] Invalid edge weight ${weight}: must be in (0.0, 1.0]`);
-}
-```
-
-**根本修復（Remediation）**: 整合 `validateEdgeProposal()` 至 `addEdge()` 的寫入路徑，
-確保 D21-H BBB 守衛層對所有邊寫入操作生效。
-
-### 驗證步驟
-
-```typescript
-// 修復後應通過此測試
-it('should reject zero-weight edges', () => {
-  expect(() => addEdge('a', 'b', 'IS_A', 0)).toThrow('[D21-9 SECURITY]');
-  expect(() => addEdge('a', 'b', 'IS_A', -0.1)).toThrow('[D21-9 SECURITY]');
-  expect(() => addEdge('a', 'b', 'IS_A', 1.01)).toThrow('[D21-9 SECURITY]');
-});
-```
 
 ---
 
@@ -123,16 +66,16 @@ grep -rn "SK_STALENESS_CONTRACT\|maxAgeMs.*staleness\|STALENESS_CONTRACT" src/
 | 層次                      | 是否強制執行 BBB 守衛 | 備注                              |
 |---------------------------|----------------------|-----------------------------------|
 | `centralized-guards/`     | ✅ 實作完整          | `validateEdgeProposal()` 覆蓋全部規則 |
-| `centralized-edges/addEdge()` | ❌ **完全繞過** | SA-001 核心漏洞所在               |
+| `centralized-edges/addEdge()` | ⚠️ 部分收斂 | 已封鎖無效 weight；仍建議統一守衛入口 |
 | `centralized-neural-net/` | ✅ 僅讀，無寫入路徑  | 無安全風險                        |
 | `projections/`            | ✅ 僅讀，無寫入路徑  | 無安全風險                        |
 
 ### 下一次審計計劃
 
 - **觸發條件**: 任何 VS8 語義圖寫入路徑的新增或修改
-- **重點**: 確認所有 `addEdge()` / `removeEdge()` 呼叫方均受 BBB 守衛保護
-- **計劃日期**: SA-001 修復後的 Sprint 結束時進行驗證複審
+- **重點**: 確認所有 `addEdge()` / `removeEdge()` 呼叫方最終收斂至單一 BBB 守衛入口
+- **計劃日期**: SA-002 修復後的 Sprint 結束時進行驗證複審
 
 ---
 
-*最後更新: 2026-03-06 | 治理官: EAGO /audit 掃描*
+*最後更新: 2026-03-09 | 維護者: Copilot（已移除 SA-001 至 archive）*
