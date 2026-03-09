@@ -60,10 +60,6 @@
 				"chrome-devtools-mcp"
 			]
 		},
-		"context7": {
-			"type": "http",
-			"url": "https://mcp.context7.com/mcp"
-		},
 		"sonarqube": {
 			"type": "stdio",
 			"command": "npx",
@@ -102,6 +98,18 @@
 				"@modelcontextprotocol/server-everything"
 			],
 			"type": "stdio"
+		},
+		"io.github.upstash/context7": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"@upstash/context7-mcp@1.0.31"
+			],
+			"env": {
+				"CONTEXT7_API_KEY": "${input:CONTEXT7_API_KEY}"
+			},
+			"gallery": "https://api.mcp.github.com",
+			"version": "1.0.31"
 		}
 	},
 	"inputs": [
@@ -120,6 +128,12 @@
 			"id": "codacy-token",
 			"type": "promptString",
 			"description": "Codacy API token",
+			"password": true
+		},
+		{
+			"id": "CONTEXT7_API_KEY",
+			"type": "promptString",
+			"description": "API key for authentication",
 			"password": true
 		}
 	]
