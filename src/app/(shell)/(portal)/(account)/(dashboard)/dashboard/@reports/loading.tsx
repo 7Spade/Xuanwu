@@ -1,12 +1,9 @@
-import { Skeleton } from "@/shadcn-ui/skeleton";
-import { RouteStreamShell } from "@/shadcn-ui/custom-ui/route-stream-shell";
+import { NexusSkeletonBlock, RouteStreamShell } from "@/shadcn-ui/custom-ui";
 
 export default function ReportsLoading() {
   return (
-    <RouteStreamShell className="space-y-3 p-5">
-      <Skeleton className="h-7 w-48 rounded-lg" />
-      <Skeleton className="h-24 rounded-xl" />
-      <Skeleton className="h-24 rounded-xl opacity-85" />
+    <RouteStreamShell className="p-5">
+      <NexusSkeletonBlock rows={3} className="bg-transparent p-0 ring-0" />
     </RouteStreamShell>
   );
 }

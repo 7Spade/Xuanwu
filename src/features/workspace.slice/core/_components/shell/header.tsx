@@ -25,6 +25,7 @@ import {
   BreadcrumbSeparator,
 } from "@/shadcn-ui/breadcrumb";
 import { Button } from "@/shadcn-ui/button";
+import { ModeToggle } from "@/shadcn-ui/custom-ui";
 import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
@@ -130,6 +131,7 @@ export function Header() {
         </Button>
       </div>
       <div className="flex items-center gap-3 pr-4">
+        <ModeToggle />
         <LanguageSwitcher />
         <Button asChild variant="ghost" size="sm" className="gap-1.5 transition-all duration-200 ease-out hover:bg-background/80 active:scale-[0.98]">
           <Link href="/wiki">

@@ -14,6 +14,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { completeRegistration, signIn } from "@/features/identity.slice/_actions";
 import { LoginForm, RegisterForm, ResetPasswordForm } from "@/features/identity.slice";
 import { Button } from "@/shadcn-ui/button";
+import { ModeToggle } from "@/shadcn-ui/custom-ui";
 import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
 import {
 	Dialog,
@@ -108,6 +109,7 @@ export default function LandingPage() {
 	return (
 		<div className="relative flex min-h-screen w-full items-center justify-center bg-background">
 			<div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+					<ModeToggle />
 				<LanguageSwitcher />
 				<Button
 					aria-label="Sign in"

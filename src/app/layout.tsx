@@ -14,7 +14,7 @@ import { AuthProvider } from '@/app-runtime/providers/auth-provider';
 import { FirebaseClientProvider } from '@/app-runtime/providers/firebase-provider';
 import { I18nProvider } from '@/app-runtime/providers/i18n-provider';
 import { ThemeProvider } from '@/app-runtime/providers/theme-provider';
-import {Toaster} from '@/shadcn-ui/toaster';
+import { NexusToaster } from '@/shadcn-ui/custom-ui';
 import { cn } from '@/shadcn-ui/utils/utils';
 
 const inter = Inter({
@@ -47,7 +47,7 @@ export default function RootLayout({
               <AuthProvider>
                 <AppProvider>
                   {children}
-                  <Toaster />
+                  <NexusToaster />
                 </AppProvider>
               </AuthProvider>
             </FirebaseClientProvider>
