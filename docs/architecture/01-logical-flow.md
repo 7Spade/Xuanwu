@@ -350,6 +350,8 @@ SK_OBS_CONTRACT -.->|"contract bind"| OBS_LAYER
 SK_OBS_PATH -.->|"contract -> runtime"| OBS_PATH
 
 %% ─── VS8 Semantic Cognition Engine（語義認知引擎）
+%% ─── 架構正確性優先原則（Architectural Correctness First）：G/C/E/O/B 五系列規則為 VS8 完整正式規範
+%% ───   奧卡姆剃刀 = 正確抽象（正確的職責邊界、清晰的語義層次），而非最少程式碼或最快實作
 %% ─── 四層架構（可維護視圖）：
 %% ───   ① Governance（治理）: registry / protocol / guards / portal
 %% ───   ② Core Domain（核心語義域）: CTA / hierarchy / vector / tag entities

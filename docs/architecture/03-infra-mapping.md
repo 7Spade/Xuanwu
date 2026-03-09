@@ -347,6 +347,8 @@ Firestore onSnapshot (CDC)
 
 ### 待遷移（Migration Target）
 
+> **遷移原則**：所有待遷移項目以**架構正確性優先原則**為最高指引。遷移是**結構性修正（Structural Correction）**，而非補丁式修補。G/C/E/O/B 規則落地是消除 VS8 P1-P10 架構缺陷的正式規範實作，遵循奧卡姆剃刀：正確的抽象與職責邊界，而非最少實作。
+
 - [ ] D24 違規：43 個檔案仍直接 import `firebase/*` → 須遷移至 FIREBASE_ACL Adapter
 - [ ] VS8 Semantic Graph Compute Engine（四層語義引擎正式落地）[D21]
 - [ ] VS8 G/C/E/O/B 正規規則落地：skill-matcher、ISemanticClassificationPort、ISkillMatchPort、ISemanticFeedbackPort Port 介面實作 [O1 E4 E7]

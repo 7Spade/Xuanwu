@@ -8,6 +8,9 @@
 %%  ║    ⑤ 所有不變量以 [#N] / [SN] / [RN] 行內索引，完整定義於文末            ║
 %%  ║    ⑥ Everything as a Tag：所有領域概念以語義標籤建模，由 VS8 全域治理 + VS4 組織擴展治理 ║
 %%  ║    ⑦ VS7 僅可經 Port（IMessaging）發送通知，不得直連任何 Adapter/Runtime   ║
+%%  ║    ⑧ 架構正確性優先（Architectural Correctness First）：正規架構為最高裁決標準；  ║
+%%  ║       奧卡姆剃刀 = 正確抽象非最少程式碼；架構違規零容忍，必須立即結構性修正  ║
+%%  ║       三原則：結構穩定與一致性 · 本質與簡約 · 可持續性與演進               ║
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  SSOT Mapping:
 %%    Architecture rules       → docs/architecture/00-logic-overview.md  ← THIS FILE（原始檔，所有規則正文在此定義）
@@ -215,6 +218,8 @@
 %%    A21=finance-request-independent-lifecycle（VS9 Finance_Request：DRAFT→AUDITING→DISBURSING→PAID）
 %%    A22=finance-task-feedback-projection（FinanceRequestStatusChanged → L5 task-finance-label-view）
 %%  ── VS8 正規規則體系（G/C/E/O/B Series · RULESET-MUST）──
+%%  ── 設計動機：G/C/E/O/B 五系列規則是 VS8 P1-P10 架構缺陷的完整正式規範（Formal Specification）；
+%%  ──   遵循架構正確性優先原則，奧卡姆剃刀 = 正確抽象非最少程式碼；任何違規必須結構性修正，禁止補丁覆蓋
 %%    G1=CTA-ssot（全域語義 SSOT；未 Active slug 不可引用）
 %%    G2=tag-lifecycle-unidirectional（Draft→Active→Stale→Deprecated；禁止跳躍/逆向）
 %%    G3=invariant-guard-supreme（最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill）
@@ -357,12 +362,13 @@
 %%    D27 屬 Extension Gate，僅影響 document-parser / finance-routing 變更。
 %%  ╠══════════════════════════════════════════════════════════════════════════╣
 %%  ── FINAL REVIEW BASELINE（最終態審查基準 · Team Gate）
+%%  ── 最高裁決原則：架構正確性優先（Architectural Correctness First）；奧卡姆剃刀 = 正確抽象非最少程式碼；架構違規零容忍
 %%  ── Scope（本輪必審）──
 %%    1) VS0~VS8：每個編號域必須有明確層位與單一職責（VS0=L1+L0+L2+L4+L5+L6+L7+L8+L9+L10；VS1~VS8=L3）
 %%    1a) VS0 檢核：每個 VS0 路徑必須標明 VS0-Kernel 或 VS0-Infra（不得混稱）
 %%    2) D1~D31：列為 Mandatory Gate（D27 為 Extension Gate，命中場景必審；D29/D30/D31 為新增 Gate）
 %%    2a) E7/E8：屬 AI/Firebase Security 閉環 Gate（命中 AI flow 或受保護入口時必審）
-%%    2b) G1~G7/C1~C11/E1~E12/O1~O6/B1~B5：VS8 正規規則 Gate（命中語義圖任何模組時必審）
+%%    2b) G1~G7/C1~C11/E1~E12/O1~O6/B1~B5：VS8 正規規則 Gate（命中語義圖任何模組時必審；違規必須結構性修正）
 %%    3) TE1~TE6：語義引用必須強型別，禁止裸字串 tagSlug
 %%    4) S1~S6：契約與 SLA 僅能引用 SK_* 常數，禁止硬寫
 %%    5) L/R/A：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
