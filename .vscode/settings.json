@@ -4,7 +4,8 @@
     "chat.includeApplyingInstructions": true,
     "chat.includeReferencedInstructions": true,
     "chat.agentSkillsLocations": {
-        "~/skills": true
+        ".github/skills": true,
+        "skills": true
     },
     "workbench.browser.enableChatTools": true,
     "chat.agentSessionProjection.enabled": true,
