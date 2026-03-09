@@ -19,7 +19,7 @@ Required sequence (Serena-first):
 3. Plan: run `sequentialthinking` and, if helpful, `software-planning` for multi-step tasks.
 4. Initialize: call `oraios/serena` `initial_instructions` and `check_onboarding_performed`.
 5. Implement: apply focused edits; for UI changes add i18n keys and tests.
-6. Test: add/execute Playwright E2E and unit tests; report failing suites.
+6. Test: add/execute Playwright E2E and Vitest unit tests (`npm run test`); report failing suites.
 7. Validate: run `npm run check` (or `get_errors` if available) and report residual risks.
 
 Output: Task Restatement, Scope, Context7 Findings, Plan, Implemented Changes, Validation, Residual Risks.

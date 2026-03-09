@@ -13,7 +13,7 @@ applyTo: "src/**, .github/{agents,instructions,prompts,skills}/**/*"
 - 所有前端 UI 字串必須使用 i18n key，並同步更新 `public/localized-files/en.json` 與 `public/localized-files/zh-TW.json`。
 - Firebase 設定範例應提供範本檔 `.env.example` 或是文件，勿寫入實際憑證。
 - Next.js App Router / 平行路由相關修改應遵守架構邊界（不要把大型第三方 wrapper 放入 feature slice）。
-- 測試流程建議使用 Playwright（或等效工具）做 E2E，並在 CI 中加入 `npm run check` 及 `npm run test` 檢查。
+- 測試流程建議使用 Playwright（或等效工具）做 E2E，單元測試以 Vitest（`npm run test`）為基線，並在 CI 中加入 `npm run check` 與 `npm run test` 檢查。
 
 Agent/Prompt 作者應：
 

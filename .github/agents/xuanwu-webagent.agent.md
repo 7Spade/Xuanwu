@@ -35,6 +35,6 @@ Assist with React/Next.js (including App Router and parallel routes), Firebase (
 ## Completion Checklist
 
 - MCP tools resolved and callable.
-- Changes include tests or test hooks (Playwright, unit tests).
+- Changes include tests or test hooks (Playwright E2E, Vitest unit tests).
 - Firebase integration includes configuration guidance, no embedded credentials.
 - Files pass repository validation steps (`npm run check` where applicable).

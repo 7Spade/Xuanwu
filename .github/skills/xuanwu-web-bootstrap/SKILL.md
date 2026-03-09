@@ -18,8 +18,8 @@ Workflow:
 6. Implement focused changes:
    - React/Next.js: follow App Router conventions and keep parallel routes isolated in feature domains.
    - Firebase: provide config templates and document where env vars must be set; do not commit credentials.
-   - Testing: add Playwright E2E skeletons and unit test hooks; add CI check commands to `package.json` if missing.
-7. Validate: run `npm run check`; run tests; verify i18n keys were added to both locale files.
+   - Testing: add Playwright E2E skeletons and Vitest unit test hooks (`npm run test`); align CI to existing `lint`, `typecheck`, `test`, and `check` scripts.
+7. Validate: run `npm run check` and `npm run test`; verify i18n keys were added to both locale files.
 
 Validation checklist:
 
