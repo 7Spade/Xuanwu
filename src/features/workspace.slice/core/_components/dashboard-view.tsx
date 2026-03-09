@@ -81,12 +81,12 @@ export function DashboardView() {
         }
       >
         {isOrganizationContext && (
-          <div className="flex items-center gap-6 rounded-2xl border border-border/50 bg-muted/40 p-4 shadow-sm backdrop-blur-sm">
-            <div className="border-r border-border/50 px-4 text-center">
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/50 bg-muted/40 p-3 shadow-sm backdrop-blur-sm sm:gap-6 sm:p-4">
+            <div className="border-border/50 px-3 text-center sm:border-r sm:px-4">
               <p className="font-headline text-2xl font-bold">{dimensionWorkspaces.length}</p>
               <p className="text-[10px] font-bold uppercase text-muted-foreground">{t('workspaces.workspaceNodes')}</p>
             </div>
-            <div className="px-4 text-center">
+            <div className="px-3 text-center sm:px-4">
               <p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">{t('workspaces.yourRole')}</p>
               <Badge className="border-primary/20 bg-primary/10 font-headline text-primary">
                 {currentUserRoleInOrganization}
@@ -97,8 +97,8 @@ export function DashboardView() {
       </PageHeader>
 
       {!isOrganizationContext && (
-        <div className="flex flex-col items-center rounded-3xl border-2 border-dashed border-accent/20 bg-accent/5 p-8 text-center">
-          <UserIcon className="mb-4 size-16 text-accent/50" />
+        <div className="flex flex-col items-center rounded-3xl border-2 border-dashed border-accent/20 bg-accent/5 px-6 py-10 text-center sm:p-8">
+          <UserIcon className="mb-4 size-12 text-accent/50 sm:size-16" />
           <h3 className="font-headline text-xl font-bold">{t('workspaces.personalDimension')}</h3>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
             {t('workspaces.personalDimensionHelp')}

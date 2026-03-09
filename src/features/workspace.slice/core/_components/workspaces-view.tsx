@@ -60,8 +60,8 @@ export function WorkspacesView() {
           <WorkspaceTableView workspaces={filteredWorkspaces} />
         )
       ) : (
-        <div className="rounded-3xl border-2 border-dashed border-border/40 bg-muted/5 p-24 text-center">
-          <Terminal className="mx-auto mb-6 size-16 text-muted-foreground opacity-10" />
+        <div className="rounded-3xl border-2 border-dashed border-border/40 bg-muted/5 px-6 py-16 text-center sm:p-24">
+          <Terminal className="mx-auto mb-6 size-12 text-muted-foreground opacity-10 sm:size-16" />
           <h3 className="mb-2 font-headline text-2xl font-bold">
             {t("workspaces.spaceVoid")}
           </h3>

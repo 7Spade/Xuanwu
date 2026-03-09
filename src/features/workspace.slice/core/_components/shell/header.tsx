@@ -91,7 +91,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 bg-background/70 backdrop-blur-xl ring-1 ring-border/55 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-      <div className="flex items-center gap-2 px-4">
+      <div className="flex items-center gap-2 px-3 sm:px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
@@ -114,7 +114,7 @@ export function Header() {
         </Breadcrumb>
       </div>
 
-      <div className="flex flex-1 items-center justify-center">
+      <div className="hidden flex-1 items-center justify-center md:flex">
         <Button
           variant="outline"
           className="group relative h-10 w-full max-w-md justify-start border-0 bg-background/55 text-sm text-muted-foreground shadow-sm ring-1 ring-border/60 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/90 hover:text-foreground hover:ring-border/90 active:scale-[0.98]"
@@ -129,10 +129,23 @@ export function Header() {
           </div>
         </Button>
       </div>
-      <div className="flex items-center gap-3 pr-4">
-        <ModeToggle />
-        <LanguageSwitcher />
-        <Button asChild variant="ghost" size="sm" className="gap-1.5 transition-all duration-200 ease-out hover:bg-background/80 active:scale-[0.98]">
+
+      <div className="ml-auto flex items-center gap-1 pr-3 sm:gap-2 sm:pr-4">
+        {/* Mobile search trigger — visible only below md */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-9 md:hidden"
+          onClick={() => setIsSearchOpen(true)}
+          aria-label="Search"
+        >
+          <Search className="size-4" />
+        </Button>
+        <div className="hidden sm:flex sm:items-center sm:gap-1">
+          <ModeToggle />
+          <LanguageSwitcher />
+        </div>
+        <Button asChild variant="ghost" size="icon" className="hidden size-9 sm:flex" aria-label="Wiki">
           <Link href="/wiki">
             <BookOpen className="size-4" />
           </Link>

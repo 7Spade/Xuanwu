@@ -39,7 +39,7 @@ export default function DashboardLayout({ children, header, modal, reports }: Da
     <SidebarInset>
       {header}
       <ThemeAdapter>
-        <main className="flex-1 space-y-8 overflow-y-auto p-6">
+        <main className="flex-1 space-y-8 overflow-y-auto p-3 sm:p-4 md:p-6">
           {children}
           {reports}
         </main>

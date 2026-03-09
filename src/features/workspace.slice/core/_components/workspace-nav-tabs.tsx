@@ -111,7 +111,7 @@ export function WorkspaceNavTabs({ workspaceId }: WorkspaceNavTabsProps) {
           <Link
             key={cap.id}
             href={`/workspaces/${workspaceId}/${cap.id}`}
-            className={`inline-flex h-9 items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[10px] font-semibold uppercase tracking-tight ring-offset-2 ring-offset-background transition-all duration-200 ease-out active:scale-[0.98] ${
+            className={`inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[10px] font-semibold uppercase tracking-tight ring-offset-2 ring-offset-background transition-all duration-200 ease-out active:scale-[0.98] sm:h-9 sm:min-h-0 ${
               isActive
                 ? "bg-background text-foreground shadow-sm ring-1 ring-border/70"
                 : "text-muted-foreground hover:bg-background/80 hover:text-foreground hover:ring-1 hover:ring-border/60"
