@@ -23,7 +23,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '@/app-runtime/providers/app-provider';
 import { useAccount } from '@/features/workspace.slice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { PageHeader } from '@/shadcn-ui/custom-ui/page-header';
+import { PageHeader } from '@/shadcn-ui/custom-ui';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
 import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import type { ScheduleItem } from '@/shared-kernel';

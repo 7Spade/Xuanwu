@@ -15,7 +15,7 @@ import { useApp } from "@/app-runtime/providers/app-provider"
 import { useTeamManagement } from "@/features/organization.slice"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import type { MemberReference, Team } from "@/shared-kernel"
 

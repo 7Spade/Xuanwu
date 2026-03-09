@@ -16,7 +16,7 @@ import { useApp } from "@/app-runtime/providers/app-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { 
   Dialog, 
   DialogContent, 

@@ -9,7 +9,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { 
   Dialog, 
   DialogContent, 

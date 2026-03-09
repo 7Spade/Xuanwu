@@ -79,14 +79,6 @@
 				"@modelcontextprotocol/server-sequential-thinking"
 			]
 		},
-		"software-planning": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"-y",
-				"software-planning-mcp"
-			]
-		},
 		"chrome-devtools-mcp": {
 			"type": "stdio",
 			"command": "npx",

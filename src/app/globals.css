@@ -115,13 +115,21 @@
     outline: none;
   }
 
+  :where(button, [role="button"], a, input, textarea, select):focus-visible {
+    @apply ring-2 ring-ring/60 ring-offset-2 ring-offset-background;
+  }
+
   a,
   button,
   [role="button"],
   input,
   textarea,
   select {
-    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, transform 120ms ease;
+    transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease, transform 120ms ease;
+  }
+
+  :where(button, [role="button"]):not(:disabled):active {
+    transform: scale(0.98);
   }
 }
 

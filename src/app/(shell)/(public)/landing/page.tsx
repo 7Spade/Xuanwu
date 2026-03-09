@@ -14,8 +14,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { completeRegistration, signIn } from "@/features/identity.slice/_actions";
 import { LoginForm, RegisterForm, ResetPasswordForm } from "@/features/identity.slice";
 import { Button } from "@/shadcn-ui/button";
-import { ModeToggle } from "@/shadcn-ui/custom-ui";
-import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
+import { LanguageSwitcher, ModeToggle } from "@/shadcn-ui/custom-ui";
 import {
 	Dialog,
 	DialogContent,

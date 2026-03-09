@@ -18,9 +18,9 @@ export function RouteStreamShell({ children, className, compact = false }: Route
   return (
     <div
       className={cn(
-        "mx-auto max-w-7xl rounded-2xl bg-background/60 shadow-sm ring-1 ring-zinc-300/50 backdrop-blur-sm dark:ring-white/10",
+        "mx-auto max-w-7xl rounded-2xl bg-background/65 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.45)] ring-1 ring-zinc-300/55 backdrop-blur-sm dark:ring-white/10",
         compact ? "space-y-4 p-5" : "space-y-6 p-6 md:p-8",
-        "animate-in fade-in duration-200 ease-out",
+        "animate-in fade-in duration-150 ease-out",
         className,
       )}
     >
