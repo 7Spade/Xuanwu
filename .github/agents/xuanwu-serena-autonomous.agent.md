@@ -5,11 +5,20 @@ argument-hint: "Task objective, scope, constraints, and acceptance criteria"
 model: GPT-5 mini
 
 tools:
+  - vscode
+  - execute
+  - read
+  - edit
+  - search
+  - agent
+  - browser
+  - web
   - io.github.upstash/context7/*
   - sequentialthinking/*
   - software-planning/*
   - oraios/serena/*
   - agent
+  
 user-invocable: true
 ---
 
