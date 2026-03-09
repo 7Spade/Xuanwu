@@ -182,6 +182,10 @@ When creating or editing a `.ts` or `.tsx` file:
 - Refactor/migration/boundary remediation: `.github/prompts/x-arch-remediation.prompt.md`
 - Compliance/pre-commit architecture checks: `.github/prompts/x-arch-gatekeeper.prompt.md` or `compliance-audit.prompt.md`
 
+## Skill Routing
+- Architecture and management document indexing: `.github/skills/xuanwu-docs-index/SKILL.md`
+  - Use for `docs/architecture/` lookup, `docs/management/` active/archive routing, and migration checks between active registers and archive registers.
+
 ## Large Move Protocol
 1. Submit a move-map (`source -> destination`) before moving files.
 2. Move at most 5 files per batch, then run error checks.
