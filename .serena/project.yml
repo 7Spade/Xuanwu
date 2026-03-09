@@ -1,0 +1,71 @@
+# Serena project configuration
+# Reference: https://oraios.github.io/serena/02-usage/050_configuration.html
+# NOTE: 不要在此檔中硬編任何機密；使用環境變數或 CI secrets 注入敏感值。
+
+project:
+  id: xuanwu
+  name: Xuanwu
+  repo: 7Spade/xuanwu
+  defaultBranch: main
+
+# 作用範圍與路徑
+# 預設將專案資料放在專案根目錄的 .serena 資料夾；可透過全域 serena_config.yml 的
+# `project_serena_folder_location` 覆寫為集中式資料夾。
+
+serena:
+  # 指定此專案啟用的 base modes（永遠啟用）與 default modes（預設啟用，可被 CLI 覆蓋）
+  baseModes:
+    - editing
+  defaultModes:
+    - interactive
+    - editing
+
+  # 使用哪個 context（在啟動時可用 --context 覆蓋）
+  context: ide
+
+  # 工具啟用/停用清單 — 請根據專案需求啟用必要工具
+  tools:
+    enable:
+      - repomix
+      - web-testing
+      - context7
+    disable:
+      - auto-commit
+
+  # 工具參數範例（timeout 秒、max_answer_length 字元）
+  tool_defaults:
+    default:
+      timeout_seconds: 30
+      max_answer_chars: 8000
+
+  # 全域忽略規則（範例）
+  ignore:
+    - "**/node_modules/**"
+    - "**/.git/**"
+
+  # 日誌等級（trace|debug|info|warn|error）
+  logging:
+    level: info
+
+  # 語言伺服器相關覆寫設定範例
+  ls_specific_settings:
+    typescript:
+      ls_path: null
+    go:
+      gopls_settings:
+        buildFlags:
+          - "-tags=dev"
+
+  # 如果需要呼叫外部 MCP 或 Context7，建議以環境變數注入金鑰
+  mcp:
+    context7:
+      command: "npx @upstash/context7-mcp@1.0.31"
+      # 注意：不要在檔案內硬編 API key；使用環境變數引用
+      env:
+        CONTEXT7_API_KEY: "${CONTEXT7_API_KEY}"
+
+# 安全與合規提示：
+# - 切勿在此檔中放入明文憑證、API keys 或私人 token。
+# - 若需讓 Serena 可在 CI 中存取外部工具，請在 CI 設定中以 secrets 注入對應的環境變數。
+
+# 如需自訂 prompts 或 prompt_templates，請在專案的 .serena/prompt_templates/ 放入對應 yml 檔。
