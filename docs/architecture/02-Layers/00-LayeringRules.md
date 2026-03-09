@@ -1,4 +1,4 @@
-﻿# [索引 ID: @LYR] 02 - Layering Rules (L0-L9)
+﻿# [索引 ID: @LYR] 02 - Layering Rules (L0-L10)
 
 本檔只定義一件事：層級之間「可以」與「不可以」如何互動。
 
@@ -14,6 +14,7 @@
 - L7: Firebase ACL Adapters
 - L8: Firebase Infrastructure
 - L9: Observability
+- L10: AI Runtime & Orchestration（Genkit Flow Gateway / Prompt Policy / Tool ACL / Model Routing）
 
 ## 2. 單向依賴鏈
 

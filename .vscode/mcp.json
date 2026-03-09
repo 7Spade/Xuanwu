@@ -1,5 +1,23 @@
 {
-	"inputs": [],
+	"inputs": [
+		{
+			"id": "sonarqube-url",
+			"type": "promptString",
+			"description": "SonarQube server URL (e.g. http://localhost:9000)"
+		},
+		{
+			"id": "sonarqube-token",
+			"type": "promptString",
+			"description": "SonarQube authentication token",
+			"password": true
+		},
+		{
+			"id": "codacy-token",
+			"type": "promptString",
+			"description": "Codacy API token",
+			"password": true
+		}
+	],
 	"servers": {
 		"repomix": {
 			"type": "stdio",
@@ -52,6 +70,57 @@
 				"@modelcontextprotocol/server-filesystem",
 				"."
 			]
+		},
+		"sequential-thinking": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			]
+		},
+		"software-planning": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"software-planning-mcp"
+			]
+		},
+		"chrome-devtools-mcp": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"chrome-devtools-mcp"
+			]
+		},
+		"context7": {
+			"type": "http",
+			"url": "https://mcp.context7.com/mcp"
+		},
+		"sonarqube": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@sonarqube/mcp-server"
+			],
+			"env": {
+				"SONARQUBE_URL": "${input:sonarqube-url}",
+				"SONARQUBE_TOKEN": "${input:sonarqube-token}"
+			}
+		},
+		"codacy": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@codacy/mcp-server"
+			],
+			"env": {
+				"CODACY_API_TOKEN": "${input:codacy-token}"
+			}
 		}
 	}
 }
