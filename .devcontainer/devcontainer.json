@@ -1,0 +1,14 @@
+{
+  "name": "node-dev",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "features": {},
+  "postCreateCommand": "npm install && npm install -g repomix && pip install uv",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.copilot",
+        "github.copilot-chat"
+      ]
+    }
+  }
+}
