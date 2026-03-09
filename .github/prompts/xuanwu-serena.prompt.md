@@ -46,10 +46,16 @@ agent: agent
 
 ## 工具路由規則（被動預設）
 
+0. `/xuanwu-serena` 啟動即走 Serena 工具流：
+   - 每次執行本 prompt，先以 `oraios/serena` 執行 `initial_instructions` 建立工具邊界與執行基準。
+   - 其後先以 `oraios/serena` 工具完成上下文檢查（至少執行 `list_memories`；需要時搭配 `read_memory` / `search_for_pattern` / `find_file`）。
+   - 若任務可由 Serena 工具完成，優先使用 Serena 工具，不先切換到其他 MCP。
+
 1. 預設先做 `sequentialthinking`：
    - 任務涉及 3 步以上決策、跨檔案影響、或需求含不確定性時，先使用 `sequentialthinking` 完成拆解與風險檢查。
 2. 涉及版本敏感或外部文件依賴時，必用 `context7`：
    - API 版本、框架升級、設定鍵、快取/安全相關整合，一律先查 `io.github.upstash/context7` 再實作。
+   - 本規則視為 `/xuanwu-serena` 對 `initial_instructions` 的補充授權：允許在任務流程中調用 `sequentialthinking` 與 `io.github.upstash/context7`。
 3. 工具順序預設為：
    - `sequentialthinking -> context7(若需要) -> 實作 -> 驗證`。
 4. 若 `context7` 無法取得可靠結果：
