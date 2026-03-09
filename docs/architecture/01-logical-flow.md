@@ -33,6 +33,7 @@
 | Webhook 驗簽 / Scheduler / 高扇出批次協調 | **L7-B** `functions` | **MUST** |
 | 高頻小請求且 Security Rules 足以保護 | **L7-A** `frontend-firebase`（降低 Functions 調用成本） | SHOULD |
 | 即時訂閱（presence / typing / live-feed） | **L7-A** `frontend-firebase/realtime-database`（RTDBAdapter） | SHOULD |
+| 視覺化圖表資料（vis-network / vis-timeline / vis-graph3d） | **L7-A** `frontend-firebase/vis-data`（VisDataAdapter · DataSet<> 快取）[D28] | **MUST** |
 | 受治理 GraphQL 資料契約 | **L7-B** `functions/dataconnect`（DataConnectGatewayAdapter） | **MUST** |
 | 受保護資料或可變更狀態 | 先完成 App Check 驗證（含 token 續期與失效處理）再進入 L2/L3 | **MUST [E7]** |
 | AI tool data access | 必須由 Genkit tool gateway 統一代理（role/scope/tenant 驗證 + 審計追蹤）；禁止 AI flow 直接呼叫 `firebase/*` | **MUST [E8]** |
@@ -248,11 +249,13 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 AUDIT_V["projection.global-audit-view\n每條記錄含 traceId [R8]"]
                 TAG_SNAP["projection.tag-snapshot\n[S4: TAG_MAX_STALENESS]\nT5 消費方禁止寫入"]
                 SEM_GOV_V["projection.semantic-governance-view\n治理頁 Read Model（wiki/proposal/relationship）\n顯示線路：L5→L6→UI"]
+                TASK_V["projection.tasks-view\n任務清單（createdAt 批次間\n→ sourceIntentIndex 批次內）[D27-Order]\napplyVersionGuard() [S2]"]
+                WS_GRAPH_V["projection.workspace-graph-view\n任務依賴 Nodes/Edges 拓撲\n[VS5 vis-network 消費格式]\napplyVersionGuard() [S2]"]
             end
 
             IER ==>|"[#9] 唯一 Projection 寫入路徑"| FUNNEL
             CRIT_PROJ --> WS_SCOPE_V & ORG_ELIG_V & WALLET_V
-            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V
+            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & TASK_V & WS_GRAPH_V
 
             FUNNEL -->|stream offset| PROJ_VER
             WS_ESTORE -.->|"[#9] replay → rebuild"| FUNNEL
@@ -282,6 +285,8 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             APPCHK_ADP["app-check.adapter.ts\nAppCheckAdapter\nClient attestation token 初始化/續期/驗證\n未通過不得進入 L2/L3\n[D24 D25 E7] 唯一合法 firebase/app-check 呼叫點"]
 
+            VIS_DATA_ADP["vis-data.adapter.ts\nVisDataAdapter\nDataSet<Node|Edge|DataItem> 本地快取\n[D28] 唯一 vis-* DataSet 寫入點\nFirebase Snapshot 訂閱一次 → DataSet 更新推播\nvis-network / vis-timeline / vis-graph3d 唯讀消費\n禁止 vis-* 直連 Firebase（N×1 連線 → 費用倍增）[D28]"]
+
             AC_TRANSLATOR_L7 -.-> AUTH_ADP
             AC_TRANSLATOR_L7 -.-> FSTORE_ADP
             AC_TRANSLATOR_L7 -.-> RTDB_ADP
@@ -289,6 +294,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> STORE_ADP
             AC_TRANSLATOR_L7 -.-> ANALYTICS_ADP
             AC_TRANSLATOR_L7 -.-> APPCHK_ADP
+            AC_TRANSLATOR_L7 -.-> VIS_DATA_ADP
         end
 
         subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
@@ -898,6 +904,12 @@ DLQ_B -.->|"安全告警"| DOMAIN_ERRORS
 TAG_SG -.->|"StaleTagWarning"| DOMAIN_ERRORS
 TOKEN_SIG -.->|"Claims 刷新成功 [S6]"| DOMAIN_METRICS
 
+%% ── Connectivity D: Visualization Bus（L5 投影 → Firebase L8 → vis-data DataSet 快取 → vis-* renderer）[D28]──
+TASK_V -.->|"[D28] tasks-view（任務節點）"| VIS_DATA_ADP
+WS_GRAPH_V -.->|"[D28] workspace-graph-view（nodes/edges）"| VIS_DATA_ADP
+TL_PROJ -.->|"[D28] schedule-timeline-view（timeline items）"| VIS_DATA_ADP
+SEM_GOV_V -.->|"[D28] semantic-governance-view（3D graph）"| VIS_DATA_ADP
+
 %% ── Global Search（Cross-cutting Authority · 語義門戶）──
 GLOBAL_SEARCH["🔍 Global Search（src/features/global-search.slice · 跨切片權威）\nL6 Query Gateway 核心消費者\n語義化索引檢索\n唯一跨域搜尋權威\n對接 VS8 語義索引\nCmd+K 唯一服務提供者\n_actions.ts / _services.ts [D26]"]
 GLOBAL_SEARCH -->|"語義化索引檢索"| QGWAY_SEARCH
@@ -1016,14 +1028,14 @@ class DLQ_B dlqBlock
 class QRY_API_GW,GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV qgway
 class PROJ_BUS,FUNNEL,PROJ_VER,READ_REG stdProj
 class CRIT_PROJ,WS_SCOPE_V,ORG_ELIG_V,WALLET_V critProj
-class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V stdProj
+class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V,TASK_V,WS_GRAPH_V stdProj
 class AUDIT_V auditView
 class TAG_SNAP tagSub
 class TIER_FN tierFn
 class TALENT talent
 class OBS_LAYER,OBS_PATH,TRACE_ID,DOMAIN_METRICS,DOMAIN_ERRORS obs
 class FIREBASE_L7,FIREBASE_ACL,AC_TRANSLATOR_L7,AUTH_ADP,FSTORE_ADP,RTDB_ADP,FCM_ADP,STORE_ADP,ANALYTICS_ADP aclAdapter
-class APPCHK_ADP aclAdapter
+class APPCHK_ADP,VIS_DATA_ADP aclAdapter
 class FIREBASE_BACKEND,BFN_GW,BDC_GW,ADMIN_ADPTS,ADMIN_AUTH_ADP,ADMIN_DB_ADP,ADMIN_MSG_ADP,ADMIN_STORE_ADP,ADMIN_APPCHK_ADP aclAdapter
 class FIREBASE_EXT,F_AUTH,F_DB,F_RTDB,F_FCM,F_STORE,F_ANALYTICS,F_APPCHK,F_DC,F_FUNCTIONS firebaseExt
 class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct

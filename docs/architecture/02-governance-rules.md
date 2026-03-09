@@ -114,6 +114,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[#A16]` | Multi-Claim Cycle：Finance 為可重入循環，直到 `outstandingClaimableAmount = 0` 才允許 Completed |
 | `[#A17]` | XP 僅能由 VS3 寫入；`awardedXp = baseXp × qualityMultiplier × policyMultiplier`（含 clamp）；VS8 禁止直接寫入 VS3 XP aggregate/ledger |
 | `[#A18]` | 組織新建 task-type/skill-type 必須走 VS4 org-semantic-registry，以 org namespace 寫入 tag-snapshot |
+| `[D28]` | vis-network / vis-timeline / vis-graph3d 只能消費 `VisDataAdapter` 提供的 `DataSet<>`；`VisDataAdapter` 訂閱 Firebase 一次，DataSet<> 快取推播至所有消費者；禁止 vis-* 直連 Firebase |
 
 ---
 
@@ -152,6 +153,8 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 用戶新增重複語義標籤時禁止靜默建立，embeddings 必須即時提示 [D21-U]
 - VS8 禁止直接寫入 VS3 XP aggregate/ledger [A17]
 - VS5 任務/品質流程禁止直接 mutate VS3 XP；必須透過 IER 事件進入 VS3 [#2 D9 A17]
+- vis-network / vis-timeline / vis-graph3d 禁止直連 Firebase；必須透過 `VisDataAdapter` DataSet<> 消費 [D28]
+- `VisDataAdapter` 禁止在多個元件重複建立 Firebase 訂閱；DataSet<> 快取必須為唯一寫入點 [D28]
 
 ---
 
@@ -420,6 +423,30 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D27` | MUST | overlap/resource-grouping 必須在 L5 Projection 層完成，前端僅渲染 [Timeline] |
 | `D27` | FORBIDDEN | VS5 document-parser 禁止自行實作成本語義邏輯；禁止 Layer-3 繞過 costItemType |
 
+### D28：視覺化 DataSet 快取模式（vis-data Caching Pattern）
+
+> D28 為 Visualization Bus Gate；凡新增或修改 vis-network / vis-timeline / vis-graph3d 元件、`VisDataAdapter` 或對 `vis-data` DataSet<> 的寫入點時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `D28` | MUST | vis-network / vis-timeline / vis-graph3d 必須從 `VisDataAdapter`（L7-A · `src/shared-infra/frontend-firebase/vis-data/`）提供的 `DataSet<>` 消費資料，不得直接訂閱 Firebase |
+| `D28` | MUST | `VisDataAdapter` 為唯一 Firebase 訂閱點：訂閱 `tasks-view`、`workspace-graph-view`、`schedule-timeline-view`、`semantic-governance-view` 各一次，DataSet<> 更新後推播所有消費者 |
+| `D28` | MUST | 新增視覺化元件需消費 Projection 資料時，必須在 `VisDataAdapter` 新增對應 DataSet<>，不得在元件中建立獨立 Firebase 訂閱 |
+| `D28` | FORBIDDEN | vis-network / vis-timeline / vis-graph3d 禁止繞過 `VisDataAdapter` 直連 Firebase（避免 N 組件 × 1 訂閱造成費用倍增）|
+| `D28` | FORBIDDEN | `VisDataAdapter` 以外的位置禁止對 vis-data `DataSet<>` 進行寫入操作 |
+
+**資料流（Visualization Bus）**：
+
+```
+L5 Projection Bus → Firebase L8（Snapshot 訂閱）
+  → VisDataAdapter（DataSet<Node|Edge|DataItem> 本地快取）
+    → vis-network（任務依賴 Nodes/Edges）
+    → vis-timeline（排班 Timeline Items）
+    → vis-graph3d（語義 3D 圖）
+```
+
+**費用保護原則**（架構正確性優先）：Firebase Snapshot 訂閱費用與連線數（讀取操作數）正比。舉例：若 vis-network、vis-timeline、vis-graph3d 三個元件各自建立 Firebase 訂閱，費用為 3 × 1 = **3 連線**；透過 `VisDataAdapter` 的 DataSet<> 快取，費用為 **1 連線**（一次訂閱，三元件共享推播）。隨元件數增長，費用差距等比放大。符合奧卡姆剃刀原則：不增加不必要的 Firebase 連線，不引入不必要的架構複雜度。
+
 ### E7：App Check 安全閉環（app-check-enforcement-closure）
 
 > E7 為 Firebase Entry Security Gate；凡新增或修改受保護資料入口、App Check Adapter 或 `firebase/app-check` / `firebase-admin/app-check` 呼叫點時必審
@@ -492,6 +519,12 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `E7` | app-check-enforcement-closure |
 | `E8` | genkit-tool-governance |
 
+### D 類（Firebase 隔離 / 視覺化 DataSet）
+
+| 索引 | 摘要 |
+|------|------|
+| `D28` | vis-data-caching-pattern |
+
 ---
 
 ## 跨切片 RULESET-MUST（分類整理）
@@ -505,6 +538,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | VS5 MUST Finance 階段閘與多輪循環 | Acceptance=OK 前禁止進入 Finance；循環直到 `outstandingClaimableAmount = 0` 才允許標記 Completed [#A15 #A16] |
 | VS5 MUST XP 只透過 IER 傳遞至 VS3 | 任務/品質流程禁止直接 mutate VS3 XP；事件 `TaskCompleted` / `QualityAssessed` 必須經 IER 傳入 VS3 [D9 #A17] |
 | VS5 MUST 語義讀取僅經 L6 | VS5 語義讀取必須經 L6 Query Gateway；禁止直連 DB 或跨越 VS8 圖結構邊界 [D21-7 T5] |
+| VS5 / VS6 MUST vis-* 元件消費 VisDataAdapter DataSet<> | vis-network（任務依賴圖）/ vis-timeline（排班日程）/ vis-graph3d（語義 3D 圖）只能消費 `VisDataAdapter` DataSet<>；禁止直連 Firebase [D28] |
 
 ### VS6 強制規則
 

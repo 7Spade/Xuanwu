@@ -123,6 +123,7 @@ src/shared-infra/
     storage/                 # StorageAdapter（L7-A · firebase/storage）
     analytics/               # AnalyticsAdapter（L7-A · firebase/analytics，遙測只寫）
     app-check/               # AppCheckAdapter（L7-A · firebase/app-check）
+    vis-data/                # VisDataAdapter（L7-A · vis-data DataSet<> 快取 · [D28]）
   backend-firebase/
     functions/               # Cloud Functions（firebase-admin 唯一容器）[D25]
       src/claims/            #   Admin Auth → firebase-admin/auth（自訂 Claims）
@@ -201,6 +202,7 @@ Firestore onSnapshot (CDC)
 | `global-audit-view` | 全域審計（含 traceId [R8]） |
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
+| `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；供 vis-network 消費 [D28] |
 
 > **規則**：`getTier(xp) → Tier` 是純函式 [#12]；Tier 是推導值，永遠不存 DB。
 
@@ -221,6 +223,7 @@ Firestore onSnapshot (CDC)
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
 | `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
+| `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
@@ -250,6 +253,7 @@ Firestore onSnapshot (CDC)
 | `RTDBAdapter` | — | `.../realtime-database/` | 即時通訊用；禁止承載領域寫入 [D25] |
 | `AnalyticsAdapter` | — | `.../analytics/` | 遙測寫入；禁止承載領域寫入 [D25] |
 | `AppCheckAdapter` | — | `.../app-check/` | Client attestation token 初始化/續期；未通過不得進入 L2/L3 [D24 D25 E7] |
+| `VisDataAdapter` | — | `.../vis-data/` | DataSet<Node\|Edge\|DataItem> 本地快取；訂閱 Firebase Snapshot 一次，推播給所有 vis-* 消費者 [D28] |
 
 ### L7-B 後端 Admin SDK Adapters（firebase-admin SDK — 一律透過 Cloud Functions）[D25]
 
@@ -323,6 +327,7 @@ Firestore onSnapshot (CDC)
 - [ ] L9 Observability（metrics/trace dashboard）[R1 R5 R8]
 - [ ] Skill XP Award Contract 完整驗收 [A17]
 - [ ] Multi-Claim Cycle Contract 完整驗收 [A16]
+- [ ] D28 Visualization Bus：`VisDataAdapter` DataSet<> 快取實作；vis-network/vis-timeline/vis-graph3d 消費層遷移 [D28]
 
 ---
 
