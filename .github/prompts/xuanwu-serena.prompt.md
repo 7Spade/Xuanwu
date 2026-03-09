@@ -16,19 +16,25 @@ Run this workflow in order and do not skip steps.
 
 ## Required Sequence
 
-1. Context7 first:
+1. Orientation gate:
+   - Read `skills/SKILL.md` for rapid repository orientation.
+   - Verify MCP server keys in `.vscode/mcp.json` include:
+     - `io.github.upstash/context7`
+     - `sequentialthinking`
+     - `oraios/serena`
+2. Context7 first:
    - Resolve and query `oraios/serena` docs.
    - Capture implementation-relevant guidance and source URLs.
-2. Sequentialthinking second:
+3. Sequentialthinking second:
    - Build a compact plan with risk trade-offs.
    - Choose a minimal-risk implementation path.
-3. Serena initialization third:
+4. Serena initialization third:
    - Execute `oraios/serena` `initial_instructions`.
    - Execute onboarding or memory checks needed for current task.
-4. Implement:
+5. Implement:
    - Apply focused edits only.
    - Respect Xuanwu architecture and i18n constraints.
-5. Validate:
+6. Validate:
    - Check changed files for errors.
    - Include follow-up validation commands if needed.
 
@@ -43,6 +49,12 @@ Use this exact section order:
 5. `Implemented Changes`
 6. `Validation`
 7. `Residual Risks`
+
+## Self-Test Checklist
+
+- Confirm `.vscode/mcp.json` has `io.github.upstash/context7`, `sequentialthinking`, and `oraios/serena`.
+- Confirm `initial_instructions` and `check_onboarding_performed` are callable.
+- If any required tool is unavailable, report failed call and continue with a conservative fallback.
 
 ## References
 

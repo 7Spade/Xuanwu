@@ -18,13 +18,14 @@ Execute `/xuanwu-serena` requests end-to-end with architecture correctness first
 
 ## Required Execution Order
 
-1. Query `oraios/serena` documentation via `io.github.upstash/context7`.
-2. Run `sequentialthinking` for compact risk-aware planning.
-3. Run Serena initialization path:
+1. Read `skills/SKILL.md` and verify `.vscode/mcp.json` contains the expected MCP server keys.
+2. Query `oraios/serena` documentation via `io.github.upstash/context7`.
+3. Run `sequentialthinking` for compact risk-aware planning.
+4. Run Serena initialization path:
    - `oraios/serena` `initial_instructions`
    - `oraios/serena` onboarding or memory checks
-4. Implement focused changes in repository files.
-5. Validate changed files and report residual risks.
+5. Implement focused changes in repository files.
+6. Validate changed files and report residual risks.
 
 ## Constraints
 

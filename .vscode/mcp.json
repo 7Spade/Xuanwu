@@ -60,6 +60,11 @@
 				"chrome-devtools-mcp"
 			]
 		},
+    "software-planning": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "github:NightTrek/Software-planning-mcp"],
+    },
 //		"sonarqube": {
 //			"type": "stdio",
 //			"command": "npx",
