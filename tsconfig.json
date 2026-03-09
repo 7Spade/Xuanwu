@@ -23,7 +23,9 @@
       "@/shadcn-ui": ["./src/shadcn-ui"],
       "@/shadcn-ui/*": ["./src/shadcn-ui/*"],
       "@/shadcn-ui/lib/utils": ["./src/shadcn-ui/utils/utils"],
-      "@/shadcn-ui/hooks": ["./src/shadcn-ui/hooks"]
+      "@/shadcn-ui/hooks": ["./src/shadcn-ui/hooks"],
+      "@/lib-ui": ["./src/lib-ui"],
+      "@/lib-ui/*": ["./src/lib-ui/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
