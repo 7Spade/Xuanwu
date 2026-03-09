@@ -1,3 +1,3 @@
-- Route testing bootstrap flow: run `npm run dev`, then open `http://localhost:9002`.
-- Login test must use env vars from `.env.local`: `TEST_AUTH_EMAIL` and `TEST_AUTH_PASSWORD`.
-- Do not store or print raw credential values in chat, logs, or committed files.
+* Route testing flow: run `npm run dev`, then open `http://localhost:9002`.
+* Login step: use `test@demo.com` and `123456` to sign in.
+* Security rule: do not persist raw credential values in memory, repository files, or chat logs.
