@@ -1,4 +1,5 @@
 ---
+name: "Agent Authoring Rules"
 description: "Authoring rules for custom agent definition files (*.agent.md)."
 applyTo: "**/*.agent.md"
 ---

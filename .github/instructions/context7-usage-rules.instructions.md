@@ -1,4 +1,5 @@
 ---
+name: "Context7 Usage Rules"
 description: "Rules for when and how to use Context7 for authoritative external documentation."
 applyTo: "**/*"
 ---

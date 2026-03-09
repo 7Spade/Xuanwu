@@ -1,4 +1,5 @@
 ---
+name: "Testing: Playwright + Next.js DevTools Rules"
 description: "Testing workflow split: Playwright MCP for browser flows, next-devtools MCP for Next.js diagnostics."
 applyTo: "**/*.{ts,tsx,js,jsx}"
 ---

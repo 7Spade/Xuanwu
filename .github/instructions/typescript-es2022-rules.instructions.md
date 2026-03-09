@@ -1,4 +1,5 @@
 ---
+name: "TypeScript ES2022 Rules"
 description: "TypeScript 5.x and ES2022 development rules for typing, module boundaries, and correctness."
 applyTo: "**/*.{ts,tsx}"
 ---

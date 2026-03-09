@@ -1,4 +1,5 @@
 ---
+name: "Context Engineering Rules"
 description: "Context engineering rules for producing precise, architecture-aligned Copilot outputs."
 applyTo: "**/*"
 ---

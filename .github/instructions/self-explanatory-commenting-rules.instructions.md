@@ -1,6 +1,7 @@
 ---
+name: "Self-explanatory Commenting Rules"
 description: "Rules for writing self-explanatory code with minimal, intent-focused comments."
-applyTo: "**/*"
+applyTo: "**/*.{ts,tsx,js,jsx}"
 ---
 
 # Self-explanatory Code Commenting Rules

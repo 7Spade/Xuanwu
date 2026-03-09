@@ -1,7 +1,9 @@
 ---
+name: "Secure Coding Rules (OWASP)"
 description: "Secure coding rules aligned with OWASP Top 10 and industry best practices."
-applyTo: "**/*"
+applyTo: "**/*.{ts,tsx,js,jsx}"
 ---
+
 # Secure Coding Rules (OWASP-aligned)
 
 Apply these rules to all generated, reviewed, and refactored code.
