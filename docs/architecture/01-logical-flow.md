@@ -1140,3 +1140,68 @@ class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCut
 | L10 | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL |
 
 > 各 Layer 對應原始碼路徑前綴請見 [`03-infra-mapping.md` § 水平層位索引（L0–L10）](./03-infra-mapping.md#水平層位索引l0l10)
+
+---
+
+## 合規規則集（Compliance Rule Set for AI Agent）
+
+本節為 **Xuanwu 架構守護者** 提供文字版合規規則，供 Agent 進行 Flow Audit 時對照使用。所有規則對應上方系統架構圖的節點與連線。
+
+### 寫鏈（Command Chain）規則
+
+| 規則 ID | 層位 | 規則 | 違規範例 |
+|--------|------|------|---------|
+| FC-001 | L3 | Domain Slice 的 Command Handler 禁止直接回傳 L5 Projection Read Model 資料（大量 Query Data）；Command 只應回傳 `SK_CMD_RESULT`（aggregateId + version）或 DomainError。 | `_actions.ts` return `projectionData[]` |
+| FC-002 | L2 | Command Gateway（`gateway-command/`）是寫鏈唯一入口；Domain Slice 禁止繞過 Gateway 直接接受外部觸發。 | L3 Slice 直接 import `external-triggers/` |
+| FC-003 | L4 | 所有跨切片副作用必須透過 L4 IER（`event-router/`）；禁止 L3 Domain Slice 直接呼叫另一 Slice 的 `_actions.ts`。 | `workspace.slice/_actions.ts` import `notification-hub.slice/_actions.ts` |
+| FC-004 | L3→L4 | L3 Slice 寫入 `{slice}/_outbox` 後，必須由 L4 IER 消費；禁止 L3 直接寫入 L5 Projection。 | L3 直接呼叫 `projection-bus/` |
+
+### 讀鏈（Query Chain）規則
+
+| 規則 ID | 層位 | 規則 | 違規範例 |
+|--------|------|------|---------|
+| FQ-001 | L6 | Query Gateway（`gateway-query/`）是讀鏈唯一入口；禁止 L6 觸發任何狀態變更（write）操作。 | `QGWAY` route 呼叫 `_actions.ts` |
+| FQ-002 | L5→L6 | L6 只讀取 L5 Projection Read Model；禁止 L6 直接查詢 Aggregate 狀態（應走 STRONG_READ via L2）。 | `gateway-query/` import L3 `_aggregate.ts` |
+| FQ-003 | L5 | L5 Projection Bus 只做事件物化（純函式式狀態轉換）；禁止 L5 包含業務決策邏輯或呼叫外部 API。 | `projection-bus/` 含 `if (condition) { /* business logic */ }` |
+
+### 基礎設施（Infra）規則
+
+| 規則 ID | 層位 | 規則 | 強度 |
+|--------|------|------|------|
+| FI-001 [D25] | L7-B | `firebase-admin` SDK 只允許在 `src/shared-infra/backend-firebase/` 或 `firebase/functions/` 中使用；禁止在 Next.js Server Components、Server Actions、Edge Functions（`src/app/`）直接 import。 | **MUST** |
+| FI-002 [D24] | L1→L7-A | 前端 firebase-client SDK 操作必須透過 L1 `SK_PORTS`（`IAuthService`、`IFirestoreRepo` 等）後，由 L7-A `frontend-firebase/` Adapter 實作；禁止 L3 直接 import `firebase/firestore`。 | **MUST** |
+| FI-003 | L1 | Shared Kernel（`src/shared-kernel/`）禁止依賴 L3 Features（`src/features/`）或 L2/L4/L5/L6 執行層；L1 只可包含純函式、常數與介面定義。 | **MUST** |
+
+### 跨切片權威規則
+
+| 規則 ID | 規則 | 強度 |
+|--------|------|------|
+| FA-001 [#A12] | 除 `global-search.slice` 外，禁止其他 Slice 直接暴露全域搜尋邏輯；搜尋需求必須委派至 `global-search.slice`。 | **MUST** |
+| FA-002 [#A13] | 所有跨切片通知副作用必須導向 `notification-hub.slice`；禁止其他 Slice 直接呼叫推播 API。 | **MUST** |
+
+### 邏輯鏈快速驗證框架（Logic Chain Validation）
+
+追蹤任意 Slice 的邏輯流向時，使用以下檢查框架：
+
+```text
+Command 流向驗證：
+  1. 入口：L0A CMD_API_GW（src/shared-infra/api-gateway）
+  2. L2 Write Pipeline：CBG_ENTRY → CBG_AUTH → CBG_ROUTE（src/shared-infra/gateway-command）
+  3. L3 Domain Slice：{feature}.slice/_actions.ts（TransactionalCommand）
+     └─ 同一 Firestore TX：Aggregate 寫入 + {slice}/_outbox 寫入
+     └─ 回傳：SK_CMD_RESULT（aggregateId, version）或 DomainError
+  4. L4 IER：src/shared-infra/event-router（RELAY → IER_CORE）
+  5. L5 Projection Bus：src/shared-infra/projection-bus（FUNNEL → Projections）
+
+Query 流向驗證：
+  1. 入口：L0A QRY_API_GW（src/shared-infra/api-gateway）
+  2. L6 Query Routes：QGWAY + routes（src/shared-infra/gateway-query）
+  3. L5 Projection Read Model（Read-only）
+
+禁止模式（任一出現即為違規）：
+  ✗ Command Handler 回傳 Projection 資料陣列（FC-001）
+  ✗ L3 Slice 直接呼叫另一 L3 Slice 的 _actions.ts（FC-003）
+  ✗ L6 Query Route 執行 write 操作（FQ-001）
+  ✗ L1 Shared Kernel import L3 Features（FI-003）
+  ✗ src/app/ 直接 import firebase-admin（FI-001 / D25）
+```

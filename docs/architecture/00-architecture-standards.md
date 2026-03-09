@@ -237,3 +237,118 @@ src/features/{new-feature}.slice/
 - 本文件為命名與目錄規格基準文件。
 - 若與其他說明文衝突，以本文件與 `00-logic-overview.md` 共同裁決。
 
+---
+
+## 11. AI Agent Three-Phase Scan Guide（三位一體掃描指南）
+
+本節描述 **Xuanwu 架構守護者（`x-framework-guardian`）** 的標準使用流程。判斷標準**僅限於**本文件（`00-architecture-standards.md`）與 `01-logical-flow.md`；未在這兩份文件中定義的結構，一律視為合規。
+
+---
+
+### 第一階段：初始化與對準 (Setup & Alignment)
+
+在執行任何掃描前，必須先餵入法律條文，以防止 Agent 依賴通用 AI 知識推斷。
+
+**初始化系統提示（建議複製並使用）：**
+
+```text
+請讀取並索引專案中的 docs/architecture/00-architecture-standards.md 與 docs/architecture/01-logical-flow.md。
+從現在起，你扮演 Xuanwu 架構守護者。你的所有判斷標準「僅限於」這兩份文件。
+若代碼違反規範，請指出具體條款（如 §3.1 或 L3 層位）；若文件未定義，則視為合規。
+請確認你已準備好執行「三位一體」掃描。
+```
+
+---
+
+### 第二階段：執行審計 (Execution)
+
+#### 2-1. 全量對準 (Full Alignment)
+
+```text
+Run Audit. Compare the current codebase with 00-architecture-standards.md and 01-logical-flow.md.
+Please provide the Drift Report and Compliance Status.
+```
+
+**輸出格式**：Physical Audit 表、Boundary Audit 表、Flow Audit 表、Auto-Fix 指令、Compliance Status 健康分。
+
+#### 2-2. 邊界巡邏 (Boundary Audit)
+
+```text
+執行 Boundary Audit。檢查 src/features/ 下是否有檔案直接 import 其他切片的內部路徑
+（如 domain.* 或 _ 開頭檔案），而非透過 index.ts。請列出違規行號與重構建議。
+```
+
+**對照條款**：§4.1 Public Export Contract。
+
+#### 2-3. 清理舊債 (Migration Audit)
+
+```text
+根據 00-architecture-standards.md §7 的遷移規則，列出所有舊版命名的檔案
+（如 *.actions.ts 或 business.* 目錄），並直接生成 git mv 修正指令。
+```
+
+**對照條款**：§7.1 File Rename Rules、§7.2 Folder Normalize Rules。
+
+---
+
+### 第三階段：開發輔助 (Development Support)
+
+#### 3-1. 建立新 Slice
+
+```text
+依照 §8 的 Bootstrap Template，為我生成一個名為 {feature-name} 的新切片（Slice）目錄結構。
+確保包含 index.ts 以及私有的 _ 開頭檔案。
+```
+
+**對照條款**：§8 New Slice Bootstrap Template、§3.1 Directory Naming、§3.2 File Naming。
+
+#### 3-2. 邏輯鏈驗證
+
+```text
+追蹤 src/features/{feature}.slice 的邏輯流向。
+它是否嚴格遵守 01-logical-flow.md 定義的 L0 -> L3 -> L4 -> L5 流程？
+特別檢查是否有 Command 流程直接回傳大量 Query Data 的違規。
+```
+
+**對照條款**：`01-logical-flow.md` § 三條主鏈、§ 合規規則集。
+
+---
+
+### 三位一體輸出範本
+
+```markdown
+## Drift Report — [日期 / PR / Commit]
+
+### Physical Audit（§3、§4、§7）
+| 違規 ID | 類型 | 路徑 | 條款 | 說明 |
+|--------|------|------|------|------|
+
+### Boundary Audit（§4.1）
+| 違規 ID | 類型 | 位置 | 違規 import | 說明 |
+|--------|------|------|------------|------|
+
+### Flow Audit（01-logical-flow.md）
+| 違規 ID | 類型 | 位置 | 違反層位 | 說明 |
+|--------|------|------|---------|------|
+
+## Auto-Fix
+\`\`\`bash
+# Physical Audit
+git mv ...
+# Boundary Audit 重構
+# Flow Audit 重構
+\`\`\`
+
+## Compliance Status
+| 審計維度 | 違規數 | 健康分 |
+|---------|-------|-------|
+| Physical | N | /100 |
+| Boundary | N | /100 |
+| Flow | N | /100 |
+| **總體** | | **/100** |
+```
+
+> ✅ 健康分 ≥ 90：HEALTHY — 可合入主幹  
+> ⚠️ 健康分 70–89：NEEDS ATTENTION — 高嚴重度項目必須修復後才可合入  
+> 🚨 健康分 < 70：CRITICAL DRIFT — 阻斷合入，必須先完成架構修復
+
