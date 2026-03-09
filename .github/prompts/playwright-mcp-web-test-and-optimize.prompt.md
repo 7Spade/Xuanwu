@@ -9,6 +9,12 @@ description: 'Run browser verification with Playwright MCP and combine with next
 
 Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 
+## Recommended skills
+- `webapp-testing`: Browser flow validation, interaction checks, and evidence capture.
+- `next-best-practices`: App Router boundary and rendering-safe fix patterns.
+- `next-cache-components`: Cache Components diagnostics when route data/render behavior is unstable.
+- `chrome-devtools`: Optional deeper browser-side investigation for console/network/perf anomalies.
+
 ## Standard flow
 1. Baseline: login + key route checks
 2. Capture console/network/screenshot evidence
