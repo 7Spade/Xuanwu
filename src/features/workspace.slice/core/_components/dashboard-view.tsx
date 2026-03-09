@@ -1,5 +1,9 @@
-// [職責] Wave 4 — Dashboard overview view (client island)
-// Extracted from app/dashboard/page.tsx to follow the features/ view pattern.
+/**
+ * Module: dashboard-view.tsx
+ * Purpose: Render account dashboard overview composition for root dashboard route.
+ * Responsibilities: compose workspace list, audit panel, and permission constellation order.
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client"
 
 import { User as UserIcon } from "lucide-react"
@@ -10,8 +14,10 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { PermissionTree } from "@/features/account.slice"
 import { AccountGrid } from "@/features/organization.slice"
 import { Badge } from "@/shadcn-ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card"
 import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
 
+import { AccountAuditComponent } from "../../gov.audit/_components/audit.account-view"
 import { useApp } from "../_hooks/use-app"
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
 
@@ -108,8 +114,23 @@ export function DashboardView() {
 
       <div className={`grid grid-cols-1 ${isOrganizationContext ? "lg:grid-cols-2" : ""} gap-8`}>
         <WorkspaceList workspaces={dimensionWorkspaces} />
-        {isOrganizationContext && <PermissionTree currentRole={currentUserRoleInOrganization} t={t} />}
+        {isOrganizationContext && (
+          <Card className="border-border/60 bg-card/50 backdrop-blur-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-headline text-xl font-bold tracking-tight">
+                {t('navigation.audit')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="max-h-[32rem] overflow-y-auto pr-2">
+                <AccountAuditComponent />
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
+
+      {isOrganizationContext && <PermissionTree currentRole={currentUserRoleInOrganization} t={t} />}
     </div>
   )
 }
