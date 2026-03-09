@@ -153,6 +153,12 @@ export const QUERY_ROUTES = {
   SCHEDULE_TIMELINE_ALL: 'schedule-timeline-all',
   /** [A6] semantic-governance-view — 語義治理頁讀模型 (提案/共識/關係) */
   SEMANTIC_GOVERNANCE: 'semantic-governance',
+  /** [#A20] finance-staging-pool — accepted-but-unbilled tasks list */
+  FINANCE_STAGING: 'finance-staging',
+  /** [#A22] task-finance-label-view — task finance display labels */
+  TASK_FINANCE_LABEL: 'task-finance-label',
+  /** [QGWAY_SEARCH] tag-snapshot — semantic index search */
+  SEMANTIC_SEARCH: 'semantic-search',
 } as const;
 
 export type QueryRouteName = (typeof QUERY_ROUTES)[keyof typeof QUERY_ROUTES];
