@@ -1,17 +1,17 @@
 # ⚡ Semantic Conflicts Register
 
 > **憲法依據 / Constitutional Basis**: `docs/architecture/00-logic-overview.md`
-> **資料來源 / Data Source**: `/audit` 全鏈路架構合規性審計 (2026-03-06)
+> **資料來源 / Data Source**: `/audit` 全鏈路架構合規性審計 (2026-03-09)
 > **說明**: 語義衝突是「代碼中存在兩個相互矛盾的邏輯或定義」，與技術債（缺失實作）不同。
 
 ---
 
 ## 衝突一覽 / Conflict Overview
 
-| ID     | 衝突描述                                    | 嚴重程度 | 狀態  |
-|--------|---------------------------------------------|----------|-------|
-| SC-002 | `SK_STALENESS_CONTRACT` 雙重定義語義歧義    | MEDIUM   | OPEN  |
-| SC-003 | `CausalityTracer` 與 BBB 的節點存在性假設衝突 | LOW    | OPEN  |
+| ID     | 衝突描述                                      | 嚴重程度 | 狀態  |
+|--------|-----------------------------------------------|----------|-------|
+| SC-002 | `SK_STALENESS_CONTRACT` 雙重定義語義歧義      | MEDIUM   | OPEN  |
+| SC-003 | `CausalityTracer` 不呼叫 `validateNotIsolated` — 假設與守衛脫鉤 | LOW | OPEN |
 
 ---
 
@@ -22,62 +22,125 @@
 
 ### 衝突描述
 
-`SK_STALENESS_CONTRACT`（緩存鮮度合約）在代碼庫中有兩個定義：
-一個在 `shared-kernel/`（全局規範），另一個在某個 feature slice（局部覆蓋）。
+`SK_STALENESS_CONTRACT`（緩存鮮度合約）在代碼庫中有兩個完全獨立的定義：
 
-這造成以下語義歧義：
-- 「緩存過期」在不同模組中有不同的判斷標準
-- 全局修改緩存策略不能保證所有消費者都跟隨更新
+**定義一（shared-kernel，規範定義）**:
+```typescript
+// src/shared-kernel/infra-contracts/staleness-contract/index.ts
+export const StalenessMs = {
+  TAG_MAX_STALENESS: 30_000,       // 30s
+  PROJ_STALE_CRITICAL: 500,        // 500ms
+  PROJ_STALE_STANDARD: 10_000,     // 10s
+  PROJ_STALE_DEMAND_BOARD: 5_000,  // 5s
+} as const;
+```
+
+**定義二（Firebase Functions 側，獨立常量）**:
+```typescript
+// src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
+export const TAG_MAX_STALENESS_MS = 30_000;
+export const PROJ_STALE_CRITICAL_MS = 500;
+export const PROJ_STALE_STANDARD_MS = 10_000;
+// ⚠️ 缺少 PROJ_STALE_DEMAND_BOARD（5000ms）！
+```
+
+目前兩份定義的數值相同，但命名規範不同（物件屬性 vs 頂層常量），
+且 Firebase Functions 側**缺少 `PROJ_STALE_DEMAND_BOARD`** 條目。
 
 ### 衝突類型
 
-這是 **Single Source of Truth（D4）** 違規的一種典型表現：
-同一業務概念在多處定義，沒有明確的「誰覆蓋誰」規則。
+這是 **Single Source of Truth（D4）** 違規的典型表現：
+- 兩份定義各自獨立演化，沒有明確的「誰引用誰」規則
+- 若未來調整鮮度閾值（例如 `TAG_MAX_STALENESS: 60_000`），
+  修改者可能只更新一處，造成行為分裂
 
 ### 修復方向
 
-1. 確定唯一規範定義位置：`src/shared-kernel/contracts/staleness.ts`
-2. 刪除所有局部定義，統一從 shared-kernel 導入
-3. 加入 lint 規則防止未來再次出現局部定義
+**選項 A（推薦）**: Firebase Functions 側改為從 shared-kernel 重新導出
+```typescript
+// src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
+// 從 shared-kernel 重新導出，消除重複
+export {
+  StalenessMs,
+  getSlaMs,
+  isStale,
+} from '../../../../shared-kernel/infra-contracts/staleness-contract';
+```
+
+**選項 B**: 確保兩側共享一個 npm package（適合 monorepo 架構重組後）
+
+### 驗證步驟
+
+確保 `src/shared-infra/backend-firebase/functions/src/staleness-contract.ts`
+中不再有任何獨立的鮮度數值常量定義。
 
 ---
 
-## SC-003 · LOW — `CausalityTracer` 假設節點存在但無前置驗證
+## SC-003 · LOW — `CausalityTracer` 不呼叫 `validateNotIsolated`，D21-C 守衛形同虛設
 
 **嚴重程度**: LOW · **狀態**: OPEN · **關聯規則**: D21-C, D21-H
 
 ### 衝突描述
 
-`centralized-causality/causality-tracer.ts` 的 `traceAffectedNodes()` 和
-`buildCausalityChain()` 在執行因果追蹤時，假設傳入的起始節點 slug 在語義圖中存在，
-但沒有任何前置驗證邏輯來確認此假設。
+`hierarchy-manager.ts` 的 `validateNotIsolated()` 函數（TD-004 已完成實作）
+提供了「驗證節點是否已掛載至父節點」的能力，是 D21-C（無孤立節點）的守衛函數。
 
-同時，D21-C 規定沒有孤立節點（但 hierarchy-manager 未實作，見 ISSUE-002），
-理論上圖中**可能存在孤立節點**，但 `CausalityTracer` 假設所有節點都已連接。
+然而，`causality-tracer.ts` 的 `traceAffectedNodes()` 在執行因果追蹤 BFS 時，
+**完全未呼叫 `validateNotIsolated()`**，假設傳入的起始節點 slug 一定存在且已連接。
 
-### 語義矛盾
-
-| 假設者                        | 假設內容                     |
-|-------------------------------|------------------------------|
-| `CausalityTracer`             | 傳入節點一定存在且非孤立      |
-| `hierarchy-manager` (缺失)    | 保證無孤立節點（但未實作）    |
-| 實際狀態                       | 孤立節點可能存在（TD-004）    |
-
-這形成一個**循環依賴的假設鏈**：A 假設 B 的保證成立，但 B 尚未實作。
-
-### 修復方向
-
-在 `traceAffectedNodes()` 入口處加入節點存在性驗證，或至少加入防禦性日誌：
 ```typescript
-export function traceAffectedNodes(startSlug: TagSlugRef): TagSlugRef[] {
-  if (!nodeExistsInGraph(startSlug)) {
-    console.warn(`[D21-C] Node ${startSlug} not found in semantic graph; returning empty trace`);
-    return [];
-  }
+// causality-tracer.ts — 第 177-196 行
+export function traceAffectedNodes(
+  event: TagLifecycleEvent,
+  candidateSlugs: readonly string[],
+  maxHops = 5
+): readonly AffectedNode[] {
+  const sourceSlug = event.tagSlug as string;
+  // ❌ 缺少：validateNotIsolated(event.tagSlug) 前置驗證
+  // 如果 sourceSlug 不存在於圖中，BFS 會直接返回空結果而不報錯
+  const entries = _bfsAffected(sourceSlug, new Set(candidateSlugs), maxHops);
   // ...
 }
 ```
-長期修復依賴 TD-004（hierarchy-manager）的實作。
+
+### 語義矛盾
+
+| 組件                      | 宣稱的保證                                | 實際狀況                           |
+|---------------------------|-------------------------------------------|------------------------------------|
+| `hierarchy-manager.ts`    | `validateNotIsolated()` 確保節點已掛載    | 函數存在但沒有被 CausalityTracer 呼叫 |
+| `CausalityTracer`         | 假設 `tagSlug` 一定存在且非孤立            | 孤立節點會造成靜默空結果，不報錯    |
+| D21-C 規則                | 語義圖中不得有孤立節點                     | 守衛函數與使用者脫鉤，無法強制執行  |
+
+### 實際風險
+
+如果一個 `TagLifecycleEvent` 的 `tagSlug` 指向一個孤立節點（尚未掛載至父節點）：
+- BFS 會立即返回空結果（因為沒有任何邊從孤立節點出發）
+- 呼叫方收到空的 `affectedNodes`，誤認為「此事件無下游影響」
+- 不會拋出任何錯誤或警告，靜默失敗
+
+### 修復方向
+
+在 `traceAffectedNodes()` 入口處加入 D21-C 前置驗證：
+
+```typescript
+import { validateNotIsolated } from '../../core/nodes/hierarchy-manager';
+
+export function traceAffectedNodes(
+  event: TagLifecycleEvent,
+  candidateSlugs: readonly string[],
+  maxHops = 5
+): readonly AffectedNode[] {
+  // [D21-C] 確認起始節點已掛載至父節點（非孤立）
+  if (!validateNotIsolated(event.tagSlug)) {
+    // 孤立節點的因果鏈為空；可選擇拋出或靜默返回
+    console.warn(`[D21-C] traceAffectedNodes: slug "${event.tagSlug as string}" is isolated, returning empty chain`);
+    return [];
+  }
+  // ...（原有 BFS 邏輯）
+}
+```
+
+**預估工作量**: 半天（1-2 個程式變更 + 測試補充）
 
 ---
 
@@ -91,4 +154,4 @@ export function traceAffectedNodes(startSlug: TagSlugRef): TagSlugRef[] {
 
 ---
 
-*最後更新: 2026-03-09 | 維護者: Copilot（已移除 SC-001 至 archive）*
+*最後更新: 2026-03-09 | 維護者: Copilot（SC-002 補充雙重定義具體路徑；SC-003 更新：TD-004 已解決，但 CausalityTracer 仍未接線）*
