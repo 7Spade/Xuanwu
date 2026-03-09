@@ -193,6 +193,13 @@ When creating or editing a `.ts` or `.tsx` file:
 4. Add compatibility shims only after new paths compile.
 5. If a tool fails, report partial state and stop.
 
+## Command-First Execution Discipline
+1. Prefer terminal commands for search, batch edits, validation, and encoding checks whenever feasible.
+2. Favor reproducible command sequences over ad-hoc manual edits.
+3. Before and after multi-file changes, run explicit verification commands (for example: typecheck, lint, and path checks).
+4. When uncertain about current file state, re-read the file from disk before editing.
+5. Avoid risky shortcuts; if a change cannot be verified safely, stop and report the blocker.
+
 ## Companion Instruction Files
 - Multi-agent workspace conventions: `AGENTS.md`
 - Project setup and contributor context: `README.md`
