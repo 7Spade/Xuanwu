@@ -10,19 +10,23 @@
 import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle, ListChecks } from 'lucide-react';
 import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
 
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
+import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
-import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import { useWorkspace } from '@/features/workspace.slice/core';
+import {
+  clearPendingParseFile,
+  loadPendingParseFile,
+} from '@/features/workspace.slice/core/_utils/pending-parse-storage';
+import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
 import { useToast } from '@/shadcn-ui/hooks/use-toast';
 import { logDomainError } from '@/shared-infra/observability';
 import type { SkillRequirement } from '@/shared-kernel';
-import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 
 
 
@@ -198,9 +202,24 @@ export function WorkspaceDocumentParser() {
     }
 
     lastHandledPendingParseKeyRef.current = pendingKey;
+    clearPendingParseFile(workspace.id);
     setPendingParseFile(null);
     triggerParseFromURL(pendingParseFile);
-  }, [pendingParseFile, setPendingParseFile, triggerParseFromURL]);
+  }, [pendingParseFile, setPendingParseFile, triggerParseFromURL, workspace.id]);
+
+  useEffect(() => {
+    if (pendingParseFile) {
+      return;
+    }
+
+    const persistedPayload = loadPendingParseFile(workspace.id);
+    if (!persistedPayload) {
+      return;
+    }
+
+    clearPendingParseFile(workspace.id);
+    triggerParseFromURL(persistedPayload);
+  }, [pendingParseFile, triggerParseFromURL, workspace.id]);
 
   useEffect(() => {
     if (state.error) {
@@ -500,7 +519,7 @@ export function WorkspaceDocumentParser() {
                       <WorkItemsTable initialData={aiWorkItems} onImport={handleImport} tagPresentationMap={tagPresentationMap} />
                     ) : (
                       <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-                        Genkit parsing not executed yet. Click "Run Genkit AI Parsing".
+                        Genkit parsing not executed yet. Click &quot;Run Genkit AI Parsing&quot;.
                       </div>
                     )}
                 </CardContent>

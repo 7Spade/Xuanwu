@@ -12,6 +12,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useAuth } from '@/app-runtime/providers/auth-provider';
 import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { useWorkspace } from '@/features/workspace.slice/core';
+import { savePendingParseFile } from '@/features/workspace.slice/core/_utils/pending-parse-storage';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
 
 import {
@@ -191,7 +192,7 @@ export function useWorkspaceFilesActions({
       return;
     }
 
-    setPendingParseFile({
+    const pendingPayload = {
       fileName: file.name,
       fileType: file.type,
       parseMode: context.parseMode,
@@ -201,7 +202,10 @@ export function useWorkspaceFilesActions({
       versionId: version.versionId,
       storagePath: version.storagePath,
       downloadURL: version.downloadURL,
-    });
+    };
+
+    setPendingParseFile(pendingPayload);
+    savePendingParseFile(workspace.id, pendingPayload);
     logAuditEvent('Sent File to Parser', `${file.name} (${context.parseMode})`, 'update');
     toast({
       title: t('workspaces.sentToParser'),
@@ -210,7 +214,7 @@ export function useWorkspaceFilesActions({
         mode: context.parseMode,
       }),
     });
-  }, [logAuditEvent, setPendingParseFile, t]);
+  }, [logAuditEvent, setPendingParseFile, t, workspace.id]);
 
   return {
     fileInputRef,
