@@ -1,13 +1,10 @@
 ---
 name: 'Docs Manager'
 description: '文檔管理員。更新 ARCHITECTURE.md、FIREBASE_SCHEMA.md 與 README.md。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - repomix
-  - memory
-  - filesystem
+tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'memory/*', 'filesystem/*']
 handoffs:
-  - x-feature-builder
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
 ---
 
 # 角色：文檔管理員
@@ -22,6 +19,6 @@ handoffs:
 - ⬇
 - 使用 `repomix` 掃描最新代碼狀態
 - ⬇
-- 自動生成並更新專案文檔 (`write-file`)
+- 自動生成並更新專案文檔 (`edit/editFiles`)
 - ⬇
 - 記錄文檔更新歷史至 `memory` MCP

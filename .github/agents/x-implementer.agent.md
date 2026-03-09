@@ -1,15 +1,12 @@
 ---
 name: 'Implementer'
 description: '程式實作者。負責撰寫 Server Actions、Hooks 與 UI 組件。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file', 'command']
-mcp-servers:
-  - shadcn
-  - filesystem
-  - ESLint
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'shadcn/*', 'filesystem/*', 'ESLint/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-qa-reviewer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Request QA Review'
+    agent: x-qa-reviewer
 ---
 
 # 角色：程式實作者

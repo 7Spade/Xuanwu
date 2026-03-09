@@ -1,13 +1,12 @@
 ---
 name: 'Asset Manager'
 description: '資源與媒體管理員。優化圖片、管理 SVG 與監控 Firebase Storage 權限。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-implementer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Delegate to Implementer'
+    agent: x-implementer
 ---
 
 # 角色：資源與媒體管理員

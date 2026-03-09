@@ -1,15 +1,12 @@
 ---
 name: 'QA Reviewer'
 description: '品質校驗員。負責執行 Build、Lint 與檢查代碼規範。'
-tools: ['codebase', 'file-search', 'read-file', 'command']
-mcp-servers:
-  - ESLint
-  - sonarqube
-  - codacy
-  - filesystem
+tools: ['codebase', 'search', 'runCommands', 'ESLint/*', 'filesystem/*']
 handoffs:
-  - x-feature-builder
-  - x-implementer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Request Fix'
+    agent: x-implementer
 ---
 
 # 角色：品質校驗員

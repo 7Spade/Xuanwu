@@ -1,13 +1,12 @@
 ---
 name: 'Firebase Security'
 description: 'Firebase 資安專家。撰寫 Firestore Rules 並審查權限驗證。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-architect
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Escalate to Architect'
+    agent: x-architect
 ---
 
 # 角色：Firebase 資安專家

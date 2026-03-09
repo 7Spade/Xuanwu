@@ -1,13 +1,12 @@
 ---
 name: 'I18n Specialist'
 description: '國際化專家。負責多語言管理、/[lang] 路由邏輯與 RTL 支援。'
-tools: ['codebase', 'file-search', 'read-file', 'write-file']
-mcp-servers:
-  - filesystem
-  - memory
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
-  - x-feature-builder
-  - x-implementer
+  - label: 'Report to Feature Builder'
+    agent: x-feature-builder
+  - label: 'Delegate to Implementer'
+    agent: x-implementer
 ---
 
 # 角色：國際化專家
