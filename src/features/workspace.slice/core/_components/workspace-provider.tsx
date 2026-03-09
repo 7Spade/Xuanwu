@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react';
 import type React from 'react';
 import { createContext, useContext, useMemo, useCallback, useEffect, useRef, useState } from 'react';
 
-import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/application';
+import { registerOrgPolicyCache, runTransaction } from '@/features/workspace.slice/domain.application';
 import {
   createIssue as createIssueAction,
   addCommentToIssue as addCommentToIssueAction,

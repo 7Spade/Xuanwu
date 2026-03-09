@@ -18,7 +18,7 @@
 
 import { registerSubscriber } from '@/shared-infra/event-router';
 
-import { deliverNotification } from '../user.notification';
+import { deliverNotification } from '../domain.notification';
 
 export interface RouterRegistration {
   unsubscribe: () => void;

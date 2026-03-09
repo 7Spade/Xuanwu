@@ -34,14 +34,14 @@ import type {
 import {
   addEdge,
   removeEdge,
-} from './graph/edges/semantic-edge-store';
+} from './domain.graph/edges/semantic-edge-store';
 import type { SemanticRelationType, TagLifecycleState } from './core/types';
 import {
   registerTagDraft,
   activateTag,
   transitionTagState,
-} from './routing/tag-lifecycle.workflow';
-import type { OutboxLifecycleEvent } from './routing/tag-lifecycle.workflow';
+} from './domain.routing/tag-lifecycle.workflow';
+import type { OutboxLifecycleEvent } from './domain.routing/tag-lifecycle.workflow';
 
 // =================================================================
 // Tag Upsert with Conflict Check
