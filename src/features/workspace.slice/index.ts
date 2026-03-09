@@ -23,8 +23,10 @@
  *   domain.workflow — workflow aggregate + state machine [R6]
  *   domain.quality-assurance — QA capability
  *   domain.acceptance        — acceptance capability
- *   domain.finance           — finance capability
  *   domain.issues            — B-track issues [A3]
+ *
+ * Finance capability (VS9) has been migrated to @/features/finance.slice.
+ * finance.slice exports are re-exported here for backward compatibility.
  */
 
 // ─── core ────────────────────────────────────────────────────────────────────
@@ -267,6 +269,7 @@ export {
   updateWorkflowState,
   findWorkflowsBlockedByIssue,
   findWorkflowsByStage,
+  listWorkflowStates,
   handleIssueResolvedForWorkflow,
 } from './domain.workflow'
 export type { WorkflowStage, WorkflowAggregateState } from './domain.workflow'
@@ -278,12 +281,14 @@ export { WorkspaceQualityAssurance } from './domain.quality-assurance'
 export { WorkspaceAcceptance } from './domain.acceptance'
 
 // ─── domain.finance ──────────────────────────────────────────────────────────
+// Finance capability migrated to finance.slice (VS9).
+// Re-exported here for backward compatibility.
 export {
   WorkspaceFinance,
   getFinanceAggregateState,
   saveFinanceAggregateState,
-} from './domain.finance'
-export type { FinanceAggregateState } from './domain.finance'
+} from '@/features/finance.slice'
+export type { FinanceAggregateState } from '@/features/finance.slice'
 
 // ─── domain.issues ───────────────────────────────────────────────────────────
 export {

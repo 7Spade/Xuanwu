@@ -6,7 +6,7 @@
  */
 
 import { classifyCostItem } from '@/features/semantic-graph.slice';
-import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice/core.event-bus/_events';
+import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice';
 
 import type {
   FinanceClaimDraftEntry,

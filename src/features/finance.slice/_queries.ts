@@ -1,3 +1,10 @@
+/**
+ * Module: _queries.ts
+ * Purpose: Read finance aggregate state from persistence layer.
+ * Responsibilities: delegate getFinanceAggregateState to Firestore facade.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
 import {
   getFinanceAggregateState as getFinanceAggregateStateFacade,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
