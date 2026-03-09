@@ -59,6 +59,8 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 3. Repeat coverage when context changes (`Personal` vs `Organization`, different workspaces).
 4. Save one artifact per tab level (snapshot or screenshot) with route evidence.
 5. Report a coverage matrix in output: `sidebar tab -> nested tabs -> PASS/FAIL/BLOCKED`.
+6. Report two top-level matrices: `Personal context` and `Organization context`.
+7. For governance-only pages in personal context, use `EXPECTED_GATED` status and include gating evidence.
 
 ## Local test credentials
 - Read credentials from project-root `.env.local`.

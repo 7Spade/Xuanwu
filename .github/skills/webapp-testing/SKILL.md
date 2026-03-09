@@ -41,6 +41,8 @@ Toolkit for interacting with and testing local web applications using Playwright
 3. Dynamic tabs: if a tab list changes by account/workspace context, run coverage for each context.
 4. Evidence: each tab level requires at least one artifact (`snapshot` or `screenshot`) with URL/path proof.
 5. Reporting: output must include a coverage matrix (`parent tab -> child tabs -> status`).
+6. Account context split is mandatory: run and report at least `Personal` and `Organization` matrices separately.
+7. Pages that are expected to be gated in `Personal` must be reported as `EXPECTED_GATED`, not `PASS`.
 
 ## Blocker Policy (localhost:9002)
 1. If page load fails (`ERR_CONNECTION_REFUSED`), run port check and restart `npm run dev`.
