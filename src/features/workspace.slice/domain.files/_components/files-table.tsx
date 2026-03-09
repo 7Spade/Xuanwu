@@ -111,9 +111,12 @@ export function FilesTable({
             const documentAiFile = file;
             const documentAiVersion = current;
             const canRunDocumentAi = !isCurrentStructuredFile && Boolean(documentAiVersion?.downloadURL);
-            const genkitSourceType: 'original' | 'structured-sidecar' =
-              isCurrentStructuredFile ? 'structured-sidecar' : 'structured-sidecar';
-            const canRunGenkitAi = Boolean(genkitAiSourceVersion?.downloadURL && genkitAiSourceFile);
+            const genkitSourceType: 'original' | 'structured-sidecar' = 'structured-sidecar';
+            const canRunGenkitAi = Boolean(
+              genkitAiSourceVersion?.downloadURL
+              && genkitAiSourceFile
+              && isStructuredSidecarFile(genkitAiSourceFile.name),
+            );
 
             return (
               <Fragment key={file.id}>

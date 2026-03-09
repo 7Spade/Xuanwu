@@ -208,6 +208,8 @@ export async function extractDataFromDocument(
   const downloadURL = formData.get('downloadURL');
   const parseModeFromForm = formData.get('parseMode');
   const parseMode: 'document-ai' | 'genkit-ai' = parseModeFromForm === 'genkit-ai' ? 'genkit-ai' : 'document-ai';
+  const normalizedSourceType: 'original' | 'structured-sidecar' =
+    sourceType === 'structured-sidecar' ? 'structured-sidecar' : 'original';
 
   if (
     typeof workspaceId !== 'string' || workspaceId.length === 0 ||
@@ -221,14 +223,33 @@ export async function extractDataFromDocument(
     };
   }
 
+  if (parseMode === 'document-ai' && normalizedSourceType !== 'original') {
+    return {
+      fileName: typeof fileName === 'string' ? fileName : undefined,
+      parseMode,
+      error: '[document-ai] Invalid sourceType: DOCUMENT-AI only accepts original document input.',
+    };
+  }
+
+  if (parseMode === 'genkit-ai' && normalizedSourceType !== 'structured-sidecar') {
+    return {
+      fileName: typeof fileName === 'string' ? fileName : undefined,
+      parseMode,
+      error: '[genkit-ai] Invalid sourceType: GENKIT-AI only accepts structured-sidecar JSON input.',
+    };
+  }
+
   try {
     let ocrDocument: OcrDocumentPayload;
-    if (
-      parseMode === 'genkit-ai' &&
-      sourceType === 'structured-sidecar' &&
-      typeof downloadURL === 'string' &&
-      downloadURL.length > 0
-    ) {
+    if (parseMode === 'genkit-ai') {
+      if (typeof downloadURL !== 'string' || downloadURL.length === 0) {
+        return {
+          fileName: typeof fileName === 'string' ? fileName : undefined,
+          parseMode,
+          error: '[genkit-ai] Missing sidecar downloadURL. Run DOCUMENT-AI first to produce *.document-ai.json.',
+        };
+      }
+
       ocrDocument = await readOcrDocumentFromSidecar(downloadURL);
     } else {
       const endpoint = getProcessDocumentEndpoint();

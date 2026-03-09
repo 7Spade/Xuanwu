@@ -184,6 +184,16 @@ export function useWorkspaceFilesActions({
   ) => {
     if (!version?.downloadURL) return;
 
+    const isStructuredSidecar = file.name.toLowerCase().endsWith('.document-ai.json');
+    const isInvalidDocumentAiInput = context.parseMode === 'document-ai' && context.sourceType !== 'original';
+    const isInvalidGenkitInput =
+      context.parseMode === 'genkit-ai'
+      && (context.sourceType !== 'structured-sidecar' || !isStructuredSidecar);
+
+    if (isInvalidDocumentAiInput || isInvalidGenkitInput) {
+      return;
+    }
+
     setPendingParseFile({
       fileName: file.name,
       fileType: file.type,
