@@ -47,6 +47,12 @@ Toolkit for interacting with and testing local web applications using Playwright
 2. If auth/session blocks navigation, re-login once and retry the blocked route once.
 3. If still failing, stop retries and record as environment blocker with exact route and evidence.
 
+## Hydration Mismatch Policy (Mandatory)
+1. Treat React/Next hydration mismatches as `FAIL`, not warning-only.
+2. Match on messages including `A tree hydrated but some attributes of the server rendered HTML didn't match the client properties` and `hydration mismatch`.
+3. Do not mark route coverage complete until the mismatch is either fixed or explicitly marked `BLOCKED` with reproducible steps and console evidence.
+4. Root-cause candidates must be checked in this order: non-deterministic IDs, SSR/CSR conditional branches, random/time-based values in render, locale-dependent formatting during SSR.
+
 ## Login Test Procedure (Mandatory)
 1. Start from landing page `/`.
 2. Verify top-right language switcher and sign-in button both exist.

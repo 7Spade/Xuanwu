@@ -1,3 +1,9 @@
+/**
+ * Module: account-switcher
+ * Purpose: Render active account context switcher in dashboard sidebar
+ * Responsibilities: show account identity, open account dropdown, dispatch account switch
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client"
 
 import { Check, ChevronsUpDown, Globe, Loader2, Plus } from "lucide-react"
@@ -108,6 +114,7 @@ export function AccountSwitcher({
           <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
+                suppressHydrationWarning
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >

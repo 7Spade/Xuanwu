@@ -1,3 +1,9 @@
+/**
+ * Module: nav-user
+ * Purpose: Render authenticated user menu in dashboard sidebar footer
+ * Responsibilities: expose account settings and logout actions
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client"
 
 import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
@@ -57,6 +63,7 @@ export function NavUser({ user, accounts, activeAccount, logout, t }: NavUserPro
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
+              suppressHydrationWarning
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >

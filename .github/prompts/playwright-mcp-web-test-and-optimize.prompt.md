@@ -51,6 +51,7 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 	- `PASS` with evidence, or
 	- `BLOCKED` with reproducible environment proof.
 - Tab coverage is complete only when sidebar tabs and nested tabs are both fully covered.
+- Any hydration mismatch console error is a hard failure and must be fixed or marked `BLOCKED` with reproducible evidence before completion.
 
 ## Sidebar and Nested Tab Coverage Rule (Mandatory)
 1. Open every visible sidebar tab at least once.
@@ -117,3 +118,9 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 - Repro steps
 - Evidence (errors/screenshots)
 - Fix summary and verification results
+
+## Hydration mismatch verification (mandatory)
+1. After each major route group (dashboard shell, workspace shell), collect console logs.
+2. If logs include `A tree hydrated but some attributes of the server rendered HTML didn't match the client properties`, classify route group as `FAIL`.
+3. Run root-cause checks for SSR/CSR branch divergence, random/time-based render values, and unstable generated IDs.
+4. Re-run affected routes and keep final artifact showing mismatch removed.
