@@ -230,3 +230,4 @@ When creating or editing a `.ts` or `.tsx` file:
 ## Companion Instruction Files
 - Multi-agent workspace conventions: `AGENTS.md`
 - Project setup and contributor context: `README.md`
+- Feature Slice Architecture rules: `.github/instructions/feature-slice-architecture-rules.instructions.md`
