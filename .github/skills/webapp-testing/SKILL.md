@@ -13,6 +13,12 @@ Toolkit for interacting with and testing local web applications using Playwright
 - Relevant repository context or existing artifacts
 - Constraints (time, scope, quality, security/compliance)
 
+## Local Test Account
+- Use project-root `.env.local` for login-based test runs.
+- Credential env vars: `TEST_AUTH_EMAIL`, `TEST_AUTH_PASSWORD`.
+- Current local dev values: `test@demo.com` / `123456`.
+- Keep credentials out of `.github/copilot-instructions.md`.
+
 ## Workflow
 1. Confirm scope and ask targeted clarifying questions when required.
 2. Produce a concise, execution-ready plan focused on the stated goal.

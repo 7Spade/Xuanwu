@@ -16,6 +16,12 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 4. Apply minimal fixes
 5. Re-run affected checks
 
+## Local test credentials
+- Read credentials from project-root `.env.local`.
+- Required variables: `TEST_AUTH_EMAIL`, `TEST_AUTH_PASSWORD`.
+- Current local dev values: `test@demo.com` / `123456`.
+- Do not place credentials in `.github/copilot-instructions.md`.
+
 ## Output
 - Repro steps
 - Evidence (errors/screenshots)
