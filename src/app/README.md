@@ -110,8 +110,12 @@ These boundaries keep shell chrome visible and render low-noise skeletons while 
 Portal bootstrap is non-blocking by design:
 
 - Sidebar/header shell remains mounted during account bootstrap.
-- "Restoring dimension sovereignty..." appears only in the portal content region when app bootstrap phase is `idle` and no `activeAccount` exists.
+- Portal bootstrap fallback uses `@/shadcn-ui/skeleton` blocks (no spinner-only fallback) when app bootstrap phase is `idle` and no `activeAccount` exists.
 - Once cache or stream hydration sets an active account, content resumes without full-screen interruption.
+
+### Global Skeleton Policy
+
+All `src/app/**/loading.tsx` boundaries and key parallel slot loading states (`@sidebar`, `@header`, `@businesstab`, `@reports`) use `@/shadcn-ui/skeleton` as the canonical loading primitive.
 
 ---
 
