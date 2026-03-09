@@ -205,29 +205,51 @@ import { SomeService } from '@/features/b.slice';
 
 ## 快捷指令（Quick Commands）
 
-### 全量對準
+### 第一階段：初始化與對準
+
+**系統提示（建議在開始任何掃描前複製使用）：**
+
+```
+請讀取並索引專案中的 docs/architecture/00-architecture-standards.md 與
+docs/architecture/01-logical-flow.md。從現在起，你扮演 Xuanwu 架構守護者。
+你的所有判斷標準「僅限於」這兩份文件。若代碼違反規範，請指出具體條款
+（如 §3.1 或 L3 層位）；若文件未定義，則視為合規。
+請確認你已準備好執行「三位一體」掃描。
+```
+
+### 第二階段：執行審計
+
+#### 全量對準
 ```
 Run Audit. Compare the current codebase with 00-architecture-standards.md and 01-logical-flow.md.
+Please provide the Drift Report and Compliance Status.
 ```
 
-### 清理舊債
+#### 邊界巡邏
 ```
-List all files that violate the migration rules in Section 7 of 00-architecture-standards.md. Generate git mv commands.
-```
-
-### 邊界巡邏
-```
-Check for illegal cross-slice imports. Flag any file importing from a .slice sub-directory directly, bypassing index.ts.
+執行 Boundary Audit。檢查 src/features/ 下是否有檔案直接 import 其他切片的內部路徑
+（如 domain.* 或 _ 開頭檔案），而非透過 index.ts。請列出違規行號與重構建議。
 ```
 
-### 邏輯鏈追蹤
+#### 清理舊債
 ```
-Trace the logic flow of [FeatureName]. Does it strictly follow L0 -> L3 -> L4 -> L5 as defined in 01-logical-flow.md?
+根據 00-architecture-standards.md §7 的遷移規則，列出所有舊版命名的檔案
+（如 *.actions.ts 或 business.* 目錄），並直接生成 git mv 修正指令。
 ```
 
-### 新功能起手
+### 第三階段：開發輔助
+
+#### 建立新 Slice
 ```
-Generate a file structure for a new slice named [Name] based on the Bootstrap Template in Section 8 of 00-architecture-standards.md.
+依照 §8 的 Bootstrap Template，為我生成一個名為 [feature-name] 的新切片（Slice）目錄結構。
+確保包含 index.ts 以及私有的 _ 開頭檔案。
+```
+
+#### 邏輯鏈驗證
+```
+追蹤 src/features/[feature].slice 的邏輯流向。
+它是否嚴格遵守 01-logical-flow.md 定義的 L0 -> L3 -> L4 -> L5 流程？
+特別檢查是否有 Command 流程直接回傳大量 Query Data 的違規。
 ```
 
 ---

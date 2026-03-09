@@ -209,6 +209,9 @@ When creating or editing a `.ts` or `.tsx` file:
 ## Skill Routing
 - Architecture and management document indexing: `.github/skills/xuanwu-docs-index/SKILL.md`
   - Use for `docs/architecture/` lookup, `docs/management/` active/archive routing, and migration checks between active registers and archive registers.
+- Architecture compliance audit (三位一體掃描): `.github/skills/x-framework-guardian/SKILL.md`
+  - Use for drift reports, boundary audits, migration `git mv` generation, new slice bootstrapping, and logic chain (L0→L5) validation.
+  - Agent: `.github/agents/x-framework-guardian.agent.md`
 
 ## Large Move Protocol
 1. Submit a move-map (`source -> destination`) before moving files.
