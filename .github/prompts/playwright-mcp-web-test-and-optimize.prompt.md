@@ -32,6 +32,16 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 7. Capture one snapshot after login as evidence.
 8. If login fails, collect console errors + failed requests + screenshot before attempting fixes.
 
+## Organization and workspace flow verification
+1. On `/dashboard`, verify header contains the top-right i18n button (`Switch language`).
+2. Open account switcher and change `Personal` <-> `Organization`; verify account label updates.
+3. In `Organization` context, confirm `Quick Access` workspaces are visible.
+4. Enter workspace by clicking one workspace quick link (`/workspaces/{id}`).
+5. Verify workspace route loaded and header still contains top-right i18n button.
+6. Switch to another workspace from quick links.
+7. Verify URL changes to the second workspace id and workspace page remains interactive.
+8. Capture one screenshot for each milestone: switched organization, entered workspace, switched workspace.
+
 ## Output
 - Repro steps
 - Evidence (errors/screenshots)

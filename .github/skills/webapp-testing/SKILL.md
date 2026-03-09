@@ -28,6 +28,16 @@ Toolkit for interacting with and testing local web applications using Playwright
 6. Assert final page is `/dashboard` with visible dashboard shell nodes (navigation + content area).
 7. Record result with one post-login snapshot and key console/network anomalies if any.
 
+## Organization and Workspace Test Procedure (Mandatory)
+1. On `/dashboard`, assert top-right i18n button exists in shell header.
+2. Open account switcher and switch between `Personal` and `Organization`; assert active account label changes.
+3. In `Organization`, assert `Quick Access` workspace links are present.
+4. Enter one workspace (`/workspaces/{id}`) through UI link.
+5. Assert workspace page renders and top-right i18n button still exists.
+6. Switch to a second workspace from UI quick links.
+7. Assert route id changed and page is stable/interactable after switch.
+8. Record evidence for all three actions: organization switch, workspace entry, workspace switch.
+
 ## Workflow
 1. Confirm scope and ask targeted clarifying questions when required.
 2. Produce a concise, execution-ready plan focused on the stated goal.
