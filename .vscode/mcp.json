@@ -40,7 +40,7 @@
 				"@modelcontextprotocol/server-memory"
 			],
 			"env": {
-				"MEMORY_FILE_PATH": "./docs/knowledge-graph.json"
+				"MEMORY_FILE_PATH": "./.memory/knowledge-graph.json"
 			}
 		},
 		"filesystem": {

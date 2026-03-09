@@ -16,7 +16,7 @@ Instructions for bounded contexts and feature slices in `src/features/`.
 
 ## DDD Language
 - Use canonical domain terms from:
-  - `docs/knowledge-graph.json`
+  - `.memory/knowledge-graph.json`
   - `docs/architecture/00-logic-overview.md`
 - Keep naming consistent across commands, queries, entities, and UI labels.
 

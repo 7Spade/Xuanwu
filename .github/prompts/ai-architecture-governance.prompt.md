@@ -11,7 +11,7 @@ Keep every architectural decision aligned with the project SSOT and governance r
 
 ## Required context (read first)
 - [docs/architecture/00-logic-overview.md](../../docs/architecture/00-logic-overview.md) (highest priority)
-- [docs/knowledge-graph.json](../../docs/knowledge-graph.json)
+- [.memory/knowledge-graph.json](../../.memory/knowledge-graph.json)
 - [skills/SKILL.md](../../skills/SKILL.md)
 
 ## Workflow
