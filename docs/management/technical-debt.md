@@ -35,7 +35,7 @@ VS8 第 7 層 Projection（語義投影層）需要提供 `getReachableNodes()` 
 ### 現狀
 
 ```
-src/features/semantic-graph.slice/output/projections/context-selectors.ts
+src/features/semantic-graph.slice/domain.output/projections/context-selectors.ts
   // TODO [VS8_PROJ]: Implement context selectors.
   //   Planned exports:
   //     - getReachableNodes(fromSlug: string): readonly string[]

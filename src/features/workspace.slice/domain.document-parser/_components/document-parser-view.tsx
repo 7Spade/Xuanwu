@@ -14,7 +14,7 @@ import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
 import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
 import { classifyParserLineItem } from '@/features/semantic-graph.slice';
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/application/_outbox';
+import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/core.application/_outbox';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import {
   clearPendingParseFile,

@@ -15,7 +15,7 @@
  */
 
 import type { HubNotification, NotificationCategory, NotificationSemanticType } from '../_contract';
-import { subscribeToNotifications } from '../user.notification/_queries';
+import { subscribeToNotifications } from '../domain.notification/_queries';
 
 export type NotificationListenerCleanup = () => void;
 

@@ -128,7 +128,7 @@ export {
   getCachedOrgPolicy,
   getAllCachedPolicies,
   clearOrgPolicyCache,
-} from './application'
+} from './core.application'
 export type {
   WorkspaceCommand,
   WorkspaceExecutorResult,
@@ -140,7 +140,7 @@ export type {
   Outbox,
   OutboxEvent,
   OrgPolicyEntry,
-} from './application'
+} from './core.application'
 
 // ─── gov.role ────────────────────────────────────────────────────────────────
 export {

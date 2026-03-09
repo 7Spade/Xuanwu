@@ -370,7 +370,7 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
         SEM_REG["semantic-registry\n【Semantic SSOT】\n由 centralized-tag.aggregate 提供唯一註冊來源\n跨域語義必須先註冊再使用 [D21-A D21-T D21-U]"]
         SEM_PROTOCOL["semantic-protocol\n【訊號協議層】\ncommand/event envelope 與 TagLifecycleEvent 協議\n維持跨模組語義訊號一致 [D21-6 S1 R8]"]
 
-        subgraph VS8_GUARD["1.1 🛡️ guards · Semantic Integrity（src/features/semantic-graph.slice/governance/guards）[D21-H D21-K S4]"]
+        subgraph VS8_GUARD["1.1 🛡️ guards · Semantic Integrity（src/features/semantic-graph.slice/gov.governance/guards）[D21-H D21-K S4]"]
             direction LR
             INV_GUARD["invariant-guard.ts\n【最高裁決權 · 語義衝突直接拒絕】\n違反物理邏輯聯結 → 攔截提案 [D21-H D21-K]"]
             STALE_MON["staleness-monitor.ts\nTAG_MAX_STALENESS ≤ 30s [S4 D21-8]"]
@@ -461,7 +461,7 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
     subgraph VS8_OUTPUT_LAYER["④ 📤 Semantic Output Layer（src/features/semantic-graph.slice/{projections,subscribers,outbox,decision,ports}）"]
         direction TB
 
-        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/output/projections）[D21-7 T5 O2~O4]"]
+        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/domain.output/projections）[D21-7 T5 O2~O4]"]
             direction LR
             TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5 O2】\n[D21-7] 讀取必須經 projection.tag-snapshot\nT1 新切片訂閱事件即可擴展"]
             GRAPH_SEL["projections/graph-selectors.ts\n圖結構唯讀查詢"]
@@ -558,7 +558,7 @@ AUTH_ID -.->|"uses IAuthService"| I_AUTH
 subgraph VS2["🟩 VS2 · Account Slice（src/features/account.slice）"]
     direction TB
 
-    subgraph VS2_USER["👤 個人帳號域（src/features/account.slice/user.profile + user.wallet）"]
+    subgraph VS2_USER["👤 個人帳號域（src/features/account.slice/domain.profile + domain.wallet）"]
         USER_AGG["user-account.aggregate"]
         WALLET_AGG["wallet.aggregate\n強一致帳本 [#A1]\n[S3: STRONG_READ]"]
         PROFILE["account.profile\nFCM Token（弱一致）"]

@@ -176,12 +176,12 @@ export type {
 export {
   getTagSnapshotPresentation,
   getTagSnapshotPresentationMap,
-} from './output/projections/tag-snapshot.slice';
+} from './domain.output/projections/tag-snapshot.slice';
 export type {
   TagSnapshotPresentation,
   TagSnapshotColorToken,
   TagSnapshotIconToken,
-} from './output/projections/tag-snapshot.slice';
+} from './domain.output/projections/tag-snapshot.slice';
 
 // =================================================================
 // CTA Operations ??Centralized Tag Aggregate [D3][D8]
@@ -213,13 +213,13 @@ export type {
 // BEFORE addEdge() to enforce all graph invariants at the BBB layer.
 // External slices must never bypass this guard to write edges directly.
 // =================================================================
-export { validateEdgeProposal } from './governance/guards/invariant-guard';
+export { validateEdgeProposal } from './gov.governance/guards/invariant-guard';
 export type {
   EdgeProposal,
   SemanticGuardDecision,
   SemanticGuardRejectionCode,
   SemanticGuardResult,
-} from './governance/guards/invariant-guard';
+} from './gov.governance/guards/invariant-guard';
 
 // =================================================================
 // L8 Global Consensus Engine ??ConsensusEngine [D21-I D21-K]
@@ -227,9 +227,9 @@ export type {
 // forwarding to the L5 BBB InvariantGuard.  Call validateConsensus()
 // BEFORE validateEdgeProposal() in the proposal-stream pipeline.
 // =================================================================
-export { validateConsensus } from './governance/semantic-governance-portal/consensus-engine';
+export { validateConsensus } from './gov.governance/semantic-governance-portal/consensus-engine';
 export type {
   ConsensusDecision,
   ConsensusRejectionCode,
   ConsensusResult,
-} from './governance/semantic-governance-portal/consensus-engine';
+} from './gov.governance/semantic-governance-portal/consensus-engine';

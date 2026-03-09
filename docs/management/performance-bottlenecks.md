@@ -22,14 +22,14 @@
 
 ### 問題描述
 
-`semantic-graph.slice/graph/neural-net/neural-network.ts` 中的 `_dijkstra()` 實作 Dijkstra
+`semantic-graph.slice/domain.graph/neural-net/neural-network.ts` 中的 `_dijkstra()` 實作 Dijkstra
 最短路徑算法，但使用**陣列線性搜尋**尋找最小距離節點，導致每次迭代的時間複雜度為 O(V)，
 整體 Dijkstra 複雜度為 **O(V²)**，而非優先佇列應有的 **O((V+E) log V)**。
 
 ### 現狀分析（已確認）
 
 ```typescript
-// src/features/semantic-graph.slice/graph/neural-net/neural-network.ts
+// src/features/semantic-graph.slice/domain.graph/neural-net/neural-network.ts
 // _dijkstra() 第 74-89 行（精確）
 while (queue.length > 0) {
   // Extract minimum-distance entry (simple linear scan — graph is small)
@@ -85,7 +85,7 @@ class MinHeap {
 ### 現狀分析（已確認）
 
 ```typescript
-// src/features/semantic-graph.slice/graph/neural-net/neural-network.ts
+// src/features/semantic-graph.slice/domain.graph/neural-net/neural-network.ts
 // computeSemanticDistanceMatrix() — 對每個節點執行完整 Dijkstra
 export function computeSemanticDistanceMatrix(
   slugs?: readonly string[],
