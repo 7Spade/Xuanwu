@@ -2,7 +2,7 @@
 name: x-arch-remediation
 description: 'Architecture drift remediation. Systematically repairs layer violations and boundary intrusions in the codebase to restore compliance.'
 agent: 'agent'
-tools: ['repomix', 'sequential-thinking', 'software-planning', 'edit/editFiles']
+tools: ['repomix/*', 'sequentialthinking/*', 'software-planning/*', 'edit/editFiles']
 argument-hint: 'Target scope for remediation, e.g.: src/features/workspace.slice or full src/'
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: tool-sequential-thinking
 description: 'Use sequential-thinking for multi-step reasoning, trade-off analysis, and risk-aware technical decisions.'
-tools: ['sequential-thinking']
+tools: ['sequentialthinking/*']
 agent: 'agent'
 ---
 

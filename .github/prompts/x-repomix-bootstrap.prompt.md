@@ -2,7 +2,7 @@
 name: x-repomix-bootstrap
 description: Start from GitHub Copilot Agents Browser and bootstrap a clean machine from zero, installing Node.js, npm, and Repomix.
 agent: 'agent'
-tools: ['repomix']
+tools: ['repomix/*', 'runInTerminal']
 ---
 
 > Scope Guard:

@@ -3,7 +3,7 @@ name: 架構審查模式
 description: "以風險與治理為核心的架構審查，優先找出錯誤邏輯、違規邊界與回歸風險"
 argument-hint: "輸入要審查的檔案/模組，例如：docs/architecture/0x-LogicOverview.md"
 agent: 'agent'
-tools: ['search/codebase', 'read', 'sequential-thinking', 'software-planning', 'memory']
+tools: ['search/codebase', 'read', 'sequentialthinking/*', 'software-planning/*', 'memory/*']
 ---
 
 # 架構審查模式

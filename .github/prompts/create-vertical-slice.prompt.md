@@ -2,7 +2,7 @@
 name: create-vertical-slice
 description: 'Create a vertical slice implementation plan with clear UI/Application/Domain/Infrastructure boundaries.'
 agent: 'agent'
-tools: ['search/codebase', 'edit/editFiles', 'read', 'software-planning']
+tools: ['search/codebase', 'edit/editFiles', 'read', 'software-planning/*']
 argument-hint: 'Name and purpose of the new slice, e.g.: VS10-Reporting — analytics reporting slice'
 ---
 

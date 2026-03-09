@@ -2,7 +2,7 @@
 name: code-exemplars-blueprint-generator
 description: 'Generate a reusable prompt for scanning a codebase and extracting high-quality code exemplars.'
 agent: 'agent'
-tools: ['search/codebase', 'repomix', 'edit/editFiles']
+tools: ['search/codebase', 'repomix/*', 'edit/editFiles']
 ---
 
 # Code Exemplars Blueprint Generator

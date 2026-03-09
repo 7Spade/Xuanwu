@@ -1,7 +1,7 @@
 ---
 name: tool-next-devtools
 description: 'Use next-devtools MCP for Next.js runtime diagnostics: routes, RSC boundaries, and rendering behavior.'
-tools: ['next-devtools']
+tools: ['next-devtools/*']
 agent: 'agent'
 ---
 
