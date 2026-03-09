@@ -1,7 +1,0 @@
-- Project: Xuanwu (Next.js workspace platform)
-- Purpose: Build a modern workspace platform with architecture-first governance and strict boundary compliance.
-- Primary stack: Next.js 15 App Router, React 19, TypeScript 5, Tailwind CSS, Radix UI, shadcn/ui, Firebase, Genkit.
-- SSOT documents: docs/architecture/00-logic-overview.md, .memory/knowledge-graph.json, skills/SKILL.md.
-- Architecture emphasis: formal architecture correctness first, deterministic boundaries, zero-tolerance for structural violations.
-- i18n rule: UI text must not be hardcoded; update both public/localized-files/en.json and public/localized-files/zh-TW.json with identical keys.
-- Encoding: UTF-8 (no BOM).

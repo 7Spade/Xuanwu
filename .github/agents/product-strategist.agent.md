@@ -12,7 +12,7 @@ tools: ["read", "search", "edit"]
 ## Memory MCP 強制協議
 
 **Session 開始**：`memory.read_graph()` — 讀取 `Logic_Overview_SSOT`（業務流程與決策邏輯）、`DDD_Boundaries`（領域邊界）、`WORKFLOW_STATE_CONTRACT`（工作流程狀態機）。
-若圖譜為空，從 `docs/knowledge-graph.json` 執行 Cold-Start Recovery。
+若圖譜為空，從 `.memory/knowledge-graph.json` 執行 Cold-Start Recovery。
 
 ## 核心職責
 

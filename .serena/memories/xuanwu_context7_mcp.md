@@ -1,4 +1,0 @@
-- Context7 server key: io.github.upstash/context7
-- command: npx @upstash/context7-mcp@1.0.31
-- api input id: CONTEXT7_API_KEY
-- source: .vscode/mcp.json:102, .vscode/mcp.json:106, .vscode/mcp.json:155
