@@ -2,6 +2,7 @@
 name: ddd-boundary-check
 description: 'DDD boundary and terminology audit for domain cohesion and application-layer orchestration.'
 agent: 'agent'
+tools: ['search/codebase', 'sequential-thinking']
 ---
 
 # DDD Boundary Auditor

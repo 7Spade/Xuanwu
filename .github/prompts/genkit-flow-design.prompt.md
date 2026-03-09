@@ -2,6 +2,8 @@
 name: genkit-flow-design
 description: 'Design Genkit flows with clear I/O contracts, observability, and architecture-safe boundaries.'
 agent: 'agent'
+tools: ['search/codebase', 'edit/editFiles', 'read', 'software-planning']
+argument-hint: 'Describe the Genkit flow to design, e.g.: user onboarding notification flow'
 ---
 
 # Genkit Flow Architect

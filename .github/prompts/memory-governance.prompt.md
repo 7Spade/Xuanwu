@@ -2,6 +2,7 @@
 name: memory-governance
 description: 'Govern project memory graph so architecture decisions and conventions stay consistent across sessions.'
 agent: 'agent'
+tools: ['memory']
 ---
 
 # Memory Knowledge Graph Governance

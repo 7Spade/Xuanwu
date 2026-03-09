@@ -2,6 +2,7 @@
 name: compliance-audit
 description: 'Project-wide compliance audit against architecture, naming, structure, and data rules.'
 agent: 'agent'
+tools: ['search/codebase', 'read', 'sequential-thinking']
 ---
 
 # Compliance Audit
