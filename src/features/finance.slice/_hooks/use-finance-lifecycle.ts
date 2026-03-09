@@ -7,8 +7,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { listWorkflowStates } from '@/features/workspace.slice/domain.workflow';
-import type { WorkspaceEventBus } from '@/features/workspace.slice/core.event-bus';
+import { listWorkflowStates } from '@/features/workspace.slice';
+import type { WorkspaceEventBus } from '@/features/workspace.slice';
 import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
 
 import { saveFinanceAggregateState } from '../_actions';

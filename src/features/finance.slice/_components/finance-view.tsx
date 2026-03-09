@@ -12,7 +12,7 @@ import { AlertCircle, CheckCircle2, FileSearch, Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
-import { useWorkspace } from '@/features/workspace.slice/core';
+import { useWorkspace } from '@/features/workspace.slice';
 import { Badge } from '@/shadcn-ui/badge';
 import { Button } from '@/shadcn-ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
