@@ -167,7 +167,9 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                     QGWAY_WALLET["→ .wallet-balance\n[S3] 顯示 → Projection\n精確交易 → STRONG_READ"]
                     QGWAY_SEARCH["→ .tag-snapshot\n語義化索引檢索"]
                     QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
-                    QGWAY --> QGWAY_SCHED & QGWAY_CAL_DAY & QGWAY_CAL_ALL & QGWAY_TL_MEMBER & QGWAY_TL_ALL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV
+                    QGWAY_FIN_STAGE["→ .finance-staging-pool [#A20]\n財務待處理清單（已驗收未請款任務）"]
+                    QGWAY_FIN_LABEL["→ .task-finance-label-view [#A22]\n任務金融顯示標籤（合成顯示：已驗收 ｜ 金融狀態）"]
+                    QGWAY --> QGWAY_SCHED & QGWAY_CAL_DAY & QGWAY_CAL_ALL & QGWAY_TL_MEMBER & QGWAY_TL_ALL & QGWAY_NOTIF & QGWAY_SCOPE & QGWAY_WALLET & QGWAY_SEARCH & QGWAY_SEM_GOV & QGWAY_FIN_STAGE & QGWAY_FIN_LABEL
                 end
 
                 QRY_API_GW --> QGWAY
@@ -188,8 +190,8 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             end
 
             subgraph IER_LANES["🚦 優先級三道分層（src/shared-infra/event-router）[P1]"]
-                CRIT_LANE["🔴 CRITICAL_LANE\n高優先最終一致\nRoleChanged → Claims 刷新 [S6]\nWalletDeducted/Credited\nOrgContextProvisioned\nSLA：盡快投遞"]
-                STD_LANE["🟡 STANDARD_LANE\n非同步最終一致\nSLA < 2s\nSkillXpAdded/Deducted\nScheduleAssigned / ScheduleProposed\nMemberJoined/Left\nAll Domain Events"]
+                CRIT_LANE["🔴 CRITICAL_LANE\n高優先最終一致\nRoleChanged → Claims 刷新 [S6]\nWalletDeducted/Credited\nOrgContextProvisioned\nTaskAcceptedConfirmed [#A19] → Finance Staging Pool\nSLA：盡快投遞"]
+                STD_LANE["🟡 STANDARD_LANE\n非同步最終一致\nSLA < 2s\nSkillXpAdded/Deducted\nScheduleAssigned / ScheduleProposed\nMemberJoined/Left\nFinanceRequestStatusChanged [#A22] → task-finance-label-view\nAll Domain Events"]
                 BG_LANE["⚪ BACKGROUND_LANE\nSLA < 30s\nTagLifecycleEvent\nAuditEvents"]
             end
 
@@ -252,11 +254,13 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 SEM_GOV_V["projection.semantic-governance-view\n治理頁 Read Model（wiki/proposal/relationship）\n顯示線路：L5→L6→UI"]
                 TASK_V["projection.tasks-view\n任務清單（createdAt 批次間\n→ sourceIntentIndex 批次內）[D27-Order]\napplyVersionGuard() [S2]"]
                 WS_GRAPH_V["projection.workspace-graph-view\n任務依賴 Nodes/Edges 拓撲\n[VS5 vis-network 消費格式]\napplyVersionGuard() [S2]"]
+                FINANCE_STAGE_V["projection.finance-staging-pool [#A20]\n待請款池：已驗收未請款任務清單\n消費 TaskAcceptedConfirmed（CRITICAL_LANE）\n狀態：PENDING | LOCKED_BY_FINANCE\napplyVersionGuard() [S2]"]
+                TASK_FIN_LABEL_V["projection.task-finance-label-view [#A22]\n任務金融顯示標籤投影\n消費 FinanceRequestStatusChanged（STANDARD_LANE）\n欄位：taskId, financeStatus, requestId, requestLabel\napplyVersionGuard() [S2]"]
             end
 
             IER ==>|"[#9] 唯一 Projection 寫入路徑"| FUNNEL
             CRIT_PROJ --> WS_SCOPE_V & ORG_ELIG_V & WALLET_V & ACL_PROJ_V
-            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & TASK_V & WS_GRAPH_V
+            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & TASK_V & WS_GRAPH_V & FINANCE_STAGE_V & TASK_FIN_LABEL_V
 
             FUNNEL -->|stream offset| PROJ_VER
             WS_ESTORE -.->|"[#9] replay → rebuild"| FUNNEL
@@ -689,28 +693,23 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
         end
 
         subgraph VS5_WF["⚙️ Workflow State Machine（src/features/workspace.slice/business.workflow）[R6]"]
-            WF_AGG["workflow.aggregate\n狀態合約：Draft→InProgress→QA\n→Acceptance(OK)→Finance(Stage Gateway)→Completed\nFinance 子流程（可多輪循環）\nClaim Preparation(勾選+quantity)→Claim Submitted\n→Claim Approved→Invoice Requested\n→Payment Term(計時中)→Payment Received\n收斂條件：outstandingClaimableAmount=0 才可 Completed\nblockedBy: Set‹issueId›\n[#A3] blockedBy.isEmpty() 才可 unblock"]
+            WF_AGG["workflow.aggregate\n狀態合約：Draft→InProgress→QA\n→Acceptance(ACCEPTED via Validator)→Completed\n[#A19] 收斂條件：所有關聯 Finance_Request.status = PAID（由 task-finance-label-view 投影反映）\nblockedBy: Set‹issueId›\n[#A3] blockedBy.isEmpty() 才可 unblock\n[注] Finance 獨立生命週期由 VS9 Finance Slice 管理"]
         end
 
-        subgraph VS5_A["🟢 A-track 主流程（src/features/workspace.slice/business.tasks + business.quality-assurance + business.acceptance + business.finance）"]
+        subgraph VS5_A["🟢 A-track 主流程（src/features/workspace.slice/business.tasks + business.quality-assurance + business.acceptance）"]
             direction LR
             A_ITEMS["workspace.items\n來源事項（Source of Work）\n保留 sourceIntentIndex"]
-            A_TASKS["tasks"]
-            A_QA["quality-assurance"]
-            A_ACCEPT["acceptance"]
-            A_FINANCE["finance-stage-gateway"]
+            A_TASKS["tasks\n狀態：IN_PROGRESS"]
+            A_QA["quality-assurance\n狀態：PENDING_QUALITY"]
+            A_ACCEPT["acceptance\n狀態：PENDING_ACCEPTANCE"]
+            A_VALIDATOR["task-accepted-validator [#A19]\n內部守衛：檢查驗收簽核 + 品質合格證\n禁止外部服務直接變更任務狀態"]
+            A_ACCEPTED["tasks.ACCEPTED [#A19 D29]\n發出 TaskAcceptedConfirmed 事件\n（同一 L2 Firestore TX 原子寫入）"]
         end
 
-        subgraph VS5_FIN["💰 Finance Lifecycle（src/features/workspace.slice/business.finance，Multi-Claim）[#A15 #A16]"]
+        subgraph VS5_FIN["💰 Finance 事件橋接（src/features/workspace.slice/business.finance）[#A19 #A20]"]
             direction TB
-            FIN_CLAIM_PREP["claim-preparation\n(select line-items + quantity)"]
-            FIN_CLAIM_SUB["claim-submitted"]
-            FIN_CLAIM_APV["claim-approved"]
-            FIN_INV_REQ["invoice-requested"]
-            FIN_TERM["payment-term (timer-running)"]
-            FIN_PAY_RECV["payment-received"]
-            FIN_BALANCE{"outstandingClaimableAmount > 0 ?"}
-            FIN_EXIT["finance-exit-gate\n(outstandingClaimableAmount=0)"]
+            FIN_BRIDGE["TaskAcceptedConfirmed 事件橋\n[#A19] 任務到達 ACCEPTED 狀態後\n→ ws-outbox（CRITICAL_LANE）\n→ L4 IER → VS9 Finance_Staging_Pool\n[#A20] 可計費任務自動轉錄至 Finance_Staging_Pool\n（禁止 VS5 直接呼叫 VS9 API）"]
+            FIN_LABEL["task-finance-label（展示層）\n[#A22] 消費 task-finance-label-view 投影\n顯示：已驗收 ｜ 金融狀態標籤（REQ-001 / 審核中）"]
         end
 
         subgraph VS5_B["🔴 B-track 異常處理（src/features/workspace.slice/business.issues）"]
@@ -722,22 +721,14 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
 
         PARSE_INT -->|"[Layer-3 Semantic Router]\nshouldMaterializeAsTask(costItemType) [D27-Gate]\n先形成 WorkspaceItem"| A_ITEMS
         A_ITEMS -->|"僅 EXECUTABLE 事項可物化任務\n保留 sourceIntentIndex 排序 [D27-Order]"| A_TASKS
-        PARSE_INT -.->|"財務候選資料（非階段遷移）"| A_FINANCE
+        PARSE_INT -.->|"財務候選資料（非階段遷移）"| FIN_BRIDGE
         PARSE_INT -->|解析異常| B_ISSUES
         A_TASKS -.->|"SourcePointer [#A4]"| PARSE_INT
         PARSE_INT -.->|"IntentDeltaProposed [#A4]"| A_TASKS
-        WF_AGG -.->|stage-view| A_TASKS & A_QA & A_ACCEPT & A_FINANCE
-        A_TASKS --> A_QA --> A_ACCEPT --> A_FINANCE
-        A_FINANCE -->|"進入請款生命週期 [#A15]"| FIN_CLAIM_PREP
-        FIN_CLAIM_PREP --> FIN_CLAIM_SUB
-        FIN_CLAIM_SUB --> FIN_CLAIM_APV
-        FIN_CLAIM_APV --> FIN_INV_REQ
-        FIN_INV_REQ -.->|"啟動 Payment Term 計時 [#A16]"| FIN_TERM
-        FIN_TERM --> FIN_PAY_RECV
-        FIN_PAY_RECV --> FIN_BALANCE
-        FIN_BALANCE -->|"是：仍有可請款餘額 [#A16]"| FIN_CLAIM_PREP
-        FIN_BALANCE -->|"否：本輪後已結清 [#A16]"| FIN_EXIT
-        FIN_EXIT -->|"允許 Completed [#A16]"| WF_AGG
+        WF_AGG -.->|stage-view| A_TASKS & A_QA & A_ACCEPT
+        A_TASKS --> A_QA --> A_ACCEPT --> A_VALIDATOR --> A_ACCEPTED
+        A_ACCEPTED -.->|"TaskAcceptedConfirmed（CRITICAL_LANE）[#A19 D29]"| FIN_BRIDGE
+        A_ACCEPTED -.->|"task-finance-label-view 投影反映"| FIN_LABEL
         WF_AGG -->|"blockWorkflow [#A3]"| B_ISSUES
         A_TASKS -.-> W_DAILY
         A_TASKS -.->|任務分配提案（Task→Schedule）| W_SCHED
@@ -815,15 +806,48 @@ NOTIF_EXIT -.->|"uses IMessaging [R8]"| I_MSG
 USER_NOTIF -.->|"[#6] RTDB 即時通知串流（低延遲 · L7-A RTDBAdapter）"| QGWAY_NOTIF
 NOTIF_EXIT -.->|"標籤感知路由"| VS8
 
+%% ── VS9 Finance（工作區任務金融聚合閘道）──
+subgraph VS9["💳 VS9 · Finance Slice（src/features/finance.slice · 金融聚合閘道）"]
+    direction TB
+
+    FIN_STAGING_ACL["finance-staging.acl [#A20]\n消費 IER CRITICAL_LANE TaskAcceptedConfirmed\n若任務標註為可計費 → 轉錄至 Finance_Staging_Pool\n事實轉錄含：taskId, amount, tags, traceId"]
+
+    subgraph VS9_POOL["💼 Finance Staging Pool（src/features/finance.slice/staging-pool）[#A20]"]
+        direction LR
+        FIN_STAGE_POOL[("Finance_Staging_Pool\nL5 Standard Projection [#A20]\n狀態：PENDING（已驗收未請款）| LOCKED_BY_FINANCE（打包中）\n欄位：taskId, amount, tags, traceId, acceptedAt, status")]
+    end
+
+    subgraph VS9_CMD["✍ Finance Command Layer（src/features/finance.slice/application）"]
+        direction LR
+        FIN_REQ_CMD["create-bulk-payment-command-handler\n接收 CreateBulkPaymentCommand\n打包任意數量任務\n打包後 Finance_Staging_Pool 中任務狀態 → LOCKED_BY_FINANCE [#A20]\n防止重複請款"]
+    end
+
+    subgraph VS9_AGG["⚙️ Finance Request Aggregate（src/features/finance.slice/core）[#A21]"]
+        direction TB
+        FIN_REQ_AGG["finance-request.aggregate [#A21]\n每筆打包動作生成一個 Finance_Request\n狀態機：DRAFT → AUDITING → DISBURSING → PAID\nbundledTaskIds[]（1:N 溯源關係）\ntraceId 繼承自觸發命令\n[S3] 狀態精確讀取 → STRONG_READ"]
+    end
+
+    subgraph VS9_EV["📢 Finance Events + Outbox（src/features/finance.slice）[S1]"]
+        FIN_OB["finance-outbox\n[SK_OUTBOX: REVIEW_REQUIRED]\nFinanceRequestStatusChanged → STANDARD_LANE\n[D29] Finance_Request 狀態變更與 Outbox 寫入同一 Firestore TX"]
+    end
+
+    FIN_STAGING_ACL -->|"PENDING 轉錄"| FIN_STAGE_POOL
+    FIN_STAGE_POOL -->|"打包選取 [#A20]"| FIN_REQ_CMD
+    FIN_REQ_CMD -->|"CreateBulkPaymentCommand"| FIN_REQ_AGG
+    FIN_REQ_AGG --> FIN_OB
+end
+
 %% 所有 OUTBOX → RELAY
-ACC_OB & ORG_OB & SCH_OB & SKILL_OB & TAG_OB & WS_OB -.->|"被 RELAY 掃描 [R1]"| RELAY
+ACC_OB & ORG_OB & SCH_OB & SKILL_OB & TAG_OB & WS_OB & FIN_OB -.->|"被 RELAY 掃描 [R1]"| RELAY
 
 %% IER → Domain Slice 消費
 CRIT_LANE -.->|"RoleChanged/PolicyChanged [S6]"| CLAIMS_H
 CRIT_LANE -.->|"OrgContextProvisioned [E2]"| ORG_ACL
+CRIT_LANE -.->|"TaskAcceptedConfirmed [#A19 #A20]"| FIN_STAGING_ACL
 ORG_EBUS -.->|"OrgContextProvisioned 事件來源 [E2]"| ORG_ACL
 STD_LANE -.->|"ScheduleAssigned [E3]"| NOTIF_R
 STD_LANE -.->|"ScheduleProposed [#A5]"| SCH_SAGA
+STD_LANE -.->|"FinanceRequestStatusChanged [#A22]"| TASK_FIN_LABEL_V
 BG_LANE -.->|"TagLifecycleEvent [T1]"| TAG_SUB
 BG_LANE -.->|"跨片稽核"| AUDIT_COL
 
@@ -834,7 +858,9 @@ ORG_OB -->|"CRITICAL_LANE: OrgContextProvisioned・PolicyChanged"| IER
 ORG_OB -->|"STANDARD_LANE: MemberJoined/Left・SkillRecog"| IER
 SKILL_OB -->|"STANDARD_LANE"| IER
 SCH_OB -->|"STANDARD_LANE"| IER
+WS_OB -->|"CRITICAL_LANE: TaskAcceptedConfirmed [#A19]"| IER
 WS_OB -->|"STANDARD_LANE [E5]"| IER
+FIN_OB -->|"STANDARD_LANE: FinanceRequestStatusChanged [#A22]"| IER
 TAG_OB -->|"BACKGROUND_LANE"| IER
 
 %% ═══════════════════════════════════════════════════════════════
@@ -861,6 +887,8 @@ WS_SCOPE_V -.-> QGWAY_SCOPE
 WALLET_V -.-> QGWAY_WALLET
 TAG_SNAP -.-> QGWAY_SEARCH
 SEM_GOV_V -.-> QGWAY_SEM_GOV
+FINANCE_STAGE_V -.-> QGWAY_FIN_STAGE
+TASK_FIN_LABEL_V -.-> QGWAY_FIN_LABEL
 ACTIVE_CTX -->|"查詢鍵"| QGWAY_SCOPE
 SK_AUTH_SNAP -.->|"AuthoritySnapshot 契約 [#A9]"| CBG_AUTH
 
@@ -932,12 +960,11 @@ CBG_ROUTE -->|"Workspace Command"| WS_CMD_H
 CBG_ROUTE -->|"Skill Command"| SKILL_AGG
 CBG_ROUTE -->|"Org Command"| ORG_AGG
 CBG_ROUTE -->|"Account Command"| USER_AGG
+CBG_ROUTE -->|"Finance Command [#A21]"| FIN_REQ_CMD
 
 %% ═══════════════════════════════════════════════════════════════
 %% STYLES
-%% ═══════════════════════════════════════════════════════════════
-
-classDef sk fill:#ecfeff,stroke:#22d3ee,color:#000,font-weight:bold
+%%
 classDef skInfra fill:#f0f9ff,stroke:#0369a1,color:#000,font-weight:bold
 classDef skAuth fill:#fdf4ff,stroke:#7c3aed,color:#000,font-weight:bold
 classDef tagAuth fill:#cffafe,stroke:#0891b2,color:#000,font-weight:bold
@@ -1006,10 +1033,9 @@ class TAG_SUB tagSub
 class ORG_OB outboxNode
 class VS5,WS_CMD_H,WS_SCP_G,WS_POL_E,WS_TX_R,WS_OB,WS_AGG,WS_EBUS,WS_ESTORE,WS_SETT,WS_ROLE,WS_PCHK,WS_AUDIT wsSlice
 class WF_AGG wfNode
-class FIN_CLAIM_PREP,FIN_CLAIM_SUB,FIN_CLAIM_APV,FIN_INV_REQ,FIN_TERM,FIN_PAY_RECV,FIN_BALANCE,FIN_EXIT wfNode
 class AUDIT_COL auditView
-class A_ITEMS,A_TASKS,A_QA,A_ACCEPT trackA
-class A_FINANCE wfNode
+class A_ITEMS,A_TASKS,A_QA,A_ACCEPT,A_VALIDATOR,A_ACCEPTED trackA
+class FIN_BRIDGE,FIN_LABEL wfNode
 class B_ISSUES,W_DAILY,W_SCHED wsSlice
 class VS6,SCH_CMD,SCH_CONFLICT,ORG_SCH,SCH_SAGA schedSlice
 class SCH_OB outboxNode
@@ -1026,10 +1052,10 @@ class DLQ dlqNode
 class DLQ_S dlqSafe
 class DLQ_R dlqReview
 class DLQ_B dlqBlock
-class QRY_API_GW,GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV qgway
+class QRY_API_GW,GW_QUERY,QGWAY,QGWAY_SCHED,QGWAY_CAL_DAY,QGWAY_CAL_ALL,QGWAY_TL_MEMBER,QGWAY_TL_ALL,QGWAY_NOTIF,QGWAY_SCOPE,QGWAY_WALLET,QGWAY_SEARCH,QGWAY_SEM_GOV,QGWAY_FIN_STAGE,QGWAY_FIN_LABEL qgway
 class PROJ_BUS,FUNNEL,PROJ_VER,READ_REG stdProj
 class CRIT_PROJ,WS_SCOPE_V,ORG_ELIG_V,WALLET_V critProj
-class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V,TASK_V,WS_GRAPH_V stdProj
+class STD_PROJ,WS_PROJ,ACC_SCHED_V,CAL_PROJ,TL_PROJ,ACC_PROJ_V,ORG_PROJ_V,SKILL_V,TASK_V,WS_GRAPH_V,FINANCE_STAGE_V,TASK_FIN_LABEL_V stdProj
 class AUDIT_V auditView
 class TAG_SNAP tagSub
 class TIER_FN tierFn
@@ -1043,6 +1069,7 @@ class EXT_CLIENT,EXT_AUTH,EXT_WEBHOOK serverAct
 class VS8 semanticGraph
 class GLOBAL_SEARCH crossCutAuth
 class NOTIF_EXIT crossCutAuth
+class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCutAuth
 ```
 
 ---
@@ -1061,6 +1088,7 @@ class NOTIF_EXIT crossCutAuth
 | **VS6** | Workforce Scheduling Slice | `src/features/workforce-scheduling.slice` | L3 |
 | **VS7** | Notification Hub（唯一副作用出口） | `src/features/notification-hub.slice` | L3 |
 | **VS8** | Semantic Graph Engine（語義引擎） | `src/features/semantic-graph.slice` | L3 |
+| **VS9** | Finance（金融聚合閘道）| `src/features/finance.slice` | L3 |
 
 ### 跨切片權威（Cross-cutting Authorities）
 
@@ -1079,7 +1107,7 @@ class NOTIF_EXIT crossCutAuth
 | L0A | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）/ `QRY_API_GW`（read-only ingress）；均在 `UNIFIED_GW` 內 [CQRS] |
 | L1 | Shared Kernel | 契約／常數／純函式（No I/O） |
 | L2 | Command Gateway（Write Path） | CBG_ENTRY / CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` 的 Write Pipeline |
-| L3 | Domain Slices | VS1–VS8 業務切片 |
+| L3 | Domain Slices | VS1–VS9 業務切片 |
 | L4 | Integration Event Router（IER） | 統一事件出口 [#9] |
 | L5 | Projection Bus | 投影物化（event-funnel，唯一寫路徑） |
 | L6 | Query Gateway（Read Path） | 統一讀取出口；`UNIFIED_GW.CQRS_READ` 的 Read Routes（QGWAY + routes） |

@@ -110,8 +110,8 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[#A12]` | Global Search = 唯一跨域搜尋出口，禁止各 Slice 自建搜尋邏輯 |
 | `[#A13]` | Notification Hub = 唯一副作用出口，業務 Slice 只產生事件不決定通知策略 |
 | `[#A14]` | `ParsedLineItem.(costItemType, semanticTagSlug)` (Layer-2) 由 VS8 `_cost-classifier.ts` 標注；Layer-3 只允許 EXECUTABLE 物化為 tasks |
-| `[#A15]` | Finance 進入閘門：僅 Acceptance=OK 才可進入 Finance |
-| `[#A16]` | Multi-Claim Cycle：Finance 為可重入循環，直到 `outstandingClaimableAmount = 0` 才允許 Completed |
+| `[#A15]` | Finance 進入閘門：僅 `ACCEPTED`（通過 `task-accepted-validator`）才可進入 Finance；Finance 生命週期由 VS9 管理 [#A19 #A21] |
+| `[#A16]` | （已由 #A21 升級）Finance_Request 獨立生命週期：DRAFT→AUDITING→DISBURSING→PAID；Workflow Completed 條件為所有關聯 Finance_Request.status = PAID [#A21] |
 | `[#A17]` | XP 僅能由 VS3 寫入；`awardedXp = baseXp × qualityMultiplier × policyMultiplier`（含 clamp）；VS8 禁止直接寫入 VS3 XP aggregate/ledger |
 | `[#A18]` | 組織新建 task-type/skill-type 必須走 VS4 org-semantic-registry，以 org namespace 寫入 tag-snapshot |
 | `[D28]` | vis-network / vis-timeline / vis-graph3d 只能消費 `VisDataAdapter` 提供的 `DataSet<>`；`VisDataAdapter` 訂閱 Firebase 一次，DataSet<> 快取推播至所有消費者；禁止 vis-* 直連 Firebase |
@@ -134,10 +134,15 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 禁止 VS8 直接下命令至 VS5/VS6；僅可透過 L4 事件或 L5/L6 投影互動
 - VS5 document-parser 禁止自行實作成本語義邏輯，必須呼叫 VS8 `classifyCostItem()` [D27 #A14]
 - Layer-3 Semantic Router 禁止繞過 `costItemType` 直接物化非 EXECUTABLE 項目為 tasks
-- Workflow 禁止在 Acceptance 未達 OK 前進入 Finance [#A15]
-- Claim Preparation 禁止送出空請款或 quantity ≤ 0 的 line item [#A15]
-- Finance 禁止跳過 Claim/Invoice/PaymentTerm 任一步驟直接收款確認 [#A16]
-- `outstandingClaimableAmount > 0` 時禁止標記 Completed [#A16]
+- Workflow 禁止在任務 Acceptance 未達 `ACCEPTED`（`task-accepted-validator` 通過）前進入 Finance [#A15 #A19]
+- 禁止外部服務直接修改 VS5 任務狀態 [#A19]
+- 禁止 VS5 直接呼叫 VS9 Finance API 或寫入 VS9 Aggregate [#A20]
+- 禁止 VS9 直接呼叫 VS5 API 或寫入 VS5 Aggregate [#A19 #A20]
+- 禁止為同一批次任務建立兩個 Finance_Request（`LOCKED_BY_FINANCE` 防止重複請款）[#A20 #A21]
+- Finance_Request 精確讀取（金融狀態、撥款確認等）必須使用 `STRONG_READ` [#A21 S3]
+- 前端禁止直讀 VS9 Finance 域資料合成任務顯示，必須透過 `task-finance-label-view` 投影 [#A22]
+- `Finance_Staging_Pool` 禁止消費方直接寫入；唯一寫入路徑為 L5 Projection Bus [#A20]
+- L5 `task-finance-label-view` 投影禁止反向寫入 VS5 任務 Aggregate 狀態 [#A22]
 - `ParsingIntent.lineItems` 禁止缺少 `semanticTagSlug`；UI 視覺屬性禁止直接讀 adjacency-list [T5]
 - 業務切片（VS1–VS6，除 VS4 org-semantic-registry）禁止私自宣告語義類別 [D21-1]
 - 禁止使用隱性字串傳遞語義；全域引用必須指向 TE1–TE6 [D21-2]
@@ -208,10 +213,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `#A12` | Global Search = 跨切片權威（語義門戶），唯一跨域搜尋出口 |
 | `#A13` | Notification Hub = 跨切片權威（反應中樞），唯一副作用出口 |
 | `#A14` | Cost Semantic 雙鍵分類（Layer-2）= VS8 `_cost-classifier.ts` 純函式輸出 `(costItemType, semanticTagSlug)`；VS5 Layer-3 僅 EXECUTABLE 物化為 tasks |
-| `#A15` | Finance gate：Acceptance=OK 才可進入 Finance；Claim Preparation 必須以「勾選項目 + quantity」建立 claim line items |
-| `#A16` | Multi-Claim cycle：Finance 可多次循環，直到 `outstandingClaimableAmount = 0` 才允許 Completed |
+| `#A15` | Finance gate：任務必須到達 `ACCEPTED`（通過 `task-accepted-validator` [#A19]）才可進入 Finance Staging Pool；Finance 獨立生命週期由 VS9 管理 |
+| `#A16` | （升級至 #A21）Finance_Request 生命週期：`DRAFT→AUDITING→DISBURSING→PAID`；Workflow Completed 條件為所有關聯 Finance_Request.status = PAID |
 | `#A17` | Skill XP Award contract：XP 僅能由 VS3 寫入；`awardedXp = baseXp × qualityMultiplier × policyMultiplier（含 clamp）` |
 | `#A18` | Org Semantic Dictionary Extension：組織新建 task-type/skill-type 必須走 VS4 org-semantic-registry，以 org namespace 寫入 tag-snapshot |
+| `#A19` | Task Lifecycle Convergence：任務嚴格狀態機 `IN_PROGRESS→PENDING_QUALITY→PENDING_ACCEPTANCE→ACCEPTED`；Validator 內部門禁；TaskAcceptedConfirmed 與狀態變更同一 L2 TX [D29] |
+| `#A20` | Finance Staging Pool：VS9 `finance-staging.acl` 消費 CRITICAL_LANE TaskAcceptedConfirmed；可計費任務轉錄至 Finance_Staging_Pool（PENDING→LOCKED_BY_FINANCE） |
+| `#A21` | Finance Request 獨立生命週期：VS9 CreateBulkPaymentCommand → Finance_Request（`DRAFT→AUDITING→DISBURSING→PAID`）；bundledTaskIds 1:N 溯源 |
+| `#A22` | Finance Feedback Projection：FinanceRequestStatusChanged → STANDARD_LANE → L5 `task-finance-label-view`；前端合成顯示任務金融標籤 |
 
 ---
 
@@ -543,6 +552,70 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 
 ---
 
+### #A19：VS5 任務生命週期收斂（task-lifecycle-convergence）
+
+> #A19 為 VS5 Task State Closure Gate；凡修改 VS5 任務狀態機、驗收流程或 TaskAcceptedConfirmed 事件發送邏輯時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `A19` | MUST | 任務 Aggregate 必須遵循嚴格狀態路徑：`IN_PROGRESS → PENDING_QUALITY → PENDING_ACCEPTANCE → ACCEPTED` |
+| `A19` | MUST | 切換至 `ACCEPTED` 之前，必須通過內部 `task-accepted-validator`，檢查驗收簽核與品質合格證均已物化 |
+| `A19` | MUST | 任務狀態變更至 `ACCEPTED` 與 `TaskAcceptedConfirmed` 事件寫入 `ws-outbox` 必須封裝於同一個 L2 Firestore Transaction [D29] |
+| `A19` | MUST | `TaskAcceptedConfirmed` 事件必須路由至 L4 IER `CRITICAL_LANE`，保障金融事實的低延遲高可靠性 |
+| `A19` | FORBIDDEN | 禁止外部服務（含 VS9）直接修改 VS5 任務狀態；狀態只能由 VS5 任務 Aggregate 內部驅動 |
+| `A19` | FORBIDDEN | 禁止在 Firestore Transaction 之外先寫狀態再補寫 Outbox（雙重寫入模式）[D29] |
+
+**設計原則**（架構正確性優先）：任務狀態封閉性（State Closure）確保業務語義的完整性——驗收是業務事實，請款是財務動作；兩者在邏輯與時間上徹底解耦。TaskAcceptedConfirmed 是二者之間唯一合法的訊號橋接，符合奧卡姆剃刀原則。
+
+### #A20：待請款池規則（finance-staging-pool-rules）
+
+> #A20 為 Finance Staging Pool Gate；凡修改 VS9 finance-staging.acl、Finance_Staging_Pool Projection 或打包鎖定邏輯時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `A20` | MUST | VS9 `finance-staging.acl` 必須透過 L4 IER `CRITICAL_LANE` 反應式監聽 `TaskAcceptedConfirmed` 事件 |
+| `A20` | MUST | 若任務標註為可計費（billable），必須自動將任務事實轉錄至 `Finance_Staging_Pool`，轉錄內容包含：taskId, amount, tags, traceId, acceptedAt |
+| `A20` | MUST | `Finance_Staging_Pool` 是 L5 Standard Projection，初始狀態為 `PENDING`（已驗收未請款）|
+| `A20` | MUST | 財務人員執行打包動作後，被選取任務的 Staging Pool 記錄狀態立即變更為 `LOCKED_BY_FINANCE` |
+| `A20` | MUST | `LOCKED_BY_FINANCE` 狀態的任務不可再次被選入另一個打包動作，防止重複請款 |
+| `A20` | FORBIDDEN | VS9 禁止直接呼叫 VS5 API 或寫入 VS5 Aggregate 狀態 |
+| `A20` | FORBIDDEN | `Finance_Staging_Pool` 禁止消費方直接寫入；唯一寫入路徑為 L5 Projection Bus via `TaskAcceptedConfirmed` 或打包鎖定命令 [S2] |
+
+**設計原則**（架構正確性優先）：Finance_Staging_Pool 是業務與財務之間的物化緩衝層（Materialized Buffer），允許財務端按現實週期（週結/月結）靈活處置驗收成果，無需等待每一筆任務完成即時請款。
+
+### #A21：Finance Request 獨立生命週期（finance-request-independent-lifecycle）
+
+> #A21 為 Finance Request Lifecycle Gate；凡修改 Finance_Request Aggregate 狀態機、CreateBulkPaymentCommand 或 bundledTaskIds 結構時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `A21` | MUST | 每一筆打包動作觸發 `CreateBulkPaymentCommand`，在 VS9 生成一個全新的 `Finance_Request` Aggregate |
+| `A21` | MUST | `Finance_Request` 狀態機必須嚴格遵循：`DRAFT → AUDITING → DISBURSING → PAID` |
+| `A21` | MUST | `Finance_Request` 必須完整記錄 `bundledTaskIds[]`，建立明確的 1:N 溯源關係 |
+| `A21` | MUST | Finance_Request 狀態變更與 `FinanceRequestStatusChanged` 事件寫入 `finance-outbox` 必須封裝於同一個 L2 Firestore Transaction [D29] |
+| `A21` | MUST | `Finance_Request` 的精確狀態讀取必須使用 `STRONG_READ` [S3]；display 用讀取才可使用 `EVENTUAL_READ` |
+| `A21` | FORBIDDEN | VS5 任務 Aggregate 禁止直接查詢或修改 VS9 Finance_Request 狀態 |
+| `A21` | FORBIDDEN | 禁止為同一批次任務發起兩個 Finance_Request（LOCKED_BY_FINANCE 鎖定防止重複請款）[#A20] |
+
+**設計原則**（架構正確性優先）：Finance_Request 的所有複雜金融規則（請款、預算對帳、撥款）全部收斂至其狀態機中；VS5 任務不需要知道錢怎麼付，VS9 Finance 不需要知道任務怎麼驗收。複雜度的物理隔離使系統在面對 WBS 業務時具備高抗壓性與可追蹤性。
+
+### #A22：逆向回饋投影（finance-task-feedback-projection）
+
+> #A22 為 Finance Feedback Projection Gate；凡修改 FinanceRequestStatusChanged 事件結構或 task-finance-label-view 投影邏輯時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `A22` | MUST | 當 Finance_Request 狀態變更時，VS9 必須透過 `finance-outbox`（`STANDARD_LANE`）發出 `FinanceRequestStatusChanged` 事件 |
+| `A22` | MUST | L5 `task-finance-label-view` 投影消費 `FinanceRequestStatusChanged`，逆向更新 VS5 任務的金融顯示標籤（financeStatus, requestId, requestLabel）|
+| `A22` | MUST | 前端 UI 透過 `task-finance-label-view` 投影合成顯示：任務狀態（已驗收）+ 金融狀態（已打包請款 REQ-001 / 審核中）|
+| `A22` | MUST | `task-finance-label-view` 投影必須引用 `SK_VERSION_GUARD` [S2] |
+| `A22` | FORBIDDEN | 前端禁止直讀 VS9 Finance 域資料以合成任務顯示；必須使用 `task-finance-label-view` 投影 |
+| `A22` | FORBIDDEN | L5 投影禁止反向寫入 VS5 任務 Aggregate 狀態；只允許更新讀模型（task-finance-label-view）|
+
+**設計原則**（架構正確性優先）：利用 IER 與 L5 Projection Bus 的透明記錄，可從任意一張請款單（Finance_Request）追蹤回所有原始任務節點，實現零模糊的金融治理審計路徑。
+
+---
+
 ## RULESET-MUST 索引（快速查閱）
 
 ### R / S 類（基礎設施不變量）
@@ -574,10 +647,14 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | `A12` | global-search-authority |
 | `A13` | notification-hub-authority |
 | `A14` | cost-semantic-dual-key |
-| `A15` | finance-lifecycle-gate |
-| `A16` | multi-claim-cycle |
+| `A15` | finance-lifecycle-gate（進入閘門：task ACCEPTED via task-accepted-validator 才可進入 Finance Staging Pool）|
+| ~~`A16`~~ | ~~multi-claim-cycle~~ → **已由 `#A21` 正式升級取代**；VS5 Finance 複雜生命週期移交 VS9 Finance_Request（DRAFT→AUDITING→DISBURSING→PAID）；禁止在新工作中引用 A16 |
 | `A17` | skill-xp-award-contract |
 | `A18` | org-semantic-extension |
+| `A19` | task-lifecycle-convergence（VS5 任務狀態封閉性 + Validator 門禁 + TaskAcceptedConfirmed 原子化）|
+| `A20` | finance-staging-pool-rules（VS9 反應式攔截 + LOCKED_BY_FINANCE 打包鎖定）|
+| `A21` | finance-request-independent-lifecycle（VS9 Finance_Request：DRAFT→AUDITING→DISBURSING→PAID，1:N bundledTaskIds）|
+| `A22` | finance-task-feedback-projection（FinanceRequestStatusChanged → L5 task-finance-label-view 逆向回饋）|
 
 ### E 類（Security Gate 閉環）
 
@@ -611,10 +688,24 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 |------|------|
 | VS5 MUST document-parser 三層閉環 | Layer-1 原始解析 → Layer-2 呼叫 VS8 `classifyCostItem()` 語義分類 → Layer-3 `shouldMaterializeAsTask()` 唯一物化閘門 [D27 #A14] |
 | VS5 MUST 保留 sourceIntentIndex | 任務物化必須寫入 `sourceIntentIndex`；`tasks-view` 按 `createdAt`（批次間）→ `sourceIntentIndex`（批次內）排序 [D27-Order] |
-| VS5 MUST Finance 階段閘與多輪循環 | Acceptance=OK 前禁止進入 Finance；循環直到 `outstandingClaimableAmount = 0` 才允許標記 Completed [#A15 #A16] |
+| VS5 MUST 任務狀態封閉性 [#A19] | 禁止外部服務直接變更任務狀態；任務狀態必須遵循嚴格路徑 `IN_PROGRESS → PENDING_QUALITY → PENDING_ACCEPTANCE → ACCEPTED`；過渡至 `ACCEPTED` 須通過內部 `task-accepted-validator`（驗收簽核 + 品質合格證）|
+| VS5 MUST TaskAcceptedConfirmed 原子化 [#A19 D29] | 任務狀態變更至 `ACCEPTED` 與 `TaskAcceptedConfirmed` 事件寫入 ws-outbox 必須封裝於同一個 L2 Firestore Transaction |
+| VS5 MUST Finance 階段閘 [#A15] | 任務 `ACCEPTED` 之前禁止進入 Finance 流程；Finance 生命週期由 VS9 管理，Completed 條件為所有關聯 Finance_Request.status = PAID |
 | VS5 MUST XP 只透過 IER 傳遞至 VS3 | 任務/品質流程禁止直接 mutate VS3 XP；事件 `TaskCompleted` / `QualityAssessed` 必須經 IER 傳入 VS3 [D9 #A17] |
 | VS5 MUST 語義讀取僅經 L6 | VS5 語義讀取必須經 L6 Query Gateway；禁止直連 DB 或跨越 VS8 圖結構邊界 [D21-7 T5] |
 | VS5 / VS6 MUST vis-* 元件消費 VisDataAdapter DataSet<> | vis-network（任務依賴圖）/ vis-timeline（排班日程）/ vis-graph3d（語義 3D 圖）只能消費 `VisDataAdapter` DataSet<>；禁止直連 Firebase [D28] |
+
+### VS9 強制規則（Finance 金融聚合閘道）
+
+| 規則 | 說明 |
+|------|------|
+| VS9 MUST 反應式攔截 [#A20] | VS9 `finance-staging.acl` 必須監聽 L4 IER `CRITICAL_LANE` 的 `TaskAcceptedConfirmed` 事件；可計費任務自動轉錄至 `Finance_Staging_Pool`（禁止 VS9 直接呼叫 VS5 API）|
+| VS9 MUST 打包鎖定 [#A20] | 財務人員執行打包動作後，`Finance_Staging_Pool` 中被選取的任務狀態必須立即變更為 `LOCKED_BY_FINANCE`；防止重複請款 |
+| VS9 MUST Finance_Request 獨立生命週期 [#A21] | 每一筆打包動作觸發 `CreateBulkPaymentCommand`，在 VS9 生成一個新的 `Finance_Request` Aggregate；狀態機 `DRAFT → AUDITING → DISBURSING → PAID`；必須完整記錄 `bundledTaskIds[]`（1:N 溯源關係）|
+| VS9 MUST Finance_Request 原子化 [#A21 D29] | Finance_Request 狀態變更與 `FinanceRequestStatusChanged` 事件寫入 finance-outbox 必須封裝於同一個 L2 Firestore Transaction |
+| VS9 MUST 逆向回饋投影 [#A22] | 當 Finance_Request 狀態變更時，VS9 必須透過 `finance-outbox` 發出 `FinanceRequestStatusChanged` 事件（STANDARD_LANE），由 L5 `task-finance-label-view` 逆向更新 VS5 任務的金融顯示標籤 |
+| VS9 MUST TaskAcceptedConfirmed 走 CRITICAL_LANE | 從 `TaskAccepted` 到 `Finance_Staging_Pool` 的事件流強制路由至 L4 IER `CRITICAL_LANE`，保證金融事實的低延遲高可靠性 [#A19] |
+| VS9 MUST 讀取僅經 L6 Query Gateway | VS9 Finance_Staging_Pool 讀取必須經 L6 `QGWAY_FIN_STAGE`；禁止直連 Firebase 或跨切片直讀 |
 
 ### VS6 強制規則
 

@@ -9,9 +9,9 @@
 
 ---
 
-## VS0–VS8 路徑對照表（Path Map）
+## VS0–VS9 路徑對照表（Path Map）
 
-### 垂直域索引（VS0–VS8）
+### 垂直域索引（VS0–VS9）
 
 | 編號 | 名稱 | 說明 |
 |------|------|------|
@@ -24,6 +24,7 @@
 | `VS6` | Workforce Scheduling | 排班與職能配對 |
 | `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
 | `VS8` | Semantic Graph Engine | 語義圖譜引擎 |
+| `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
 
 ### 目標路徑（Source Path）
 
@@ -40,6 +41,7 @@ VS5 = src/features/workspace.slice
 VS6 = src/features/workforce-scheduling.slice
 VS7 = src/features/notification-hub.slice
 VS8 = src/features/semantic-graph.slice
+VS9 = src/features/finance.slice
 ```
 
 ### VS0 細分規則
@@ -59,7 +61,7 @@ VS8 = src/features/semantic-graph.slice
 | `L0A` | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）→ L2 Write Path ／ `QRY_API_GW`（read-only ingress）→ L6 Read Path；`UNIFIED_GW` 讀寫分離統一閘道的入口 | `src/shared-infra/api-gateway/` |
 | `L1` | Shared Kernel | 契約/常數/純函式（No I/O, No Side Effects） | `src/shared-kernel/` |
 | `L2` | Command Gateway（Write Path） | CBG_ENTRY（TraceID 注入唯一點）/ CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` Write Pipeline | `src/shared-infra/gateway-command/` |
-| `L3` | Domain Slices | VS1–VS8 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
+| `L3` | Domain Slices | VS1–VS9 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
 | `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
@@ -153,8 +155,8 @@ src/shared-infra/
 
 | Lane | 消費場景 | 處理器 | 特性 |
 |------|----------|--------|------|
-| `CRITICAL_LANE` | RoleChanged / PolicyChanged / Security events | CLAIMS_HANDLER | 即時，不批次；完成 S6 `SK_TOKEN_REFRESH_CONTRACT` |
-| `STANDARD_LANE` | Domain events / Projections / Notifications | STANDARD_PROJ + VS7 notification-router | Eventual consistency |
+| `CRITICAL_LANE` | RoleChanged / PolicyChanged / Security events / **TaskAcceptedConfirmed [#A19]** | CLAIMS_HANDLER / **finance-staging.acl [#A20]** | 即時，不批次；完成 S6 `SK_TOKEN_REFRESH_CONTRACT`；TaskAcceptedConfirmed → Finance Staging Pool 金融事實低延遲 |
+| `STANDARD_LANE` | Domain events / Projections / Notifications / **FinanceRequestStatusChanged [#A22]** | STANDARD_PROJ + VS7 notification-router / **task-finance-label-view** | Eventual consistency |
 | `BACKGROUND_LANE` | Analytics / TagLifecycleEvent / Observability | — | Best-effort |
 
 ### DLQ 分級（S1 合規要求）
@@ -162,7 +164,7 @@ src/shared-infra/
 | DLQ 分級 | 適用場景 | 恢復策略 |
 |----------|----------|----------|
 | `SAFE_AUTO` | 冪等操作（通知投遞失敗等） | 自動 retry backoff |
-| `REVIEW_REQUIRED` | 財務 / 排班 / 角色變更 | 人工審查後手動 replay |
+| `REVIEW_REQUIRED` | 財務 / 排班 / 角色變更 / **Finance_Request 事件 [#A21]** | 人工審查後手動 replay |
 | `SECURITY_BLOCK` | 安全事件（RoleChanged / PolicyChanged）/ CircularDependencyDetected [D30] | 凍結 + 警報，禁止自動 replay |
 
 ### Outbox relay-worker CDC 鏈路
@@ -206,6 +208,8 @@ Firestore onSnapshot (CDC)
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；供 vis-network 消費 [D28] |
+| `finance-staging-pool` | 待請款池：已驗收未請款任務清單；消費 `TaskAcceptedConfirmed`（CRITICAL_LANE）；狀態：`PENDING` ｜ `LOCKED_BY_FINANCE` [#A20] |
+| `task-finance-label-view` | 任務金融顯示標籤；消費 `FinanceRequestStatusChanged`（STANDARD_LANE）；欄位：taskId, financeStatus, requestId, requestLabel [#A22] |
 
 > **規則**：`getTier(xp) → Tier` 是純函式 [#12]；Tier 是推導值，永遠不存 DB。
 
@@ -240,6 +244,8 @@ Firestore onSnapshot (CDC)
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
 | `acl-projection` | 讀取路徑權限鏡像；QRY_API_GW 讀取自動 JOIN 過濾（禁止讀路徑重新執行 Aggregate 鑑權）| [D31] |
+| `finance-staging-pool` | 待請款池（已驗收未請款任務清單）；財務人員操作界面消費此路由 | [#A20] |
+| `task-finance-label-view` | 任務金融顯示標籤（financeStatus, requestId, requestLabel）；任務列表 UI 合成顯示金融狀態 | [#A22] |
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
@@ -344,13 +350,16 @@ Firestore onSnapshot (CDC)
 - [ ] App Check 全面啟用 [E7]
 - [ ] L9 Observability（metrics/trace dashboard）[R1 R5 R8]
 - [ ] Skill XP Award Contract 完整驗收 [A17]
-- [ ] Multi-Claim Cycle Contract 完整驗收 [A16]
 - [ ] D28 Visualization Bus：`VisDataAdapter` DataSet<> 快取實作；vis-network/vis-timeline/vis-graph3d 消費層遷移 [D28]
 - [ ] D29 Transactional Outbox：L2 `TransactionalCommand` 基類實作；所有 VS 切片 Command Handler 遷移至單一 Firestore TX [D29]
 - [ ] D30 Hop Limit：`SK_ENV.hopCount` 欄位加入；L4 IER 實作 hopCount 遞增與臨界值攔截 [D30]
 - [ ] P8 Dynamic Backpressure：L5 FUNNEL Worker Pool 分流 + Debounce/Batching 實作 [P8]
 - [ ] D31 Permission Projection：`projection.acl-projection` 實作；L6 Query Gateway JOIN 過濾接入 [D31]
 - [ ] R9 Context Propagation Middleware：AsyncLocalStorage 上下文傳遞實作；前端 `x-trace-id` 自動注入 [R9]
+- [ ] VS5 Task Lifecycle Convergence：任務狀態機 IN_PROGRESS→PENDING_QUALITY→PENDING_ACCEPTANCE→ACCEPTED 落地；task-accepted-validator 實作；TaskAcceptedConfirmed 與狀態變更同一 Firestore TX [#A19 D29]
+- [ ] VS9 Finance Slice：`src/features/finance.slice` 建立；Finance_Staging_Pool 實作；Finance_Request Aggregate（DRAFT→AUDITING→DISBURSING→PAID）落地 [#A21]
+- [ ] VS9 finance-staging-pool Projection：消費 CRITICAL_LANE TaskAcceptedConfirmed；LOCKED_BY_FINANCE 鎖定邏輯 [#A20]
+- [ ] VS9 task-finance-label-view Projection：消費 STANDARD_LANE FinanceRequestStatusChanged；逆向更新任務金融顯示標籤 [#A22]
 
 ---
 
