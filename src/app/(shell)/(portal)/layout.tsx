@@ -39,10 +39,10 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
 
   if (status === "initializing" && !user && !isPublicRoot) {
     return (
-      <div className="flex h-screen w-full flex-col items-center justify-center space-y-4 bg-background">
-        <div className="animate-bounce text-4xl">🐢</div>
-        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" /> Restoring dimension sovereignty...
+      <div className="mx-auto flex w-full max-w-4xl items-center gap-3 rounded-2xl bg-background/75 px-6 py-5 ring-1 ring-border/60 backdrop-blur-sm">
+        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+        <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Restoring dimension sovereignty...
         </div>
       </div>
     );

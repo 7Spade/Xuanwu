@@ -34,7 +34,7 @@ type ShellLayoutProps = {
 
 export default function ShellLayout({ children, sidebar, modal }: ShellLayoutProps) {
   const { state } = useAuth();
-  const { user } = state;
+  const { user, status } = state;
 
   // [S6] Frontend Party 3 — force-refresh Firebase token on TOKEN_REFRESH_SIGNAL
   useTokenRefreshListener(user?.id ?? null);
@@ -42,7 +42,7 @@ export default function ShellLayout({ children, sidebar, modal }: ShellLayoutPro
   // For unauthenticated users (public routes like /login), skip the full shell
   // to avoid rendering sidebar, but still provide AccountContext for shared
   // header/hooks that depend on useAccount during route prerender.
-  if (!user) {
+  if (!user && status !== "initializing") {
     return (
       <SidebarProvider>
         <AccountProvider>{children}</AccountProvider>
