@@ -87,6 +87,7 @@ export function WorkspaceDocumentParser() {
   const sourceFileDownloadURLRef = useRef<string | undefined>(undefined);
   // Tracks the last saved intentId so that re-parses supersede the prior intent [#A4]
   const previousIntentIdRef = useRef<IntentID | undefined>(undefined);
+  const lastHandledPendingParseKeyRef = useRef<string | null>(null);
 
   // Real-time ParsingIntent history (Digital Twin 解析合約 list)
   const [parsingIntents, setParsingIntents] = useState<ParsingIntent[]>([]);
@@ -161,18 +162,28 @@ export function WorkspaceDocumentParser() {
     startOcrTransition(() => formAction(formData));
   }, [formAction, startOcrTransition, workspace.id]);
 
-  // On mount: if files-view queued a file via WorkspaceProvider context, auto-trigger.
-  // This bridges the cross-tab gap — subscriber only exists when this component is mounted.
-  // Deps intentionally empty: pendingParseFile/setPendingParseFile are stable React state
-  // references, triggerParseFromURL is stable via useCallback, and we only want to run once
-  // on mount (not re-run whenever pendingParseFile changes later).
+  // Consume queued parser payloads from Files tab whenever they arrive.
+  // Keyed dedupe prevents duplicate trigger under StrictMode double-invocation.
   useEffect(() => {
-    if (pendingParseFile) {
-      setPendingParseFile(null);
-      triggerParseFromURL(pendingParseFile);
+    if (!pendingParseFile) {
+      return;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    const pendingKey = [
+      pendingParseFile.fileId,
+      pendingParseFile.versionId,
+      pendingParseFile.parseMode ?? 'document-ai',
+      pendingParseFile.sourceType ?? 'original',
+    ].join('|');
+
+    if (lastHandledPendingParseKeyRef.current === pendingKey) {
+      return;
+    }
+
+    lastHandledPendingParseKeyRef.current = pendingKey;
+    setPendingParseFile(null);
+    triggerParseFromURL(pendingParseFile);
+  }, [pendingParseFile, setPendingParseFile, triggerParseFromURL]);
 
   useEffect(() => {
     if (state.error) {

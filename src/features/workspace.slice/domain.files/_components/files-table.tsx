@@ -102,18 +102,12 @@ export function FilesTable({
             const isExpanded = Boolean(expandedFileIds[file.id]);
             const relatedStructuredFile = getRelatedStructuredFile(file);
             const isCurrentStructuredFile = isStructuredSidecarFile(file.name);
-            const genkitAiSourceFile = isCurrentStructuredFile
-              ? file
-              : relatedStructuredFile;
-            const genkitAiSourceVersion = genkitAiSourceFile
-              ? getCurrentVersion(genkitAiSourceFile)
-              : undefined;
             const documentAiFile = file;
             const documentAiVersion = current;
             const canRunDocumentAi = !isCurrentStructuredFile && Boolean(documentAiVersion?.downloadURL);
-            const genkitSourceType: 'original' | 'structured-sidecar' =
-              isCurrentStructuredFile ? 'structured-sidecar' : 'original';
-            const canRunGenkitAi = Boolean(genkitAiSourceVersion?.downloadURL && genkitAiSourceFile);
+            // Genkit parsing pipeline in document-parser currently depends on OCR payload,
+            // so Files actions must hand off the original binary source (not sidecar JSON).
+            const canRunGenkitAi = !isCurrentStructuredFile && Boolean(documentAiVersion?.downloadURL);
 
             return (
               <Fragment key={file.id}>
@@ -175,9 +169,9 @@ export function FilesTable({
                         <DropdownMenuItem
                           disabled={!canRunGenkitAi}
                           onClick={() =>
-                            genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                            onParseWithAi(documentAiFile, documentAiVersion, {
                               parseMode: 'genkit-ai',
-                              sourceType: genkitSourceType,
+                              sourceType: 'original',
                               triggeredFrom: 'files-table-row',
                             })
                           }
@@ -225,9 +219,9 @@ export function FilesTable({
                             className="h-7 text-[10px] font-bold"
                             disabled={!canRunGenkitAi}
                             onClick={() =>
-                              genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                              onParseWithAi(documentAiFile, documentAiVersion, {
                                 parseMode: 'genkit-ai',
-                                sourceType: genkitSourceType,
+                                sourceType: 'original',
                                 triggeredFrom: 'files-expanded-panel',
                               })
                             }
