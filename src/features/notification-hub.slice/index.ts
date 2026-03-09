@@ -85,10 +85,10 @@ export {
 // =================================================================
 // User Notification (FCM Layer 3 — personal push delivery [R8])
 // =================================================================
-export { deliverNotification, type NotificationDeliveryInput, type DeliveryResult } from './user.notification';
-export { subscribeToNotifications, markNotificationRead } from './user.notification';
-export { useUserNotifications } from './user.notification';
-export { NotificationBadge, NotificationList } from './user.notification';
+export { deliverNotification, type NotificationDeliveryInput, type DeliveryResult } from './domain.notification';
+export { subscribeToNotifications, markNotificationRead } from './domain.notification';
+export { useUserNotifications } from './domain.notification';
+export { NotificationBadge, NotificationList } from './domain.notification';
 
 // =================================================================
 // Governance: Notification Router (FCM Layer 2 — routes org events [E3, #A10])

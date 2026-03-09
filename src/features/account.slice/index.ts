@@ -15,22 +15,22 @@
  */
 
 // =================================================================
-// User Profile (account-user.profile)
+// User Profile (account-domain.profile)
 // =================================================================
-export { UserSettingsView, AccountSettingsRouter, UserSettings, ProfileCard, PreferencesCard, SecurityCard, AccountSkillsSection } from './user.profile';
-export { useUser } from './user.profile';
-export { createUserAccount, updateUserProfile } from './user.profile';
-export { getUserProfile } from './user.profile';
+export { UserSettingsView, AccountSettingsRouter, UserSettings, ProfileCard, PreferencesCard, SecurityCard, AccountSkillsSection } from './domain.profile';
+export { useUser } from './domain.profile';
+export { createUserAccount, updateUserProfile } from './domain.profile';
+export { getUserProfile } from './domain.profile';
 
 // =================================================================
-// User Wallet (account-user.wallet)
+// User Wallet (account-domain.wallet)
 // Strong-consistency financial ledger [SK_READ_CONSISTENCY: STRONG_READ]
 // =================================================================
-export { creditWallet, debitWallet } from './user.wallet';
-export type { WalletTransaction, TopUpInput, DebitInput } from './user.wallet';
-export { getWalletBalance, subscribeToWalletBalance, subscribeToWalletTransactions } from './user.wallet';
-export type { WalletTransactionRecord } from './user.wallet';
-export { useWallet } from './user.wallet';
+export { creditWallet, debitWallet } from './domain.wallet';
+export type { WalletTransaction, TopUpInput, DebitInput } from './domain.wallet';
+export { getWalletBalance, subscribeToWalletBalance, subscribeToWalletTransactions } from './domain.wallet';
+export type { WalletTransactionRecord } from './domain.wallet';
+export { useWallet } from './domain.wallet';
 
 // =================================================================
 // Governance: Account Role (account-governance.role)
