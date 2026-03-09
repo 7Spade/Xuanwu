@@ -1,7 +1,7 @@
 ---
 name: "Context Engineering Rules"
 description: "Context engineering rules for producing precise, architecture-aligned Copilot outputs."
-applyTo: "**/*"
+applyTo: "**/*.{ts,tsx,js,jsx,css,md,json,yml,yaml}"
 ---
 
 # Context Engineering Rules

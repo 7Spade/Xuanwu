@@ -29,9 +29,11 @@ applyTo: "**/*.{ts,tsx,js,jsx,css}"
 ## Caching
 
 - SHOULD prefer Cache Components for new caching work.
-- SHOULD use `cacheTag(...)` and `cacheLife(...)` with explicit intent.
-- SHOULD use `revalidateTag(tag, 'max')` for SWR-style invalidation.
-- SHOULD use `updateTag(...)` when read-your-writes behavior is required.
+- MUST add `"use cache"` directive at the top of any async Server Component or function that should be cached; this opts the function into Next.js Cache Components behavior.
+- MUST NOT use `"use cache"` in Client Components or files with `"use client"`.
+- SHOULD use `cacheTag(...)` and `cacheLife(...)` inside cached functions to control scope and TTL.
+- SHOULD use `revalidateTag(tag)` to invalidate cached data on mutation.
+- SHOULD use `updateTag(...)` when read-your-writes consistency is required after a mutation.
 
 ## Rendering and UX
 
