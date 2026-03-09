@@ -1,0 +1,27 @@
+/**
+ * Module: route-stream-shell
+ * Purpose: Provide a consistent non-blocking loading surface for portal route streaming.
+ * Responsibilities: render ring-based container and staggered skeleton rows for App Router boundaries.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+import type { ReactNode } from "react";
+
+import { cn } from "@/shadcn-ui/utils/utils";
+
+interface RouteStreamShellProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function RouteStreamShell({ children, className }: RouteStreamShellProps) {
+  return (
+    <div
+      className={cn(
+        "mx-auto max-w-7xl space-y-6 rounded-2xl bg-background/60 p-6 shadow-sm ring-1 ring-zinc-300/50 backdrop-blur-sm dark:ring-white/10",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
