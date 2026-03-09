@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * notification-hub.slice/user.notification — _hooks/use-user-notifications.ts
+ * notification-hub.slice/domain.notification — _hooks/use-user-notifications.ts
  *
  * React hook that subscribes to a user's personal notification stream.
  * Delegates Firestore subscription to createNotificationListener per [D3].

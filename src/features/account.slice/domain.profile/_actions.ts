@@ -1,5 +1,5 @@
 /**
- * @fileoverview user.commands.ts - Pure business logic for user account operations.
+ * @fileoverview _actions.ts - Pure business logic for user account operations.
  * @description Contains framework-agnostic action functions for creating user
  * accounts and managing user profiles. These functions can be called from React
  * hooks, context, or future Server Actions without any React dependencies.

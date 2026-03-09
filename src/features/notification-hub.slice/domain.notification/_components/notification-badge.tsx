@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * notification-hub.slice/user.notification — _components/notification-badge.tsx
+ * notification-hub.slice/domain.notification — _components/notification-badge.tsx
  *
  * Notification bell icon with unread count badge.
  * Used in the top navigation bar.

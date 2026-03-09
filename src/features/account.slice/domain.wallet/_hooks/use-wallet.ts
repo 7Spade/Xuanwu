@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * account-user.wallet ??_hooks/use-wallet.ts
+ * domain.wallet ??_hooks/use-wallet.ts
  *
  * React hook for subscribing to a user's wallet balance.
  */

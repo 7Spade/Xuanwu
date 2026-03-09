@@ -12,7 +12,7 @@
  *   USER_ACCOUNT_PROFILE -.->|read FCM token (read-only)| ACCOUNT_USER_NOTIFICATION
  *
  * Architecture:
- *  - Reads FCM token from account-user.profile public API (never writes to profile)
+ *  - Reads FCM token from domain.profile public API (never writes to profile)
  *  - Stores notification in RTDB: user-notifications/{accountId}/{notifId}
  *  - Pushes to FCM via Firebase Admin SDK pattern (server-side) or client SDK
  *
@@ -100,7 +100,7 @@ export async function deliverNotification(
 
   // Step 4: Attempt FCM push (best-effort, non-blocking)
   // FCM token is read from the account profile ??we read it here inline
-  // to avoid a hard dependency on the account-user.profile slice.
+  // to avoid a hard dependency on the domain.profile slice.
   let fcmSent = false;
   try {
     const fcmToken = accountSnap.exists()

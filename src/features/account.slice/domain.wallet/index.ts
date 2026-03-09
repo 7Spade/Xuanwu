@@ -1,5 +1,5 @@
 /**
- * account-user.wallet — Public API
+ * domain.wallet — Public API
  *
  * User personal wallet — balance management with strong consistency.
  *

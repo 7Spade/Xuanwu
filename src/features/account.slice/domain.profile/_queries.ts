@@ -1,5 +1,5 @@
 /**
- * account-user.profile ??_queries.ts
+ * domain.profile ??_queries.ts
  *
  * Read queries for user profile data.
  *

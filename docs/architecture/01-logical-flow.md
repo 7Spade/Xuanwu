@@ -133,12 +133,12 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
         %% 三者同屬「讀寫分離閘道」，以讀/寫為唯一切割線，合一呈現
         %% ═══════════════════════════════════════════════════════════════
 
-        subgraph UNIFIED_GW["🔀 CQRS Gateway（讀寫分離統一閘道 · L0A + L2 + L6 · src/shared-infra/api-gateway + gateway-command + gateway-query）"]
+        subgraph UNIFIED_GW["🔀 CQRS Gateway（讀寫分離統一閘道 · L0A + L2 + L6 · src/shared-infra/gateway-command + gateway-query）"]
             direction LR
 
             subgraph CQRS_WRITE["✍ Write Path（L0A → L2）"]
                 direction TB
-                CMD_API_GW["COMMAND_API_GATEWAY\nwrite-only ingress · L0A\nsrc/shared-infra/api-gateway"]
+                CMD_API_GW["COMMAND_API_GATEWAY\nwrite-only ingress · L0A\nsrc/shared-infra/gateway-command"]
 
                 subgraph GW_PIPE["⚙️ Command Pipeline（L2 · src/shared-infra/gateway-command）"]
                     CBG_ENTRY["unified-command-gateway\n[R8] TraceID 注入（唯一注入點）\n→ event-envelope.traceId"]
@@ -152,7 +152,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             subgraph CQRS_READ["📖 Read Path（L0A → L6）"]
                 direction TB
-                QRY_API_GW["QUERY_API_GATEWAY\nread-only ingress · L0A\nsrc/shared-infra/api-gateway"]
+                QRY_API_GW["QUERY_API_GATEWAY\nread-only ingress · L0A\nsrc/shared-infra/gateway-query"]
 
                 subgraph GW_QUERY["⚙️ Query Routes（L6 · src/shared-infra/gateway-query）[S2 S3]"]
                     direction LR
@@ -215,10 +215,10 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
         %% LAYER 5 ── PROJECTION BUS（事件投影總線）
         %% ═══════════════════════════════════════════════════════════════
 
-        subgraph PROJ_BUS["🟡 L5 · Projection Bus（src/shared-infra/projection-bus，ownership: VS0-Infra）"]
+        subgraph PROJ_BUS["🟡 L5 · Projection Bus（src/shared-infra/projection.bus，ownership: VS0-Infra）"]
             direction TB
 
-            subgraph PROJ_BUS_FUNNEL["▶ Event Funnel（src/shared-infra/projection-bus）[S2 P5 R8]"]
+            subgraph PROJ_BUS_FUNNEL["▶ Event Funnel（src/shared-infra/projection.bus）[S2 P5 R8]"]
                 direction LR
                 FUNNEL[["event-funnel\n[#9] 唯一 Projection 寫入路徑\n[Q3] upsert by idempotency-key\n[R8] 從 envelope 讀取 traceId → DOMAIN_METRICS\n[S2] 所有 Lane 遵守 SK_VERSION_GUARD\n     event.aggVersion > view.lastVersion\n     → 更新；否則 → 丟棄\n[P8] Worker Pool：依 priorityLane 分配 Quota（Critical/Standard/Background）\n     同一 doc 100ms 內多次更新合併為 1 次寫入（Debounce/Batch）"]]
                 CRIT_PROJ["🔴 CRITICAL_PROJ_LANE\n[S4: PROJ_STALE_CRITICAL ≤ 500ms]\n獨立重試 / dead-letter"]
@@ -226,13 +226,13 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 FUNNEL --> CRIT_PROJ & STD_PROJ
             end
 
-            subgraph PROJ_BUS_META["⚙️ Stream Meta（src/shared-infra/projection-bus）"]
+            subgraph PROJ_BUS_META["⚙️ Stream Meta（src/shared-infra/projection.bus）"]
                 PROJ_VER["projection.version\n事件串流偏移量"]
                 READ_REG["read-model-registry\n版本目錄"]
                 PROJ_VER -->|version mapping| READ_REG
             end
 
-            subgraph PROJ_BUS_CRIT["🔴 Critical Projections（src/shared-infra/projection-bus）[S2 S4]"]
+            subgraph PROJ_BUS_CRIT["🔴 Critical Projections（src/shared-infra/projection.bus）[S2 S4]"]
                 WS_SCOPE_V["projection.workspace-scope-guard-view\n授權路徑 [#A9]\n[S2: SK_VERSION_GUARD]"]
                 ORG_ELIG_V["projection.org-eligible-member-view\n[S2: SK_VERSION_GUARD]\nskills{tagSlug→xp} / eligible\n[#14 #15 #16 T3]\n→ tag::skill [TE_SK]\n→ tag::skill-tier [TE_ST]"]
                 WALLET_V["projection.wallet-balance\n[S3: EVENTUAL_READ]\n顯示用・精確交易回源 AGG"]
@@ -240,7 +240,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 TIER_FN[["getTier(xp) → Tier\n純函式 [#12]"]]
             end
 
-            subgraph PROJ_BUS_STD["⚪ Standard Projections（src/shared-infra/projection-bus）[S4]"]
+            subgraph PROJ_BUS_STD["⚪ Standard Projections（src/shared-infra/projection.bus）[S4]"]
                 direction LR
                 WS_PROJ["projection.workspace-view"]
                 ACC_SCHED_V["projection.account-schedule"]
@@ -350,18 +350,8 @@ SK_OBS_CONTRACT -.->|"contract bind"| OBS_LAYER
 SK_OBS_PATH -.->|"contract -> runtime"| OBS_PATH
 
 %% ─── VS8 Semantic Cognition Engine（語義認知引擎）
-%% ─── 架構正確性優先原則（Architectural Correctness First）：G/C/E/O/B 五系列規則為 VS8 完整正式規範
-%% ───   奧卡姆剃刀 = 正確抽象（正確的職責邊界、清晰的語義層次），而非最少程式碼或最快實作
-%% ─── 四層架構（可維護視圖）：
-%% ───   ① Governance（治理）: registry / protocol / guards / portal
-%% ───   ② Core Domain（核心語義域）: CTA / hierarchy / vector / tag entities
-%% ───   ③ Compute Engine（計算引擎）: graph / reasoning / routing / learning
-%% ───   ④ Output（輸出）: projections / event-broadcast / decision-policy
-%% ─── 向下相容：VS8_CL ≡ core-domain, VS8_SL ≡ graph-engine, VS8_NG ≡ reasoning-engine, VS8_RL ≡ decision-policy
-%% ─── [B2] 四層單向依賴：Governance→Core Domain→Compute Engine→Output（禁止逆向）
-%% ─── [B4] 分類學（IS_A 本體論）≠ 向量工具（認識論）；兩者職責不可互換
-%% ─── [B5] VS8 推論因果鏈路徑；因果執行副作用（排班、通知、物化）歸 IER+L5
-%% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority [#A6 #17]
+%% ─── 四層架構：①Governance → ②Core Domain → ③Compute Engine → ④Output（[B2] 禁止逆向依賴）
+%% ─── [B4] IS_A 本體論 ≠ 向量工具；[B5] 因果執行副作用歸 IER+L5；規則全集見 02-governance-rules.md
 subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]"]
     direction TB
 
@@ -558,7 +548,7 @@ AUTH_ID -.->|"uses IAuthService"| I_AUTH
 subgraph VS2["🟩 VS2 · Account Slice（src/features/account.slice）"]
     direction TB
 
-    subgraph VS2_USER["👤 個人帳號域（src/features/account.slice/user.profile + user.wallet）"]
+    subgraph VS2_USER["👤 個人帳號域（src/features/account.slice/domain.profile + domain.wallet）"]
         USER_AGG["user-account.aggregate"]
         WALLET_AGG["wallet.aggregate\n強一致帳本 [#A1]\n[S3: STRONG_READ]"]
         PROFILE["account.profile\nFCM Token（弱一致）"]
@@ -704,21 +694,21 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
         WS_ROLE -.->|"[#18] eligible 查詢"| WS_PCHK
     end
 
-    subgraph VS5_BIZ["⚙️ Business Domain（src/features/workspace.slice/business.{tasks,quality-assurance,acceptance,finance,daily,document-parser,files,issues,workflow}，A+B 雙軌）"]
+    subgraph VS5_BIZ["⚙️ Business Domain（src/features/workspace.slice/domain.{tasks,quality-assurance,acceptance,daily,document-parser,files,issues,workflow} + domain.parsing-intent，A+B 雙軌）"]
         direction TB
 
-        subgraph VS5_PARSE["📄 文件解析三層閉環（src/features/workspace.slice/business.document-parser）[Layer-1 → Layer-2 → Layer-3]"]
+        subgraph VS5_PARSE["📄 文件解析三層閉環（src/features/workspace.slice/domain.document-parser + domain.files + domain.parsing-intent）[Layer-1 → Layer-2 → Layer-3]"]
             W_FILES["workspace.files"]
             W_PARSER["document-parser\nLayer-1 原始解析\n→ raw ParsedLineItem[]\n+ classifyCostItem() [VS8 Layer-2]\n→ ParsedLineItem.(costItemType, semanticTagSlug)"]
             PARSE_INT[("ParsingIntent\nDigital Twin [#A4]\nlineItems[].(costItemType, semanticTagSlug, sourceIntentIndex)\n（Layer-2 語義標注 + 來源索引）")]
             W_FILES -.->|原始檔案| W_PARSER --> PARSE_INT
         end
 
-        subgraph VS5_WF["⚙️ Workflow State Machine（src/features/workspace.slice/business.workflow）[R6]"]
+        subgraph VS5_WF["⚙️ Workflow State Machine（src/features/workspace.slice/domain.workflow）[R6]"]
             WF_AGG["workflow.aggregate\n狀態合約：Draft→InProgress→QA\n→Acceptance(ACCEPTED via Validator)→Completed\n[#A19] 收斂條件：所有關聯 Finance_Request.status = PAID（由 task-finance-label-view 投影反映）\nblockedBy: Set‹issueId›\n[#A3] blockedBy.isEmpty() 才可 unblock\n[注] Finance 獨立生命週期由 VS9 Finance Slice 管理"]
         end
 
-        subgraph VS5_A["🟢 A-track 主流程（src/features/workspace.slice/business.tasks + business.quality-assurance + business.acceptance）"]
+        subgraph VS5_A["🟢 A-track 主流程（src/features/workspace.slice/domain.tasks + domain.quality-assurance + domain.acceptance）"]
             direction LR
             A_ITEMS["workspace.items\n來源事項（Source of Work）\n保留 sourceIntentIndex"]
             A_TASKS["tasks\n狀態：IN_PROGRESS"]
@@ -728,13 +718,13 @@ subgraph VS5["🟣 VS5 · Workspace Slice（src/features/workspace.slice）"]
             A_ACCEPTED["tasks.ACCEPTED [#A19 D29]\n發出 TaskAcceptedConfirmed 事件\n（同一 L2 Firestore TX 原子寫入）"]
         end
 
-        subgraph VS5_FIN["💰 Finance 事件橋接（src/features/workspace.slice/business.finance）[#A19 #A20]"]
+        subgraph VS5_FIN["💰 Finance 事件橋接（TaskAcceptedConfirmed → VS9 Finance Slice）[#A19 #A20]"]
             direction TB
             FIN_BRIDGE["TaskAcceptedConfirmed 事件橋\n[#A19] 任務到達 ACCEPTED 狀態後\n→ ws-outbox（CRITICAL_LANE）\n→ L4 IER → VS9 Finance_Staging_Pool\n[#A20] 可計費任務自動轉錄至 Finance_Staging_Pool\n（禁止 VS5 直接呼叫 VS9 API）"]
             FIN_LABEL["task-finance-label（展示層）\n[#A22] 消費 task-finance-label-view 投影\n顯示：已驗收 ｜ 金融狀態標籤（REQ-001 / 審核中）"]
         end
 
-        subgraph VS5_B["🔴 B-track 異常處理（src/features/workspace.slice/business.issues）"]
+        subgraph VS5_B["🔴 B-track 異常處理（src/features/workspace.slice/domain.issues）"]
             B_ISSUES{{"issues"}}
         end
 
@@ -814,7 +804,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
     NOTIF_EXIT["notification-hub._services.ts\nNOTIF_EXIT（唯一副作用出口）\n標籤感知路由策略\n對接 VS8 語義索引\n#channel:slack → Slack\n#urgency:high → 電話"]
 
     subgraph VS7_DEL["📤 Delivery（src/features/notification-hub.slice）"]
-        USER_NOTIF["account-user.notification\n個人推播 + RTDB 即時通知串流"]
+        USER_NOTIF["domain.notification\n個人推播 + RTDB 即時通知串流"]
         USER_DEV["使用者裝置"]
         USER_NOTIF --> USER_DEV
     end

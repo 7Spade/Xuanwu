@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * account-user.wallet ??_actions.ts
+ * domain.wallet ??_actions.ts
  *
  * Server actions for user wallet balance management.
  *

@@ -1,5 +1,5 @@
 /**
- * account-user.wallet ??_queries.ts
+ * domain.wallet ??_queries.ts
  *
  * Read queries for user wallet balance and transaction history.
  */
