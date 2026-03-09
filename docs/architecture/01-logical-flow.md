@@ -358,6 +358,9 @@ SK_OBS_PATH -.->|"contract -> runtime"| OBS_PATH
 %% ───   ③ Compute Engine（計算引擎）: graph / reasoning / routing / learning
 %% ───   ④ Output（輸出）: projections / event-broadcast / decision-policy
 %% ─── 向下相容：VS8_CL ≡ core-domain, VS8_SL ≡ graph-engine, VS8_NG ≡ reasoning-engine, VS8_RL ≡ decision-policy
+%% ─── [B2] 四層單向依賴：Governance→Core Domain→Compute Engine→Output（禁止逆向）
+%% ─── [B4] 分類學（IS_A 本體論）≠ 向量工具（認識論）；兩者職責不可互換
+%% ─── [B5] VS8 推論因果鏈路徑；因果執行副作用（排班、通知、物化）歸 IER+L5
 %% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority [#A6 #17]
 subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]"]
     direction TB

@@ -155,6 +155,9 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[O4]` | projection.causal-audit-log 每條記錄必須含 inferenceTrace[] + traceId；禁止重新生成 traceId |
 | `[B1]` | VS8 只做語義推理輸出；禁止直接觸發跨切片副作用 |
 | `[B2]` | VS8 內部依賴方向單向：Governance→Core→Engine→Output；禁止逆向依賴 |
+| `[B3]` | AI Flow (L10 Genkit) 只能透過 ISemanticClassificationPort / ISkillMatchPort 存取 VS8；禁止直呼 VS8 內部模組 |
+| `[B4]` | 分類學（IS_A 邊本體論）與向量（認識論工具）各有職責；禁止以一者取代另一者 |
+| `[B5]` | VS8 維護主體圖（Subject Graph），不承載因果執行；因果路徑推論可以，但因果狀態物化或副作用禁止 |
 
 ---
 
@@ -213,6 +216,8 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 禁止 PersonNode 被任何路徑直接寫入；唯一更新路徑是 ISemanticFeedbackPort [C9]
 - 無 inferenceTrace[] 的推理結果視為不完整，禁止進入任何下游流程 [E6]
 - routing-engine 禁止直呼 VS6 排班或 VS7 通知；只輸出 SemanticRouteHint [E11]
+- 禁止以 IS_A 分類學邊替代向量相似度，或以向量相似度取代 IS_A 分類學；兩者認識論職責不可互換 [B4]
+- 禁止在 VS8 中物化因果執行副作用（排班、通知、狀態機轉換）；VS8 只推論因果鏈，執行由 IER+L5 承載 [B5]
 
 ---
 

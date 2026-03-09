@@ -477,6 +477,9 @@
 %%    禁止 PersonNode 被任何路徑直接寫入；唯一更新路徑是 ISemanticFeedbackPort [C9]
 %%    無 inferenceTrace[] 的推理結果視為不完整，禁止進入任何下游流程 [E6]
 %%    routing-engine 禁止直呼 VS6 排班或 VS7 通知；只輸出 SemanticRouteHint [E11]
+%%    VS8 內部依賴單向：Governance→Core→Engine→Output；禁止逆向 import [B2]
+%%    IS_A 分類學（本體論）≠ 向量工具（認識論）；禁止以一者取代另一者 [B4]
+%%    VS8 只推論因果鏈，不物化因果副作用；因果執行歸 IER+L5 [B5]
 %%    cost-item-classifier 三步推理不可跳躍（向量縮範→Graph 確認→override）；輸出必須含 inferenceTrace[] [E5]
 %%    skill-matcher 三條件全滿才合格：tier + granularity 覆蓋度 + cert_required 證照；禁止部分通過 [E7]
 %%    TagLifecycleEvent 廣播必須經 tag-outbox→RELAY→IER；禁止繞過 IER [O5 O6]
@@ -788,12 +791,17 @@ SK_OBS_CONTRACT -.->|"contract bind"| OBS_LAYER
 SK_OBS_PATH -.->|"contract -> runtime"| OBS_PATH
 
 %% ─── VS8 Semantic Cognition Engine（語義認知引擎）
+%% ─── 架構正確性優先原則（Architectural Correctness First）：G/C/E/O/B 五系列規則為 VS8 完整正式規範
+%% ───   奧卡姆剃刀 = 正確抽象（正確的職責邊界、清晰的語義層次），而非最少程式碼或最快實作
 %% ─── 四層架構（可維護視圖）：
 %% ───   ① Governance（治理）: registry / protocol / guards / portal
 %% ───   ② Core Domain（核心語義域）: CTA / hierarchy / vector / tag entities
 %% ───   ③ Compute Engine（計算引擎）: graph / reasoning / routing / learning
 %% ───   ④ Output（輸出）: projections / event-broadcast / decision-policy
 %% ─── 向下相容：VS8_CL ≡ core-domain, VS8_SL ≡ graph-engine, VS8_NG ≡ reasoning-engine, VS8_RL ≡ decision-policy
+%% ─── [B2] 四層單向依賴：Governance→Core Domain→Compute Engine→Output（禁止逆向）
+%% ─── [B4] 分類學（IS_A 本體論）≠ 向量工具（認識論）；兩者職責不可互換
+%% ─── [B5] VS8 推論因果鏈路徑；因果執行副作用（排班、通知、物化）歸 IER+L5
 %% ─── centralized-tag.aggregate 具備 lifecycle，為 domain authority [#A6 #17]
 subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]"]
     direction TB
