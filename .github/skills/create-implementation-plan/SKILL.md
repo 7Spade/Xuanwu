@@ -1,34 +1,39 @@
 ---
 name: create-implementation-plan
-description: 'Create a new implementation plan file for new features, refactoring existing code or upgrading packages, design, architecture or infrastructure.'
+description: 'Create a structured implementation plan covering phases, tasks, dependencies, and success criteria. Use when planning new features, architectural changes, package upgrades, or major refactors before coding begins. Triggers: "implementation plan", "create plan", "dev plan", "feature plan", "task breakdown", "phase plan".'
 ---
 
 # Create Implementation Plan
 
-## Intent
-Create a new implementation plan file for new features, refactoring existing code or upgrading packages, design, architecture or infrastructure.
+## When to Use
+- Starting work on a new feature that spans multiple files or layers
+- Planning an architectural change or package upgrade
+- Need a phased approach with checkpoints before committing to code
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Clarify goal, scope, and constraints with the user
+- Review relevant architecture docs: `docs/architecture/00-logic-overview.md`
+- Identify affected features and their current state
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Define the goal in one sentence and confirm it with the user.
+2. Identify all affected files, modules, and external dependencies.
+3. Break work into phases (≤5 tasks per phase) with a clear deliverable for each.
+4. Sequence phases bottom-up: foundational changes first, UI last.
+5. For each task, specify: description, files affected, acceptance criteria.
+6. Identify risks and blockers; mark tasks that need spikes or research.
+7. Write the plan to `.copilot-tracking/plans/` in Markdown checklist format.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- One Markdown file per plan under `.copilot-tracking/plans/`.
+- Format: `## Phase N: Title`, then `- [ ] Task description (files: ..., criteria: ...)`.
+- Include a "Success Criteria" section at the end covering the overall goal.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not include implementation code in the plan — only task descriptions.
+- Flag tasks with architecture boundary concerns before proceeding.
+- Do not finalize the plan without user confirmation on scope.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
+- Plan tracking: `.copilot-tracking/plans/`

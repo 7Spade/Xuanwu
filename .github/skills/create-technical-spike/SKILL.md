@@ -1,34 +1,39 @@
 ---
 name: create-technical-spike
-description: 'Create time-boxed technical spike documents for researching and resolving critical development decisions before implementation.'
+description: 'Create a time-boxed technical spike document to investigate unknowns and validate decisions before implementation. Use when facing architectural uncertainty, evaluating libraries, or prototyping risky approaches. Triggers: "technical spike", "create spike", "research spike", "spike document", "prototype", "investigate unknown".'
 ---
 
 # Create Technical Spike
 
-## Intent
-Create time-boxed technical spike documents for researching and resolving critical development decisions before implementation.
+## When to Use
+- A technical decision carries significant uncertainty or risk
+- Evaluating two or more implementation approaches before committing
+- A feature requires a throwaway prototype to validate feasibility
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Define the specific question the spike must answer
+- Agree on the time box (typically 1–3 days)
+- Identify success criteria: what result confirms or rejects the hypothesis
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. State the spike goal: one sentence describing the unknown to resolve.
+2. Define the hypothesis: the expected answer and why it is believed.
+3. Set the time box: maximum effort before a decision must be made.
+4. List acceptance criteria: specific, observable outcomes that answer the question.
+5. Outline the investigation approach: steps, tools, and resources to consult.
+6. Define the fallback plan if the hypothesis is disproved.
+7. Write findings and decision in the spike doc after investigation.
+8. Save the spike under `docs/` or a dedicated `spikes/` directory.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a Markdown spike doc with: Goal, Hypothesis, Time Box, Acceptance Criteria, Approach, Findings, Decision.
+- Findings section MUST be completed after investigation — do not leave it blank.
+- Decision MUST be one of: Proceed / Reject / Needs More Investigation.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not allow the spike to grow beyond the agreed time box.
+- Do not implement production code during a spike — throwaway prototypes only.
+- Stop and report if acceptance criteria cannot be evaluated within the time box.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

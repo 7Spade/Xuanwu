@@ -1,34 +1,37 @@
 ---
 name: create-readme
-description: 'Create a README.md file for the project'
+description: 'Create or update a README.md file for the project. Use when starting a new project, documenting an existing one, or regenerating the project overview. Triggers: "create readme", "write readme", "generate README", "add project docs", "update README".'
 ---
 
 # Create Readme
 
-## Intent
-Create a README.md file for the project
+## When to Use
+- Starting a new project and need a README from scratch
+- Updating an outdated README to reflect current state
+- Generating documentation from existing project structure and code
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Review existing `README.md` if present
+- Check `package.json` for project name, description, and scripts
+- Scan `docs/` directory for additional context
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Analyze project structure: entry points, tech stack, scripts, and dependencies.
+2. Review any existing docs or inline comments for domain context.
+3. Draft the README with standard sections: Overview, Prerequisites, Installation, Usage, Configuration, Contributing, License.
+4. Include runnable code examples for installation and common commands.
+5. Add badges (build status, version, license) where applicable.
+6. Verify all listed commands and paths exist and are accurate.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a single `README.md` at the project root.
+- All code blocks must be runnable and reference real files/commands.
+- Sections must be ordered by user onboarding priority.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not invent commands or file paths that do not exist.
+- Keep README focused on end-user onboarding, not internal architecture.
+- Do not embed credentials or secrets.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

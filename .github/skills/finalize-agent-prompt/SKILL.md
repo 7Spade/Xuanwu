@@ -1,34 +1,39 @@
 ---
 name: finalize-agent-prompt
-description: 'Finalize prompt file using the role of an AI agent to polish the prompt for the end user.'
+description: 'Polish and finalize a Copilot prompt or agent definition file for end-user consumption. Use when a draft prompt needs clarity, stronger role-framing, structured instructions, or output format improvements before committing. Triggers: "finalize prompt", "polish agent", "improve prompt file", "clean up agent definition", "refine instructions".'
 ---
 
 # Finalize Agent Prompt
 
-## Intent
-Finalize prompt file using the role of an AI agent to polish the prompt for the end user.
+## When to Use
+- A draft `.prompt.md` or `.agent.md` file needs polishing before merging
+- A prompt produces inconsistent or ambiguous output and needs structural improvement
+- Refactoring an agent file to align with the latest authoring rules
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Read `.github/instructions/agent-authoring-rules.instructions.md` for agents
+- Read `docs/copilot/customization/prompt-files.md` for prompts
+- Read the draft file in full before making any changes
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Validate frontmatter: `name`, `description`, required fields are present and correct.
+2. Check role clarity: does the file state a clear, testable role or purpose in the first paragraph?
+3. Review instruction quality: are rules imperative and specific (MUST/SHOULD/MAY)?
+4. Confirm output format is explicitly specified (format, length, structure).
+5. Add or improve examples for non-obvious instructions.
+6. Remove vague phrasing ("try to", "maybe", "if possible") — replace with deterministic rules.
+7. Verify the description is discoverable: states what, when, and trigger keywords.
+8. Check for secrets or hardcoded credentials — remove any found.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Return the finalized file content with a summary of every change and its rationale.
+- Changes must be traceable: one rationale per modified section.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not change the core intent or domain of the prompt.
+- Do not add capabilities beyond what the original file intended.
+- Do not embed secrets, tokens, or personal credentials.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
+- Agent authoring rules: `.github/instructions/agent-authoring-rules.instructions.md`
