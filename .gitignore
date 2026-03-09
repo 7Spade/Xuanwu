@@ -46,3 +46,7 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 .eslintcache
+
+
+.copilot-tracking
+.playwright-mcp

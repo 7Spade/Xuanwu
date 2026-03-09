@@ -6,32 +6,21 @@ import { useRouter } from "next/navigation"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { AccountNewForm } from "@/features/organization.slice"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/shadcn-ui/dialog"
+import { NexusDialogShell } from "@/shadcn-ui/custom-ui"
 
 export default function AccountNewModalPage() {
   const router = useRouter()
   const { t } = useI18n()
 
   return (
-    <Dialog open onOpenChange={() => router.back()}>
-      <DialogContent className="rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">
-            {t("dimension.createTitle")}
-          </DialogTitle>
-          <DialogDescription>{t("dimension.createDescription")}</DialogDescription>
-        </DialogHeader>
-        <AccountNewForm
-          onSuccess={() => router.back()}
-          onCancel={() => router.back()}
-        />
-      </DialogContent>
-    </Dialog>
+    <NexusDialogShell
+      open
+      onOpenChange={() => router.back()}
+      title={t("dimension.createTitle")}
+      description={t("dimension.createDescription")}
+      titleClassName="font-headline"
+    >
+      <AccountNewForm onSuccess={() => router.back()} onCancel={() => router.back()} />
+    </NexusDialogShell>
   )
 }

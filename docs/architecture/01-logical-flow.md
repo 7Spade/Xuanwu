@@ -814,7 +814,7 @@ subgraph VS7["🩷 VS7 · Notification Hub（src/features/notification-hub.slice
     NOTIF_EXIT["notification-hub._services.ts\nNOTIF_EXIT（唯一副作用出口）\n標籤感知路由策略\n對接 VS8 語義索引\n#channel:slack → Slack\n#urgency:high → 電話"]
 
     subgraph VS7_DEL["📤 Delivery（src/features/notification-hub.slice）"]
-        USER_NOTIF["account-user.notification\n個人推播 + RTDB 即時通知串流"]
+        USER_NOTIF["src/features/notification-hub.slice/domain.notification\n個人推播 + RTDB 即時通知串流"]
         USER_DEV["使用者裝置"]
         USER_NOTIF --> USER_DEV
     end

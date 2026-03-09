@@ -7,12 +7,7 @@ import { Suspense } from "react"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { ResetPasswordForm } from "@/features/identity.slice"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/shadcn-ui/dialog"
+import { NexusDialogShell } from "@/shadcn-ui/custom-ui"
 
 function ResetPasswordModalContent() {
   const router = useRouter()
@@ -20,22 +15,21 @@ function ResetPasswordModalContent() {
   const { t } = useI18n()
 
   return (
-    <Dialog open onOpenChange={() => router.back()}>
-      <DialogContent className="max-w-sm rounded-[2.5rem] border-none p-10 shadow-2xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 font-headline text-2xl">
-            🐢 {t("auth.resetPassword")}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="py-6">
-          <ResetPasswordForm
-            defaultEmail={searchParams.get("email") ?? ""}
-            onSuccess={() => router.back()}
-            onCancel={() => router.back()}
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
+    <NexusDialogShell
+      open
+      onOpenChange={() => router.back()}
+      title={t("auth.resetPassword")}
+      description={t("auth.sendEmail")}
+      contentClassName="max-w-sm p-6 sm:p-8"
+      titleClassName="font-headline"
+      bodyClassName="pt-2"
+    >
+      <ResetPasswordForm
+        defaultEmail={searchParams.get("email") ?? ""}
+        onSuccess={() => router.back()}
+        onCancel={() => router.back()}
+      />
+    </NexusDialogShell>
   )
 }
 

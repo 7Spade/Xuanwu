@@ -1,6 +1,13 @@
+/**
+ * Module: language-switcher
+ * Purpose: Provide an app-wide locale switcher with deterministic hydration behavior.
+ * Responsibilities: expose locale selection menu and maintain accessible trigger labels.
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client"
 
 import { Globe } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { type Locale } from "@/config/i18n/i18n-types"
@@ -19,6 +26,26 @@ const LOCALE_NAMES: Record<Locale, string> = {
 
 export function LanguageSwitcher() {
   const { locale, setLocale, t } = useI18n()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  if (!isMounted) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        suppressHydrationWarning
+        aria-label={t("common.switchLanguage")}
+        className="size-9 rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+      >
+        <Globe className="size-4" />
+        <span className="sr-only">{t("common.switchLanguage")}</span>
+      </Button>
+    )
+  }
 
   return (
     <DropdownMenu>
@@ -26,7 +53,8 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="icon"
-          className="size-9 rounded-xl ring-1 ring-zinc-300/50 transition-all duration-200 ease-out active:scale-[0.98] hover:bg-background/80 hover:ring-zinc-300/70 dark:ring-white/10"
+          suppressHydrationWarning
+          className="size-9 rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
         >
           <Globe className="size-4" />
           <span className="sr-only">{t("common.switchLanguage")}</span>
