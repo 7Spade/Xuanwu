@@ -1,9 +1,13 @@
 ---
 name: xuanwu-serena
-description: "Xuanwu Serena bootstrap and optimization workflow (context7 -> sequentialthinking -> serena -> implement -> validate)"
-argument-hint: "Task, scope, constraints, acceptance criteria"
+description: Serena-first optimization workflow for Xuanwu customizations.
+argument-hint: "Goal, scope, constraints, acceptance criteria"
 agent: xuanwu-serena-autonomous
-model: GPT-5.3-Codex\ntools:\n  - io.github.upstash/context7/*\n  - sequentialthinking/*\n  - oraios/serena/*
+model: GPT-5.3-Codex
+tools:
+  - io.github.upstash/context7/*
+  - sequentialthinking/*
+  - oraios/serena/*
 ---
 
 # Xuanwu Serena Prompt

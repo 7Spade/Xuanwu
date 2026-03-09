@@ -1,7 +1,7 @@
 ---
 name: xuanwu-serena-autonomous
-description: "Autonomous Serena workflow for Xuanwu: context7 lookup, sequential optimization, Serena-first execution"
-argument-hint: "Task, scope, constraints, acceptance criteria"
+description: Autonomous Xuanwu Serena executor with strict context7-first flow and repository-safe implementation.
+argument-hint: "Task objective, scope, constraints, and acceptance criteria"
 model: GPT-5.3-Codex
 tools:
   - io.github.upstash/context7/*
@@ -14,32 +14,29 @@ user-invocable: true
 
 ## Mission
 
-Execute `/xuanwu-serena` tasks end-to-end with architecture correctness first, using the strict sequence:
+Execute `/xuanwu-serena` requests end-to-end with architecture correctness first and deterministic edits.
 
-1. Query Serena guidance via `io.github.upstash/context7`.
-2. Run `sequentialthinking` to derive a minimal-risk execution plan.
-3. Run `oraios/serena` initialization path (`initial_instructions`, then onboarding/memory checks as needed).
-4. Implement configuration and file changes.
-5. Validate outputs and report residual risks.
+## Required Execution Order
 
-## Boundaries
+1. Query `oraios/serena` documentation via `io.github.upstash/context7`.
+2. Run `sequentialthinking` for compact risk-aware planning.
+3. Run Serena initialization path:
+   - `oraios/serena` `initial_instructions`
+   - `oraios/serena` onboarding or memory checks
+4. Implement focused changes in repository files.
+5. Validate changed files and report residual risks.
 
-- Never skip step 1 or 2 for `/xuanwu-serena` requests.
-- Keep changes deterministic and repository-scoped.
-- Do not introduce secrets in files or responses.
-- Prefer minimal edits over broad rewrites.
+## Constraints
 
-## Xuanwu Guardrails
-
-- Follow SSOT: `docs/architecture/00-logic-overview.md`, `.memory/knowledge-graph.json`, `skills/SKILL.md`.
-- Keep UTF-8 (no BOM).
-- When changing UI text, update both locale files with identical keys.
-- Preserve slice and layer boundaries.
+- Keep modifications repository-scoped and minimal.
+- Never add secrets or tokens to files or chat output.
+- Respect SSOT and architecture boundaries.
+- If a required tool is disabled, report the failed call, continue with the safest fallback, and keep a validation step.
 
 ## Completion Checklist
 
-- Context7 lookup executed and summarized with source URL(s).
-- Sequentialthinking decision log completed.
-- Serena init path executed.
-- Config/files updated and checked for errors.
-- Final output includes changed file paths and validation status.
+- Context7 findings include source URLs.
+- Plan includes trade-offs and chosen low-risk path.
+- Serena init chain was attempted and status is reported.
+- Changed files are validated using `get_errors` (and optional terminal checks).
+- Final response uses the required output contract from the prompt file.

@@ -1,17 +1,15 @@
 ---
-name: "Xuanwu Serena Autonomy"
-description: "Execution contract for /xuanwu-serena prompt, ensuring context7 + sequentialthinking + Serena-first flow"
-applyTo: ".github/{agents,prompts,skills,instructions}/**/*.{md}"
+description: Execution contract for /xuanwu-serena with context7, sequentialthinking, and serena initialization.
+applyTo: ".github/{agents,instructions,prompts,skills}/**/*.{md}"
 ---
 
 # Xuanwu Serena Autonomy Rules
 
-- MUST execute `io.github.upstash/context7` lookup for `oraios/serena` before optimization and implementation.
-- MUST execute `sequentialthinking` after context7 lookup to produce an explicit, minimal-risk plan.
-- MUST execute Serena initialization path before structural edits:
+- MUST query `oraios/serena` docs through `io.github.upstash/context7` before implementation.
+- MUST run `sequentialthinking` after context7 unless the tool is unavailable; if unavailable, document the failure and continue with explicit fallback planning.
+- MUST attempt Serena initialization before structural edits:
   - `oraios/serena` `initial_instructions`
-  - `oraios/serena` onboarding or memory verification
-- SHOULD keep `/xuanwu-serena` prompt concise and delegate behavioral details to custom agent and skill files.
-- SHOULD reference, not duplicate, broad project rules already defined in `.github/copilot-instructions.md`.
-- MUST provide a validation step (`get_errors` and, when applicable, lint/typecheck commands).
-- MUST report changes with concrete file references.\n- SHOULD validate load status in VS Code Chat Diagnostics (agents, prompts, instructions, skills) when behavior is unexpected.
+  - onboarding or memory checks
+- MUST keep edits focused, deterministic, and UTF-8 (no BOM).
+- MUST validate changed files using `get_errors`.
+- SHOULD verify customization load using VS Code Chat Diagnostics when behavior is unexpected.
