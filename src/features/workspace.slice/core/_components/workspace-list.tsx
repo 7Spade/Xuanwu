@@ -24,10 +24,18 @@ function WorkspaceListItem({ workspace, onDelete }: WorkspaceListItemProps) {
   const protocolLabel = workspace.protocol || t('workspaces.defaultProtocol');
 
   return (
-    <button
-      type="button"
-      className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-border/60 bg-card p-4 text-left transition-colors hover:bg-muted/30"
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={`${workspace.name} workspace`}
+      className="group flex w-full cursor-pointer items-center justify-between rounded-xl border border-border/60 bg-card p-4 text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       onClick={() => router.push(`/workspaces/${workspace.id}`)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          router.push(`/workspaces/${workspace.id}`)
+        }
+      }}
     >
       <div className="flex items-center gap-4">
         <div className="rounded-lg bg-primary/5 p-2 text-primary">
@@ -63,7 +71,7 @@ function WorkspaceListItem({ workspace, onDelete }: WorkspaceListItemProps) {
           </Button>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
