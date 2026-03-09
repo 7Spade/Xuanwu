@@ -147,6 +147,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const { state: authState } = useAuth()
   const { user, status } = authState
+  const userId = user?.id
   const [state, dispatch] = useReducer(appReducer, initialState)
 
   useEffect(() => {
@@ -154,8 +155,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     let unsubscribe: (() => void) | null = null
 
-    if (user?.id) {
-      const cached = readAccountsCache(user.id)
+    if (userId && user) {
+      const cached = readAccountsCache(userId)
 
       if (cached) {
         dispatch({
@@ -172,7 +173,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         dispatch({ type: 'SET_ACCOUNTS_LOADING' })
       }
 
-      unsubscribe = subscribeToAccountsForUser(user.id, (accounts) =>
+      unsubscribe = subscribeToAccountsForUser(userId, (accounts) =>
         dispatch({ type: 'SET_ACCOUNTS', payload: { accounts, user } }),
       )
     } else {
@@ -182,7 +183,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       if (unsubscribe) unsubscribe()
     }
-  }, [status, user])
+  }, [status, userId])
 
   useEffect(() => {
     if (status !== 'authenticated' || !user) return
@@ -191,7 +192,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // Guard against post-auth stream lag by seeding a deterministic personal account context.
     dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: user })
     dispatch({ type: 'SET_BOOTSTRAP_PHASE', payload: 'cache-ready' })
-  }, [status, user, state.activeAccount])
+  }, [status, userId, state.activeAccount])
 
   useEffect(() => {
     if (!user?.id || !state.accountsHydrated) return
