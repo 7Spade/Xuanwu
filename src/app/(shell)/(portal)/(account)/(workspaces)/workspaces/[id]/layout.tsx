@@ -79,7 +79,7 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
   const formattedAddress = workspace.address ? [workspace.address.street, workspace.address.city, workspace.address.state, workspace.address.country, workspace.address.postalCode].filter(Boolean).join(', ') : 'No address defined.';
 
   return (
-     <div className="gpu-accelerated mx-auto max-w-7xl space-y-8 pb-24 pt-1 duration-500 animate-in fade-in slide-in-from-bottom-2">
+     <div className="gpu-accelerated mx-auto max-w-7xl space-y-4 pb-16 pt-1 duration-500 animate-in fade-in slide-in-from-bottom-2 sm:space-y-6 sm:pb-20 md:space-y-8 md:pb-24">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Button
           variant="ghost"
@@ -90,8 +90,8 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
           <ArrowLeft className="size-4" />
         </Button>
         <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em]">
-          <span>Dimension Space</span>
-          <ChevronRight className="size-3 opacity-30" />
+          <span className="hidden sm:inline">Dimension Space</span>
+          <ChevronRight className="size-3 hidden opacity-30 sm:block" />
           <span className="text-foreground">{workspace.name}</span>
         </div>
       </div>
@@ -100,14 +100,14 @@ function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { work
         title={workspace.name}
         description="Manage this space's atomic capability stack, data exchange, and governance protocols."
       >
-        <div className="mb-2">
+        <div className="mb-2 max-w-full overflow-x-auto">
             <WorkspaceStatusBar />
         </div>
       </PageHeader>
       
       {workspace.address && (
-          <div className="-mt-3 flex items-center gap-4 rounded-2xl bg-background/70 p-4 shadow-sm ring-1 ring-border/60 backdrop-blur-sm">
-              <MapPin className="size-5 text-muted-foreground" />
+          <div className="-mt-3 flex items-center gap-3 rounded-2xl bg-background/70 p-3 shadow-sm ring-1 ring-border/60 backdrop-blur-sm sm:gap-4 sm:p-4">
+              <MapPin className="size-4 shrink-0 text-muted-foreground sm:size-5" />
               <p className="text-sm font-medium text-muted-foreground">{formattedAddress}</p>
           </div>
       )}

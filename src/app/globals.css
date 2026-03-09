@@ -153,3 +153,12 @@
 .dimension-glow {
   box-shadow: 0 0 20px -5px rgba(var(--primary), 0.3);
 }
+
+/* Mobile scrollbar suppression — used for horizontal-scroll nav containers */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

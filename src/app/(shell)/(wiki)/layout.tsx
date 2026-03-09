@@ -19,7 +19,7 @@ export default function WikiLayout({ children }: WikiLayoutProps) {
     <SidebarInset>
       <Header />
       <ThemeAdapter>
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6">{children}</div>
       </ThemeAdapter>
     </SidebarInset>
   );

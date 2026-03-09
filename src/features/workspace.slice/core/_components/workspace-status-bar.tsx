@@ -22,7 +22,7 @@ export function WorkspaceStatusBar() {
     : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Badge
         className="border-primary/20 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary"
       >

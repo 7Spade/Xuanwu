@@ -50,6 +50,7 @@ export function WorkspaceListHeader({
               size="sm"
               className="size-8 p-0"
               onClick={() => onViewModeChange("grid")}
+              aria-label="Grid view"
             >
               <LayoutGrid className="size-4" />
             </Button>
@@ -58,16 +59,21 @@ export function WorkspaceListHeader({
               size="sm"
               className="size-8 p-0"
               onClick={() => onViewModeChange("list")}
+              aria-label="List view"
             >
               <ListIcon className="size-4" />
             </Button>
           </div>
-          <Button className="h-10 gap-2 px-4 text-[11px] font-bold uppercase tracking-widest shadow-sm" onClick={() => router.push(ROUTES.WORKSPACES_NEW)}>
-            <Plus className="size-4" /> {t("workspaces.createSpace")}
+          <Button
+            className="h-10 gap-2 px-3 text-[11px] font-bold uppercase tracking-widest shadow-sm sm:px-4"
+            onClick={() => router.push(ROUTES.WORKSPACES_NEW)}
+          >
+            <Plus className="size-4" />
+            <span className="hidden sm:inline">{t("workspaces.createSpace")}</span>
           </Button>
         </div>
       </PageHeader>
-      <div className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/50 p-3 shadow-sm backdrop-blur-sm">
+      <div className="flex items-center gap-3 rounded-2xl border border-border/50 bg-card/50 p-3 shadow-sm backdrop-blur-sm">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -80,9 +86,10 @@ export function WorkspaceListHeader({
         <Button
           variant="outline"
           size="sm"
-          className="h-10 gap-2 rounded-xl border-border/60 px-4 text-xs font-bold uppercase tracking-widest"
+          className="h-10 gap-2 rounded-xl border-border/60 px-3 text-xs font-bold uppercase tracking-widest sm:px-4"
         >
-          <Filter className="size-3.5" /> {t("common.filter")}
+          <Filter className="size-3.5" />
+          <span className="hidden sm:inline">{t("common.filter")}</span>
         </Button>
       </div>
     </>
