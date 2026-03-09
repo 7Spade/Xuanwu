@@ -36,6 +36,11 @@ import { versionGuardAllows } from '@/shared-kernel';
 
 export type AclPermission = 'read' | 'write' | 'admin' | 'none';
 
+/** Serialisable record shape written to Firestore. */
+type AclProjectionRecord = Omit<AclProjectionEntry, 'updatedAt'> & {
+  updatedAt: ReturnType<typeof serverTimestamp>;
+};
+
 export interface AclProjectionEntry {
   /** Subject (accountId / userId) */
   subjectId: string;
@@ -87,9 +92,7 @@ export async function applyAclPermissionChanged(
     return;
   }
 
-  const record: Omit<AclProjectionEntry, 'updatedAt'> & {
-    updatedAt: ReturnType<typeof serverTimestamp>;
-  } = {
+  const record: AclProjectionRecord = {
     subjectId,
     resourceId,
     resourceType,

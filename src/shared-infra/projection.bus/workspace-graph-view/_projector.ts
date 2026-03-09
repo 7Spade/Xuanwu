@@ -97,7 +97,9 @@ export async function applyGraphNodeUpserted(
   const edges = existing?.edges ?? [];
   const idx = nodes.findIndex((n) => n.id === node.id);
   const updatedNodes =
-    idx >= 0 ? nodes.map((n) => (n.id === node.id ? node : n)) : [...nodes, node];
+    idx >= 0
+      ? [...nodes.slice(0, idx), node, ...nodes.slice(idx + 1)]
+      : [...nodes, node];
 
   await setDocument(docPath(workspaceId), {
     workspaceId,
@@ -134,7 +136,9 @@ export async function applyGraphEdgeUpserted(
   const edges = existing?.edges ?? [];
   const idx = edges.findIndex((e) => e.id === edge.id);
   const updatedEdges =
-    idx >= 0 ? edges.map((e) => (e.id === edge.id ? edge : e)) : [...edges, edge];
+    idx >= 0
+      ? [...edges.slice(0, idx), edge, ...edges.slice(idx + 1)]
+      : [...edges, edge];
 
   await setDocument(docPath(workspaceId), {
     workspaceId,

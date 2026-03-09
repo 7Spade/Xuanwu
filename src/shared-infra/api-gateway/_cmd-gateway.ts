@@ -21,7 +21,7 @@
  *   - Must never accept read requests (reads route through QRY_API_GW).
  */
 
-import type { AuthoritySnapshot } from '@/shared-kernel';
+import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
 import { dispatchCommand } from '@/shared-infra/gateway-command';
 import type { GatewayCommand, DispatchOptions } from '@/shared-infra/gateway-command';
 
@@ -40,7 +40,7 @@ import type { GatewayCommand, DispatchOptions } from '@/shared-infra/gateway-com
 export async function cmdApiGateway<TCmd extends GatewayCommand>(
   command: TCmd,
   opts?: DispatchOptions
-): Promise<Awaited<ReturnType<typeof dispatchCommand>>> {
+): Promise<CommandResult> {
   return dispatchCommand(command, opts);
 }
 
