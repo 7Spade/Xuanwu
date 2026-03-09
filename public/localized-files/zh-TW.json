@@ -22,7 +22,14 @@
     "confirmCreation": "確認建立",
     "saving": "儲存中...",
     "i18nEnforcedTitle": "強制使用 i18n",
-    "i18nEnforcedDescription": "所有 UI 文案必須使用 i18n key，不可直接硬編碼。"
+    "i18nEnforcedDescription": "所有 UI 文案必須使用 i18n key，不可直接硬編碼。",
+    "switchLanguage": "切換語言",
+    "languageEnglish": "English",
+    "languageTraditionalChinese": "繁體中文",
+    "toggleTheme": "切換主題",
+    "light": "亮色",
+    "dark": "暗色",
+    "system": "系統"
   },
   "auth": {
     "login": "登入",

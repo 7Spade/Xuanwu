@@ -22,7 +22,14 @@
     "confirmCreation": "Confirm Creation",
     "saving": "Saving...",
     "i18nEnforcedTitle": "i18n Required",
-    "i18nEnforcedDescription": "All UI text must use i18n keys and must not be hardcoded."
+    "i18nEnforcedDescription": "All UI text must use i18n keys and must not be hardcoded.",
+    "switchLanguage": "Switch language",
+    "languageEnglish": "English",
+    "languageTraditionalChinese": "Traditional Chinese",
+    "toggleTheme": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "auth": {
     "login": "Login",

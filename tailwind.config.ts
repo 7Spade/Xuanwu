@@ -8,8 +8,8 @@ export default {
   theme: {
   	extend: {
   		fontFamily: {
-  			sans: sansFontStack,
-  			headline: sansFontStack,
+  			sans: 'sansFontStack',
+  			headline: 'sansFontStack',
   			code: [
   				'monospace'
   			]
