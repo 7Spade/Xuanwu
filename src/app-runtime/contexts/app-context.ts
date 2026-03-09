@@ -12,9 +12,12 @@ import { createContext, type Dispatch } from 'react'
 import type { CapabilitySpec } from '@/features/workspace.slice'
 import { type Account, type Notification } from '@/shared-kernel'
 
+export type AppBootstrapPhase = 'idle' | 'cache-ready' | 'stream-ready'
+
 export interface AppState {
   accounts: Record<string, Account>
   accountsHydrated: boolean
+  bootstrapPhase: AppBootstrapPhase
   activeAccount: Account | null
   notifications: Notification[]
   capabilitySpecs: CapabilitySpec[]
@@ -23,6 +26,7 @@ export interface AppState {
 
 export type AppAction =
   | { type: 'SET_ACCOUNTS_LOADING' }
+  | { type: 'SET_BOOTSTRAP_PHASE'; payload: AppBootstrapPhase }
   | { type: 'HYDRATE_ACCOUNTS_CACHE'; payload: { accounts: Record<string, Account>; user: Account; lastActiveAccountId: string | null } }
   | { type: 'SET_ACCOUNTS'; payload: { accounts: Record<string, Account>; user: Account } }
   | { type: 'SET_ACTIVE_ACCOUNT'; payload: Account | null }

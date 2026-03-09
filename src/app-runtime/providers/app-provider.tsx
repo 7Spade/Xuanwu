@@ -39,6 +39,7 @@ import { useAuth } from './auth-provider'
 const initialState: AppState = {
   accounts: {},
   accountsHydrated: false,
+  bootstrapPhase: 'idle',
   activeAccount: null,
   notifications: [],
   capabilitySpecs: [
@@ -65,7 +66,11 @@ const initialState: AppState = {
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case 'SET_ACCOUNTS_LOADING':
-      return { ...state, accountsHydrated: false }
+      return { ...state, accountsHydrated: false, bootstrapPhase: 'idle' }
+
+    case 'SET_BOOTSTRAP_PHASE':
+      if (state.bootstrapPhase === action.payload) return state
+      return { ...state, bootstrapPhase: action.payload }
 
     case 'HYDRATE_ACCOUNTS_CACHE': {
       const { accounts, user, lastActiveAccountId } = action.payload
@@ -78,6 +83,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         accounts,
         accountsHydrated: true,
+        bootstrapPhase: 'cache-ready',
         activeAccount: cachedActiveAccount,
       }
     }
@@ -99,7 +105,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
         // Refresh optimistic organization payload with canonical snapshot data.
         newActiveAccount = { ...accounts[newActiveAccount.id], accountType: 'organization' }
       }
-      return { ...state, accounts, accountsHydrated: true, activeAccount: newActiveAccount }
+      return {
+        ...state,
+        accounts,
+        accountsHydrated: true,
+        bootstrapPhase: 'stream-ready',
+        activeAccount: newActiveAccount,
+      }
     }
 
     case 'ADD_NOTIFICATION': {
@@ -155,6 +167,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           },
         })
       } else {
+        dispatch({ type: 'SET_BOOTSTRAP_PHASE', payload: 'idle' })
         dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: user })
         dispatch({ type: 'SET_ACCOUNTS_LOADING' })
       }
