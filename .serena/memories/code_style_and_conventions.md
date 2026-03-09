@@ -1,0 +1,8 @@
+- Use architectural SSOT before business logic changes.
+- Respect layer and slice boundaries; do not bypass public contracts.
+- Keep side effects in application/execution layers.
+- Prefer command-first workflow for search/validation (lint, typecheck, path checks).
+- TypeScript/React code should use clear semantic naming and explicit public boundaries.
+- Avoid hardcoded UI strings; use i18n keys.
+- Keep comments intent-focused and minimal; avoid obvious comments.
+- Security baseline: no hardcoded secrets, use env vars; apply OWASP-aligned safe coding patterns.
