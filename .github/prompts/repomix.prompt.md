@@ -1,7 +1,7 @@
 ---
 name: tool-repomix
 description: 'Use repomix to package repository context before architecture analysis, cross-file refactoring, or deep diagnostics.'
-tools: ['repomix']
+tools: ['repomix/*']
 agent: 'agent'
 ---
 

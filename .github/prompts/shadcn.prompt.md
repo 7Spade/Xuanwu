@@ -1,7 +1,7 @@
 ---
 name: tool-shadcn
 description: 'shadcn/ui implementation guard for component reuse, theme token consistency, and accessibility.'
-tools: ['shadcn']
+tools: ['shadcn/*']
 agent: 'agent'
 ---
 

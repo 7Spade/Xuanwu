@@ -2,7 +2,7 @@
 name: x-arch-auditor
 description: 'Architecture compliance audit. Cross-checks against project documentation to detect layer violations, naming drift, and boundary intrusions.'
 agent: 'agent'
-tools: ['repomix', 'sequential-thinking', 'software-planning']
+tools: ['repomix/*', 'sequentialthinking/*', 'software-planning/*']
 argument-hint: 'Target directory or slice to audit, e.g.: src/features/workspace.slice'
 ---
 

@@ -2,7 +2,7 @@
 name: x-arch-sync
 description: 'Synchronize architectural documentation with code reality. Identifies divergence between docs/ and implementation and updates the authoritative documents.'
 agent: 'agent'
-tools: ['repomix', 'sequential-thinking', 'software-planning', 'edit/editFiles']
+tools: ['repomix/*', 'sequentialthinking/*', 'software-planning/*', 'edit/editFiles']
 ---
 
 # Architecture Documentation Sync Specialist

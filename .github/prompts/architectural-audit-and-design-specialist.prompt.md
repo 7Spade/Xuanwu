@@ -2,7 +2,7 @@
 name: architectural-audit-and-design-specialist
 description: 'Architecture audit specialist for cross-layer compliance and bounded-context design quality.'
 agent: 'agent'
-tools: ['search/codebase', 'repomix', 'sequential-thinking', 'software-planning']
+tools: ['search/codebase', 'repomix/*', 'sequentialthinking/*', 'software-planning/*']
 ---
 
 # Architecture Audit & Design Specialist

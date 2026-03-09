@@ -2,7 +2,7 @@
 name: x-arch-graph-pruner
 description: 'Knowledge graph maintenance and pruning. Cleans up outdated or contradictory architecture memories to maintain a high-quality knowledge base.'
 agent: 'agent'
-tools: ['memory', 'sequential-thinking']
+tools: ['memory/*', 'sequentialthinking/*']
 ---
 
 # Knowledge Graph Pruner

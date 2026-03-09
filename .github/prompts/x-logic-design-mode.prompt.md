@@ -3,7 +3,7 @@ name: 邏輯設計模式
 description: "以架構正確性優先，產出可落地的設計方案（非最小/最快導向）"
 argument-hint: "輸入需求、範圍、限制條件，例如：重構 VS0/VS7 事件出口模型"
 agent: 'agent'
-tools: ['search/codebase', 'edit/editFiles', 'sequential-thinking', 'software-planning', 'memory']
+tools: ['search/codebase', 'edit/editFiles', 'sequentialthinking/*', 'software-planning/*', 'memory/*']
 ---
 
 # 邏輯設計模式

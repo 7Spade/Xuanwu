@@ -2,7 +2,7 @@
 name: x-arch-adr
 description: 'Architecture Decision Record (ADR) author. Formally captures significant technical decisions and their rationale for long-term governance reference.'
 agent: 'agent'
-tools: ['repomix', 'sequential-thinking', 'software-planning', 'edit/editFiles']
+tools: ['repomix/*', 'sequentialthinking/*', 'software-planning/*', 'edit/editFiles']
 argument-hint: 'Describe the architectural decision to capture, e.g.: introduce CQRS gateway pattern'
 ---
 

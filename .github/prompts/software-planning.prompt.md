@@ -1,7 +1,7 @@
 ---
 name: tool-software-planning
 description: 'Use software-planning to decompose complex work into trackable tasks and reduce implementation risk.'
-tools: ['software-planning']
+tools: ['software-planning/*']
 agent: 'agent'
 ---
 
