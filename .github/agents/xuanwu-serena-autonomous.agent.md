@@ -2,11 +2,12 @@
 name: xuanwu-serena-autonomous
 description: Autonomous Xuanwu Serena executor with strict context7-first flow and repository-safe implementation.
 argument-hint: "Task objective, scope, constraints, and acceptance criteria"
-model: GPT-5.3-Codex
 tools:
   - io.github.upstash/context7/*
   - sequentialthinking/*
+  - software-planning/*
   - oraios/serena/*
+  - agent
 user-invocable: true
 ---
 
