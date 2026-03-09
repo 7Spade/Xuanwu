@@ -28,7 +28,7 @@
  *   WORKSPACE_EVENT_BUS + ORGANIZATION_EVENT_BUS + TAG_LIFECYCLE_BUS
  *     → EVENT_FUNNEL_INPUT → all projection slices
  *
- * External consumers import from '@/features/projection.bus'.
+ * External consumers import from '@/shared-infra/projection.bus'.
  * Consumers call once at app startup:
  *   registerWorkspaceFunnel(bus)
  *   registerOrganizationFunnel()
@@ -122,6 +122,20 @@ export { getTagSnapshot, getAllTagSnapshots, getActiveTagSnapshots } from './tag
 export type { TagSnapshotEntry } from './tag-snapshot';
 
 // =================================================================
+// account-schedule — ACCOUNT_SCHEDULE_PROJECTION [S2] STD ≤10s
+// =================================================================
+export {
+  initAccountScheduleProjection,
+  applyScheduleAssigned,
+  applyScheduleCompleted,
+} from './account-schedule';
+export type {
+  AccountScheduleProjection,
+  AccountScheduleAssignment,
+} from './account-schedule';
+export { getAccountScheduleProjection, getAccountActiveAssignments } from './account-schedule';
+
+// =================================================================
 // demand-board — DEMAND_BOARD_PROJECTION
 // =================================================================
 export {
@@ -194,3 +208,38 @@ export type { WorkspaceScopeGuardView, WorkspaceScopeGrantEntry } from './worksp
 export { getWorkspaceView, getWorkspaceCapabilities } from './workspace-view';
 export { projectWorkspaceSnapshot, applyCapabilityUpdate } from './workspace-view';
 export type { WorkspaceViewRecord } from './workspace-view';
+
+// =================================================================
+// acl-projection — ACL_PROJECTION [D31] CRITICAL ≤500ms
+// =================================================================
+export { applyAclPermissionChanged, applyAclPermissionRevoked } from './acl-projection';
+export type { AclProjectionEntry, AclPermission } from './acl-projection';
+export { getAclProjectionEntry, hasAclPermission } from './acl-projection';
+
+// =================================================================
+// tasks-view — TASKS_VIEW [D27-Order] STD ≤10s
+// =================================================================
+export { applyTaskUpserted, applyTaskStatusChanged } from './tasks-view';
+export type { TaskViewEntry, TaskStatus } from './tasks-view';
+export { getTaskViewEntry, getTasksView, getTasksViewByStatus } from './tasks-view';
+
+// =================================================================
+// workspace-graph-view — WORKSPACE_GRAPH_VIEW STD ≤10s
+// =================================================================
+export { applyGraphNodeUpserted, applyGraphEdgeUpserted, applyGraphNodeRemoved } from './workspace-graph-view';
+export type { WorkspaceGraphView, GraphNode, GraphEdge } from './workspace-graph-view';
+export { getWorkspaceGraphView, getWorkspaceGraphNodes, getWorkspaceGraphEdges } from './workspace-graph-view';
+
+// =================================================================
+// finance-staging-pool — FINANCE_STAGING_POOL [#A20] STD ≤10s
+// =================================================================
+export { applyTaskAcceptedToPool, applyFinanceStagingLocked, applyFinanceStagingRemoved } from './finance-staging-pool';
+export type { FinanceStagingEntry, FinanceStagingStatus } from './finance-staging-pool';
+export { getFinanceStagingPool, getFinanceStagingByStatus, getPendingFinanceStagingItems } from './finance-staging-pool';
+
+// =================================================================
+// task-finance-label-view — TASK_FINANCE_LABEL_VIEW [#A22] STD ≤10s
+// =================================================================
+export { applyFinanceLabelUpdated, applyTaskAcceptedLabel } from './task-finance-label-view';
+export type { TaskFinanceLabelEntry, FinanceLabelStatus } from './task-finance-label-view';
+export { getTaskFinanceLabel, getTaskFinanceLabels } from './task-finance-label-view';
