@@ -13,11 +13,33 @@ tools:
   - agent
   - browser
   - web
+  - chrome-devtools-mcp/*
+  - eslint/*
+  - everything/*
+  - filesystem/*
   - io.github.upstash/context7/*
+  - memory/*
+  - microsoft/markitdown/*
+  - next-devtools/*
+  - repomix/*
   - sequentialthinking/*
-  - software-planning/*
+  - shadcn/*
+  - awesome-copilot/*
+  - playwright/*
   - oraios/serena/*
-  - agent
+  - software-planning/*
+  - vscode.mermaid-chat-features/renderMermaidDiagram
+  - github.vscode-pull-request-github/issue_fetch
+  - github.vscode-pull-request-github/labels_fetch
+  - github.vscode-pull-request-github/notification_fetch
+  - github.vscode-pull-request-github/doSearch
+  - github.vscode-pull-request-github/activePullRequest
+  - github.vscode-pull-request-github/pullRequestStatusChecks
+  - github.vscode-pull-request-github/openPullRequest
+  - ms-toolsai.jupyter/configureNotebook
+  - ms-toolsai.jupyter/listNotebookPackages
+  - ms-toolsai.jupyter/installNotebookPackages
+  - todo
   
 user-invocable: true
 ---
