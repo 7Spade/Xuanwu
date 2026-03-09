@@ -22,7 +22,21 @@ import { FirebaseContext } from '../contexts/firebase-context';
 
 export function FirebaseClientProvider({ children }: { children: ReactNode; }) {
   useEffect(() => {
-    ensureAppCheckInitialized();
+    const run = () => {
+      ensureAppCheckInitialized();
+    };
+
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(run);
+      return () => {
+        window.cancelIdleCallback(idleId);
+      };
+    }
+
+    const timeoutId = window.setTimeout(run, 0);
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const value = { app, db, auth, storage };

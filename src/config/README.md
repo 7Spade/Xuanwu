@@ -68,6 +68,7 @@ Non-environment constants that are referenced across multiple layers — route p
 | Variable type | Prefix / location | Visibility |
 |--------------|-------------------|------------|
 | Firebase SDK config | `NEXT_PUBLIC_FIREBASE_*` | Client + Server |
+| Firebase App Check | `NEXT_PUBLIC_FIREBASE_APP_CHECK_*` | Client |
 | Server-only API keys | `SECRET_*` or no prefix | Server only |
 | Feature flags | `NEXT_PUBLIC_FF_*` | Client + Server |
 | Staleness SLA constants | `SK_STALENESS_CONTRACT` in `src/features/shared-kernel` | Server |

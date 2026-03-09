@@ -9,6 +9,13 @@ npm install
 npm run dev
 ```
 
+### Environment Variables (Firebase App Check)
+
+- `NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY`: reCAPTCHA v3 site key used by Firebase App Check on web.
+- `NEXT_PUBLIC_FIREBASE_APP_CHECK_ENABLED`: optional toggle (`true` by default, set `false` for local troubleshooting).
+
+If no site key is provided, App Check is skipped by design and the app continues with best-effort behavior.
+
 ## AI Instruction System
 
 This repository uses VS Code Copilot custom instructions:

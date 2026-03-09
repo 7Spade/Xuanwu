@@ -24,6 +24,8 @@ type PortalLayoutProps = {
   children: ReactNode;
 };
 
+const AUTH_RESTORE_TIMEOUT_MS = 8000;
+
 export default function PortalLayout({ children }: PortalLayoutProps) {
   const { state } = useAuth();
   const { user, authInitialized } = state;
@@ -33,9 +35,23 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
 
   useEffect(() => {
     if (authInitialized && !user && !isPublicRoot) {
-      router.push("/");
+      router.replace("/");
     }
   }, [user, authInitialized, isPublicRoot, router]);
+
+  useEffect(() => {
+    if (authInitialized || isPublicRoot) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      window.location.replace("/");
+    }, AUTH_RESTORE_TIMEOUT_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [authInitialized, isPublicRoot]);
 
   if (!authInitialized && !isPublicRoot) {
     return (

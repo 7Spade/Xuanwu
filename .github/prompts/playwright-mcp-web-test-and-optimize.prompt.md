@@ -1,7 +1,6 @@
 ---
 name: playwright-mcp-web-test-and-optimize
 agent: 'agent'
-tools: ['playwright-browser_*', 'next-devtools', 'edit/editFiles']
 description: 'Run browser verification with Playwright MCP and combine with next-devtools diagnostics for root-cause-safe fixes.'
 ---
 
