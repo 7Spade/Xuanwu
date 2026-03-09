@@ -9,9 +9,9 @@
 
 ---
 
-## VS0–VS8 路徑對照表（Path Map）
+## VS0–VS9 路徑對照表（Path Map）
 
-### 垂直域索引（VS0–VS8）
+### 垂直域索引（VS0–VS9）
 
 | 編號 | 名稱 | 說明 |
 |------|------|------|
@@ -24,6 +24,7 @@
 | `VS6` | Workforce Scheduling | 排班與職能配對 |
 | `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
 | `VS8` | Semantic Graph Engine | 語義圖譜引擎 |
+| `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
 
 ### 目標路徑（Source Path）
 
@@ -40,6 +41,7 @@ VS5 = src/features/workspace.slice
 VS6 = src/features/workforce-scheduling.slice
 VS7 = src/features/notification-hub.slice
 VS8 = src/features/semantic-graph.slice
+VS9 = src/features/finance.slice
 ```
 
 ### VS0 細分規則
@@ -59,7 +61,7 @@ VS8 = src/features/semantic-graph.slice
 | `L0A` | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）→ L2 Write Path ／ `QRY_API_GW`（read-only ingress）→ L6 Read Path；`UNIFIED_GW` 讀寫分離統一閘道的入口 | `src/shared-infra/api-gateway/` |
 | `L1` | Shared Kernel | 契約/常數/純函式（No I/O, No Side Effects） | `src/shared-kernel/` |
 | `L2` | Command Gateway（Write Path） | CBG_ENTRY（TraceID 注入唯一點）/ CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` Write Pipeline | `src/shared-infra/gateway-command/` |
-| `L3` | Domain Slices | VS1–VS8 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
+| `L3` | Domain Slices | VS1–VS9 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
 | `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
@@ -142,6 +144,8 @@ src/shared-infra/
 > **CQRS Gateway（讀寫分離統一閘道）**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在圖中合一為 `UNIFIED_GW`，以讀寫分離為唯一切割線。詳見 [`01-logical-flow.md §三條主鏈`](./01-logical-flow.md)
 >
 > **L2 Command Gateway 邊界規則**（可下沉 L1 元件 / MUST stay at L2 / D8・D10 禁止）→ [`02-governance-rules.md §L2 Command Gateway 邊界規則`](./02-governance-rules.md#l2-command-gateway-邊界規則d8--d10-附則)
+>
+> **[D29] Transactional Outbox Pattern**：`CBG_ROUTE` 提供 `TransactionalCommand` 基類；所有 VS 切片的 Command Handler 必須在同一 Firestore Transaction 中完成 Aggregate 寫入 + `{slice}/_outbox` 寫入。禁止在 Transaction 外部以雙步驟執行。
 
 ---
 
@@ -151,8 +155,8 @@ src/shared-infra/
 
 | Lane | 消費場景 | 處理器 | 特性 |
 |------|----------|--------|------|
-| `CRITICAL_LANE` | RoleChanged / PolicyChanged / Security events | CLAIMS_HANDLER | 即時，不批次；完成 S6 `SK_TOKEN_REFRESH_CONTRACT` |
-| `STANDARD_LANE` | Domain events / Projections / Notifications | STANDARD_PROJ + VS7 notification-router | Eventual consistency |
+| `CRITICAL_LANE` | RoleChanged / PolicyChanged / Security events / **TaskAcceptedConfirmed [#A19]** | CLAIMS_HANDLER / **finance-staging.acl [#A20]** | 即時，不批次；完成 S6 `SK_TOKEN_REFRESH_CONTRACT`；TaskAcceptedConfirmed → Finance Staging Pool 金融事實低延遲 |
+| `STANDARD_LANE` | Domain events / Projections / Notifications / **FinanceRequestStatusChanged [#A22]** | STANDARD_PROJ + VS7 notification-router / **task-finance-label-view** | Eventual consistency |
 | `BACKGROUND_LANE` | Analytics / TagLifecycleEvent / Observability | — | Best-effort |
 
 ### DLQ 分級（S1 合規要求）
@@ -160,15 +164,15 @@ src/shared-infra/
 | DLQ 分級 | 適用場景 | 恢復策略 |
 |----------|----------|----------|
 | `SAFE_AUTO` | 冪等操作（通知投遞失敗等） | 自動 retry backoff |
-| `REVIEW_REQUIRED` | 財務 / 排班 / 角色變更 | 人工審查後手動 replay |
-| `SECURITY_BLOCK` | 安全事件（RoleChanged / PolicyChanged） | 凍結 + 警報，禁止自動 replay |
+| `REVIEW_REQUIRED` | 財務 / 排班 / 角色變更 / **Finance_Request 事件 [#A21]** | 人工審查後手動 replay |
+| `SECURITY_BLOCK` | 安全事件（RoleChanged / PolicyChanged）/ CircularDependencyDetected [D30] | 凍結 + 警報，禁止自動 replay |
 
 ### Outbox relay-worker CDC 鏈路
 
 ```
 Firestore onSnapshot (CDC)
-  → outbox-relay-worker
-    → L4 IER Lane Router
+  → outbox-relay-worker [R9: 驗證 traceId 必帶；AsyncLocalStorage 傳遞上下文]
+    → L4 IER Lane Router [D30: hopCount++ → ≥4 → SECURITY_BLOCK + CircularDependencyDetected]
       → [CRITICAL / STANDARD / BACKGROUND]
         → Projectors / Handlers / Subscribers
           → failure: retry backoff → 3 次失敗 → DLQ
@@ -186,6 +190,7 @@ Firestore onSnapshot (CDC)
 | `workspace-scope-guard-view` | [A9] |
 | `org-eligible-member-view`（含 `skills{tagSlug→xp}` / eligible） | [#14 #15 #16] |
 | `wallet-balance`（display 用 EVENTUAL_READ） | [S3 A1] |
+| `acl-projection`（讀取路徑權限鏡像）[D31] | CBG_AUTH 權限變更 → L5 同步更新；QRY_API_GW 自動 JOIN 過濾 |
 
 ### Standard Projections（PROJ_STALE_STANDARD ≤ 10s）[S4]
 
@@ -203,8 +208,24 @@ Firestore onSnapshot (CDC)
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；供 vis-network 消費 [D28] |
+| `task-semantic-view` | 任務語義視圖 [O3]；同時包含 `required_skills`（Graph REQUIRES 邊）與 `eligible_persons`（skill-matcher 推理）；兩者缺一則投影不完整 |
+| `causal-audit-log` | 因果審計日誌 [O4]；每條記錄必含 `inferenceTrace[]` + `traceId`（從 event-envelope 讀取，禁止重新生成）|
+| `finance-staging-pool` | 待請款池：已驗收未請款任務清單；消費 `TaskAcceptedConfirmed`（CRITICAL_LANE）；狀態：`PENDING` ｜ `LOCKED_BY_FINANCE` [#A20] |
+| `task-finance-label-view` | 任務金融顯示標籤；消費 `FinanceRequestStatusChanged`（STANDARD_LANE）；欄位：taskId, financeStatus, requestId, requestLabel [#A22] |
 
 > **規則**：`getTier(xp) → Tier` 是純函式 [#12]；Tier 是推導值，永遠不存 DB。
+
+### L5 Worker Pool 分流（Dynamic Backpressure）[P8]
+
+> L5 `FUNNEL` 依 `priorityLane` 分配 Worker Pool Quota；對同一 `docId` 的高密度投影進行 Debounce/Batching，100ms 內合併為 1 次寫入。
+
+| priorityLane | Worker Pool | Debounce |
+|---|---|---|
+| `CRITICAL_LANE` | 高配額（Critical 不批次） | 禁用（即時寫入） |
+| `STANDARD_LANE` | 中配額 | 100ms 同 doc Batching |
+| `BACKGROUND_LANE` | 低配額 | 100ms 同 doc Batching |
+
+> **規則**：Worker Pool 配額邊界必須引用 `SK_STALENESS_CONTRACT` SLA 常數，禁止硬寫數字 [P8 S4]。
 
 ---
 
@@ -221,9 +242,14 @@ Firestore onSnapshot (CDC)
 | `account-view` | 帳戶資料（含 FCM Token）；`notification-feed-view` RTDB 即時通知串流（via L7-A RTDBAdapter） | [#6] |
 | `workspace-scope-guard-view` | Scope Guard 快路徑 | [A9] |
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
-| `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |
+| `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5 O2] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
+| `task-semantic-view` | 任務語義視圖（required_skills + eligible_persons）；VS5 消費以顯示任務語義資訊；投影不完整時禁止對外提供 | [O3] |
+| `causal-audit-log` | 因果審計日誌（inferenceTrace[] + traceId）；合規稽核路徑 | [O4 R8] |
+| `acl-projection` | 讀取路徑權限鏡像；QRY_API_GW 讀取自動 JOIN 過濾（禁止讀路徑重新執行 Aggregate 鑑權）| [D31] |
+| `finance-staging-pool` | 待請款池（已驗收未請款任務清單）；財務人員操作界面消費此路由 | [#A20] |
+| `task-finance-label-view` | 任務金融顯示標籤（financeStatus, requestId, requestLabel）；任務列表 UI 合成顯示金融狀態 | [#A22] |
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
@@ -301,7 +327,9 @@ Firestore onSnapshot (CDC)
 | `RATE_LIM hits` | Rate limit 命中次數（按 user+org） | [S5] |
 | `CIRCUIT state` | Circuit breaker 狀態（consecutive 5xx） | [S5] |
 | `domain-metrics` | IER Lane 吞吐量/延遲，DLQ 事件 | [R5] |
-| `DOMAIN_ERRORS` | DLQ 事件 / failed relay / circuit-open | [R5] |
+| `DOMAIN_ERRORS` | DLQ 事件 / failed relay / circuit-open / CircularDependencyDetected [D30] | [R5] |
+| `hopCount-alerts` | L4 IER 循環依賴偵測（hopCount ≥ 4）告警事件 | [D30] |
+| `context-propagation-miss` | outbox-relay-worker 缺少 traceId 的投遞拒絕事件 | [R9] |
 | `findIsolatedNodes` | VS8 拓撲健康探針，孤立節點寫入 L9 | [D21-10 T7] |
 | `global-audit-view` | 全域審計日誌（含 traceId） | [R8] |
 
@@ -319,15 +347,36 @@ Firestore onSnapshot (CDC)
 
 ### 待遷移（Migration Target）
 
+> **遷移原則**：所有待遷移項目以**架構正確性優先原則**為最高指引。遷移是**結構性修正（Structural Correction）**，而非補丁式修補。G/C/E/O/B 規則落地是消除 VS8 P1-P10 架構缺陷的正式規範實作，遵循奧卡姆剃刀：正確的抽象與職責邊界，而非最少實作。
+
 - [ ] D24 違規：43 個檔案仍直接 import `firebase/*` → 須遷移至 FIREBASE_ACL Adapter
 - [ ] VS8 Semantic Graph Compute Engine（四層語義引擎正式落地）[D21]
+- [ ] VS8 G/C/E/O/B 正規規則落地：skill-matcher、ISemanticClassificationPort、ISkillMatchPort、ISemanticFeedbackPort Port 介面實作 [O1 E4 E7]
+- [ ] VS8 projection.task-semantic-view 實作：required_skills（REQUIRES 邊）+ eligible_persons（skill-matcher）[O3]
+- [ ] VS8 projection.causal-audit-log 實作：每條記錄含 inferenceTrace[] + traceId [O4 E6 R8]
+- [ ] VS8 SemanticRouteHint contract 實作：routing-engine 只輸出 hint；禁止持有副作用 [E11]
+- [ ] VS8 inferenceTrace[] 強制輸出：cost-item-classifier 三步推理全程可審計 [E5 E6]
+- [ ] VS8 learning-engine ISemanticFeedbackPort 強制邊界：只接受 VS3/VS5 事實事件 [E9]
+- [ ] VS8 invariant-guard G3 規則落地：COMPLIANCE TaskNode 必須有 cert_required Skill [G3]
+- [ ] VS8 staleness-monitor 引用 SK_STALENESS_CONTRACT [G6 S4]
+- [ ] VS8 B3 邊界驗證：AI Flow (L10 Genkit) 只透過 ISemanticClassificationPort / ISkillMatchPort 存取 VS8；禁止直呼內部模組 [B3 O1]
+- [ ] VS8 B4 認識論分離：IS_A 分類學（本體論）與向量縮範（認識論工具）各自獨立，禁止以一者替代另一者 [B4 C11]
+- [ ] VS8 B5 主體圖邊界：VS8 只推論因果鏈；因果物化、排班、通知副作用必須通過 IER+L5 承載 [B5 B1]
 - [ ] VS4 org-semantic-registry（組織語義字典）[D21-1 A18]
 - [ ] L10 AI Runtime（Genkit Flow Gateway / Tool ACL）[E8]
 - [ ] App Check 全面啟用 [E7]
 - [ ] L9 Observability（metrics/trace dashboard）[R1 R5 R8]
 - [ ] Skill XP Award Contract 完整驗收 [A17]
-- [ ] Multi-Claim Cycle Contract 完整驗收 [A16]
 - [ ] D28 Visualization Bus：`VisDataAdapter` DataSet<> 快取實作；vis-network/vis-timeline/vis-graph3d 消費層遷移 [D28]
+- [ ] D29 Transactional Outbox：L2 `TransactionalCommand` 基類實作；所有 VS 切片 Command Handler 遷移至單一 Firestore TX [D29]
+- [ ] D30 Hop Limit：`SK_ENV.hopCount` 欄位加入；L4 IER 實作 hopCount 遞增與臨界值攔截 [D30]
+- [ ] P8 Dynamic Backpressure：L5 FUNNEL Worker Pool 分流 + Debounce/Batching 實作 [P8]
+- [ ] D31 Permission Projection：`projection.acl-projection` 實作；L6 Query Gateway JOIN 過濾接入 [D31]
+- [ ] R9 Context Propagation Middleware：AsyncLocalStorage 上下文傳遞實作；前端 `x-trace-id` 自動注入 [R9]
+- [ ] VS5 Task Lifecycle Convergence：任務狀態機 IN_PROGRESS→PENDING_QUALITY→PENDING_ACCEPTANCE→ACCEPTED 落地；task-accepted-validator 實作；TaskAcceptedConfirmed 與狀態變更同一 Firestore TX [#A19 D29]
+- [ ] VS9 Finance Slice：`src/features/finance.slice` 建立；Finance_Staging_Pool 實作；Finance_Request Aggregate（DRAFT→AUDITING→DISBURSING→PAID）落地 [#A21]
+- [ ] VS9 finance-staging-pool Projection：消費 CRITICAL_LANE TaskAcceptedConfirmed；LOCKED_BY_FINANCE 鎖定邏輯 [#A20]
+- [ ] VS9 task-finance-label-view Projection：消費 STANDARD_LANE FinanceRequestStatusChanged；逆向更新任務金融顯示標籤 [#A22]
 
 ---
 
