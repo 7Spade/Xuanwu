@@ -6,6 +6,7 @@
  */
 
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+
 import type { WorkspaceGraphView, GraphNode, GraphEdge } from './_projector';
 
 /**

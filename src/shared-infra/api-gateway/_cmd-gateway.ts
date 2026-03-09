@@ -22,6 +22,7 @@
  */
 
 import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
+
 import { dispatchCommand } from '@/shared-infra/gateway-command';
 import type { GatewayCommand, DispatchOptions } from '@/shared-infra/gateway-command';
 

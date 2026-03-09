@@ -6,7 +6,16 @@
  */
 
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+
 import type { AclProjectionEntry, AclPermission } from './_projector';
+
+// Module-level constant avoids repeated object allocation on every hasAclPermission call.
+const PERMISSION_RANK: Record<AclPermission, number> = {
+  none: 0,
+  read: 1,
+  write: 2,
+  admin: 3,
+};
 
 /**
  * Get the ACL entry for a subject/resource pair [D31].
@@ -30,13 +39,6 @@ export async function hasAclPermission(
 ): Promise<boolean> {
   const entry = await getAclProjectionEntry(subjectId, resourceId);
   if (!entry || entry.permission === 'none') return false;
-
-  const PERMISSION_RANK: Record<AclPermission, number> = {
-    none: 0,
-    read: 1,
-    write: 2,
-    admin: 3,
-  };
 
   return PERMISSION_RANK[entry.permission] >= PERMISSION_RANK[requiredPermission];
 }

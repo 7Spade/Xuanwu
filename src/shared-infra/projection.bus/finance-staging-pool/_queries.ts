@@ -13,6 +13,7 @@ import {
   type QueryDocumentSnapshot,
   type DocumentData,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+
 import type { FinanceStagingEntry, FinanceStagingStatus } from './_projector';
 
 /**

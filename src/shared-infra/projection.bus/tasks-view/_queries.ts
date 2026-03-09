@@ -14,6 +14,7 @@ import {
   type DocumentData,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+
 import type { TaskViewEntry, TaskStatus } from './_projector';
 
 /**
@@ -30,6 +31,10 @@ export async function getTaskViewEntry(
  * Get all tasks in a workspace, ordered per [D27-Order]:
  * - Primary: createdAt ascending (inter-batch)
  * - Secondary: sourceIntentIndex ascending (intra-batch)
+ *
+ * NOTE: Ordering is applied client-side. For production scale, add a Firestore
+ * composite index on (createdAt ASC, sourceIntentIndex ASC) and use Firestore
+ * orderBy clauses to push ordering to the server.
  */
 export async function getTasksView(workspaceId: string): Promise<TaskViewEntry[]> {
   const q = query(collection(db, `tasksView/${workspaceId}/tasks`));

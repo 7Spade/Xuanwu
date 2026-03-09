@@ -140,7 +140,9 @@ export async function applyFinanceStagingRemoved(
 
   await setDocument(docPath(orgId, taskId), {
     ...existing,
-    status: 'PENDING' as FinanceStagingStatus, // reset — will be cleaned up by TTL
+    // NOTE: Physical deletion is handled by the VS9 Finance Slice cleanup process.
+    // This entry will be removed by VS9 once Finance_Request reaches PAID state.
+    status: 'PENDING' as FinanceStagingStatus,
     updatedAt: serverTimestamp(),
   });
 }
