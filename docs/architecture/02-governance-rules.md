@@ -115,6 +115,25 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[#A17]` | XP 僅能由 VS3 寫入；`awardedXp = baseXp × qualityMultiplier × policyMultiplier`（含 clamp）；VS8 禁止直接寫入 VS3 XP aggregate/ledger |
 | `[#A18]` | 組織新建 task-type/skill-type 必須走 VS4 org-semantic-registry，以 org namespace 寫入 tag-snapshot |
 | `[D28]` | vis-network / vis-timeline / vis-graph3d 只能消費 `VisDataAdapter` 提供的 `DataSet<>`；`VisDataAdapter` 訂閱 Firebase 一次，DataSet<> 快取推播至所有消費者；禁止 vis-* 直連 Firebase |
+| `[G1]` | CTA 是全域語義字典 SSOT；未 Active 的 slug 不可在任何切片中引用 |
+| `[G3]` | invariant-guard 擁有最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill；裁決結果不可被覆蓋 |
+| `[G4]` | VS8 寫入路徑唯一：CMD_GWAY→CTA；禁止繞過 |
+| `[G5]` | semantic-governance-portal 治理變更強制 DLQ=REVIEW_REQUIRED；禁止 SAFE_AUTO replay |
+| `[G6]` | staleness-monitor 時間閾值必須引用 SK_STALENESS_CONTRACT [S4]；禁止硬寫 |
+| `[C2]` | 主體圖五種合法邊：REQUIRES/HAS_SKILL/IS_A/DEPENDS_ON/TRIGGERS；禁止業務端自定義 |
+| `[C3]` | 所有邊 weight 由 weight-calculator 計算；weight ∈ [0,1]；禁止硬寫 |
+| `[C6]` | TaskNode.essence_type 只有三個合法值：PHYSICAL_INSTALL/LOGIC_CONFIG/COMPLIANCE；只由 cost-item-classifier 賦值 |
+| `[C11]` | 向量縮範 + Graph 確認缺一不可；禁止以純向量相似度作最終分類依據 |
+| `[E4]` | cost-item-classifier 是訂單語義分類唯一入口（ISemanticClassificationPort）；禁止切片自行字串比對 |
+| `[E5]` | 推理三步驟不可跳躍；輸出必須含 confidence + inferenceTrace[] |
+| `[E6]` | inferenceTrace[] 是推理完整性強制要件；無 trace 不得進入下游 |
+| `[E7]` | skill-matcher 三條件全滿才合格：tier + granularity 覆蓋度 + cert_required 證照 |
+| `[E11]` | routing-engine 只輸出 SemanticRouteHint；禁止持有副作用或直呼 VS6/VS7 |
+| `[O1]` | VS8 對外只有三個 Port 介面；禁止繞過 Port 直呼內部模組 |
+| `[O3]` | projection.task-semantic-view 必須含 required_skills + eligible_persons；缺一視為不完整 |
+| `[O4]` | projection.causal-audit-log 每條記錄必須含 inferenceTrace[] + traceId；禁止重新生成 traceId |
+| `[B1]` | VS8 只做語義推理輸出；禁止直接觸發跨切片副作用 |
+| `[B2]` | VS8 內部依賴方向單向：Governance→Core→Engine→Output；禁止逆向依賴 |
 
 ---
 
@@ -165,6 +184,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 禁止在 `hopCount ≥ 4` 後繼續轉發事件；禁止對 `CircularDependencyDetected` 觸發的 SECURITY_BLOCK DLQ 自動 Replay [D30]
 - 讀路徑禁止重新執行複雜的 Aggregate 鑑權邏輯；讀寫授權必須依賴 `acl-projection` [D31]
 - 禁止開發者在業務代碼中手動傳遞 `traceId`；上下文傳遞由底層 Middleware 自動維持 [R9]
+- 禁止任何模組繞過 CTA 或 `invariant-guard` 自行宣告或修改語義標籤狀態 [G1 G3 G4]
+- 禁止以純向量相似度作最終分類依據；向量縮範後必須 Graph 確認 [C11 E5]
+- 禁止業務端或 AI Flow 自行計算邊 weight；所有 weight 由 weight-calculator 統一計算 [C3 E2]
+- 禁止在 VS8 任何子模組中執行跨切片副作用（通知、排班、物化）[B1 E11]
+- 禁止業務端繞過 Port 直接呼叫 VS8 內部模組（semantic-edge-store、causality-tracer 等）[O1 B3]
+- 禁止 PersonNode 被任何路徑直接寫入；唯一更新路徑是 ISemanticFeedbackPort [C9]
+- 無 inferenceTrace[] 的推理結果視為不完整，禁止進入任何下游流程 [E6]
+- routing-engine 禁止直呼 VS6 排班或 VS7 通知；只輸出 SemanticRouteHint [E11]
 
 ---
 
@@ -616,6 +643,141 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 
 ---
 
+## VS8 語義認知引擎正規規則體系（G/C/E/O/B Series）
+
+> **VS8 Gate**：凡新增或修改 `src/features/semantic-graph.slice/` 中任何模組，或跨切片引用 VS8 Port 介面時，必須對照本節所有適用規則進行完整審查。本節規則以**架構正確性優先原則**為最高裁決標準。
+
+---
+
+### G 系列：Semantic Governance 治理規則 [G1–G7]
+
+> G 系列規則屬於語義治理的**硬不變量（Hard Invariants）**，違反即視為架構違規，不接受業務端例外申請。
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `G1` | MUST | `centralized-tag.aggregate`（CTA）是全域語義字典的唯一真相（SSOT）；所有 `TaskNode` slug、`SkillNode` slug、分類學節點，必須先在 CTA 完成註冊並進入 `Active` 狀態，方可在任何切片中被引用；未註冊的 slug 引用視為架構違規 |
+| `G1` | FORBIDDEN | 禁止任何切片自行定義全域語義類別，或引用未在 CTA 完成 `Active` 狀態的 slug |
+| `G2` | MUST | 語義標籤生命週期是**單向狀態機**，路徑唯一：`Draft → Active → Stale → Deprecated`；任何跳躍轉換或逆向轉換由 `invariant-guard` 攔截 |
+| `G2` | FORBIDDEN | 不接受業務端以任何理由申請跳躍或逆向轉換語義標籤狀態 |
+| `G3` | MUST | `invariant-guard` 擁有最高裁決權，負責強制執行物理邏輯不可違反的語義規則；裁決結果不可被任何上游覆蓋 |
+| `G3` | MUST | 規則範例：`essence_type = COMPLIANCE` 的 `TaskNode`，其 `required_skills` 中必須存在至少一個 `cert_required = true` 的 `SkillNode`，違反即攔截 |
+| `G3` | FORBIDDEN | 禁止任何模組繞過或覆蓋 `invariant-guard` 的裁決結果 |
+| `G4` | MUST | VS8 的所有寫入路徑唯一：portal-editor / 任何切片 → L2 `CMD_GWAY` → CTA |
+| `G4` | FORBIDDEN | 禁止任何模組繞過 `CMD_GWAY` 直接寫入 CTA、Graph 邊或任何 VS8 內部狀態 |
+| `G5` | MUST | `semantic-governance-portal` 的所有治理變更必須經由 `portal-outbox` 廣播，DLQ 分級強制為 `REVIEW_REQUIRED` |
+| `G5` | FORBIDDEN | 語義治理變更不允許 `SAFE_AUTO` 自動 Replay，必須經人工確認後方可進入 IER |
+| `G6` | MUST | `staleness-monitor` 是語義腐爛的唯一預警點；其時間閾值必須引用 `SK_STALENESS_CONTRACT.TAG_MAX_STALENESS ≤ 30s` [S4] |
+| `G6` | FORBIDDEN | 禁止在 `staleness-monitor` 內部硬寫任何時間數值 |
+| `G7` | MUST | `semantic-protocol` 是跨切片語義訊號的協議憲法；所有穿越切片邊界的 command 與 event envelope 必須攜帶 `semanticTagSlugs` |
+| `G7` | FORBIDDEN | 缺失 `semanticTagSlugs` 的跨切片訊號視為協議違規，由 `semantic-protocol` 攔截，不進入下游處理 |
+
+---
+
+### C 系列：Core Domain 主體圖規則 [C1–C11]
+
+> C 系列規則定義主體圖（Subject Graph）的**結構本體論**，確保圖的語義完整性與一致性。
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `C1` | MUST | VS8 維護的是**主體圖**（Subject Graph）；主體圖描述「世界中存在什麼以及存在物之間的結構關係」；因果（事件序列、動態過程）從主體圖推論得出，由 IER 與 L5 Projection 承載 |
+| `C1` | FORBIDDEN | VS8 不維護因果圖；禁止在 VS8 內執行因果的物化或副作用 |
+| `C2` | MUST | 主體圖有且僅有五種合法邊類型：`REQUIRES`（Task→Skill）、`HAS_SKILL`（Person→Skill）、`IS_A`（Skill→Skill 分類學繼承）、`DEPENDS_ON`（Task→Task 前置依賴）、`TRIGGERS`（Task→Task 完成觸發） |
+| `C2` | FORBIDDEN | 禁止業務端自定義邊類型；擴充邊類型必須經過 `semantic-governance-portal` 治理流程 |
+| `C3` | MUST | 所有邊必須攜帶 `weight ∈ [0,1]`；`REQUIRES` 邊的 weight 來源為對應 `SkillNode` 的 `granularity`；`HAS_SKILL` 邊的 weight 來源為 Person 的 `xp/tier` 換算值 |
+| `C3` | FORBIDDEN | 禁止業務端在任何邊上硬寫 weight 數值；所有 weight 由 `weight-calculator` 統一計算 |
+| `C4` | MUST | 分類學（Taxonomy）由 `IS_A` 邊與 `hierarchy-manager` 共同構成；父技能的滿足隱含對子技能 `REQUIRES` 的滿足 |
+| `C4` | MUST | 分類學的任何修改必須經過 `semantic-governance-portal` 治理流程 [G4] |
+| `C5` | MUST | 每個新標籤節點必須透過 `hierarchy-manager` 掛載至少一個父節點；孤立節點（無父節點）不得進入 `Active` 狀態 |
+| `C5` | FORBIDDEN | 孤立節點的存在視為未完成的語義定義 |
+| `C6` | MUST | `TaskNode.essence_type` 有且僅有三個合法值：`PHYSICAL_INSTALL`、`LOGIC_CONFIG`、`COMPLIANCE`；此欄位由 `cost-item-classifier` 推理賦值 |
+| `C6` | FORBIDDEN | 禁止業務端直接賦值或覆蓋 `TaskNode.essence_type` |
+| `C7` | MUST | `TaskNode.shouldMaterializeAsTask` 是推理結果（非資料庫欄位）；只有 `essence_type = PHYSICAL_INSTALL` 或符合 EXECUTABLE override 規則（機電檢測/施工測試類）的 TaskNode 才觸發 VS5 `task.aggregate` 物化；override 規則本身是 Graph 上的一條 `IS_A` 邊 |
+| `C7` | FORBIDDEN | override 規則不得以 if-else 實作；必須表達為 Graph 邊 |
+| `C8` | MUST | `SkillNode.granularity` 是語義匹配的精細度參數，初始值由語義定義時設定，後續只由 `learning-engine` 根據事實事件演化 |
+| `C8` | FORBIDDEN | 禁止任何切片手動修改 `granularity` |
+| `C9` | MUST | `PersonNode` 是 VS2 `user-account` 在語義圖中的唯讀投影映射；`PersonNode.skill_inventory` 的更新來源唯一，由 VS3 `SkillXpAdded` / `SkillXpDeducted` 事件透過 `ISemanticFeedbackPort` 驅動 |
+| `C9` | FORBIDDEN | 禁止任何路徑直接寫入 `PersonNode` |
+| `C10` | MUST | `vector-store` 的向量是推理的輸入工具；向量必須與 CTA 標籤定義保持同步刷新，刷新延遲受 `SK_STALENESS_CONTRACT` [S4] 約束 |
+| `C10` | FORBIDDEN | 過期向量不得用於任何推理輸入 |
+| `C11` | MUST | 向量搜尋的結果必須經過 graph traversal 確認才能成為有效分類；向量負責縮小候選 slug 範圍，Graph 負責確認分類的結構正確性，兩者缺一不可 |
+| `C11` | FORBIDDEN | 禁止以純向量相似度作為最終分類依據 |
+
+---
+
+### E 系列：Compute Engine 推理規則 [E1–E12]
+
+> E 系列規則定義 VS8 Compute Engine 各模組的**推理邏輯邊界**，確保推理過程可追蹤、可審計。
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `E1` | MUST | `semantic-edge-store` 是唯一合法的邊圖操作點；所有對 Graph 邊的讀取與寫入必須經過 `semantic-edge-store` |
+| `E1` | FORBIDDEN | 禁止任何模組直接操作底層圖資料結構 |
+| `E2` | MUST | `weight-calculator` 是語義相似度的統一出口；`computeSimilarity(a, b)` 是系統中唯一合法的語義相似度計算介面 |
+| `E2` | FORBIDDEN | 禁止業務端、AI Flow 或任何其他模組自行實作語義加權邏輯 |
+| `E3` | MUST | `adjacency-list` 的拓撲閉包計算是業務端消費圖結構的唯一合法路徑 [T5]；對外暴露 `getTransitiveRequirements`、`isSupersetOf`、`findCriticalPath` 三個介面 |
+| `E3` | FORBIDDEN | 禁止業務端直接遍歷圖節點或邊集合 |
+| `E4` | MUST | `cost-item-classifier` 是訂單項次語義分類的唯一入口，實作 `ISemanticClassificationPort`；系統中任何位置的訂單項次分類邏輯必須統一路由至此 |
+| `E4` | FORBIDDEN | 禁止在 VS5 或任何其他切片中存在基於字串比對的分類邏輯 |
+| `E5` | MUST | `cost-item-classifier` 的推理流程是固定三步驟，不可跳躍：① vector similarity 縮小候選 slug 範圍；② graph traversal 確認 `essence_type`；③ 套用 override 規則（override 規則本身是 Graph 邊） |
+| `E5` | MUST | 輸出必須包含 `confidence` 與 `inferenceTrace[]` |
+| `E6` | MUST | 每次推理必須輸出 `inferenceTrace[]`；`inferenceTrace` 記錄完整的推理路徑，包含每一步的候選 slug、邊類型、weight 值及 override 觸發記錄 |
+| `E6` | FORBIDDEN | 無 `inferenceTrace` 的推理結果視為不完整，不得進入任何下游流程 |
+| `E7` | MUST | `skill-matcher` 的人員資格推理必須同時滿足三個條件：① tier ≥ Task 要求層級；② granularity 覆蓋度 ≥ REQUIRES 邊 weight；③ `cert_required = true` 的 Skill 必須有對應合規證照 |
+| `E7` | FORBIDDEN | 任一條件不滿足即判定不合格；不允許部分滿足的模糊通過 |
+| `E8` | MUST | `causality-tracer` 的 BFS 因果傳播邊來源唯一：主體圖的 `TRIGGERS` 與 `DEPENDS_ON` 邊 |
+| `E8` | FORBIDDEN | `causality-tracer` 不自行定義因果規則；所有因果路徑必須在主體圖中有對應邊作為依據 |
+| `E9` | MUST | `learning-engine` 的權重演化只接受兩種事實事件作為輸入：VS3 `SkillXpAdded` / `SkillXpDeducted`（強化/弱化 HAS_SKILL 邊 weight）與 VS5 `TaskCompleted`（強化 REQUIRES 邊信心值）；強制邊界由 `ISemanticFeedbackPort` 實施 |
+| `E9` | FORBIDDEN | 禁止任何其他事件繞過 `ISemanticFeedbackPort` 直接驅動 `learning-engine` |
+| `E10` | MUST | `semantic-decay` 的衰退週期必須綁定 `SK_STALENESS_CONTRACT` [S4]；衰退邏輯只作用於長期無事實事件支撐的邊 weight |
+| `E10` | FORBIDDEN | 禁止衰退邏輯覆蓋有活躍事實事件支撐的邊 |
+| `E11` | MUST | `routing-engine` 只輸出 `SemanticRouteHint` contract，是純語義計算的建議輸出 |
+| `E11` | FORBIDDEN | `routing-engine` 禁止持有任何副作用，禁止直接呼叫 VS6 排班或 VS7 通知；副作用的執行由訂閱 `SemanticRouteHint` 的對應切片自行負責 |
+| `E12` | MUST | `context-attention` 的 Workspace 語義情境過濾是 Engine 層的統一職責；所有需要 Workspace 情境感知的語義查詢必須透過 `filterByContext(slugs, wsCtx)` 處理 |
+| `E12` | FORBIDDEN | 禁止 VS8 以外的切片自行實作語義情境過濾邏輯 |
+
+---
+
+### O 系列：Output 輸出規則 [O1–O6]
+
+> O 系列規則定義 VS8 對外輸出的**唯一合法出口**，確保跨切片語義消費遵守 CQRS 讀寫分離與 Port 介面原則。
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `O1` | MUST | VS8 對外暴露三個 Port 介面作為唯一合法出口：`ISemanticClassificationPort`（供 VS5 呼叫分類）、`ISkillMatchPort`（供 L10 Genkit Flow 呼叫資格推理）、`ISemanticFeedbackPort`（供 `learning-engine` 接收事實事件） |
+| `O1` | FORBIDDEN | 禁止任何切片或 AI Flow 繞過 Port 直接呼叫 VS8 內部模組 |
+| `O2` | MUST | 業務端讀取語義資料的唯一合法路徑是 `projection.tag-snapshot` [T5]；`semantic-registry` 的資料來源也必須是 `projection.tag-snapshot`，遵守 CQRS 讀寫分離原則 |
+| `O2` | FORBIDDEN | 禁止業務端直接查詢 CTA aggregate 或 `semantic-edge-store` |
+| `O3` | MUST | `projection.task-semantic-view` 必須同時包含 `required_skills`（來自 Graph REQUIRES 邊）與 `eligible_persons`（來自 `skill-matcher` 推理結果）；兩者缺一則投影視為不完整，不得對外提供 |
+| `O4` | MUST | `projection.causal-audit-log` 的每條記錄必須包含 `inferenceTrace[]` 與 `traceId` [R8]；`traceId` 從 event-envelope 讀取 |
+| `O4` | FORBIDDEN | 禁止在 `causal-audit-log` 中重新生成 `traceId`；不含 `traceId` 或 `inferenceTrace` 的審計記錄視為不合規 |
+| `O5` | MUST | `tag-outbox` 是 VS8 內部唯一的 outbox 節點，DLQ 分級為 `SAFE_AUTO`；路徑唯一：`tag-outbox → RELAY → IER → L5 FUNNEL → projection.tag-snapshot` |
+| `O5` | FORBIDDEN | 禁止在 VS8 任何子模組中重複定義第二個 outbox 節點 |
+| `O6` | MUST | `TagLifecycleEvent` 的廣播路徑唯一：必須經由 `tag-outbox → RELAY → IER` |
+| `O6` | FORBIDDEN | 禁止 `TagLifecycleEvent` 繞過 IER 直接更新任何 Projection 或觸發任何切片邏輯 |
+
+---
+
+### B 系列：Boundary 邊界規則 [B1–B5]
+
+> B 系列規則定義 VS8 的**切片邊界與依賴方向**，確保 VS8 的純語義職責不被副作用污染。
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `B1` | MUST | VS8 的職責邊界是「語義推理與語義輸出」；VS8 不執行任何業務副作用；任務物化歸 VS5，排班執行歸 VS6，通知執行歸 VS7 |
+| `B1` | FORBIDDEN | 任何試圖在 VS8 內部直接觸發跨切片副作用的設計視為邊界違規 |
+| `B2` | MUST | VS8 內部各層的依賴方向是單向的：`Governance → Core → Engine → Output` |
+| `B2` | FORBIDDEN | 禁止任何逆向依賴；Output 層只能透過 Port 介面被外部消費，不能被 Engine 層直接呼叫 |
+| `B3` | MUST | AI Flow（L10 Genkit）存取 VS8 的路徑有且僅有兩條：透過 `ISemanticClassificationPort` 取得分類結果，透過 `ISkillMatchPort` 取得資格推理結果 |
+| `B3` | FORBIDDEN | 禁止 AI Flow 直接呼叫 VS8 任何內部模組 |
+| `B4` | MUST | VS8 的分類學（Taxonomy）與向量（Vector）共同服務於語義推理，但職責嚴格分離：分類學是本體論（世界是什麼），向量是認識論工具（如何從模糊輸入找到精確節點） |
+| `B4` | FORBIDDEN | 禁止以向量替代分類學；禁止以分類學替代向量的模糊匹配能力 |
+| `B5` | MUST | VS8 是主體圖的維護者，不是因果圖的維護者；VS8 可以從主體圖推論出因果路徑（`causality-tracer`），但因果的執行與物化屬於 IER 與 L5 Projection 的職責 |
+| `B5` | FORBIDDEN | 禁止在 VS8 內執行因果的物化、狀態更新或任何業務副作用 |
+
+**設計原則**（架構正確性優先）：B 系列規則確保 VS8 的狀態始終是語義現實的靜態鏡像，而不是動態流程的執行引擎。這條邊界使 VS8 在面對複雜業務演化時保持結構穩定、可審計、可演進。
+
+---
+
 ## RULESET-MUST 索引（快速查閱）
 
 ### R / S 類（基礎設施不變量）
@@ -663,6 +825,72 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | `E7` | app-check-enforcement-closure |
 | `E8` | genkit-tool-governance |
 
+### G 類（VS8 Semantic Governance 治理不變量）
+
+| 索引 | 摘要 |
+|------|------|
+| `G1` | CTA-ssot（CTA 是全域語義字典唯一真相；未 Active 的 slug 不可引用） |
+| `G2` | tag-lifecycle-unidirectional（生命週期單向狀態機：Draft→Active→Stale→Deprecated） |
+| `G3` | invariant-guard-supreme（最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill） |
+| `G4` | cta-write-path-exclusive（寫入路徑唯一：CMD_GWAY → CTA；禁止繞過） |
+| `G5` | governance-portal-review-required（治理變更 DLQ 強制 REVIEW_REQUIRED；禁止 SAFE_AUTO） |
+| `G6` | staleness-monitor-sla-reference（TAG_MAX_STALENESS 必須引用 SK_STALENESS_CONTRACT；禁止硬寫） |
+| `G7` | semantic-protocol-cross-slice（跨切片訊號必須攜帶 semanticTagSlugs；缺失即攔截） |
+
+### C 類（VS8 Core Domain 主體圖不變量）
+
+| 索引 | 摘要 |
+|------|------|
+| `C1` | subject-graph-boundary（VS8 只維護主體圖；因果圖由 IER+L5 承載） |
+| `C2` | five-legal-edge-types（五種合法邊：REQUIRES/HAS_SKILL/IS_A/DEPENDS_ON/TRIGGERS；禁止自定義） |
+| `C3` | weight-calculator-exclusive（所有邊 weight 由 weight-calculator 計算；禁止硬寫） |
+| `C4` | taxonomy-governance（IS_A 邊分類學修改必須走 governance-portal [G4]） |
+| `C5` | no-orphan-node（新標籤必須掛載父節點；孤立節點不得 Active） |
+| `C6` | essence-type-classifier（TaskNode.essence_type 只由 cost-item-classifier 賦值；禁止業務端覆蓋） |
+| `C7` | materialize-as-inference（shouldMaterializeAsTask 是推理結果；override 規則是 IS_A 邊，非 if-else） |
+| `C8` | granularity-learning-only（SkillNode.granularity 只由 learning-engine 演化；禁止手動修改） |
+| `C9` | person-node-readonly-projection（PersonNode 唯讀；唯一更新來源是 ISemanticFeedbackPort） |
+| `C10` | vector-sync-freshness（向量必須與 CTA 同步；過期向量不得用於推理） |
+| `C11` | vector-graph-dual-confirmation（向量縮範 + Graph 確認缺一不可；禁止以純向量作最終分類） |
+
+### E 系列（VS8 Compute Engine 推理邊界）
+
+| 索引 | 摘要 |
+|------|------|
+| `E1` | edge-store-exclusive（所有邊操作必須經 semantic-edge-store；禁止直操作底層圖） |
+| `E2` | weight-calculator-sole-interface（computeSimilarity 是唯一語義相似度介面；禁止業務端自行計算） |
+| `E3` | adjacency-list-topology（拓撲閉包唯一合法路徑；暴露 3 個介面；禁止直接遍歷） |
+| `E4` | cost-item-classifier-sole-entry（ISemanticClassificationPort；禁止切片自行字串比對分類） |
+| `E5` | three-step-inference（向量縮範→Graph 確認→override 三步不可跳躍；輸出含 confidence+inferenceTrace） |
+| `E6` | inference-trace-mandatory（每次推理必須輸出 inferenceTrace[]；無 trace 不得進入下游） |
+| `E7` | skill-matcher-triple-gate（tier+granularity+cert 三條件缺一不可；禁止部分滿足通過） |
+| `E8` | causality-tracer-graph-only（BFS 來源唯一為 TRIGGERS+DEPENDS_ON 邊；禁止自定義因果規則） |
+| `E9` | learning-engine-fact-events-only（只接受 VS3/VS5 事實事件；禁止繞過 ISemanticFeedbackPort） |
+| `E10` | semantic-decay-sla-bound（衰退週期綁定 SK_STALENESS_CONTRACT；禁止覆蓋活躍事件支撐的邊） |
+| `E11` | routing-engine-hint-only（只輸出 SemanticRouteHint；禁止持有副作用或直呼 VS6/VS7） |
+| `E12` | context-attention-unified（filterByContext 由 VS8 統一；禁止其他切片自行過濾語義情境） |
+
+### O 類（VS8 Output 輸出不變量）
+
+| 索引 | 摘要 |
+|------|------|
+| `O1` | three-port-interfaces（ISemanticClassificationPort/ISkillMatchPort/ISemanticFeedbackPort 是唯一出口；禁止繞過） |
+| `O2` | tag-snapshot-read-path（業務端讀取唯一路徑是 projection.tag-snapshot；禁止直查 CTA） |
+| `O3` | task-semantic-view-completeness（required_skills+eligible_persons 必須同時存在；缺一不完整） |
+| `O4` | causal-audit-log-with-trace（每條記錄必須含 inferenceTrace[]+traceId；禁止重新生成 traceId） |
+| `O5` | tag-outbox-single-node（VS8 唯一 outbox，DLQ=SAFE_AUTO；禁止重複定義第二個 outbox） |
+| `O6` | tag-lifecycle-event-ier-path（TagLifecycleEvent 廣播路徑唯一：tag-outbox→RELAY→IER；禁止繞過 IER） |
+
+### B 類（VS8 Boundary 邊界不變量）
+
+| 索引 | 摘要 |
+|------|------|
+| `B1` | vs8-semantic-only（VS8 只做語義推理輸出；禁止直接觸發跨切片副作用） |
+| `B2` | governance-core-engine-output-unidirectional（內部依賴方向單向；禁止逆向依賴） |
+| `B3` | ai-flow-port-only（AI Flow 只能透過 ISemanticClassificationPort/ISkillMatchPort 存取 VS8） |
+| `B4` | taxonomy-vector-separation（分類學是本體論，向量是認識論工具；禁止互相取代） |
+| `B5` | subject-graph-not-causal-executor（VS8 推論因果路徑，但因果執行歸 IER+L5；禁止在 VS8 內執行副作用） |
+
 ### D 類（Firebase 隔離 / 視覺化 DataSet / 原子性 / 循環防禦 / 權限一致性）
 
 | 索引 | 摘要 |
@@ -706,6 +934,23 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | VS9 MUST 逆向回饋投影 [#A22] | 當 Finance_Request 狀態變更時，VS9 必須透過 `finance-outbox` 發出 `FinanceRequestStatusChanged` 事件（STANDARD_LANE），由 L5 `task-finance-label-view` 逆向更新 VS5 任務的金融顯示標籤 |
 | VS9 MUST TaskAcceptedConfirmed 走 CRITICAL_LANE | 從 `TaskAccepted` 到 `Finance_Staging_Pool` 的事件流強制路由至 L4 IER `CRITICAL_LANE`，保證金融事實的低延遲高可靠性 [#A19] |
 | VS9 MUST 讀取僅經 L6 Query Gateway | VS9 Finance_Staging_Pool 讀取必須經 L6 `QGWAY_FIN_STAGE`；禁止直連 Firebase 或跨切片直讀 |
+
+### VS8 強制規則（Semantic Cognition Engine 語義認知引擎）
+
+| 規則 | 說明 |
+|------|------|
+| VS8 MUST 寫入唯一路徑 [G4] | 所有語義寫入必須走 L2 CMD_GWAY → CTA；禁止任何模組繞過 CMD_GWAY 直接寫入 CTA、Graph 邊或 VS8 內部狀態 |
+| VS8 MUST 標籤生命週期單向 [G2] | 生命週期路徑唯一：Draft→Active→Stale→Deprecated；任何跳躍或逆向由 invariant-guard 攔截 |
+| VS8 MUST Port 介面唯一出口 [O1] | VS8 對外只暴露三個 Port：ISemanticClassificationPort（VS5 分類）、ISkillMatchPort（L10 AI Flow）、ISemanticFeedbackPort（learning-engine 事實事件）；禁止繞過 Port 直接呼叫內部模組 |
+| VS8 MUST 讀取只經 tag-snapshot [O2] | 業務端讀取語義資料唯一路徑是 projection.tag-snapshot；禁止直查 CTA 或 semantic-edge-store |
+| VS8 MUST 推理三步驟完整 [E5 E6] | cost-item-classifier 必須完整執行：① 向量縮範 → ② Graph 確認 → ③ override 規則；輸出必須包含 inferenceTrace[] |
+| VS8 MUST skill-matcher 三條件全滿 [E7] | tier ≥ 要求層級 AND granularity 覆蓋度 ≥ REQUIRES 邊 weight AND cert_required Skill 有合規證照；三者缺一不可 |
+| VS8 MUST tag-outbox 唯一 [O5 O6] | VS8 只有一個 outbox（tag-outbox，DLQ=SAFE_AUTO）；TagLifecycleEvent 廣播必須經 tag-outbox→RELAY→IER；禁止繞過 IER |
+| VS8 MUST learning-engine 只接受事實事件 [E9] | 唯一輸入：VS3 SkillXpAdded/SkillXpDeducted + VS5 TaskCompleted；透過 ISemanticFeedbackPort；禁止其他事件直驅 |
+| VS8 MUST staleness-monitor 引用 SLA 常數 [G6] | TAG_MAX_STALENESS 必須引用 SK_STALENESS_CONTRACT [S4]；禁止硬寫數值 |
+| VS8 MUST routing-engine 只輸出 SemanticRouteHint [E11] | routing-engine 是純語義計算建議輸出；禁止持有副作用或直呼 VS6/VS7 |
+| VS8 MUST governance-portal 治理變更走 REVIEW_REQUIRED [G5] | semantic-governance-portal 所有治理變更 DLQ 強制 REVIEW_REQUIRED；禁止 SAFE_AUTO replay |
+| VS8 FORBIDDEN 跨切片副作用 [B1] | VS8 禁止直接觸發任務物化（VS5）、排班執行（VS6）或通知發送（VS7）；副作用由訂閱 SemanticRouteHint 的切片執行 |
 
 ### VS6 強制規則
 

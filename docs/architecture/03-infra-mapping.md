@@ -208,6 +208,8 @@ Firestore onSnapshot (CDC)
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；供 vis-network 消費 [D28] |
+| `task-semantic-view` | 任務語義視圖 [O3]；同時包含 `required_skills`（Graph REQUIRES 邊）與 `eligible_persons`（skill-matcher 推理）；兩者缺一則投影不完整 |
+| `causal-audit-log` | 因果審計日誌 [O4]；每條記錄必含 `inferenceTrace[]` + `traceId`（從 event-envelope 讀取，禁止重新生成）|
 | `finance-staging-pool` | 待請款池：已驗收未請款任務清單；消費 `TaskAcceptedConfirmed`（CRITICAL_LANE）；狀態：`PENDING` ｜ `LOCKED_BY_FINANCE` [#A20] |
 | `task-finance-label-view` | 任務金融顯示標籤；消費 `FinanceRequestStatusChanged`（STANDARD_LANE）；欄位：taskId, financeStatus, requestId, requestLabel [#A22] |
 
@@ -240,9 +242,11 @@ Firestore onSnapshot (CDC)
 | `account-view` | 帳戶資料（含 FCM Token）；`notification-feed-view` RTDB 即時通知串流（via L7-A RTDBAdapter） | [#6] |
 | `workspace-scope-guard-view` | Scope Guard 快路徑 | [A9] |
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
-| `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |
+| `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5 O2] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
+| `task-semantic-view` | 任務語義視圖（required_skills + eligible_persons）；VS5 消費以顯示任務語義資訊；投影不完整時禁止對外提供 | [O3] |
+| `causal-audit-log` | 因果審計日誌（inferenceTrace[] + traceId）；合規稽核路徑 | [O4 R8] |
 | `acl-projection` | 讀取路徑權限鏡像；QRY_API_GW 讀取自動 JOIN 過濾（禁止讀路徑重新執行 Aggregate 鑑權）| [D31] |
 | `finance-staging-pool` | 待請款池（已驗收未請款任務清單）；財務人員操作界面消費此路由 | [#A20] |
 | `task-finance-label-view` | 任務金融顯示標籤（financeStatus, requestId, requestLabel）；任務列表 UI 合成顯示金融狀態 | [#A22] |
@@ -345,6 +349,14 @@ Firestore onSnapshot (CDC)
 
 - [ ] D24 違規：43 個檔案仍直接 import `firebase/*` → 須遷移至 FIREBASE_ACL Adapter
 - [ ] VS8 Semantic Graph Compute Engine（四層語義引擎正式落地）[D21]
+- [ ] VS8 G/C/E/O/B 正規規則落地：skill-matcher、ISemanticClassificationPort、ISkillMatchPort、ISemanticFeedbackPort Port 介面實作 [O1 E4 E7]
+- [ ] VS8 projection.task-semantic-view 實作：required_skills（REQUIRES 邊）+ eligible_persons（skill-matcher）[O3]
+- [ ] VS8 projection.causal-audit-log 實作：每條記錄含 inferenceTrace[] + traceId [O4 E6 R8]
+- [ ] VS8 SemanticRouteHint contract 實作：routing-engine 只輸出 hint；禁止持有副作用 [E11]
+- [ ] VS8 inferenceTrace[] 強制輸出：cost-item-classifier 三步推理全程可審計 [E5 E6]
+- [ ] VS8 learning-engine ISemanticFeedbackPort 強制邊界：只接受 VS3/VS5 事實事件 [E9]
+- [ ] VS8 invariant-guard G3 規則落地：COMPLIANCE TaskNode 必須有 cert_required Skill [G3]
+- [ ] VS8 staleness-monitor 引用 SK_STALENESS_CONTRACT [G6 S4]
 - [ ] VS4 org-semantic-registry（組織語義字典）[D21-1 A18]
 - [ ] L10 AI Runtime（Genkit Flow Gateway / Tool ACL）[E8]
 - [ ] App Check 全面啟用 [E7]

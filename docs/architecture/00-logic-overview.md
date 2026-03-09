@@ -214,6 +214,48 @@
 %%    A20=finance-staging-pool-rules（VS9 反應式攔截 + LOCKED_BY_FINANCE 打包鎖定）
 %%    A21=finance-request-independent-lifecycle（VS9 Finance_Request：DRAFT→AUDITING→DISBURSING→PAID）
 %%    A22=finance-task-feedback-projection（FinanceRequestStatusChanged → L5 task-finance-label-view）
+%%  ── VS8 正規規則體系（G/C/E/O/B Series · RULESET-MUST）──
+%%    G1=CTA-ssot（全域語義 SSOT；未 Active slug 不可引用）
+%%    G2=tag-lifecycle-unidirectional（Draft→Active→Stale→Deprecated；禁止跳躍/逆向）
+%%    G3=invariant-guard-supreme（最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill）
+%%    G4=cta-write-path-exclusive（寫入路徑唯一：CMD_GWAY→CTA；禁止繞過）
+%%    G5=governance-portal-review-required（治理變更強制 REVIEW_REQUIRED；禁止 SAFE_AUTO）
+%%    G6=staleness-monitor-sla-reference（引用 SK_STALENESS_CONTRACT；禁止硬寫時間數值）
+%%    G7=semantic-protocol-cross-slice（跨切片訊號必帶 semanticTagSlugs；缺失即攔截）
+%%    C1=subject-graph-boundary（VS8 只維護主體圖；因果圖由 IER+L5 承載）
+%%    C2=five-legal-edge-types（REQUIRES/HAS_SKILL/IS_A/DEPENDS_ON/TRIGGERS；禁止自定義邊）
+%%    C3=weight-calculator-exclusive（所有邊 weight 由 weight-calculator 計算；禁止硬寫）
+%%    C4=taxonomy-governance（IS_A 邊分類學修改必須走 governance-portal [G4]）
+%%    C5=no-orphan-node（新標籤必須掛父節點；孤立節點不得 Active）
+%%    C6=essence-type-classifier（TaskNode.essence_type 只由 cost-item-classifier 賦值）
+%%    C7=materialize-as-inference（shouldMaterializeAsTask 是推理結果；override 是 IS_A 邊）
+%%    C8=granularity-learning-only（SkillNode.granularity 只由 learning-engine 演化）
+%%    C9=person-node-readonly-projection（PersonNode 唯讀；唯一更新路徑 ISemanticFeedbackPort）
+%%    C10=vector-sync-freshness（向量必須與 CTA 同步；過期向量不得用於推理）
+%%    C11=vector-graph-dual-confirmation（向量縮範+Graph 確認缺一不可；禁止純向量作最終分類）
+%%    E1=edge-store-exclusive（所有邊操作必須經 semantic-edge-store）
+%%    E2=weight-calculator-sole-interface（computeSimilarity 唯一語義相似度介面）
+%%    E3=adjacency-list-topology（拓撲閉包唯一合法路徑；3 個介面；禁止直遍歷）
+%%    E4=cost-item-classifier-sole-entry（ISemanticClassificationPort；禁止字串比對分類）
+%%    E5=three-step-inference（向量縮範→Graph 確認→override 三步不可跳躍；輸出含 inferenceTrace）
+%%    E6=inference-trace-mandatory（每次推理必須輸出 inferenceTrace[]；無 trace 禁止進入下游）
+%%    E7=skill-matcher-triple-gate（tier+granularity 覆蓋度+cert 三條件全滿；禁止部分通過）
+%%    E8=causality-tracer-graph-only（BFS 來源唯一：TRIGGERS+DEPENDS_ON 邊；禁止自定義因果規則）
+%%    E9=learning-engine-fact-events-only（只接受 VS3/VS5 事實事件；禁止繞過 ISemanticFeedbackPort）
+%%    E10=semantic-decay-sla-bound（衰退週期綁定 SK_STALENESS_CONTRACT；禁止覆蓋活躍邊）
+%%    E11=routing-engine-hint-only（只輸出 SemanticRouteHint；禁止持有副作用或直呼 VS6/VS7）
+%%    E12=context-attention-unified（filterByContext 由 VS8 統一；禁止其他切片自行過濾語義情境）
+%%    O1=three-port-interfaces（ISemanticClassificationPort/ISkillMatchPort/ISemanticFeedbackPort 唯一出口）
+%%    O2=tag-snapshot-read-path（業務端讀取唯一路徑是 projection.tag-snapshot）
+%%    O3=task-semantic-view-completeness（required_skills+eligible_persons 必須同時存在）
+%%    O4=causal-audit-log-with-trace（每條記錄必含 inferenceTrace[]+traceId；禁止重新生成）
+%%    O5=tag-outbox-single-node（VS8 唯一 outbox，DLQ=SAFE_AUTO；禁止重複定義）
+%%    O6=tag-lifecycle-event-ier-path（TagLifecycleEvent：tag-outbox→RELAY→IER；禁止繞過）
+%%    B1=vs8-semantic-only（VS8 只做語義推理；禁止直接觸發跨切片副作用）
+%%    B2=governance-core-engine-output-unidirectional（內部依賴單向；禁止逆向）
+%%    B3=ai-flow-port-only（AI Flow 只能透過 ISemanticClassificationPort/ISkillMatchPort 存取 VS8）
+%%    B4=taxonomy-vector-separation（分類學是本體論；向量是認識論工具；禁止互相取代）
+%%    B5=subject-graph-not-causal-executor（VS8 推論因果路徑；因果執行歸 IER+L5）
 %%  ── RULESET-SHOULD（可演化治理）: D · P · T · E ──
 %%    D7=cross-slice-index-only   D24=no-firebase-import D26=cross-cutting-authority
 %%    D27=cost-semantic-routing   D27-A=semantic-aware-routing-policy
@@ -224,7 +266,7 @@
 %%    P6=parallel-routes-data-contract  P7=realtime-subscription-lifecycle
 %%    P8=dynamic-backpressure-worker-pool
 %%    E7=app-check-enforcement-closure  E8=genkit-tool-governance
-%%    D21=VS8-semantic-engine-governance（四層語義引擎 D21-1~D21-10 + D21-A~D21-X）
+%%    D21=VS8-semantic-engine-governance（四層語義引擎 D21-1~D21-10 + D21-A~D21-X；完整正規規則見 G/C/E/O/B series）
 %%    D21-1=semantic-uniqueness(→D21-A)   D21-2=strong-typed-tags(→D22)  D21-3=node-connectivity(→D21-C)
 %%    D21-4=aggregate-constraint          D21-5=semantic-aware-routing(→D27-A)
 %%    D21-6=causal-auto-trigger           D21-7=read-write-separation    D21-8=freshness-defense(→S4)
@@ -320,6 +362,7 @@
 %%    1a) VS0 檢核：每個 VS0 路徑必須標明 VS0-Kernel 或 VS0-Infra（不得混稱）
 %%    2) D1~D31：列為 Mandatory Gate（D27 為 Extension Gate，命中場景必審；D29/D30/D31 為新增 Gate）
 %%    2a) E7/E8：屬 AI/Firebase Security 閉環 Gate（命中 AI flow 或受保護入口時必審）
+%%    2b) G1~G7/C1~C11/E1~E12/O1~O6/B1~B5：VS8 正規規則 Gate（命中語義圖任何模組時必審）
 %%    3) TE1~TE6：語義引用必須強型別，禁止裸字串 tagSlug
 %%    4) S1~S6：契約與 SLA 僅能引用 SK_* 常數，禁止硬寫
 %%    5) L/R/A：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
@@ -419,6 +462,19 @@
 %%    用戶新增重複語義標籤時禁止靜默建立，embeddings 必須即時提示相似標籤 [D21-U]
 %%    VS8 禁止直接寫入 VS3 XP aggregate/ledger；僅可提供 semanticTag 與 policy lookup [A17]
 %%    VS5 任務/品質流程禁止直接 mutate VS3 XP；必須透過 IER 事件進入 VS3 [#2 D9 A17]
+%%    ── VS8 G/C/E/O/B 系列核心禁令 ──
+%%    禁止任何模組繞過 CMD_GWAY 直接寫入 CTA、Graph 邊或 VS8 內部狀態 [G4]
+%%    禁止以純向量相似度作最終分類依據；向量縮範後必須 Graph 確認 [C11 E5]
+%%    禁止業務端或 AI Flow 自行計算邊 weight；所有 weight 由 weight-calculator 統一計算 [C3 E2]
+%%    禁止在 VS8 任何子模組中執行跨切片副作用（通知、排班、物化）[B1 E11]
+%%    禁止業務端繞過 Port 直接呼叫 VS8 內部模組（semantic-edge-store、causality-tracer 等）[O1 B3]
+%%    禁止 PersonNode 被任何路徑直接寫入；唯一更新路徑是 ISemanticFeedbackPort [C9]
+%%    無 inferenceTrace[] 的推理結果視為不完整，禁止進入任何下游流程 [E6]
+%%    routing-engine 禁止直呼 VS6 排班或 VS7 通知；只輸出 SemanticRouteHint [E11]
+%%    cost-item-classifier 三步推理不可跳躍（向量縮範→Graph 確認→override）；輸出必須含 inferenceTrace[] [E5]
+%%    skill-matcher 三條件全滿才合格：tier + granularity 覆蓋度 + cert_required 證照；禁止部分通過 [E7]
+%%    TagLifecycleEvent 廣播必須經 tag-outbox→RELAY→IER；禁止繞過 IER [O5 O6]
+%%    語義治理變更 DLQ 強制 REVIEW_REQUIRED；禁止 SAFE_AUTO replay [G5]
 %%  ╚══════════════════════════════════════════════════════════════════════════╝
 
 flowchart TD
@@ -783,20 +839,21 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
     subgraph VS8_ENGINE_LAYER["③ ⚙️ Semantic Compute Engine（src/features/semantic-graph.slice/{graph,reasoning,routing,learning}）"]
         direction TB
 
-        subgraph VS8_SL["3.1 graph-engine（src/features/semantic-graph.slice/graph）[D21-E D21-F D21-9 D21-10]"]
+        subgraph VS8_SL["3.1 graph-engine（src/features/semantic-graph.slice/graph）[D21-E D21-F D21-9 D21-10 C2 C3]"]
             direction LR
-            EDGE_STORE["semantic-edge-store.ts\n【邊關係登錄中心 · 唯一邊圖操作點】\nIS_A / REQUIRES 加權邊 weight ∈ [0,1] [D21-9]\ncost = 1/weight（強連結=近鄰）"]
-            WT_CALC["weight-calculator.ts\n【語義相似度統一出口 · 禁止業務端自行加權】\ncomputeSimilarity(a,b) [D21-E]"]
-            CTX_ATTN["context-attention.ts\n【Workspace 情境過濾 · 注意力隔離】\nfilterByContext(slugs, wsCtx) [D21-F]"]
-            TOPO_OPS["adjacency-list.ts\n拓撲閉包計算（禁止業務端直連 [T5]）\nisSupersetOf / getTransitiveRequirements [D21-10]"]
+            EDGE_STORE["semantic-edge-store.ts\n【邊關係登錄中心 · 唯一邊圖操作點 [E1]】\n5 種合法邊類型 [C2]：\n  REQUIRES（Task→Skill）\n  HAS_SKILL（Person→Skill）\n  IS_A（Skill→Skill 繼承）\n  DEPENDS_ON（Task→Task 前置）\n  TRIGGERS（Task→Task 完成觸發）\nweight ∈ [0,1]（REQUIRES←granularity；HAS_SKILL←xp/tier）[C3]\n禁止業務端自定義邊類型・禁止硬寫 weight [C2 C3]"]
+            WT_CALC["weight-calculator.ts\n【語義相似度統一出口 · 禁止業務端自行加權 [E2]】\ncomputeSimilarity(a,b) [D21-E]"]
+            CTX_ATTN["context-attention.ts\n【Workspace 情境過濾 · 注意力隔離 [E12]】\nfilterByContext(slugs, wsCtx) [D21-F]"]
+            TOPO_OPS["adjacency-list.ts\n拓撲閉包計算（禁止業務端直連 [T5 E3]）\ngetTransitiveRequirements / isSupersetOf / findCriticalPath [D21-10]"]
             EDGE_STORE -.-> WT_CALC
             EDGE_STORE -.-> TOPO_OPS
         end
 
-        subgraph VS8_NG["3.2 reasoning-engine（src/features/semantic-graph.slice/reasoning）[D21-4 D21-6 D21-X]"]
+        subgraph VS8_NG["3.2 reasoning-engine（src/features/semantic-graph.slice/reasoning）[D21-4 D21-6 D21-X E5~E9]"]
             direction LR
             NEURAL_NET["semantic-distance\ncomputeSemanticDistance(a,b)\nfindIsolatedNodes(slugs[]) [D21-10]\nDijkstra 加權最短路徑"]
-            CAUSALITY["🔍 Causality Tracer [D21-6 D21-X]\ntraceAffectedNodes(event, candidates[])\nbuildCausalityChain(event, candidates[])\nBFS 因果傳播 · 語義自動激發"]
+            CAUSALITY["🔍 Causality Tracer [D21-6 D21-X E8]\ntraceAffectedNodes(event, candidates[])\nbuildCausalityChain(event, candidates[])\nBFS 因果傳播 · 來源唯一：TRIGGERS+DEPENDS_ON 邊\n禁止自定義因果規則 [E8]"]
+            SKILL_MATCH["skill-matcher.ts [E7]\n人員資格推理：三條件全滿才合格\n① tier ≥ Task 要求層級\n② granularity 覆蓋度 ≥ REQUIRES 邊 weight\n③ cert_required Skill 必須有合規證照\n禁止部分滿足的模糊通過 [E7]"]
             TAG_EV["TagLifecycleEvent（in-process）\neventType: TAG_CREATED | TAG_ACTIVATED\n         | TAG_DEPRECATED | TAG_STALE_FLAGGED\n         | TAG_DELETED\n[D21-6] 因果自動觸發"]
             TAG_OB["tag-outbox\n[SK_OUTBOX: SAFE_AUTO]"]
             TAG_SG["⚠️ TAG_STALE_GUARD\n[S4 D21-8: TAG_MAX_STALENESS ≤ 30s]"]
@@ -804,18 +861,20 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
             CAUSALITY -->|"TagLifecycleEvent [D21-6]"| TAG_EV
             TAG_EV --> TAG_OB
             CAUSALITY -.->|"廢棄感知 [D21-8]"| TAG_SG
+            SKILL_MATCH -.->|"消費 HAS_SKILL / REQUIRES 邊 [E7]"| EDGE_STORE
         end
 
-        subgraph VS8_ROUT["3.3 routing-engine（src/features/semantic-graph.slice/routing）[D21-5 D27-A]"]
+        subgraph VS8_ROUT["3.3 routing-engine（src/features/semantic-graph.slice/routing）[D21-5 D27-A E11]"]
             direction LR
             POLICY_MAP["policy-mapper/\n語義標籤→分發策略 [D27-A]\n禁止 ID 硬編碼路由"]
+            SEM_ROUTE_HINT["SemanticRouteHint contract [E11]\n純語義計算建議輸出\n禁止 routing-engine 直呼 VS6/VS7\n副作用由訂閱方負責執行"]
             DISPATCH["dispatch-bridge/\n排班路由 · 通知分發出口"]
             subgraph WORKFLOWS["workflows/（src/features/semantic-graph.slice/workflows）"]
                 direction LR
                 TAG_PROMO["tag-promotion-flow.ts\n標籤晉升流程"]
                 ALERT_FLOW["alert-routing-flow.ts\n告警路由流程"]
             end
-            POLICY_MAP --> DISPATCH
+            POLICY_MAP --> SEM_ROUTE_HINT --> DISPATCH
         end
 
         subgraph VS8_PLAST["3.4 learning-engine（src/features/semantic-graph.slice/learning）[D21-G]"]
@@ -826,30 +885,39 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
         end
     end
 
-    subgraph VS8_OUTPUT_LAYER["④ 📤 Semantic Output Layer（src/features/semantic-graph.slice/{projections,subscribers,outbox,decision}）"]
+    subgraph VS8_OUTPUT_LAYER["④ 📤 Semantic Output Layer（src/features/semantic-graph.slice/{projections,subscribers,outbox,decision,ports}）"]
         direction TB
 
-        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/output/projections）[D21-7 T5]"]
+        subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/output/projections）[D21-7 T5 O2~O4]"]
             direction LR
-            TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5】\n[D21-7] 讀取必須經 projection.tag-snapshot\nT1 新切片訂閱事件即可擴展"]
+            TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5 O2】\n[D21-7] 讀取必須經 projection.tag-snapshot\nT1 新切片訂閱事件即可擴展"]
             GRAPH_SEL["projections/graph-selectors.ts\n圖結構唯讀查詢"]
             CTX_SEL["projections/context-selectors.ts\nWorkspace 語義上下文"]
+            TASK_SEM_V["projection.task-semantic-view [O3]\nrequired_skills（來自 REQUIRES 邊）\neligible_persons（來自 skill-matcher 推理）\n兩者缺一則投影不完整不得對外提供"]
+            CAUSAL_LOG["projection.causal-audit-log [O4]\n每條記錄必含 inferenceTrace[] + traceId\ntraceId 從 event-envelope 讀取（禁止重新生成）"]
             TAG_RO -.-> GRAPH_SEL
             TAG_RO -.-> CTX_SEL
         end
 
-        subgraph VS8_IO["4.2 event-broadcast · 語義訂閱廣播（src/features/semantic-graph.slice/{subscribers,outbox}）[D21-6 S1]"]
+        subgraph VS8_IO["4.2 event-broadcast · 語義訂閱廣播（src/features/semantic-graph.slice/{subscribers,outbox}）[D21-6 S1 O5 O6]"]
             direction LR
             LIFECYCLE_SUB["subscribers/lifecycle-subscriber.ts\n標籤生命週期事件訂閱"]
-            TAG_OUTBOX["outbox/tag-outbox.ts\n[SK_OUTBOX: SAFE_AUTO]\n標籤異動廣播出口"]
+            TAG_OUTBOX["outbox/tag-outbox.ts\n【VS8 唯一 outbox 節點 [O5]】\n[SK_OUTBOX: SAFE_AUTO]\n路徑：tag-outbox→RELAY→IER→L5 FUNNEL→tag-snapshot\n標籤異動廣播出口 [O6]"]
         end
 
-        subgraph VS8_RL["4.3 decision-policy · 語義決策輸出（src/features/semantic-graph.slice/decision）[D21-5 D8 D27]"]
+        subgraph VS8_RL["4.3 decision-policy · 語義決策輸出（src/features/semantic-graph.slice/decision）[D21-5 D8 D27 E4~E6]"]
             direction LR
-            subgraph COST_CLASS["📊 成本語義分類器（src/features/semantic-graph.slice/_cost-classifier.ts）[D8][D24][D27]"]
+            subgraph COST_CLASS["📊 成本語義分類器（src/features/semantic-graph.slice/_cost-classifier.ts）[D8][D24][D27][E4 E5 E6 C6]"]
                 direction LR
-                COST_CLASSIFIER["_cost-classifier.ts（純函式 [D8]）\nclassifyCostItem(name) → (costItemType, semanticTagSlug)\nshouldMaterializeAsTask(type) → boolean  ★[D27]\n──────────────────────────────\nEXECUTABLE  物理施工任務（預設出口）\nMANAGEMENT  行政/品管/職安管理（含 QC Inspection）\nRESOURCE    倉儲/人力資源儲備\nFINANCIAL   付款里程碑/預付款\nPROFIT      利潤項目（利潤）\nALLOWANCE   耗材/差旅/運輸補貼（含差旅、運輸）\n──────────────────────────────\nsemanticTagSlug 由 VS8 依內容語義掛載（對齊 tagSlug）\n★ EXECUTABLE override 優先：機電檢測/qc test 等施工測試→EXECUTABLE\n禁止 Firestore 存取・禁止 async\n可在任意 Layer 安全呼叫 [D8]"]
+                COST_CLASSIFIER["_cost-classifier.ts（純函式 [D8]）\n實作 ISemanticClassificationPort [O1 E4]\nclassifyCostItem(name) → (costItemType, semanticTagSlug, confidence, inferenceTrace[])\nshouldMaterializeAsTask(type) → boolean  ★[D27 C7]\n────────────────────────────────────\n推理三步驟不可跳躍 [E5]：\n  ① vector similarity 縮小候選 slug（C11 向量縮範）\n  ② graph traversal 確認 essence_type（C11 Graph 確認）\n  ③ 套用 override 規則（override = IS_A 邊，非 if-else [C7]）\nTaskNode.essence_type [C6]：\n  PHYSICAL_INSTALL / LOGIC_CONFIG / COMPLIANCE\n────────────────────────────────────\nEXECUTABLE  物理施工任務（預設出口）\nMANAGEMENT  行政/品管/職安管理（含 QC Inspection）\nRESOURCE    倉儲/人力資源儲備\nFINANCIAL   付款里程碑/預付款\nPROFIT      利潤項目（利潤）\nALLOWANCE   耗材/差旅/運輸補貼（含差旅、運輸）\n────────────────────────────────────\nsemanticTagSlug 由 VS8 依內容語義掛載（對齊 tagSlug）\n★ EXECUTABLE override 優先：機電檢測/qc test 等施工測試→EXECUTABLE\n無 inferenceTrace 的推理結果禁止進入下游流程 [E6]\n禁止 Firestore 存取・禁止 async\n可在任意 Layer 安全呼叫 [D8]"]
             end
+        end
+
+        subgraph VS8_PORTS["4.4 port-interfaces · VS8 對外唯一出口（src/features/semantic-graph.slice/ports）[O1 B3]"]
+            direction LR
+            PORT_CLASS["ISemanticClassificationPort [O1]\n供 VS5 呼叫成本分類\ncost-item-classifier 實作此介面 [E4]"]
+            PORT_SKILL["ISkillMatchPort [O1]\n供 L10 Genkit Flow 呼叫資格推理\nskill-matcher 實作此介面 [E7]"]
+            PORT_FEED["ISemanticFeedbackPort [O1]\n供 learning-engine 接收事實事件\n唯一合法：VS3 SkillXpAdded/Deducted\n         + VS5 TaskCompleted [E9]"]
         end
     end
 
@@ -869,6 +937,11 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
     CTA -.->|"Deprecated 通知 [D21-8]"| TAG_SG
     VS8_NG -.->|"語義路由授權 [D21-5]"| VS8_RL
     CONS_ENG -.->|"治理通過 → BBB 最終裁決 [D21-I D21-K]"| INV_GUARD
+    SKILL_MATCH -.->|"eligible_persons 推理結果 [O3]"| TASK_SEM_V
+    CAUSALITY -.->|"因果審計記錄 [O4]"| CAUSAL_LOG
+    PORT_CLASS -.->|"介面實作 [O1 E4]"| COST_CLASSIFIER
+    PORT_SKILL -.->|"介面實作 [O1 E7]"| SKILL_MATCH
+    PORT_FEED -.->|"事實事件驅動 [O1 E9]"| LEARN
 end
 
 %% ═══════════════════════════════════════════════════════════════
