@@ -1,3 +1,9 @@
+/**
+ * Module: reset-password-modal-page
+ * Purpose: Render reset password flow in an intercepting modal route.
+ * Responsibilities: read optional email query param and close modal through router back navigation.
+ * Constraints: deterministic logic, respect module boundaries
+ */
 // [職責] Intercepting route — renders ResetPasswordForm as Dialog overlay from within login page
 // Client nav: modal overlay; direct URL: falls through to (auth)/reset-password/page.tsx
 "use client"

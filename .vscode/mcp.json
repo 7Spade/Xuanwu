@@ -60,29 +60,29 @@
 				"chrome-devtools-mcp"
 			]
 		},
-		"sonarqube": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"-y",
-				"@sonarqube/mcp-server"
-			],
-			"env": {
-				"SONARQUBE_URL": "${input:sonarqube-url}",
-				"SONARQUBE_TOKEN": "${input:sonarqube-token}"
-			}
-		},
-		"codacy": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"-y",
-				"@codacy/mcp-server"
-			],
-			"env": {
-				"CODACY_API_TOKEN": "${input:codacy-token}"
-			}
-		},
+//		"sonarqube": {
+//			"type": "stdio",
+//			"command": "npx",
+//			"args": [
+//				"-y",
+//				"@sonarqube/mcp-server"
+//			],
+//			"env": {
+//				"SONARQUBE_URL": "${input:sonarqube-url}",
+//				"SONARQUBE_TOKEN": "${input:sonarqube-token}"
+//			}
+//		},
+//		"codacy": {
+//			"type": "stdio",
+//			"command": "npx",
+//			"args": [
+//				"-y",
+//				"@codacy/mcp-server"
+//			],
+//			"env": {
+//				"CODACY_API_TOKEN": "${input:codacy-token}"
+//			}
+//		},
 		"sequentialthinking": {
 			"command": "npx",
 			"args": [
@@ -107,9 +107,30 @@
 			],
 			"env": {
 				"CONTEXT7_API_KEY": "${input:CONTEXT7_API_KEY}"
-			},
-			"gallery": "https://api.mcp.github.com",
-			"version": "1.0.31"
+			}
+		},
+		"microsoft/markitdown": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"markitdown-mcp@0.0.1a4"
+			]
+		},
+		"oraios/serena": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"--from",
+				"git+https://github.com/oraios/serena",
+				"serena",
+				"start-mcp-server",
+				"--context",
+				"ide",
+				"--project",
+				"${workspaceFolder}",
+				"--open-web-dashboard",
+				"false"
+			]
 		}
 	},
 	"inputs": [
