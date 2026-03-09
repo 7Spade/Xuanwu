@@ -9,6 +9,7 @@
 | `language-switcher.tsx` | `LanguageSwitcher` | 多語系切換下拉選單 |
 | `mode-toggle.tsx` | `ModeToggle` | Light / Dark / System 主題切換 |
 | `page-header.tsx` | `PageHeader` | 頁面標題列（title / description / actions） |
+| `parallel-slot-header-loading.tsx` | `ParallelSlotHeaderLoading` | 平行路由 Header slot 統一 loading 骨架 |
 | `global-command-palette.tsx` | `GlobalCommandPalette` | 全域命令面板（快捷鍵、搜尋、動作觸發） |
 | `status-progress.tsx` | `StatusProgress` | 帶標籤的進度條封裝 |
 | `inline-spinner.tsx` | `InlineSpinner` | 行內載入指示器 |

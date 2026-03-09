@@ -11,13 +11,16 @@ import { cn } from "@/shadcn-ui/utils/utils";
 interface RouteStreamShellProps {
   children: ReactNode;
   className?: string;
+  compact?: boolean;
 }
 
-export function RouteStreamShell({ children, className }: RouteStreamShellProps) {
+export function RouteStreamShell({ children, className, compact = false }: RouteStreamShellProps) {
   return (
     <div
       className={cn(
-        "mx-auto max-w-7xl space-y-6 rounded-2xl bg-background/60 p-6 shadow-sm ring-1 ring-zinc-300/50 backdrop-blur-sm dark:ring-white/10",
+        "mx-auto max-w-7xl rounded-2xl bg-background/60 shadow-sm ring-1 ring-zinc-300/50 backdrop-blur-sm dark:ring-white/10",
+        compact ? "space-y-4 p-5" : "space-y-6 p-6 md:p-8",
+        "animate-in fade-in duration-200 ease-out",
         className,
       )}
     >

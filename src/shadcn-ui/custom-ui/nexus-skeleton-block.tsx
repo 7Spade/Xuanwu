@@ -14,10 +14,15 @@ interface NexusSkeletonBlockProps {
 
 export function NexusSkeletonBlock({ rows = 4, className }: NexusSkeletonBlockProps) {
   return (
-    <div className={cn("space-y-3 rounded-2xl bg-background/55 p-4 ring-1 ring-zinc-300/50 dark:ring-white/10", className)}>
+    <div
+      className={cn(
+        "space-y-3 rounded-2xl bg-background/65 p-4 shadow-sm ring-1 ring-zinc-300/50 backdrop-blur-sm transition-all duration-200 ease-out dark:ring-white/10",
+        className,
+      )}
+    >
       <Skeleton className="h-6 w-2/5" />
       {Array.from({ length: rows }).map((_, index) => (
-        <Skeleton key={`skeleton-row-${index}`} className="h-10 w-full" />
+        <Skeleton key={`skeleton-row-${index}`} className="h-10 w-full active:scale-[0.98]" />
       ))}
     </div>
   )
