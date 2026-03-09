@@ -1,44 +1,18 @@
 /**
  * Module: gov.semantic/_types
- * Purpose: Domain contracts for organization semantic dictionaries.
- * Responsibilities: Define task-type and skill-type dictionary entities managed by VS4.
+ * Purpose: Domain contracts for organization semantic dictionaries — shim for backward compatibility.
+ * Responsibilities: Re-export types from centralized location.
  * Constraints: deterministic logic, respect module boundaries
+ *
+ * @deprecated 🛑 型別定義已集中管理。
+ * 請優先從 `@/shared-kernel/types` 引用。
+ * 定義位置：src/shared-kernel/types/organization-semantic.ts
  */
-
-import type { SkillRequirement } from '@/shared-kernel';
-
-export type OrgSemanticNamespace = 'task-type' | 'skill-type';
-
-interface OrgSemanticDictionaryBase {
-  orgId: string;
-  slug: string;
-  name: string;
-  aliases: string[];
-  description?: string;
-  active: boolean;
-  addedBy: string;
-  addedAt: string;
-  updatedAt?: string;
-}
-
-export interface OrgSkillTypeEntry extends OrgSemanticDictionaryBase {
-  namespace: 'skill-type';
-}
-
-export interface OrgTaskTypeEntry extends OrgSemanticDictionaryBase {
-  namespace: 'task-type';
-  requiredSkills: SkillRequirement[];
-}
-
-export type OrgSemanticEntry = OrgSkillTypeEntry | OrgTaskTypeEntry;
-
-export interface ResolveOrgTaskTypeInput {
-  orgId: string;
-  itemName: string;
-}
-
-export interface ResolvedOrgTaskType {
-  taskTypeSlug: string;
-  taskTypeName: string;
-  requiredSkills: SkillRequirement[];
-}
+export type {
+  OrgSemanticNamespace,
+  OrgSkillTypeEntry,
+  OrgTaskTypeEntry,
+  OrgSemanticEntry,
+  ResolveOrgTaskTypeInput,
+  ResolvedOrgTaskType,
+} from '@/shared-kernel/types/organization-semantic';

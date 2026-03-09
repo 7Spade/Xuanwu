@@ -148,3 +148,81 @@ export type {
 	ScheduleItem,
 	Location,
 } from './data-contracts/scheduling/schedule-contract';
+
+// ─── Centralized Domain Types ─────────────────────────────────────────────────
+// [D19] Canonical cross-BC type definitions — centralized in shared-kernel/types.
+export type { AuditLog, AuditLogType } from './types/audit-log';
+export type { DailyLog, DailyLogComment } from './types/daily-log';
+export type {
+	IntentID,
+	SourcePointer,
+	ParsedLineItem,
+	ParsingIntent,
+	ParsingImportStatus,
+	ParsingImport,
+	ParsingIntentStatus,
+	ParsingIntentSourceType,
+	ParsingIntentReviewStatus,
+} from './types/document-parser';
+export type {
+	FinanceLifecycleStage,
+	FinanceClaimDraftEntry,
+	FinanceClaimLineItem,
+	FinanceStrongReadSnapshot,
+} from './types/finance';
+export type {
+	TagRoutingRule,
+	TagRoutingDecision,
+	NotificationSourceEvent,
+	NotificationDispatch,
+	NotificationDispatchResult,
+	NotificationDispatchError,
+	NotificationSubscription,
+	NotificationHubStats,
+} from './types/notification';
+export type {
+	OrgSemanticNamespace,
+	OrgSkillTypeEntry,
+	OrgTaskTypeEntry,
+	OrgSemanticEntry,
+	ResolveOrgTaskTypeInput,
+	ResolvedOrgTaskType,
+} from './types/organization-semantic';
+export type {
+	DateRangeFilter,
+	SearchFilters,
+	SearchState,
+	ExecuteSearchInput,
+	GroupedSearchResult,
+	SearchResponse,
+} from './types/search';
+export { INITIAL_SEARCH_STATE } from './types/search';
+export type {
+	SemanticIndexEntry,
+	SemanticIndexStats,
+	TemporalTagAssignment,
+	TemporalConflict,
+	TemporalConflictCheckInput,
+	TemporalConflictCheckResult,
+	TaxonomyTree,
+	TaxonomyValidationResult,
+	TaxonomyValidationError,
+	TaxonomyErrorCode,
+} from './types/semantic-graph';
+export type {
+	Workspace,
+	WorkspaceLifecycleState,
+	WorkspacePersonnel,
+	CapabilitySpec,
+	Capability,
+	Address,
+	WorkspaceLocation,
+} from './types/workspace';
+export type {
+	WorkspaceFile,
+	WorkspaceFileVersion,
+	CreateWorkspaceFileInput,
+} from './types/workspace-file';
+export type { WorkspaceIssue, IssueComment } from './types/workspace-issue';
+export type { WorkspaceRole, WorkspaceGrant } from './types/workspace-role';
+export type { WorkspaceTask, TaskWithChildren } from './types/workspace-task';

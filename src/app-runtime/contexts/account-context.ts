@@ -9,11 +9,11 @@
 
 import { createContext, type Dispatch } from 'react'
 
-import type { DailyLog } from '@/features/workspace.slice/domain.daily/_types'
-import type { WorkspaceIssue } from '@/features/workspace.slice/domain.issues/_types'
-import type { WorkspaceTask } from '@/features/workspace.slice/domain.tasks/_types'
-import type { Workspace } from '@/features/workspace.slice/core/_types'
-import type { AuditLog } from '@/features/workspace.slice/gov.audit/_types'
+import type { DailyLog } from '@/shared-kernel/types/daily-log';
+import type { WorkspaceIssue } from '@/shared-kernel/types/workspace-issue';
+import type { WorkspaceTask } from '@/shared-kernel/types/workspace-task';
+import type { Workspace } from '@/shared-kernel/types/workspace';
+import type { AuditLog } from '@/shared-kernel/types/audit-log';
 import type { PartnerInvite } from '@/shared-kernel'
 import type { ScheduleItem } from '@/shared-kernel'
 
