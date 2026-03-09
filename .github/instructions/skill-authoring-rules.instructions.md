@@ -1,4 +1,5 @@
 ---
+name: "Agent Skill Authoring Rules"
 description: "Authoring rules for high-quality SKILL.md files used by Copilot agent skills."
 applyTo: "**/{.github,.claude}/skills/**/SKILL.md"
 ---

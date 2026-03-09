@@ -1,6 +1,7 @@
 ---
+name: "Performance Optimization Rules"
 description: "Performance optimization rules for frontend, backend, and data layers."
-applyTo: "**/*"
+applyTo: "src/**/*.{ts,tsx,js,jsx,css}"
 ---
 
 # Performance Optimization Rules

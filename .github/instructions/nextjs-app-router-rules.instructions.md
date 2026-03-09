@@ -1,4 +1,5 @@
 ---
+name: "Next.js App Router Rules"
 description: "Best practices for Next.js App Router code, Server/Client boundaries, and Cache Components usage."
 applyTo: "**/*.{ts,tsx,js,jsx,css}"
 ---

@@ -1,4 +1,5 @@
 ---
+name: "Documentation Sync Rules"
 description: "Rules to keep README and docs synchronized with code, API, and configuration changes."
 applyTo: "**/*.{md,ts,tsx,js,jsx,mjs,cjs,yml,yaml,json}"
 ---

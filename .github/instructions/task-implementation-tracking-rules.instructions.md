@@ -1,4 +1,5 @@
 ---
+name: "Task Implementation Tracking Rules"
 description: "Rules for implementing tracked task plans and maintaining change records."
 applyTo: "**/.copilot-tracking/**/*.md"
 ---
