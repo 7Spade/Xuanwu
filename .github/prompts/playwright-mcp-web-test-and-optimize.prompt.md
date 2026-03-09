@@ -42,6 +42,33 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 7. Verify URL changes to the second workspace id and workspace page remains interactive.
 8. Capture one screenshot for each milestone: switched organization, entered workspace, switched workspace.
 
+## Full project walkthrough (required route tour)
+1. Verify left sidebar routes are each opened at least once:
+	- `/dashboard`
+	- `/workspaces`
+	- `/dashboard/account/members`
+	- `/dashboard/account/teams`
+	- `/dashboard/account/partners`
+	- `/dashboard/account/matrix`
+	- `/dashboard/account/workforce-scheduling`
+	- `/dashboard/account/daily`
+	- `/dashboard/account/audit`
+2. Inside one workspace, open each tab route at least once:
+	- `Capabilities`
+	- `Members`
+	- `Tasks`
+	- `QA`
+	- `Acceptance`
+	- `Finance`
+	- `Issues`
+	- `Daily`
+	- `Files`
+	- `Schedule`
+	- `Document Parser`
+	- `Audit`
+3. Confirm top-right i18n button exists on both dashboard shell and workspace shell during the tour.
+4. If `Restoring dimension sovereignty...` blocks navigation, re-authenticate and retry once; if still blocked, record it as environment blocker with console/network evidence.
+
 ## Output
 - Repro steps
 - Evidence (errors/screenshots)

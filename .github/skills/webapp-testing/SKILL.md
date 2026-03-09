@@ -38,6 +38,33 @@ Toolkit for interacting with and testing local web applications using Playwright
 7. Assert route id changed and page is stable/interactable after switch.
 8. Record evidence for all three actions: organization switch, workspace entry, workspace switch.
 
+## Full Route Tour Procedure (Mandatory)
+1. Traverse left sidebar routes once each:
+	- `/dashboard`
+	- `/workspaces`
+	- `/dashboard/account/members`
+	- `/dashboard/account/teams`
+	- `/dashboard/account/partners`
+	- `/dashboard/account/matrix`
+	- `/dashboard/account/workforce-scheduling`
+	- `/dashboard/account/daily`
+	- `/dashboard/account/audit`
+2. In one workspace context, traverse all workspace tab routes once each:
+	- `Capabilities`
+	- `Members`
+	- `Tasks`
+	- `QA`
+	- `Acceptance`
+	- `Finance`
+	- `Issues`
+	- `Daily`
+	- `Files`
+	- `Schedule`
+	- `Document Parser`
+	- `Audit`
+3. During traversal, assert top-right i18n button exists in both dashboard and workspace shells.
+4. If blocked by `Restoring dimension sovereignty...`, re-login and retry once; if still blocked, mark as environment blocker and capture console/network evidence.
+
 ## Workflow
 1. Confirm scope and ask targeted clarifying questions when required.
 2. Produce a concise, execution-ready plan focused on the stated goal.
