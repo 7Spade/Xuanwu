@@ -207,6 +207,7 @@
 %%    A12=global-search-authority   A13=notification-hub-authority
 %%    A14=cost-semantic-dual-key
 %%    A15=finance-lifecycle-gate    A16=multi-claim-cycle   A17=skill-xp-award-contract
+%%    A18=org-semantic-extension
 %%  ── RULESET-SHOULD（可演化治理）: D · P · T · E ──
 %%    D7=cross-slice-index-only   D24=no-firebase-import D26=cross-cutting-authority
 %%    D27=cost-semantic-routing   D27-A=semantic-aware-routing-policy

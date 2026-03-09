@@ -11,10 +11,20 @@
 
 - `docs/architecture/00-LogicOverview.md`
   - 架構唯一真相來源 (SSOT)，包含 D/S/R/A/# 全規則、flowchart、FORBIDDEN。
-- `docs/architecture/01-SharedKernel.md`
-  - L1 契約中心：SK_DATA、S1~S6、SK_PORTS。
+  - L1 契約中心：SK_DATA、S1~S6、SK_PORTS 定義均在此檔。
 - `docs/architecture/02-Layers/00-LayeringRules.md`
-  - L0~L9 層級通訊與單向依賴鏈。
+  - L0~L10 層級通訊與單向依賴鏈。
+
+## 1a. Sub-Views（子視圖 · 從 00-LogicOverview.md 抽出，供可讀性閱覽）
+
+- `docs/architecture/01-logical-flow.md`
+  - 邏輯流視圖：三條主鏈端到端流向與 VS0–VS8 子圖結構（Mermaid 可讀版）。
+- `docs/architecture/02-governance-rules.md`
+  - 治理視圖：完整規則正文（D/S/R/A/# + FORBIDDEN），供審查與快速查閱。
+- `docs/architecture/03-infra-mapping.md`
+  - 基礎設施視圖：L0–L10 路徑、Projection 清單、Firebase Adapter 清單。
+
+> 子視圖與 `00-LogicOverview.md` 有衝突時，以 `00-LogicOverview.md` 為準。
 
 ## 2. Slice 文件
 
