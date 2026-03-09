@@ -3,7 +3,7 @@
  *
  * Dead-Letter Queue (DLQ) fault-containment center. [R5]
  *
- * Per 00-LogicOverview.md [R5] DLQ 三級策略 and tree.md:
+ * Per 00-logic-overview.md [R5] DLQ 三級策略 and tree.md:
  *   infra.dlq-manager = [R5] 故障收容中心 (SAFE_AUTO / REVIEW_REQUIRED / SECURITY_BLOCK)
  *
  * Consumers:

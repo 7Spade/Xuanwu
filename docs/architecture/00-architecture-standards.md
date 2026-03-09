@@ -8,7 +8,7 @@
 
 - 消除同語義不同命名（檔名、資料夾名、層級位置不一致）。
 - 讓新功能可以直接依照標準範本建立，不再每個切片各自發明。
-- 對齊 `docs/architecture/00-LogicOverview.md` 的層級與邊界。
+- 對齊 `docs/architecture/00-logic-overview.md` 的層級與邊界。
 
 ## 2. Core Principles
 
@@ -235,5 +235,5 @@ src/features/{new-feature}.slice/
 ## 10. Versioning
 
 - 本文件為命名與目錄規格基準文件。
-- 若與其他說明文衝突，以本文件與 `00-LogicOverview.md` 共同裁決。
+- 若與其他說明文衝突，以本文件與 `00-logic-overview.md` 共同裁決。
 

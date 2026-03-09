@@ -9,11 +9,11 @@
 
 | Artefact | Purpose |
 |---|---|
-| `docs/architecture/00-LogicOverview.md` | Architecture SSOT — layer definitions, dependency rules, invariants |
+| `docs/architecture/00-logic-overview.md` | Architecture SSOT — layer definitions, dependency rules, invariants |
 | `docs/knowledge-graph.json` | Semantic entity relationships |
 | `eslint.config.mts` | Enforces D1–D26 rules as ESLint errors |
 
-**Always read `docs/architecture/00-LogicOverview.md` before proposing any structural change.**
+**Always read `docs/architecture/00-logic-overview.md` before proposing any structural change.**
 
 ---
 
@@ -115,7 +115,7 @@ Known baseline after `npm install`:
 
 ## 8. Key Files to Read Before Making Changes
 
-1. `docs/architecture/00-LogicOverview.md` — architecture & invariants SSOT
+1. `docs/architecture/00-logic-overview.md` — architecture & invariants SSOT
 2. `eslint.config.mts` — enforced rules
 3. `src/features/shared-kernel/` — shared contracts & ports
 4. Relevant `{slice}/index.ts` — slice public API

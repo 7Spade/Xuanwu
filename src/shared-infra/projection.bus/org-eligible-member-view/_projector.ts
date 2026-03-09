@@ -5,7 +5,7 @@
  * Used exclusively by organization.schedule to determine assignable members
  * and validate skill tier requirements WITHOUT querying Account aggregates directly.
  *
- * Per 00-LogicOverview.md invariants:
+ * Per 00-logic-overview.md invariants:
  *   #12 ??Tier is NEVER stored; derived at query time via resolveSkillTier(xp).
  *   #14 ??Schedule reads ONLY this projection (org-eligible-member-view).
  *

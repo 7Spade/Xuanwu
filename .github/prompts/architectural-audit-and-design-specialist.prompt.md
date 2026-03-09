@@ -9,7 +9,7 @@ agent: 'agent'
 Audit implementation against the architecture SSOT and provide actionable fixes.
 
 ## Source of truth
-- [docs/architecture/00-LogicOverview.md](../../docs/architecture/00-LogicOverview.md)
+- [docs/architecture/00-logic-overview.md](../../docs/architecture/00-logic-overview.md)
 
 ## Checklist
 - Layer dependency direction

@@ -5,7 +5,7 @@
  * Orchestrates the full command processing pipeline:
  *   ScopeGuard → PolicyEngine → TransactionRunner → Outbox flush
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  * - SERVER_ACTION →|發送 Command| WORKSPACE_COMMAND_HANDLER
  * - WORKSPACE_COMMAND_HANDLER → WORKSPACE_SCOPE_GUARD
  * - WORKSPACE_COMMAND_HANDLER --> TRACE_IDENTIFIER (Observability)

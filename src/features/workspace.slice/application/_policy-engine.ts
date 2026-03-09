@@ -3,7 +3,7 @@
  *
  * Evaluates workspace-level policies based on role and requested action.
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  * - WORKSPACE_SCOPE_GUARD → WORKSPACE_POLICY_ENGINE → WORKSPACE_TRANSACTION_RUNNER
  * - Application layer coordinates flow only — no domain rules (invariant #3)
  *

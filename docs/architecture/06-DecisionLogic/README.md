@@ -2,5 +2,5 @@
 
 本目錄承載決策邏輯文件。
 
-- `CostClassifier.md` (`#A14`, `D27`)
-- `FinanceCycle.md` (`#A15`, `#A16`)
+- `01-cost-classifier.md` (`#A14`, `D27`)
+- `02-finance-cycle.md` (`#A15`, `#A16`)

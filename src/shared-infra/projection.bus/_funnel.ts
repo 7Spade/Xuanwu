@@ -3,7 +3,7 @@
  *
  * EVENT_FUNNEL_INPUT: unified entry point for the Projection Layer.
  *
- * Per 00-LogicOverview.md (L5 · ProjectionBus Infrastructure):
+ * Per 00-logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   WORKSPACE_EVENT_BUS -> EVENT_FUNNEL_INPUT
  *   ORGANIZATION_EVENT_BUS -> EVENT_FUNNEL_INPUT
  *   TAG_LIFECYCLE_BUS -> EVENT_FUNNEL_INPUT (v5)
@@ -57,10 +57,10 @@ export function registerOrganizationFunnel(): () => void {
  * Also delegates to VS4_TAG_SUBSCRIBER to update SKILL_TAG_POOL. [R3]
  * Returns a cleanup function.
  *
- * Per 00-LogicOverview.md [R3]:
+ * Per 00-logic-overview.md [R3]:
  *   IER BACKGROUND_LANE ??VS4_TAG_SUBSCRIBER ??SKILL_TAG_POOL
  *
- * Per 00-LogicOverview.md (L5 · ProjectionBus Infrastructure):
+ * Per 00-logic-overview.md (L5 · ProjectionBus Infrastructure):
  *   IER ==>|"#9 event write path"| FUNNEL
  *   FUNNEL --> TAG_SNAPSHOT
  *

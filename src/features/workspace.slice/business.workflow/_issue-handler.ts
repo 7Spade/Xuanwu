@@ -3,7 +3,7 @@
  *
  * Handles the B-track `IssueResolved` domain event for the Workflow aggregate.
  *
- * Per 00-LogicOverview.md [R6] WORKFLOW_STATE_CONTRACT:
+ * Per 00-logic-overview.md [R6] WORKFLOW_STATE_CONTRACT:
  *   IssueResolved event → blockedBy.delete(issueId)  (ONLY trigger)
  *   B-Track communicates back to A-Track ONLY via Domain Event — never a direct call.
  *

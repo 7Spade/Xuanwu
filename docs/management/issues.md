@@ -1,6 +1,6 @@
 # 🗂 Active Issues Register
 
-> **憲法依據 / Constitutional Basis**: `docs/architecture/00-LogicOverview.md`
+> **憲法依據 / Constitutional Basis**: `docs/architecture/00-logic-overview.md`
 > **資料來源 / Data Source**: VS5 Files + Document Parser flow review (2026-03-09)
 > **格式說明**: 每條目包含 [❗ 違規] [🔍 現狀] [🛠 修正方案] [📈 影響評估]
 > **最後更新**: 2026-03-09 — ISSUE-009、ISSUE-010 已確認修復並移至 `issues-archive.md`。

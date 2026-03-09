@@ -1,6 +1,6 @@
 ﻿# [索引 ID: @CHK] Architecture Checklist & PR Review
 
-本檔作為 `docs/architecture/00-LogicOverview.md` 的審查落地版。
+本檔作為 `docs/architecture/00-logic-overview.md` 的審查落地版。
 每次 PR（尤其跨 slice 或 infra 變更）必須逐項勾選。
 
 ## 1. 單向依賴鏈檢查（D27-Order）

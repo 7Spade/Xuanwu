@@ -5,7 +5,7 @@
  * Covers wiki entries, proposals, and tag relationship data surfaced by VS8
  * for the governance UI.
  *
- * Per 00-LogicOverview.md (VS8 → STD_PROJ_LANE):
+ * Per 00-logic-overview.md (VS8 → STD_PROJ_LANE):
  *   SEM_GOV_V["projection.semantic-governance-view\n治理頁 Read Model（wiki/proposal/relationship）\n顯示線路：L5→L6→UI"]
  *   QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
  *

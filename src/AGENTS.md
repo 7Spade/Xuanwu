@@ -9,7 +9,7 @@ Nested agent instructions for all code under `src/`.
 ## Goals
 - Enforce clear architectural boundaries.
 - Reduce context noise by focusing only on relevant slice/layer files.
-- Use DDD language from `docs/knowledge-graph.json` and `docs/architecture/00-LogicOverview.md`.
+- Use DDD language from `docs/knowledge-graph.json` and `docs/architecture/00-logic-overview.md`.
 - Increase reasoning depth before editing: clarify boundary, authority, and side effects.
 
 ## Boundary Enforcement

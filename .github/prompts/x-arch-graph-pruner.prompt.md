@@ -15,7 +15,7 @@ Maintain the freshness and accuracy of the `memory` knowledge graph; remove outd
 2. **Contradiction Detection:** Invoke `tool-thinking` to check:
    - Is there more than one Entity with the same concept?
    - Do Relations reference deleted or renamed entities?
-   - Are knowledge entries contradicting the current `docs/architecture/00-LogicOverview.md`?
+   - Are knowledge entries contradicting the current `docs/architecture/00-logic-overview.md`?
 3. **Execute Pruning:** Use `delete_entities` or `delete_relations` to clean up invalid data.
 4. **Re-Sync:** Re-read the latest architecture document and use `create_entities` to add missing knowledge.
 

@@ -6,7 +6,7 @@
  * Teams are stored as `accounts/{orgId}.teams[]` (type === 'internal').
  * onSnapshot on the org account document provides real-time updates.
  *
- * Per 00-LogicOverview.md:
+ * Per 00-logic-overview.md:
  *   ORGANIZATION_TEAM (organization-governance.team aggregate)
  *   ORGANIZATION_TEAM -.-> SKILL_TAG_POOL (read-only by tagSlug)
  *

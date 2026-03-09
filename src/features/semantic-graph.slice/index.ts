@@ -4,7 +4,7 @@
  * VS8 Semantic Graph: The Brain ??manages tag taxonomy, temporal conflict
  * detection for scheduling, and semantic indexing for cross-domain queries.
  *
- * Per 00-LogicOverview.md (VS8):
+ * Per 00-logic-overview.md (VS8):
  *   ??Everything as a Tag: all domain concepts modelled as semantic tags,
  *      governed by VS8 (Semantic Graph).
  *
