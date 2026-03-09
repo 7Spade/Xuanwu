@@ -18,6 +18,7 @@ import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogHeader,
 	DialogTitle,
 } from "@/shadcn-ui/dialog";
@@ -130,6 +131,9 @@ export default function LandingPage() {
 						<DialogTitle className="text-xl font-black tracking-wide">
 							{t("auth.enterDimension")}
 						</DialogTitle>
+						<DialogDescription className="text-sm text-muted-foreground">
+							{t("common.appDescription")}
+						</DialogDescription>
 					</DialogHeader>
 					<Tabs defaultValue="signin" className="pt-2">
 						<TabsList className="mb-4 grid h-11 w-full grid-cols-2 rounded-xl bg-muted/30 p-1">
@@ -175,6 +179,9 @@ export default function LandingPage() {
 						<DialogTitle className="text-xl font-black uppercase tracking-wide">
 							{t("auth.resetPassword")}
 						</DialogTitle>
+						<DialogDescription className="text-sm text-muted-foreground">
+							{t("auth.sendEmail")}
+						</DialogDescription>
 					</DialogHeader>
 					<div className="pt-2">
 						<ResetPasswordForm

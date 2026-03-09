@@ -21,6 +21,44 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 4. Apply minimal fixes
 5. Re-run affected checks
 
+## Localhost target (Xuanwu)
+- Base URL for this repository: `http://localhost:9002`
+- Start command: `npm run dev`
+- Required preflight: confirm `localhost:9002` is reachable before any browser step.
+- PowerShell check: `Test-NetConnection -ComputerName localhost -Port 9002`
+- If unreachable: restart dev server and retry preflight once, then classify as environment blocker.
+
+## Optimized execution pipeline (localhost:9002)
+1. Preflight
+	- Verify server reachability on `9002`.
+	- Open base URL and confirm landing UI renders.
+2. Authentication baseline
+	- Execute login flow using `.env.local` test credentials.
+	- Verify `/dashboard` shell is truly rendered.
+3. Navigation coverage
+	- Execute dashboard/sidebar route tour (all sidebar tabs).
+	- Execute workspace tab route tour (all workspace tabs).
+	- For every tab page, execute nested tab tour (all visible sub-tabs).
+4. Evidence and diagnosis
+	- Collect snapshot + screenshot + console/network anomalies per failed route.
+	- Use next-devtools runtime diagnostics for server-side root cause.
+5. Fix and verify
+	- Apply minimal boundary-safe fix.
+	- Re-run only affected flows, then regression-check auth + shell + routing.
+
+## Completion gate
+- The run is complete only when all mandatory flows are either:
+	- `PASS` with evidence, or
+	- `BLOCKED` with reproducible environment proof.
+- Tab coverage is complete only when sidebar tabs and nested tabs are both fully covered.
+
+## Sidebar and Nested Tab Coverage Rule (Mandatory)
+1. Open every visible sidebar tab at least once.
+2. On each opened tab page, open every visible nested tab/sub-tab at least once.
+3. Repeat coverage when context changes (`Personal` vs `Organization`, different workspaces).
+4. Save one artifact per tab level (snapshot or screenshot) with route evidence.
+5. Report a coverage matrix in output: `sidebar tab -> nested tabs -> PASS/FAIL/BLOCKED`.
+
 ## Local test credentials
 - Read credentials from project-root `.env.local`.
 - Required variables: `TEST_AUTH_EMAIL`, `TEST_AUTH_PASSWORD`.
@@ -71,8 +109,9 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 	- `Schedule`
 	- `Document Parser`
 	- `Audit`
-3. Confirm top-right i18n button exists on both dashboard shell and workspace shell during the tour.
-4. If `Restoring dimension sovereignty...` blocks navigation, re-authenticate and retry once; if still blocked, record it as environment blocker with console/network evidence.
+3. For each opened workspace tab, open all nested tabs/sub-tabs on that page before continuing.
+4. Confirm top-right i18n button exists on both dashboard shell and workspace shell during the tour.
+5. If `Restoring dimension sovereignty...` blocks navigation, re-authenticate and retry once; if still blocked, record it as environment blocker with console/network evidence.
 
 ## Output
 - Repro steps

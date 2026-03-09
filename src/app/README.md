@@ -63,7 +63,7 @@ Routes accessible without authentication. They must not import any authenticated
 
 | Segment | Feature Slice | Notes |
 |---------|--------------|-------|
-| `/login` | VS1 Identity | Triggers `authenticated-identity` flow |
+| `/login` | VS1 Identity | Alias route; redirects to `/` landing auth entry |
 | `/reset-password` | VS1 Identity | Uses `@modal` parallel slot for overlay UI |
 
 ### Portal Group `(shell)/(portal)`
@@ -73,6 +73,7 @@ Authenticated routes wrapped in shell + portal layering.
 | Segment | Feature Slice | Notes |
 |---------|--------------|-------|
 | `/dashboard` | VS2 Account, VS5 Workspace | Main dashboard |
+| `/dashboard/workspaces` | VS5 Workspace | Compatibility alias; redirects to `/workspaces` |
 | `/workspaces/[id]` | VS5 Workspace | Workspace detail pages |
 
 ---

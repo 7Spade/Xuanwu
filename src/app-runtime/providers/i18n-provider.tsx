@@ -12,7 +12,10 @@ import { useContext, useEffect, useState, type ReactNode } from 'react'
 import { getPreferredLocale, i18nConfig, loadMessages, setLocalePreference } from '@/config/i18n/i18n'
 import { type Locale, type TranslationMessages } from '@/config/i18n/i18n-types'
 
+import fallbackEnMessages from '../../../public/localized-files/en.json'
 import { I18nContext } from '../contexts/i18n-context'
+
+const fallbackMessages = fallbackEnMessages as TranslationMessages
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(i18nConfig.defaultLocale)
@@ -56,10 +59,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   const t = (key: string, params?: Record<string, string | number>): string => {
-    if (!messages) return key
+    const sourceMessages = messages ?? fallbackMessages
 
     const keys = key.split('.')
-    let value: unknown = messages
+    let value: unknown = sourceMessages
 
     for (const itemKey of keys) {
       if (value && typeof value === 'object' && itemKey in value) {

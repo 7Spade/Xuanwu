@@ -19,6 +19,34 @@ Toolkit for interacting with and testing local web applications using Playwright
 - Current local dev values: `test@demo.com` / `123456`.
 - Keep credentials out of `.github/copilot-instructions.md`.
 
+## Localhost 9002 Execution Profile (Xuanwu)
+- Base URL: `http://localhost:9002`
+- Start server: `npm run dev`
+- Port check (PowerShell): `Test-NetConnection -ComputerName localhost -Port 9002`
+- Continue only when `TcpTestSucceeded` is `True`.
+- If `False`: restart dev server, then re-check once before marking environment blocker.
+
+## Playwright MCP Run Sequence (localhost:9002)
+1. Open `http://localhost:9002`.
+2. Confirm landing controls are visible: language switcher and sign-in button.
+3. Run mandatory login flow with `.env.local` credentials.
+4. Run mandatory organization/workspace flow.
+5. Run mandatory full route tour, including all sidebar tabs and nested tabs.
+6. Capture artifacts for each phase: snapshot + console anomalies + one screenshot.
+7. Report route-level status as `PASS`, `FAIL`, or `BLOCKED`.
+
+## Sidebar and Nested Tab Coverage Rule (Mandatory)
+1. Sidebar tabs: every visible sidebar navigation tab must be opened at least once.
+2. Nested tabs: for each parent tab page, open every visible child tab/sub-tab at least once.
+3. Dynamic tabs: if a tab list changes by account/workspace context, run coverage for each context.
+4. Evidence: each tab level requires at least one artifact (`snapshot` or `screenshot`) with URL/path proof.
+5. Reporting: output must include a coverage matrix (`parent tab -> child tabs -> status`).
+
+## Blocker Policy (localhost:9002)
+1. If page load fails (`ERR_CONNECTION_REFUSED`), run port check and restart `npm run dev`.
+2. If auth/session blocks navigation, re-login once and retry the blocked route once.
+3. If still failing, stop retries and record as environment blocker with exact route and evidence.
+
 ## Login Test Procedure (Mandatory)
 1. Start from landing page `/`.
 2. Verify top-right language switcher and sign-in button both exist.
@@ -63,7 +91,8 @@ Toolkit for interacting with and testing local web applications using Playwright
 	- `Document Parser`
 	- `Audit`
 3. During traversal, assert top-right i18n button exists in both dashboard and workspace shells.
-4. If blocked by `Restoring dimension sovereignty...`, re-login and retry once; if still blocked, mark as environment blocker and capture console/network evidence.
+4. For each workspace tab page, if there are internal tabs/sub-tabs, open all of them once each before moving to the next workspace tab.
+5. If blocked by `Restoring dimension sovereignty...`, re-login and retry once; if still blocked, mark as environment blocker and capture console/network evidence.
 
 ## Workflow
 1. Confirm scope and ask targeted clarifying questions when required.

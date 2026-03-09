@@ -117,13 +117,13 @@ export function Header() {
       <div className="flex flex-1 items-center justify-center">
         <Button
           variant="outline"
-          className="group relative h-9 w-full max-w-md justify-start border-none bg-muted/40 text-sm text-muted-foreground"
+          className="group relative h-10 w-full max-w-md justify-start border-0 bg-background/60 text-sm text-muted-foreground shadow-sm ring-1 ring-border/60 ring-offset-1 ring-offset-background transition-all duration-200 ease-out hover:bg-background/90 hover:text-foreground hover:ring-border/85 active:scale-[0.98]"
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-primary" />
           <span className="pl-7">{t('workspaces.searchDimensionsPlaceholder')}</span>
           <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
-            <div className="ml-1 hidden items-center gap-1 rounded border bg-background px-1.5 py-0.5 text-[10px] text-muted-foreground shadow-sm md:flex">
+            <div className="ml-1 hidden items-center gap-1 rounded-md bg-background/95 px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border/70 md:flex">
               <Command className="size-2.5" /> K
             </div>
           </div>
