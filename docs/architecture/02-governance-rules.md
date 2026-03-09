@@ -155,6 +155,11 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - VS5 任務/品質流程禁止直接 mutate VS3 XP；必須透過 IER 事件進入 VS3 [#2 D9 A17]
 - vis-network / vis-timeline / vis-graph3d 禁止直連 Firebase；必須透過 `VisDataAdapter` DataSet<> 消費 [D28]
 - `VisDataAdapter` 禁止在多個元件重複建立 Firebase 訂閱；DataSet<> 快取必須為唯一寫入點 [D28]
+- 禁止在 Aggregate Transaction 外部先寫 Aggregate 再補寫 Outbox（雙重寫入模式）[D29]
+- 禁止 L2 CBG_ROUTE 的 Command Handler 在 Transaction 外部以兩步驟執行寫入 [D29]
+- 禁止在 `hopCount ≥ 4` 後繼續轉發事件；禁止對 `CircularDependencyDetected` 觸發的 SECURITY_BLOCK DLQ 自動 Replay [D30]
+- 讀路徑禁止重新執行複雜的 Aggregate 鑑權邏輯；讀寫授權必須依賴 `acl-projection` [D31]
+- 禁止開發者在業務代碼中手動傳遞 `traceId`；上下文傳遞由底層 Middleware 自動維持 [R9]
 
 ---
 
@@ -447,7 +452,68 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 
 **費用保護原則**（架構正確性優先）：Firebase Snapshot 訂閱費用與連線數（讀取操作數）正比。舉例：若 vis-network、vis-timeline、vis-graph3d 三個元件各自建立 Firebase 訂閱，費用為 3 × 1 = **3 連線**；透過 `VisDataAdapter` 的 DataSet<> 快取，費用為 **1 連線**（一次訂閱，三元件共享推播）。隨元件數增長，費用差距等比放大。符合奧卡姆剃刀原則：不增加不必要的 Firebase 連線，不引入不必要的架構複雜度。
 
-### E7：App Check 安全閉環（app-check-enforcement-closure）
+### D29：原子性保證（transactional-outbox-pattern）
+
+> D29 為 Write-Atomicity Gate；凡新增或修改 L2 Command Pipeline 的 Aggregate 寫入路徑時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `D29` | MUST | L2 `CBG_ROUTE` 必須提供 `TransactionalCommand` 基類，供所有 VS 切片的寫操作繼承 |
+| `D29` | MUST | 所有 VS 切片的 Command Handler 必須在同一個 Firestore Transaction 中完成：① 寫入業務 Aggregate 狀態、② 寫入該切片的 `{slice}/_outbox` 集合 |
+| `D29` | MUST | 若 Aggregate 寫入成功、Outbox 寫入失敗，整個 Transaction 必須回滾；不得存在「Aggregate 已寫入、Outbox 未寫入」的中間狀態 |
+| `D29` | FORBIDDEN | 禁止在 Transaction 外部先寫 Aggregate 再補寫 Outbox（雙重寫入模式），此違反原子性 |
+
+**設計原則**（架構正確性優先）：只要業務存檔成功，事件就一定會發出；若存檔失敗，事件也會隨之復原。此從機制上消除了狀態與事件不同步的不一致性，無需各業務切片自行實作補償邏輯。
+
+### D30：循環依賴防禦（hop-limit-circular-dependency）
+
+> D30 為 Event Loop Guard Gate；凡修改 L4 IER 事件轉發邏輯、或跨切片事件訂閱關係時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `D30` | MUST | `SK_ENV`（EventEnvelope）必須包含 `hopCount` 欄位，初始值為 0 |
+| `D30` | MUST | L4 `IER` 每次轉發事件時，必須將 `hopCount + 1` 後寫入下一個 Envelope |
+| `D30` | MUST | 當 `hopCount ≥ 4` 時，IER 必須攔截該事件，拋出 `CircularDependencyDetected` 告警，並將事件路由至 `DLQ SECURITY_BLOCK` |
+| `D30` | MUST | `CircularDependencyDetected` 告警必須寫入 L9 `DOMAIN_ERRORS` |
+| `D30` | FORBIDDEN | 禁止在 hopCount 超限後繼續轉發事件；禁止對 `SECURITY_BLOCK` DLQ 自動 Replay |
+
+**設計原則**（架構正確性優先）：即使開發者在業務邏輯中不慎設計了循環觸發，系統也能在運行時自動截斷，防止雪崩效應。臨界值 3 次轉發（hopCount ≥ 4）符合奧卡姆剃刀原則：正常業務事件鏈不應超過此深度，超過即視為異常。
+
+### P8：L5 動態背壓與併發池（dynamic-backpressure-worker-pool）
+
+> P8 為 Projection Bus Performance Gate；凡新增高頻 Projection 寫入路徑、或修改 FUNNEL 分派邏輯時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `P8` | SHOULD | L5 `FUNNEL` 必須按事件的 `priorityLane`（Critical / Standard / Background）分配不同的 Worker Pool 配額（Quota） |
+| `P8` | SHOULD | 對於「高密度」投影（同一 Document 被多個事件修改），FUNNEL 在緩衝區中對同一 `docId` 的寫入進行 Debounce / Batching：100ms 內的同一 doc 更新合併為一次寫入 |
+| `P8` | SHOULD | Worker Pool 配額邊界必須引用 `SK_STALENESS_CONTRACT` 的 SLA 常數，禁止硬寫配額數字 |
+
+**設計原則**（架構正確性優先）：確保基礎設施能根據負載自動調節，Critical Lane 不會因 Background Lane 的寫入放大而受到影響；Debounce 機制可有效降低寫入次數，符合奧卡姆剃刀原則：不引入不必要的 Firestore 寫入。
+
+### D31：讀寫權限一致性（permission-projection）
+
+> D31 為 CQRS Auth Symmetry Gate；凡修改 CBG_AUTH 權限邏輯、或新增讀取路由時必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `D31` | MUST | 將「存取權限」視為一種 Projection（Read Model）：`acl-projection` |
+| `D31` | MUST | 當 `CBG_AUTH` 處理權限變更事件（如 RoleChanged / PolicyChanged）時，L5 必須同步更新 `projection.acl-projection` |
+| `D31` | MUST | `QRY_API_GW`（L6 Query Gateway）讀取資料時，必須自動將讀取請求與 `acl-projection` 進行 JOIN / Filter，確保讀寫路徑授權的絕對同步 |
+| `D31` | MUST | `projection.acl-projection` 歸屬 `CRITICAL_PROJ_LANE`；SLA 遵守 `PROJ_STALE_CRITICAL ≤ 500ms`[S4] |
+| `D31` | FORBIDDEN | 讀路徑禁止重新執行複雜的 Aggregate 鑑權邏輯；必須僅依賴 `acl-projection` 的預計算結果 |
+
+**設計原則**（架構正確性優先）：CQRS 讀寫分離後，鑑權邏輯若只在寫路徑執行，讀路徑就會存在授權漏洞。Permission Projection 是解決讀寫鑑權不對稱的正規架構方案，而非補丁式修補。
+
+### R9：Context Propagation Middleware（context-propagation-middleware）
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `R9` | MUST | `outbox-relay-worker` 在投遞 Outbox 時，必須驗證來源 Envelope 帶有 `traceId`；若缺失則拒絕投遞並記錄 L9 錯誤 |
+| `R9` | MUST | `outbox-relay-worker` 及 L4 IER 執行非同步函式時，必須使用 `AsyncLocalStorage`（Node.js）自動傳遞 `traceId` 上下文，確保整條非同步鏈路 context 不斷鏈 |
+| `R9` | MUST | 前端 SDK（`EXT_CLIENT` · `_actions.ts`）必須在每個請求中自動注入 `x-trace-id` HTTP Header |
+| `R9` | MUST | `CBG_ENTRY` 在收到請求時，必須優先讀取 `x-trace-id`；僅在 Header 缺失時才由 `CBG_ENTRY` 生成新的 `traceId`[R8] |
+| `R9` | FORBIDDEN | 禁止開發者在業務代碼中手動傳遞 `traceId`；`traceId` 的傳遞由底層 Middleware 自動維持 |
 
 > E7 為 Firebase Entry Security Gate；凡新增或修改受保護資料入口、App Check Adapter 或 `firebase/app-check` / `firebase-admin/app-check` 呼叫點時必審
 
@@ -488,6 +554,7 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | `R6` | workflow-state-rule |
 | `R7` | aggVersion-relay |
 | `R8` | traceId-readonly |
+| `R9` | context-propagation-middleware |
 | `S1` | OUTBOX-contract |
 | `S2` | VersionGuard |
 | `S3` | ReadConsistency |
@@ -519,11 +586,20 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | `E7` | app-check-enforcement-closure |
 | `E8` | genkit-tool-governance |
 
-### D 類（Firebase 隔離 / 視覺化 DataSet）
+### D 類（Firebase 隔離 / 視覺化 DataSet / 原子性 / 循環防禦 / 權限一致性）
 
 | 索引 | 摘要 |
 |------|------|
 | `D28` | vis-data-caching-pattern |
+| `D29` | transactional-outbox-pattern |
+| `D30` | hop-limit-circular-dependency |
+| `D31` | permission-projection |
+
+### P 類（效能與穩定性治理）
+
+| 索引 | 摘要 |
+|------|------|
+| `P8` | dynamic-backpressure-worker-pool |
 
 ---
 

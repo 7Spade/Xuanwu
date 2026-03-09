@@ -142,6 +142,8 @@ src/shared-infra/
 > **CQRS Gateway（讀寫分離統一閘道）**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在圖中合一為 `UNIFIED_GW`，以讀寫分離為唯一切割線。詳見 [`01-logical-flow.md §三條主鏈`](./01-logical-flow.md)
 >
 > **L2 Command Gateway 邊界規則**（可下沉 L1 元件 / MUST stay at L2 / D8・D10 禁止）→ [`02-governance-rules.md §L2 Command Gateway 邊界規則`](./02-governance-rules.md#l2-command-gateway-邊界規則d8--d10-附則)
+>
+> **[D29] Transactional Outbox Pattern**：`CBG_ROUTE` 提供 `TransactionalCommand` 基類；所有 VS 切片的 Command Handler 必須在同一 Firestore Transaction 中完成 Aggregate 寫入 + `{slice}/_outbox` 寫入。禁止在 Transaction 外部以雙步驟執行。
 
 ---
 
@@ -161,14 +163,14 @@ src/shared-infra/
 |----------|----------|----------|
 | `SAFE_AUTO` | 冪等操作（通知投遞失敗等） | 自動 retry backoff |
 | `REVIEW_REQUIRED` | 財務 / 排班 / 角色變更 | 人工審查後手動 replay |
-| `SECURITY_BLOCK` | 安全事件（RoleChanged / PolicyChanged） | 凍結 + 警報，禁止自動 replay |
+| `SECURITY_BLOCK` | 安全事件（RoleChanged / PolicyChanged）/ CircularDependencyDetected [D30] | 凍結 + 警報，禁止自動 replay |
 
 ### Outbox relay-worker CDC 鏈路
 
 ```
 Firestore onSnapshot (CDC)
-  → outbox-relay-worker
-    → L4 IER Lane Router
+  → outbox-relay-worker [R9: 驗證 traceId 必帶；AsyncLocalStorage 傳遞上下文]
+    → L4 IER Lane Router [D30: hopCount++ → ≥4 → SECURITY_BLOCK + CircularDependencyDetected]
       → [CRITICAL / STANDARD / BACKGROUND]
         → Projectors / Handlers / Subscribers
           → failure: retry backoff → 3 次失敗 → DLQ
@@ -186,6 +188,7 @@ Firestore onSnapshot (CDC)
 | `workspace-scope-guard-view` | [A9] |
 | `org-eligible-member-view`（含 `skills{tagSlug→xp}` / eligible） | [#14 #15 #16] |
 | `wallet-balance`（display 用 EVENTUAL_READ） | [S3 A1] |
+| `acl-projection`（讀取路徑權限鏡像）[D31] | CBG_AUTH 權限變更 → L5 同步更新；QRY_API_GW 自動 JOIN 過濾 |
 
 ### Standard Projections（PROJ_STALE_STANDARD ≤ 10s）[S4]
 
@@ -206,6 +209,18 @@ Firestore onSnapshot (CDC)
 
 > **規則**：`getTier(xp) → Tier` 是純函式 [#12]；Tier 是推導值，永遠不存 DB。
 
+### L5 Worker Pool 分流（Dynamic Backpressure）[P8]
+
+> L5 `FUNNEL` 依 `priorityLane` 分配 Worker Pool Quota；對同一 `docId` 的高密度投影進行 Debounce/Batching，100ms 內合併為 1 次寫入。
+
+| priorityLane | Worker Pool | Debounce |
+|---|---|---|
+| `CRITICAL_LANE` | 高配額（Critical 不批次） | 禁用（即時寫入） |
+| `STANDARD_LANE` | 中配額 | 100ms 同 doc Batching |
+| `BACKGROUND_LANE` | 低配額 | 100ms 同 doc Batching |
+
+> **規則**：Worker Pool 配額邊界必須引用 `SK_STALENESS_CONTRACT` SLA 常數，禁止硬寫數字 [P8 S4]。
+
 ---
 
 ## L6 Query Gateway 路由清單
@@ -224,6 +239,7 @@ Firestore onSnapshot (CDC)
 | `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
+| `acl-projection` | 讀取路徑權限鏡像；QRY_API_GW 讀取自動 JOIN 過濾（禁止讀路徑重新執行 Aggregate 鑑權）| [D31] |
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
@@ -301,7 +317,9 @@ Firestore onSnapshot (CDC)
 | `RATE_LIM hits` | Rate limit 命中次數（按 user+org） | [S5] |
 | `CIRCUIT state` | Circuit breaker 狀態（consecutive 5xx） | [S5] |
 | `domain-metrics` | IER Lane 吞吐量/延遲，DLQ 事件 | [R5] |
-| `DOMAIN_ERRORS` | DLQ 事件 / failed relay / circuit-open | [R5] |
+| `DOMAIN_ERRORS` | DLQ 事件 / failed relay / circuit-open / CircularDependencyDetected [D30] | [R5] |
+| `hopCount-alerts` | L4 IER 循環依賴偵測（hopCount ≥ 4）告警事件 | [D30] |
+| `context-propagation-miss` | outbox-relay-worker 缺少 traceId 的投遞拒絕事件 | [R9] |
 | `findIsolatedNodes` | VS8 拓撲健康探針，孤立節點寫入 L9 | [D21-10 T7] |
 | `global-audit-view` | 全域審計日誌（含 traceId） | [R8] |
 
@@ -328,6 +346,11 @@ Firestore onSnapshot (CDC)
 - [ ] Skill XP Award Contract 完整驗收 [A17]
 - [ ] Multi-Claim Cycle Contract 完整驗收 [A16]
 - [ ] D28 Visualization Bus：`VisDataAdapter` DataSet<> 快取實作；vis-network/vis-timeline/vis-graph3d 消費層遷移 [D28]
+- [ ] D29 Transactional Outbox：L2 `TransactionalCommand` 基類實作；所有 VS 切片 Command Handler 遷移至單一 Firestore TX [D29]
+- [ ] D30 Hop Limit：`SK_ENV.hopCount` 欄位加入；L4 IER 實作 hopCount 遞增與臨界值攔截 [D30]
+- [ ] P8 Dynamic Backpressure：L5 FUNNEL Worker Pool 分流 + Debounce/Batching 實作 [P8]
+- [ ] D31 Permission Projection：`projection.acl-projection` 實作；L6 Query Gateway JOIN 過濾接入 [D31]
+- [ ] R9 Context Propagation Middleware：AsyncLocalStorage 上下文傳遞實作；前端 `x-trace-id` 自動注入 [R9]
 
 ---
 
