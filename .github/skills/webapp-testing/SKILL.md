@@ -111,6 +111,9 @@ Toolkit for interacting with and testing local web applications using Playwright
 - Deliverables must be actionable, deterministic, and easy to review.
 - Use clear sections and checklists when they improve execution clarity.
 - Keep output concise while preserving all required decisions and risks.
+- MUST include a full coverage matrix for all discovered sidebar tabs, nested tabs, and navigation links.
+- MUST include `covered/total` and `missing` counts per route group (dashboard, workspace, global navigation).
+- MUST list every missing or blocked tab explicitly with reason and evidence pointer.
 
 ## Guardrails
 - Follow repository conventions and existing architecture boundaries.

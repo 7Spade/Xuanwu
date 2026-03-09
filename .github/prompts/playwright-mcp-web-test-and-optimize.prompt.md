@@ -118,6 +118,8 @@ Use Playwright for browser truth and next-devtools for Next.js runtime truth.
 - Repro steps
 - Evidence (errors/screenshots)
 - Fix summary and verification results
+- Full coverage matrix for sidebar tabs, nested tabs, and global navigation links
+- Coverage summary with `covered/total` and explicit `missing` counts per route group
 
 ## Hydration mismatch verification (mandatory)
 1. After each major route group (dashboard shell, workspace shell), collect console logs.

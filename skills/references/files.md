@@ -3748,46 +3748,6 @@ const handleCreate = async () =>
 ⋮----
 ```
 
-## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
-```typescript
-import { Check, ChevronsUpDown, Globe, Loader2, Plus } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
-import type { AppAction } from '@/app-runtime/contexts/app-context'
-import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shadcn-ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  useSidebar,
-} from "@/shadcn-ui/sidebar"
-import { cn } from "@/shadcn-ui/utils/utils"
-import type { Account } from "@/shared-kernel"
-import { ROUTES } from "@/shared-kernel/constants/routes"
-interface AccountSwitcherProps {
-  user: Account | null
-  accounts: Record<string, Account>
-  accountsHydrated: boolean
-  activeAccount: Account | null
-  dispatch: React.Dispatch<AppAction>
-  createOrganization: (name: string) => Promise<string>
-  t: (key: string) => string
-}
-const getAccountInitial = (name?: string)
-⋮----
-<AvatarFallback className=
-⋮----
-```
-
 ## File: src/features/workspace.slice/core/_components/shell/dashboard-sidebar.tsx
 ```typescript
 import { usePathname } from 'next/navigation';
@@ -3860,38 +3820,6 @@ const isPartiallyActive = (path: string)
 <SidebarMenuButton asChild isActive=
 ⋮----
 <SidebarMenuSubButton asChild isActive=
-```
-
-## File: src/features/workspace.slice/core/_components/shell/nav-user.tsx
-```typescript
-import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useMemo } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/shadcn-ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
-import type { Account } from "@/shared-kernel"
-import { ROUTES } from "@/shared-kernel/constants/routes"
-interface NavUserProps {
-  user: Account | null
-  accounts: Record<string, Account>
-  activeAccount: Account | null
-  logout: () => void
-  t: (key: string, params?: Record<string, string | number>) => string;
-}
-const getAccountInitial = (name?: string)
-⋮----
-const handleLogout = () =>
-⋮----
-<AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
 ```
 
 ## File: src/features/workspace.slice/core/_components/shell/nav-workspaces.tsx
@@ -9303,6 +9231,78 @@ import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
 import { WorkspaceList } from "./workspace-list"
 ```
 
+## File: src/features/workspace.slice/core/_components/shell/account-switcher.tsx
+```typescript
+import { Check, ChevronsUpDown, Globe, Loader2, Plus } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react"
+import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu"
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  useSidebar,
+} from "@/shadcn-ui/sidebar"
+import { cn } from "@/shadcn-ui/utils/utils"
+import type { Account } from "@/shared-kernel"
+import { ROUTES } from "@/shared-kernel/constants/routes"
+interface AccountSwitcherProps {
+  user: Account | null
+  accounts: Record<string, Account>
+  accountsHydrated: boolean
+  activeAccount: Account | null
+  dispatch: React.Dispatch<AppAction>
+  createOrganization: (name: string) => Promise<string>
+  t: (key: string) => string
+}
+const getAccountInitial = (name?: string)
+⋮----
+<AvatarFallback className=
+⋮----
+```
+
+## File: src/features/workspace.slice/core/_components/shell/nav-user.tsx
+```typescript
+import { UserCircle, LogOut, ChevronsUpDown } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMemo } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shadcn-ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shadcn-ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
+import type { Account } from "@/shared-kernel"
+import { ROUTES } from "@/shared-kernel/constants/routes"
+interface NavUserProps {
+  user: Account | null
+  accounts: Record<string, Account>
+  activeAccount: Account | null
+  logout: () => void
+  t: (key: string, params?: Record<string, string | number>) => string;
+}
+const getAccountInitial = (name?: string)
+⋮----
+const handleLogout = () =>
+⋮----
+<AvatarFallback className="rounded-lg bg-primary/10 font-bold text-primary">
+```
+
 ## File: src/features/workspace.slice/core/_components/workspace-context.types.ts
 ```typescript
 import type { WorkspaceTask } from '@/features/workspace.slice/domain.tasks/_types';
@@ -13059,39 +13059,6 @@ export type SubscribeFn = <T extends WorkspaceEventName>(
 ) => () => void
 ```
 
-## File: src/features/workspace.slice/core/_components/shell/header.tsx
-```typescript
-import { Search, Command, BookOpen } from "lucide-react";
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useI18n } from '@/app-runtime/providers/i18n-provider';
-import { GlobalSearch } from "@/features/global-search.slice";
-import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
-import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/shadcn-ui/breadcrumb";
-import { Button } from "@/shadcn-ui/button";
-import { ModeToggle } from "@/shadcn-ui/custom-ui";
-import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
-import { Separator } from "@/shadcn-ui/separator";
-import { SidebarTrigger } from "@/shadcn-ui/sidebar";
-import type { Account } from '@/shared-kernel'
-import { NotificationCenter } from "./notification-center";
-⋮----
-function usePageBreadcrumbs(pathname: string)
-⋮----
-const down = (e: KeyboardEvent) =>
-⋮----
-const handleSwitchOrganization = (organization: Account) =>
-```
-
 ## File: src/features/workspace.slice/domain.document-parser/_form-actions.ts
 ```typescript
 import { extractInvoiceItems } from '@/app-runtime/ai/flows/extract-invoice-items';
@@ -13181,6 +13148,39 @@ export async function extractDataFromDocument(
   prevState: ActionState,
   formData: FormData
 ): Promise<ActionState>
+```
+
+## File: src/features/workspace.slice/core/_components/shell/header.tsx
+```typescript
+import { Search, Command, BookOpen } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { GlobalSearch } from "@/features/global-search.slice";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { ModeToggle } from "@/shadcn-ui/custom-ui";
+import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
+import type { Account } from '@/shared-kernel'
+import { NotificationCenter } from "./notification-center";
+⋮----
+function usePageBreadcrumbs(pathname: string)
+⋮----
+const down = (e: KeyboardEvent) =>
+⋮----
+const handleSwitchOrganization = (organization: Account) =>
 ```
 
 ## File: src/features/workspace.slice/domain.document-parser/_components/document-parser-view.tsx
