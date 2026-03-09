@@ -2,6 +2,7 @@
 name: boundary-check
 description: 'Aggregate write-protection guard for D3: mutations must stay in `_actions.ts`.'
 agent: 'agent'
+tools: ['search/codebase']
 ---
 
 # Aggregate Write-Protection Guard

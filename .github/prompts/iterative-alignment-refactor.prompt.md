@@ -2,6 +2,8 @@
 name: iterative-alignment-refactor
 description: 'Iteratively align existing code with architecture and project documentation through minimal refactors.'
 agent: 'agent'
+tools: ['search/codebase', 'edit/editFiles', 'read', 'sequential-thinking']
+argument-hint: 'Target file or directory to align, e.g.: src/features/workspace.slice'
 ---
 
 # Multi-Iteration Alignment & Refactor Specialist

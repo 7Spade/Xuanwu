@@ -2,6 +2,7 @@
 name: cicd-deployment-orchestrator
 description: 'Design CI/CD pipelines for Next.js + Firebase with secure, staged, and verifiable deployment flow.'
 agent: 'agent'
+tools: ['search/codebase', 'changes', 'edit/editFiles']
 ---
 
 # CI/CD Deployment Orchestrator

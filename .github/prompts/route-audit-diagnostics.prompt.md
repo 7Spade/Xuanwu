@@ -2,6 +2,7 @@
 name: route-audit-diagnostics
 description: 'Audit Next.js App Router rendering issues: RSC boundaries, parallel slots, and streaming/suspense behavior.'
 agent: 'agent'
+tools: ['search/codebase', 'next-devtools']
 ---
 
 # Next.js Route Audit & Diagnostics

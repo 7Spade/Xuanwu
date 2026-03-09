@@ -1,6 +1,8 @@
 ---
 name: x-arch-gatekeeper
 description: 'Pre-commit architecture compliance check. Validates code diffs against Hard Invariants and CI rules to ensure no governance violations enter the main branch.'
+agent: 'agent'
+tools: ['repomix', 'sequential-thinking', 'changes']
 ---
 
 # Pre-Commit Architecture Gatekeeper
@@ -11,8 +13,8 @@ Validate the current code changes against all Hard Invariants before merge, ensu
 
 ## Execution Steps
 
-1. **Diff Analysis:** Invoke `tool-repomix` to generate a change summary of modified files.
-2. **Rule Verification:** Invoke `tool-thinking` to check each item:
+1. **Diff Analysis:** Use #tool:repomix to generate a change summary of modified files.
+2. **Rule Verification:** Use #tool:sequential-thinking to check each item:
 
 ### Hard Invariants (D1–D20)
 

@@ -2,6 +2,7 @@
 name: ui-ux-consistency-sync
 description: 'Audit UI/UX consistency across design system usage, accessibility standards, and i18n completeness.'
 agent: 'agent'
+tools: ['search/codebase', 'edit/editFiles', 'shadcn']
 ---
 
 # UI/UX Consistency Sync Specialist

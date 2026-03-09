@@ -1,6 +1,9 @@
 ---
 name: x-arch-remediation
 description: 'Architecture drift remediation. Systematically repairs layer violations and boundary intrusions in the codebase to restore compliance.'
+agent: 'agent'
+tools: ['repomix', 'sequential-thinking', 'software-planning', 'edit/editFiles']
+argument-hint: 'Target scope for remediation, e.g.: src/features/workspace.slice or full src/'
 ---
 
 # Architecture Drift Remediation Specialist
@@ -9,8 +12,8 @@ description: 'Architecture drift remediation. Systematically repairs layer viola
 
 ### Phase 1: Drift Inventory
 
-1. Invoke `tool-repomix` to scan the full `src/` directory.
-2. Invoke `tool-thinking` to enumerate all non-compliant items — not merely samples.
+1. Use #tool:repomix to scan the full `src/` directory.
+2. Use #tool:sequential-thinking to enumerate all non-compliant items — not merely samples.
 
 ### Phase 2: Priority Classification
 
@@ -23,7 +26,7 @@ description: 'Architecture drift remediation. Systematically repairs layer viola
 
 ### Phase 3: Remediation Execution
 
-Use `tool-planning` to generate a prioritized remediation plan; execute P0 items first.
+Use #tool:software-planning to generate a prioritized remediation plan; execute P0 items first.
 
 ## Remediation Patterns
 

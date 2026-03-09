@@ -2,6 +2,7 @@
 name: performance-optimization-auditor
 description: 'Audit and optimize Next.js performance (CWV, rendering, data access, and serverless latency).'
 agent: 'agent'
+tools: ['search/codebase', 'next-devtools', 'repomix', 'sequential-thinking']
 ---
 
 # Performance Optimization Auditor

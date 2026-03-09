@@ -2,6 +2,7 @@
 name: ai-architecture-governance
 description: 'Architecture governance controller for Next.js + Firebase + Genkit work. Enforce SSOT and hard invariants before implementation.'
 agent: 'agent'
+tools: ['search/codebase', 'read', 'sequential-thinking']
 ---
 
 # AI Architecture Governance Master

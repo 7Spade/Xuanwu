@@ -2,6 +2,7 @@
 name: technology-stack-blueprint-generator
 description: 'Generate a prompt that produces a practical technology stack blueprint from repository evidence.'
 agent: 'agent'
+tools: ['search/codebase', 'repomix', 'edit/editFiles']
 ---
 
 # Technology Stack Blueprint Generator
