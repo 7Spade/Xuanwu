@@ -291,6 +291,8 @@
     "createNewTeam": "建立團隊",
     "teamName": "團隊名稱",
     "teamNamePlaceholder": "例如：工程團隊",
+    "memberName": "成員名稱",
+    "memberNamePlaceholder": "例如：王小明",
     "members": "成員",
     "partnersTitle": "夥伴",
     "partnersDescription": "管理夥伴及協作。",

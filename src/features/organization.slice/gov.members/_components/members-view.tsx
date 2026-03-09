@@ -10,6 +10,15 @@ import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
 import { PageHeader } from "@/shadcn-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/shadcn-ui/dialog"
+import { Input } from "@/shadcn-ui/input"
+import { Label } from "@/shadcn-ui/label"
 import type { OrgEligibleMemberView } from "@/shared-infra/projection-bus"
 import { getAllOrgMembersView } from "@/shared-infra/projection-bus"
 import { type MemberReference } from "@/shared-kernel"
@@ -24,6 +33,9 @@ export function MembersView() {
   const { recruitMember, dismissMember } = useMemberManagement()
   const [isRecruiting, setIsRecruiting] = useState(false)
   const [dismissingMemberId, setDismissingMemberId] = useState<string | null>(null)
+
+  const [isRecruitOpen, setIsRecruitOpen] = useState(false)
+  const [newMemberName, setNewMemberName] = useState("")
 
   // FR-W1: eligible status map
   const [eligibilityMap, setEligibilityMap] = useState<Record<string, boolean>>({})
@@ -71,14 +83,21 @@ export function MembersView() {
   const members = activeOrganization.members || []
 
   const handleRecruitMember = async () => {
+    // Open recruit dialog (user will input name)
+    setIsRecruitOpen(true)
+  }
+
+  const handleConfirmRecruit = async () => {
+    if (!newMemberName.trim()) return
     setIsRecruiting(true)
     const newId = `m-${Math.random().toString(36).slice(-4)}`
-    const name = "New Researcher"
+    const name = newMemberName.trim()
     const email = `user-${newId}@orgverse.io`
-    
     try {
       await recruitMember(newId, name, email)
       toast({ title: t('account.identityResonanceActivated'), description: t('account.identityResonanceDescription') })
+      setNewMemberName("")
+      setIsRecruitOpen(false)
     } catch (error: unknown) {
       console.error("Error recruiting member:", error)
       const message = error instanceof Error ? error.message : t('common.unknownError')
@@ -177,6 +196,21 @@ export function MembersView() {
           </Card>
         ))}
       </div>
+      <Dialog open={isRecruitOpen} onOpenChange={setIsRecruitOpen}>
+        <DialogContent className="max-w-sm rounded-[2.5rem] border-none p-8 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-2xl">{t('account.recruitNewMember')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Label>{t('account.memberName')}</Label>
+            <Input value={newMemberName} onChange={(e) => setNewMemberName(e.target.value)} placeholder={t('account.memberNamePlaceholder')} disabled={isRecruiting} />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsRecruitOpen(false)} disabled={isRecruiting}>{t('common.cancel')}</Button>
+            <Button onClick={handleConfirmRecruit} disabled={isRecruiting || !newMemberName.trim()}>{isRecruiting ? t('common.creating') : t('account.recruitNewMember')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

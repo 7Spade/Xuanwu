@@ -291,6 +291,8 @@
     "createNewTeam": "Create Team",
     "teamName": "Team Name",
     "teamNamePlaceholder": "e.g., Engineering Team",
+    "memberName": "Member Name",
+    "memberNamePlaceholder": "e.g., Alice Chen",
     "members": "Members",
     "partnersTitle": "Partner Teams",
     "partnersDescription": "Manage external partner teams and collaborations.",
