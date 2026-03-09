@@ -9,5 +9,9 @@
     },
     "workbench.browser.enableChatTools": true,
     "chat.agentSessionProjection.enabled": true,
-    "github.copilot.chat.copilotMemory.enabled": true
+    "github.copilot.chat.copilotMemory.enabled": true,
+    "chat.useCustomAgentHooks": true,
+    "chat.hookFilesLocations": {
+        ".github/hooks": true
+    }
 }
