@@ -103,11 +103,12 @@ Toolkit for interacting with and testing local web applications using Playwright
 5. If blocked by `Restoring dimension sovereignty...`, re-login and retry once; if still blocked, mark as environment blocker and capture console/network evidence.
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Read `## Localhost 9002 Execution Profile` and start the dev server if not running.
+2. Run the `## Playwright MCP Run Sequence` from login through the full route tour.
+3. Apply `## Sidebar and Nested Tab Coverage Rule` for every route visited.
+4. Apply `## Blocker Policy` if any step fails or environment issues arise.
+5. Collect artifacts: snapshot + console messages + screenshot for each route.
+6. Produce the coverage matrix and route-level status report.
 
 ## Output Contract
 - Deliverables must be actionable, deterministic, and easy to review.
@@ -118,9 +119,9 @@ Toolkit for interacting with and testing local web applications using Playwright
 - MUST list every missing or blocked tab explicitly with reason and evidence pointer.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not expose `TEST_AUTH_EMAIL` / `TEST_AUTH_PASSWORD` values in output.
+- Do not commit test credentials to any tracked file.
+- Flag unresolved environment blockers explicitly with route, error, and evidence pointer.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

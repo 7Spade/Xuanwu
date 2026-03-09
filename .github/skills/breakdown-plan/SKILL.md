@@ -1,34 +1,38 @@
 ---
 name: breakdown-plan
-description: 'Issue Planning and Automation prompt that generates comprehensive project plans with Epic > Feature > Story/Enabler > Test hierarchy, dependencies, priorities, and automated tracking.'
+description: 'Generate a comprehensive project plan with Epic > Feature > Story/Enabler > Test hierarchy, dependencies, priorities, and automated tracking. Use when decomposing a large initiative into actionable issues, planning a sprint, or creating a GitHub project backlog. Triggers: "breakdown plan", "project plan", "issue planning", "task decomposition", "sprint planning".'
 ---
 
 # Breakdown Plan
 
-## Intent
-Issue Planning and Automation prompt that generates comprehensive project plans with Epic > Feature > Story/Enabler > Test hierarchy, dependencies, priorities, and automated tracking.
+## When to Use
+- Decomposing a large initiative or epic into trackable tasks
+- Creating a structured backlog for sprint planning
+- Generating GitHub issues from a requirements document
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Have a clear goal statement or PRD (use `breakdown-epic-pm` first if needed)
+- Understand the target repository and issue tracker
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Parse the goal or PRD: extract the top-level epic.
+2. Decompose into Features: groups of related functionality.
+3. Break each Feature into Stories (user-facing) and Enablers (technical tasks).
+4. Write test tasks for each Story: define what automated tests must pass.
+5. Assign priorities: Critical / High / Medium / Low based on business value and risk.
+6. Map dependencies: which tasks must complete before others can start.
+7. Estimate complexity: S / M / L / XL for each story.
+8. Format the plan as a Markdown checklist and optionally create GitHub issues.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a hierarchical plan: `Epic > Feature > Story/Enabler > Test`.
+- Each story must have: title, description, acceptance criteria, priority, complexity, dependencies.
+- Include a dependency graph or ordered list of blocking relationships.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not create stories without acceptance criteria.
+- Flag circular dependencies and escalate for resolution before finalizing the plan.
+- Keep each story independently deliverable where possible.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

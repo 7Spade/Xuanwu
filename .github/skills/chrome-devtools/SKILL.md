@@ -1,35 +1,39 @@
 ---
 name: chrome-devtools
-description: 'Expert-level browser automation, debugging, and performance analysis using Chrome DevTools MCP. Use for interacting with web pages, capturing screenshots, analyzing network traffic, and profiling performance.'
-license: MIT
+description: 'Expert-level browser automation, debugging, and performance analysis using Chrome DevTools MCP. Use when interacting with web pages, capturing screenshots, analyzing network traffic, profiling performance, or debugging UI behavior in a running browser. Triggers: "browser debug", "chrome devtools", "capture screenshot", "network analysis", "performance profile".'
 ---
 
 # Chrome Devtools
 
-## Intent
-Expert-level browser automation, debugging, and performance analysis using Chrome DevTools MCP. Use for interacting with web pages, capturing screenshots, analyzing network traffic, and profiling performance.
+## When to Use
+- Interacting with a running web page: click, type, fill forms, navigate
+- Capturing screenshots or recording network traffic for debugging
+- Profiling Core Web Vitals and identifying performance bottlenecks
+- Inspecting console errors and JavaScript exceptions in the browser
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Chrome or Chromium must be running with the DevTools MCP server connected
+- Know the target URL and the expected behavior to test or inspect
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Use `chrome-devtools-mcp-navigate_page` to load the target URL.
+2. Use `chrome-devtools-mcp-take_snapshot` to get the current accessibility/DOM tree.
+3. Interact using `chrome-devtools-mcp-click`, `chrome-devtools-mcp-fill`, or `chrome-devtools-mcp-press_key` as needed.
+4. Use `chrome-devtools-mcp-take_screenshot` to capture visual state for verification.
+5. Use `chrome-devtools-mcp-list_console_messages` to check for JS errors.
+6. Use `chrome-devtools-mcp-list_network_requests` to inspect API calls and responses.
+7. For performance: use `chrome-devtools-mcp-performance_start_trace` and `chrome-devtools-mcp-performance_stop_trace`, then analyze insights.
+8. Always re-take a snapshot after navigation or significant DOM changes.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a summary of: actions performed, observed outcomes, console errors, and network anomalies.
+- Include screenshots for all UI state verifications.
+- List any performance insights with their severity.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not use `chrome-devtools-mcp-evaluate_script` with untrusted user input — injection risk.
+- Do not capture or log credentials, tokens, or personal data visible in the browser.
+- Always re-take snapshot before using `uid` values — stale refs cause silent failures.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

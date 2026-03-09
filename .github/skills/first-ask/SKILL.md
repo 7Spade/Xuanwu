@@ -1,34 +1,40 @@
 ---
 name: first-ask
-description: 'Interactive, input-tool powered, task refinement workflow: interrogates scope, deliverables, constraints before carrying out the task; Requires the Joyride extension.'
+description: 'Interactive task-refinement workflow that interrogates scope, deliverables, and constraints before carrying out any task. Use before starting any complex or ambiguous request to surface hidden assumptions. Requires the Joyride VS Code extension. Triggers: "first ask", "clarify task", "scope questions", "refine request", "before starting".'
 ---
 
 # First Ask
 
-## Intent
-Interactive, input-tool powered, task refinement workflow: interrogates scope, deliverables, constraints before carrying out the task; Requires the Joyride extension.
+## When to Use
+- A task description is ambiguous or underspecified
+- Multiple valid interpretations exist and picking the wrong one would waste significant effort
+- A new project or feature kickoff where scope needs explicit alignment
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Joyride VS Code extension must be installed and active
+- User must be available for interactive Q&A
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Parse the user's request to identify ambiguities and unstated assumptions.
+2. Generate a focused set of ≤5 clarifying questions covering:
+   - Scope: what is in and out of scope?
+   - Deliverable: what does "done" look like?
+   - Constraints: time, tech stack, quality, security limits?
+   - Dependencies: what must be ready before this can start?
+   - Priority: if trade-offs arise, what matters most?
+3. Present questions interactively via the Joyride input tool.
+4. Collect and summarize answers.
+5. Confirm the refined scope with the user before proceeding.
+6. Begin the actual task only after scope is confirmed.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a confirmed scope summary before task execution begins.
+- The summary must include: Goal, Deliverable, Out of Scope, Constraints, Success Criteria.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not start implementing before the scope is confirmed.
+- Do not ask more than 5 questions — prioritize the highest-impact unknowns.
+- If the user declines to answer, proceed with the most conservative interpretation and state assumptions explicitly.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

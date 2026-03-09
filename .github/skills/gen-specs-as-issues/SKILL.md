@@ -1,34 +1,41 @@
 ---
 name: gen-specs-as-issues
-description: 'This workflow guides you through a systematic approach to identify missing features, prioritize them, and create detailed specifications for implementation.'
+description: 'Identify missing features or gaps in a codebase, prioritize them, and generate detailed GitHub issue specifications. Use when building a backlog from requirements, discovering feature gaps, or converting a requirements doc into trackable issues. Triggers: "gen specs", "create issues", "feature gaps", "spec to issues", "backlog generation".'
 ---
 
 # Gen Specs As Issues
 
-## Intent
-This workflow guides you through a systematic approach to identify missing features, prioritize them, and create detailed specifications for implementation.
+## When to Use
+- Converting a requirements document or PRD into GitHub issues
+- Auditing a codebase for missing functionality against a specification
+- Building an initial backlog for a new project or feature area
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Have a requirements source: PRD, specification doc, or user story map
+- Access to the target GitHub repository or issue tracker
+- Identify the priority framework to use: MoSCoW, RICE, or simple High/Med/Low
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Parse the requirements source: extract every stated feature and capability.
+2. Compare against existing code and issues to identify what is missing or incomplete.
+3. Prioritize gaps by business impact and implementation effort.
+4. For each prioritized gap, write a detailed issue spec:
+   - Title: clear, action-oriented
+   - Description: what it does and why it matters
+   - Acceptance criteria: testable conditions
+   - Labels: feature area, priority, effort estimate
+5. Group related issues under a parent epic or milestone.
+6. Review the issue list with the user before creating issues in GitHub.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a list of issue specs in Markdown or directly create GitHub issues.
+- Each issue must have: Title, Description, Acceptance Criteria, Labels, Parent Epic.
+- Include a coverage summary: total gaps found, prioritized, deferred.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not create duplicate issues — check existing issues before generating.
+- Do not set priority without business context — ask if unclear.
+- Flag issues that require architecture decisions before they can be estimated.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

@@ -1,34 +1,37 @@
 ---
 name: code-exemplars-blueprint-generator
-description: 'Technology-agnostic prompt generator that creates customizable AI prompts for scanning codebases and identifying high-quality code exemplars. Supports multiple programming languages (.NET, Java, JavaScript, TypeScript, React, Angular, Python) with configurable analysis depth, categorization methods, and documentation formats to establish coding standards and maintain consistency across development teams.'
+description: 'Generate customizable AI prompts for scanning codebases and identifying high-quality code exemplars to establish coding standards. Use when auditing a codebase for best-practice examples or creating reference standards for a team. Supports .NET, Java, JavaScript, TypeScript, React, Angular, and Python. Triggers: "code exemplars", "code standards", "best practice scan", "exemplar generator", "coding standards".'
 ---
 
 # Code Exemplars Blueprint Generator
 
-## Intent
-Technology-agnostic prompt generator that creates customizable AI prompts for scanning codebases and identifying high-quality code exemplars. Supports multiple programming languages (.NET, Java, JavaScript, TypeScript, React, Angular, Python) with configurable analysis depth, categorization methods, and documentation formats to establish coding standards and maintain consistency across development teams.
+## When to Use
+- Establishing coding standards for a new team or project
+- Identifying the best-quality code in a legacy codebase as reference
+- Generating a prompt that can scan multiple codebases for exemplar patterns
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Identify the target language(s) and framework(s)
+- Define quality dimensions to evaluate: readability, testability, error handling, documentation
+- Clarify the output format: Markdown catalog, annotated file list, or structured report
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Confirm the target language, framework, and quality dimensions with the user.
+2. Generate a scanning prompt tailored to the specified stack.
+3. Define exemplar categories: naming conventions, error handling, test structure, data models, etc.
+4. Produce a blueprint prompt that instructs the AI to score and rank code samples.
+5. Include a documentation template for each identified exemplar.
+6. Optionally generate a negative-exemplar catalog (anti-patterns to avoid).
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a customizable prompt file targeting the specified language and framework.
+- The generated prompt must include: scan scope, quality criteria, output format, exemplar template.
+- Flag ambiguous quality criteria for human review before use.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not score or rank code without defined, objective criteria.
+- Do not include real code samples from proprietary sources in the output.
+- Keep generated prompts under 2000 tokens to remain within context budgets.
 
 ## Source of Truth
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

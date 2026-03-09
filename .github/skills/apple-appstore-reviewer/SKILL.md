@@ -1,34 +1,40 @@
 ---
 name: apple-appstore-reviewer
-description: 'Serves as a reviewer of the codebase with instructions on looking for Apple App Store optimizations or rejection reasons.'
+description: 'Review the codebase for Apple App Store guideline compliance, common rejection reasons, and optimization opportunities. Use when preparing a mobile app for App Store submission or auditing for policy violations. Triggers: "app store review", "apple review", "iOS submission", "app rejection", "appstore guidelines", "apple compliance".'
 ---
 
 # Apple Appstore Reviewer
 
-## Intent
-Serves as a reviewer of the codebase with instructions on looking for Apple App Store optimizations or rejection reasons.
+## When to Use
+- Preparing for a new App Store submission or an update
+- Auditing a mobile codebase for common rejection reasons
+- Checking compliance with Apple Human Interface Guidelines and App Store Review Guidelines
 
-## Inputs
-- User goal and expected deliverable
-- Relevant repository context or existing artifacts
-- Constraints (time, scope, quality, security/compliance)
+## Prerequisites
+- Access to the project source code (iOS/React Native/Flutter/etc.)
+- Knowledge of the target iOS version and device support
+- Review Apple App Store Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
 
 ## Workflow
-1. Confirm scope and ask targeted clarifying questions when required.
-2. Produce a concise, execution-ready plan focused on the stated goal.
-3. Execute the domain-specific work implied by this skill's intent.
-4. Validate quality, safety, and completeness before finalizing output.
-5. Return concrete results with assumptions, decisions, and next actions.
+1. Check privacy API declarations: ensure all APIs that access photos, location, contacts, etc. have usage description strings in `Info.plist`.
+2. Review in-app purchase flows: all digital goods must use StoreKit; no external payment links allowed.
+3. Inspect content: flag objectionable, violent, or adult content that lacks appropriate age rating.
+4. Check required metadata: app icon (1024×1024), screenshots for each required device, privacy policy URL.
+5. Verify network security: ensure `NSAppTransportSecurity` exceptions are justified.
+6. Review push notification usage: must not use for marketing without explicit user consent.
+7. Check for third-party SDKs with known rejection history (e.g., unapproved fingerprinting).
+8. Flag any UI that mimics iOS system interfaces in a deceptive way.
 
 ## Output Contract
-- Deliverables must be actionable, deterministic, and easy to review.
-- Use clear sections and checklists when they improve execution clarity.
-- Keep output concise while preserving all required decisions and risks.
+- Produce a checklist of findings grouped by severity: Blocker / Warning / Suggestion.
+- Each finding must reference the specific App Store Review Guideline section.
+- Include recommended remediation steps for each Blocker.
 
 ## Guardrails
-- Follow repository conventions and existing architecture boundaries.
-- Do not expose secrets or sensitive data.
-- Flag unresolved risks, dependencies, and follow-up work explicitly.
+- Do not modify source code during review — report findings only.
+- Flag findings even if probability of rejection is low; let the team decide.
+- Do not expose user data found in source files.
 
 ## Source of Truth
+- Apple App Store Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

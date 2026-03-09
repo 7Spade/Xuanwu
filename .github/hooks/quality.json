@@ -3,7 +3,7 @@
     "PostToolUse": [
       {
         "type": "command",
-        "command": "node .github/hooks/scripts/post-edit-lint.js",
+        "command": "./scripts/hooks/lint-on-edit.sh",
         "timeout": 30
       }
     ]
