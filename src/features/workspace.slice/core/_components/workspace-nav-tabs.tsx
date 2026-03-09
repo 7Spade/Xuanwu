@@ -1,3 +1,9 @@
+/**
+ * Module: workspace-nav-tabs
+ * Purpose: Render workspace capability navigation tabs with stable ordering.
+ * Responsibilities: map mounted capabilities to route tabs and active-state styling.
+ * Constraints: deterministic logic, respect module boundaries
+ */
 "use client"
 
 import Link from "next/link"
@@ -93,7 +99,10 @@ export function WorkspaceNavTabs({ workspaceId }: WorkspaceNavTabsProps) {
   }, [workspace.capabilities, showGovernanceTabs])
 
   return (
-    <div className="no-scrollbar flex w-full overflow-x-auto rounded-xl border border-border/50 bg-muted/40 p-1">
+    <div
+      aria-label="Workspace capability navigation"
+      className="no-scrollbar flex w-full gap-1 overflow-x-auto rounded-2xl bg-background/55 p-1.5 shadow-sm ring-1 ring-border/55 backdrop-blur-md"
+    >
       {mountedCapabilities.map((cap: { id: string; name: string }) => {
         const detail = CAPABILITY_REGISTRY[cap.id as keyof typeof CAPABILITY_REGISTRY]
         const isActive = activeCapability === cap.id
@@ -102,10 +111,10 @@ export function WorkspaceNavTabs({ workspaceId }: WorkspaceNavTabsProps) {
           <Link
             key={cap.id}
             href={`/workspaces/${workspaceId}/${cap.id}`}
-            className={`inline-flex h-9 items-center justify-center whitespace-nowrap rounded-lg px-4 text-[9px] font-bold uppercase tracking-widest transition-colors ${
+            className={`inline-flex h-9 items-center justify-center whitespace-nowrap rounded-xl px-3.5 text-[10px] font-semibold uppercase tracking-tight ring-offset-2 ring-offset-background transition-all duration-200 ease-out active:scale-[0.98] ${
               isActive
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-background/50 hover:text-foreground"
+                ? "bg-background text-foreground shadow-sm ring-1 ring-border/70"
+                : "text-muted-foreground hover:bg-background/80 hover:text-foreground hover:ring-1 hover:ring-border/60"
             }`}
           >
             {detail.label}

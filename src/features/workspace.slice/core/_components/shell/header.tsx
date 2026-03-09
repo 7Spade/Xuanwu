@@ -90,7 +90,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b bg-background/60 backdrop-blur-md transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 bg-background/70 backdrop-blur-xl ring-1 ring-border/55 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex items-center gap-2 px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
@@ -99,12 +99,12 @@ export function Header() {
             {breadcrumbs.flatMap((crumb) =>
               crumb.isLast ? [
                 <BreadcrumbItem key={crumb.href}>
-                  <BreadcrumbPage className="font-semibold capitalize">{crumb.label}</BreadcrumbPage>
+                  <BreadcrumbPage className="font-semibold capitalize tracking-tight">{crumb.label}</BreadcrumbPage>
                 </BreadcrumbItem>,
               ] : [
                 <BreadcrumbItem key={crumb.href} className="hidden md:block">
                   <BreadcrumbLink asChild>
-                    <Link href={crumb.href} className="capitalize">{crumb.label}</Link>
+                    <Link href={crumb.href} className="capitalize tracking-tight">{crumb.label}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>,
                 <BreadcrumbSeparator key={`sep-${crumb.href}`} className="hidden md:block" />,
@@ -117,7 +117,7 @@ export function Header() {
       <div className="flex flex-1 items-center justify-center">
         <Button
           variant="outline"
-          className="group relative h-10 w-full max-w-md justify-start border-0 bg-background/60 text-sm text-muted-foreground shadow-sm ring-1 ring-border/60 ring-offset-1 ring-offset-background transition-all duration-200 ease-out hover:bg-background/90 hover:text-foreground hover:ring-border/85 active:scale-[0.98]"
+          className="group relative h-10 w-full max-w-md justify-start border-0 bg-background/55 text-sm text-muted-foreground shadow-sm ring-1 ring-border/60 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/90 hover:text-foreground hover:ring-border/90 active:scale-[0.98]"
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-primary" />
@@ -131,7 +131,7 @@ export function Header() {
       </div>
       <div className="flex items-center gap-3 pr-4">
         <LanguageSwitcher />
-        <Button asChild variant="ghost" size="sm" className="gap-1.5">
+        <Button asChild variant="ghost" size="sm" className="gap-1.5 transition-all duration-200 ease-out hover:bg-background/80 active:scale-[0.98]">
           <Link href="/wiki">
             <BookOpen className="size-4" />
           </Link>
