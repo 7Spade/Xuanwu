@@ -7,14 +7,12 @@
 
 "use client";
 
-import { useRouter } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 
 import { useAuth } from '@/app-runtime/providers/auth-provider';
 import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { toast } from '@/shadcn-ui/hooks/use-toast';
-import { ROUTES } from '@/shared-kernel/constants/routes';
 
 import {
   addWorkspaceFileVersion,
@@ -41,7 +39,6 @@ export function useWorkspaceFilesActions({
   const { t } = useI18n();
   const { workspace, logAuditEvent, setPendingParseFile } = useWorkspace();
   const { state: { user } } = useAuth();
-  const router = useRouter();
 
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -206,8 +203,14 @@ export function useWorkspaceFilesActions({
       downloadURL: version.downloadURL,
     });
     logAuditEvent('Sent File to Parser', `${file.name} (${context.parseMode})`, 'update');
-    router.push(`${ROUTES.WORKSPACE(workspace.id)}/document-parser`);
-  }, [logAuditEvent, router, setPendingParseFile, workspace.id]);
+    toast({
+      title: t('workspaces.sentToParser'),
+      description: t('workspaces.sentToParserDescription', {
+        name: file.name,
+        mode: context.parseMode,
+      }),
+    });
+  }, [logAuditEvent, setPendingParseFile, t]);
 
   return {
     fileInputRef,

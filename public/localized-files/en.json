@@ -135,6 +135,8 @@
     "parseWithAi": "Parse with AI",
     "documentAi": "document-ai",
     "genkitAi": "genkit-ai",
+    "sentToParser": "Sent to parser queue",
+    "sentToParserDescription": "{name} ({mode}) has been queued. Open Document Parser to review the persisted result.",
     "reparse": "Reparse",
     "structurize": "Structure",
     "versionHistory": "Version History",
