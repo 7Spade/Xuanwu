@@ -47,6 +47,29 @@ interface ProcessDocumentFunctionResponse {
   }>;
 }
 
+interface StructuredSidecarPayload {
+  source?: string;
+  mimeType?: string;
+  text?: string;
+  entities?: Array<{
+    type?: string;
+    mentionText?: string;
+    confidence?: number;
+    normalizedValue?: string;
+  }>;
+  ocrDocument?: {
+    source?: string;
+    mimeType?: string;
+    text?: string;
+    entities?: Array<{
+      type?: string;
+      mentionText?: string;
+      confidence?: number;
+      normalizedValue?: string;
+    }>;
+  };
+}
+
 const truncateText = (value: string, maxLength: number): string =>
   value.length <= maxLength ? value : `${value.slice(0, maxLength)}...`;
 
@@ -66,6 +89,57 @@ async function readProcessDocumentPayload(response: Response): Promise<{
     payload: null,
     contentType,
     rawText,
+  };
+}
+
+function normalizeOcrDocumentPayload(
+  payload: ProcessDocumentFunctionResponse,
+  fileType?: string,
+): OcrDocumentPayload {
+  return {
+    source: 'document-ocr-extractor',
+    mimeType: payload.mimeType ?? fileType ?? 'application/octet-stream',
+    text: payload.text ?? '',
+    entities: (payload.entities ?? []).map((entity) => ({
+      type: entity.type,
+      mentionText: entity.mentionText,
+      confidence: entity.confidence,
+      ...(entity.normalizedValue ? { normalizedValue: entity.normalizedValue } : {}),
+    })),
+    traceId: payload.traceId ?? crypto.randomUUID(),
+    extractedAt: payload.extractedAt ?? new Date().toISOString(),
+  };
+}
+
+async function readOcrDocumentFromSidecar(downloadURL: string): Promise<OcrDocumentPayload> {
+  const response = await fetch(downloadURL, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Failed to load OCR sidecar: status=${response.status}`);
+  }
+
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.toLowerCase().includes('application/json')) {
+    throw new Error(`Invalid OCR sidecar content-type: ${contentType || 'unknown'}`);
+  }
+
+  const raw = (await response.json()) as StructuredSidecarPayload;
+  const ocr = raw.ocrDocument ?? raw;
+  const entities = Array.isArray(ocr.entities) ? ocr.entities : [];
+
+  return {
+    source: 'document-ocr-extractor',
+    mimeType: ocr.mimeType ?? 'application/octet-stream',
+    text: typeof ocr.text === 'string' ? ocr.text : '',
+    entities: entities.map((entity) => ({
+      type: typeof entity.type === 'string' ? entity.type : 'unknown',
+      mentionText: typeof entity.mentionText === 'string' ? entity.mentionText : '',
+      confidence: typeof entity.confidence === 'number' ? entity.confidence : 0,
+      ...(typeof entity.normalizedValue === 'string'
+        ? { normalizedValue: entity.normalizedValue }
+        : {}),
+    })),
+    traceId: crypto.randomUUID(),
+    extractedAt: new Date().toISOString(),
   };
 }
 
@@ -130,6 +204,8 @@ export async function extractDataFromDocument(
   const storagePath = formData.get('storagePath');
   const fileName = formData.get('fileName');
   const fileType = formData.get('fileType');
+  const sourceType = formData.get('sourceType');
+  const downloadURL = formData.get('downloadURL');
   const parseModeFromForm = formData.get('parseMode');
   const parseMode: 'document-ai' | 'genkit-ai' = parseModeFromForm === 'genkit-ai' ? 'genkit-ai' : 'document-ai';
 
@@ -146,64 +222,68 @@ export async function extractDataFromDocument(
   }
 
   try {
-    const endpoint = getProcessDocumentEndpoint();
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        workspaceId,
-        fileId,
-        versionId,
-        storagePath: typeof storagePath === 'string' && storagePath.length > 0 ? storagePath : undefined,
-        mimeType: typeof fileType === 'string' && fileType.length > 0 ? fileType : undefined,
-        fileName: typeof fileName === 'string' && fileName.length > 0 ? fileName : undefined,
-      }),
-      cache: 'no-store',
-    });
+    let ocrDocument: OcrDocumentPayload;
+    if (
+      parseMode === 'genkit-ai' &&
+      sourceType === 'structured-sidecar' &&
+      typeof downloadURL === 'string' &&
+      downloadURL.length > 0
+    ) {
+      ocrDocument = await readOcrDocumentFromSidecar(downloadURL);
+    } else {
+      const endpoint = getProcessDocumentEndpoint();
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          workspaceId,
+          fileId,
+          versionId,
+          storagePath: typeof storagePath === 'string' && storagePath.length > 0 ? storagePath : undefined,
+          mimeType: typeof fileType === 'string' && fileType.length > 0 ? fileType : undefined,
+          fileName: typeof fileName === 'string' && fileName.length > 0 ? fileName : undefined,
+        }),
+        cache: 'no-store',
+      });
 
-    const { payload, contentType, rawText } = await readProcessDocumentPayload(response);
+      const { payload, contentType, rawText } = await readProcessDocumentPayload(response);
 
-    if (!response.ok) {
-      const message = payload?.error
-        ?? (rawText ? truncateText(rawText, 240) : `Document AI request failed with status ${response.status}`);
-      return {
-        fileName: typeof fileName === 'string' ? fileName : undefined,
-        parseMode,
-        error: `[${parseMode}] status=${response.status} contentType=${contentType} endpoint=${endpoint} :: ${message}`,
-      };
+      if (!response.ok) {
+        const message = payload?.error
+          ?? (rawText ? truncateText(rawText, 240) : `Document AI request failed with status ${response.status}`);
+        return {
+          fileName: typeof fileName === 'string' ? fileName : undefined,
+          parseMode,
+          error: `[${parseMode}] status=${response.status} contentType=${contentType} endpoint=${endpoint} :: ${message}`,
+        };
+      }
+
+      if (!payload || payload.ok === false) {
+        return {
+          fileName: typeof fileName === 'string' ? fileName : undefined,
+          parseMode,
+          error: `[${parseMode}] Invalid processDocument payload (contentType=${contentType})`,
+        };
+      }
+
+      ocrDocument = normalizeOcrDocumentPayload(
+        payload,
+        typeof fileType === 'string' ? fileType : undefined,
+      );
     }
 
-    if (!payload || payload.ok === false) {
-      return {
-        fileName: typeof fileName === 'string' ? fileName : undefined,
-        parseMode,
-        error: `[${parseMode}] Invalid processDocument payload (contentType=${contentType})`,
-      };
-    }
-
-    const ocrDocument = {
-      source: 'document-ocr-extractor' as const,
-      mimeType: payload.mimeType ?? (typeof fileType === 'string' ? fileType : 'application/octet-stream'),
-      text: payload.text ?? '',
-      entities: (payload.entities ?? []).map((entity) => ({
-        type: entity.type,
-        mentionText: entity.mentionText,
-        confidence: entity.confidence,
-        ...(entity.normalizedValue ? { normalizedValue: entity.normalizedValue } : {}),
-      })),
-      traceId: payload.traceId ?? crypto.randomUUID(),
-      extractedAt: payload.extractedAt ?? new Date().toISOString(),
-    };
+    const shouldRunGenkit = parseMode === 'genkit-ai';
+    const workItems = shouldRunGenkit
+      ? (await runAiParsingFromOcrDocument(ocrDocument)).workItems
+      : [];
 
     return {
       fileName: typeof fileName === 'string' ? fileName : undefined,
       parseMode,
       data: {
-        // Document AI and AI semantic parsing are intentionally decoupled.
-        // This action only executes Document AI OCR extraction.
-        workItems: [],
+        workItems,
         ocrDocument,
       },
     };

@@ -79,6 +79,7 @@ export function WorkspaceDocumentParser() {
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
   const [aiWorkItems, setAiWorkItems] = useState<WorkItem[]>([]);
+  const [activeParseMode, setActiveParseMode] = useState<'document-ai' | 'genkit-ai'>('document-ai');
   // Tracks the WorkspaceFile ID when a file is sent from the Files tab for full traceability
   const sourceFileIdRef = useRef<string | undefined>(undefined);
   const sourceFileVersionIdRef = useRef<string | undefined>(undefined);
@@ -157,10 +158,26 @@ export function WorkspaceDocumentParser() {
     if (payload.storagePath) {
       formData.append('storagePath', payload.storagePath);
     }
-    formData.append('parseMode', payload.parseMode ?? 'document-ai');
+    if (payload.sourceType) {
+      formData.append('sourceType', payload.sourceType);
+    }
+    if (payload.downloadURL) {
+      formData.append('downloadURL', payload.downloadURL);
+    }
+    const nextParseMode = payload.parseMode ?? 'document-ai';
+    formData.append('parseMode', nextParseMode);
+    setActiveParseMode(nextParseMode);
     setAiWorkItems([]);
     startOcrTransition(() => formAction(formData));
   }, [formAction, startOcrTransition, workspace.id]);
+
+  useEffect(() => {
+    const workItems = state.data?.workItems;
+    if (!workItems || workItems.length === 0) {
+      return;
+    }
+    setAiWorkItems(workItems);
+  }, [state.data?.workItems]);
 
   // Consume queued parser payloads from Files tab whenever they arrive.
   // Keyed dedupe prevents duplicate trigger under StrictMode double-invocation.
@@ -215,6 +232,7 @@ export function WorkspaceDocumentParser() {
     if (event.target.files && event.target.files.length > 0) {
       if (formRef.current) {
         const formData = new FormData(formRef.current);
+        setActiveParseMode('document-ai');
         setAiWorkItems([]);
         startOcrTransition(() => {
           formAction(formData);
@@ -447,8 +465,14 @@ export function WorkspaceDocumentParser() {
        {isOcrPending && (
         <div className="mt-8 flex flex-col items-center justify-center text-center">
           <Loader2 className="mb-4 size-16 animate-spin text-primary" />
-          <p className="text-lg font-medium text-foreground">Running Document AI OCR...</p>
-          <p className="text-muted-foreground">This step only extracts OCR text and entities.</p>
+          <p className="text-lg font-medium text-foreground">
+            {activeParseMode === 'genkit-ai' ? 'Running Genkit AI Tagging...' : 'Running Document AI OCR...'}
+          </p>
+          <p className="text-muted-foreground">
+            {activeParseMode === 'genkit-ai'
+              ? 'This step applies AI semantic tagging on OCR-ready content.'
+              : 'This step only extracts OCR text and entities.'}
+          </p>
         </div>
       )}
 
