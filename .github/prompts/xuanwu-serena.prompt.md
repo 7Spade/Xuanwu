@@ -3,7 +3,6 @@ name: xuanwu-serena
 description: Serena-first optimization workflow for Xuanwu customizations.
 argument-hint: "Goal, scope, constraints, acceptance criteria"
 agent: xuanwu-serena-autonomous
-model: GPT-5.3-Codex
 tools:
   - io.github.upstash/context7/*
   - sequentialthinking/*

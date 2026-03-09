@@ -1,0 +1,3 @@
+- Route testing bootstrap flow: run `npm run dev`, then open `http://localhost:9002`.
+- Login test must use env vars from `.env.local`: `TEST_AUTH_EMAIL` and `TEST_AUTH_PASSWORD`.
+- Do not store or print raw credential values in chat, logs, or committed files.

@@ -2,7 +2,6 @@
 name: xuanwu-webapp
 description: Prompt template for React/Next.js + Firebase + testing tasks following Serena-first workflow.
 agent: xuanwu-webagent
-model: GPT-5.3-Codex
 tools:
   - io.github.upstash/context7/*
   - sequentialthinking/*
