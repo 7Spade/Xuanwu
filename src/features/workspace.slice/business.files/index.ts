@@ -2,7 +2,7 @@ export { WorkspaceFiles } from './_components'
 export { useStorage } from './_hooks/use-storage'
 export { useWorkspaceFilters } from './_hooks/use-workspace-filters'
 export { useWorkspaceFilesActions } from './_hooks/use-workspace-files-actions'
-export { useWorkspaceFilesQuery } from './_hooks/use-workspace-files.query'
+export { useWorkspaceFilesQuery } from './_hooks/use-workspace-files'
 export {
 	createWorkspaceFile,
 	addWorkspaceFileVersion,

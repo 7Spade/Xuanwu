@@ -14,7 +14,7 @@ import { useWorkspace } from '@/features/workspace.slice';
 import type { ScheduleItem } from '@/shared-kernel';
 import type { WorkspaceTask } from '@/features/workspace.slice';
 
-import { subscribeToWorkspaceTimelineItems } from '../../../application/queries/timeline.queries';
+import { subscribeToWorkspaceTimelineItems } from '../../../application/queries/timeline';
 import type { TimelineMember } from '../../types/timeline.types';
 
 export function useWorkspaceTimeline() {

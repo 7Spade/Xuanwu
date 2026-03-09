@@ -11,7 +11,7 @@ import { useState } from "react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { useWorkspaceFilesActions } from '../_hooks/use-workspace-files-actions';
-import { useWorkspaceFilesQuery } from '../_hooks/use-workspace-files.query';
+import { useWorkspaceFilesQuery } from '../_hooks/use-workspace-files';
 import { FileHistorySheet, type HistoryPanelTab } from './file-history-sheet';
 import { FilesTable } from './files-table';
 import type { WorkspaceFileWithRelations } from './files-view.utils';
