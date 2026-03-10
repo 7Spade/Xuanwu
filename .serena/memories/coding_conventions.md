@@ -1,0 +1,6 @@
+- Follow Feature-Sliced architecture with one-way dependency flow.
+- Respect layer ownership and module boundaries; keep side effects out of pure kernel code.
+- Keep source/doc/json files UTF-8 (no BOM).
+- Prefer English code naming/comments unless Traditional Chinese is required for domain precision.
+- For TS/TSX edits, add module header comments when missing and applicable to repository rule.
+- Avoid hardcoded UI text; use i18n keys.

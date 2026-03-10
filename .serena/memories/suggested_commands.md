@@ -1,0 +1,9 @@
+- npm install: install dependencies
+- npm run dev: run Next.js dev server on localhost:9002 (Turbopack)
+- npm run lint: run ESLint
+- npm run typecheck: run TypeScript type check
+- npm run test: run Vitest tests
+- npm run check: project verification (install + lint + typecheck)
+- npm run build: production build
+- npm run start: start production server
+- Windows utility commands: Get-ChildItem, Get-Location, Set-Location, Select-String, git status, git diff
