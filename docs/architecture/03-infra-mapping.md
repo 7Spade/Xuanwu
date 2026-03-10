@@ -73,6 +73,18 @@ VS9 = src/features/finance.slice
 
 ---
 
+## Canonical Chains 路徑矩陣（唯一排序判準）
+
+| 鏈路 | 基礎設施路徑 | 基礎設施判準 |
+|------|--------------|--------------|
+| **寫鏈（Command）** | `L0A CMD_API_GW → L2 CBG_ENTRY → CBG_AUTH → CBG_ROUTE → L3 Slice → L4 IER → L5 Projection` | 所有寫入必須由 L2 收口；`CBG_ENTRY` 是唯一 `traceId` 注入點 |
+| **讀鏈（Query）** | `L0A QRY_API_GW → L6 QGWAY/read-model-registry → L5 Projection Read Model` | UI 與 App Router 只可讀取 L5 物化視圖；禁止直讀 L3 raw state |
+| **基礎設施鏈（Infra）** | **A / firebase-client**：`L3/L5/L6 → L1 SK_PORTS → L7-A frontend-firebase → L8 Firebase Runtime`<br>**B / firebase-admin**：`L0 external trigger 或 L2 privileged entry → L7-B backend-firebase/functions → L8 Firebase Runtime` | L7-A 與 L7-B 為並列分流；不得把 Command / Query / Infra 壓成單一線性排序 |
+
+> **規則**：Feature Slice 嚴禁跳過上述鏈路直接操作 Firebase SDK、直連 Projection、或在 UI 層繞過 L6 Query Gateway。
+
+---
+
 ## 標準目錄結構（Standard Directory Structure）
 
 ### Feature Slice 標準結構

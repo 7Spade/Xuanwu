@@ -59,18 +59,19 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 ### CP2 MUST：Cross-cutting Authorities（職責邊界與權威出口）
 
-- 全域搜尋只經 `Global Search`
-- 通知副作用只經 `Notification Hub`
+- 全域搜尋只經 `Global Search`；禁止各 Slice 自建搜尋引擎或搜尋入口
+- 通知 / 推播 / 外部通訊只經 `Notification Hub`；業務 Slice 只產生事件，不決定通知策略
+- Finance 僅接受 `ACCEPTED`（通過 `task-accepted-validator`）任務進入；進入路徑唯一，禁止旁路
 - 任務語義與成本決策由 `VS8` 提供全域基線
 - 組織自訂 task-type / skill-type 語義必須經 `VS4 org-semantic-registry` 治理並投影到 tag-snapshot
 
 ### CP3 MUST：Layering Rules（層級通訊）
 
-- 命令由 L2 收口
-- 事件由 L4 分發
-- 投影由 L5 物化
-- 讀取由 L6 暴露
-- Feature Slice 不得跨層旁路（含 Firebase SDK 旁路與 Projection 直寫）
+- 所有寫入操作必須由 L2 Command Gateway 收口；`CBG_ENTRY` 是唯一 `traceId` 注入點，且同時負責命令入口治理
+- 跨切片副作用必須由 L4 IER 分發；禁止 Slice 間直接互相寫入對方 aggregate
+- 所有投影與物化視圖更新由 L5 Projection Bus 物化；禁止 Feature Slice 直寫 Projection
+- 所有讀取必須由 L6 Query Gateway 暴露；UI 禁止直接讀取 L3 Aggregate / raw state
+- Feature Slice 不得跨層旁路（含 Firebase SDK 旁路、Projection 直寫、繞過 Query/Command Gateway）
 
 ### CP4 SHOULD：Governance Rules（治理與演化）
 
@@ -78,6 +79,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 優先引用現有契約
 - 全域語義進 VS8 註冊，組織 task-type/skill-type 進 VS4 org-semantic-registry 註冊
 - D27 屬 Extension Gate，僅影響 document-parser / finance-routing 變更
+
+---
+
+## Single Source of Truth（消除雙重真相）
+
+- **SLA 契約唯一來源**：所有延遲 / 新鮮度 / Worker Pool 配額邊界只能引用 `SK_STALENESS_CONTRACT`；禁止在圖、規則或實作中硬寫數值
+- **語義型別唯一來源**：業務代碼禁止使用裸字串（例如 `tag_name` / `semanticTagSlug` 字串常值）自行表達語義；全域語義必須引用 VS8 提供的強型別定義（TE1–TE6 / CTA / OrgTagRef）
+- **版本守衛唯一來源**：所有會更新 L5 Projection / Read Model 的物化寫入必須先套用 `applyVersionGuard()`，以 `aggregateVersion` 單調遞增作為並發與重播一致性的唯一裁決條件 [S2]
 
 ---
 

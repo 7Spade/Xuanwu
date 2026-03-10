@@ -18,6 +18,9 @@
 
 > **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
 > **CQRS Gateway**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
+> **Command 鏈硬不變量**：所有寫入必須先經 `CMD_API_GW → CBG_ENTRY → CBG_AUTH`，由 L2 注入唯一 `traceId` 並完成權限驗證，之後才可進入 L3。
+> **Query 鏈硬不變量**：所有讀取必須先經 `QRY_API_GW → QGWAY`；UI 僅可讀取 L5 物化視圖，禁止直接讀取 L3 Aggregate / raw state。
+> **Infra 鏈硬不變量**：L7-A `frontend-firebase` 與 L7-B `backend-firebase/functions` 是同一 Infra 鏈的前後端分流；Feature Slice 不得旁路至 Firebase SDK 或直接寫入 L5 Projection。
 
 ---
 
@@ -1183,6 +1186,10 @@ class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCut
 
 追蹤任意 Slice 的邏輯流向時，使用以下檢查框架：
 
+- **入口驗證**：Command / Query 是否由 L0A 閘道進入？高權限或外部觸發是否只走 `EXT_WEBHOOK` / `backend-firebase/functions` 合法入口？
+- **管道驗證**：Command 是否經過 `CBG_ENTRY` 注入唯一 `traceId`，並由 `TransactionalCommand` 封裝成同一 Firestore Transaction（Aggregate 寫入 + `{slice}/_outbox` 寫入）？
+- **依賴驗證**：L1 `Shared Kernel` 是否仍維持 pure zone（只含純函式、常數、介面；禁止 I/O / async side effects）？
+
 ```text
 Command 流向驗證：
   1. 入口：L0A CMD_API_GW（src/shared-infra/api-gateway）
@@ -1202,6 +1209,8 @@ Query 流向驗證：
   ✗ Command Handler 回傳 Projection 資料陣列（FC-001）
   ✗ L3 Slice 直接呼叫另一 L3 Slice 的 _actions.ts（FC-003）
   ✗ L6 Query Route 執行 write 操作（FQ-001）
+  ✗ UI / app 直接讀取 L3 Aggregate 或 raw state（必須經 L6 → L5）
+  ✗ Feature Slice 直接 import Firebase SDK / 直連 L5 Projection（必須經 L1 Port 或 Gateway）
   ✗ L1 Shared Kernel import L3 Features（FI-003）
   ✗ src/app/ 直接 import firebase-admin（FI-001 / D25）
 ```
