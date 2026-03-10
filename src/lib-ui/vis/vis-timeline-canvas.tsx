@@ -8,10 +8,9 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { DataGroup, DataItem, Timeline, TimelineItem, TimelineOptions } from "vis-timeline"
-import "vis-timeline/styles/vis-timeline-graph2d.min.css"
+import type { DataGroup, DataItem, Timeline, TimelineOptions } from "vis-timeline"
 
-export interface VisTimelineCanvasProps {
+interface VisTimelineCanvasProps {
   items: DataItem[]
   groups?: DataGroup[]
   options?: TimelineOptions
@@ -28,49 +27,31 @@ export function VisTimelineCanvas({
 }: VisTimelineCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<Timeline | null>(null)
-  // Stale-closure prevention: always-current mirrors used inside the async init().
-  const itemsRef = useRef<DataItem[]>(items)
-  const groupsRef = useRef<DataGroup[] | undefined>(groups)
-  const optionsRef = useRef<TimelineOptions | undefined>(options)
 
-  useEffect(() => { itemsRef.current = items }, [items])
-  useEffect(() => { groupsRef.current = groups }, [groups])
-  useEffect(() => { optionsRef.current = options }, [options])
-
-  // Mount once — vis-timeline manages its own DOM imperatively.
+  // Mount once — vis-timeline manages its own DOM imperatively
   useEffect(() => {
     if (!containerRef.current) return
 
     let timeline: Timeline | null = null
-    let resizeObserver: ResizeObserver | null = null
 
     async function init() {
-      // Dynamic imports prevent SSR evaluation of the browser-only packages.
+      // Dynamic import prevents SSR evaluation of the browser-only package
       const { Timeline: VisTimeline } = await import("vis-timeline/standalone")
       const { DataSet } = await import("vis-data")
-      const itemsDs = new DataSet<DataItem>(itemsRef.current)
-      const groupsDs = groupsRef.current
-        ? new DataSet<DataGroup>(groupsRef.current)
-        : undefined
+      const itemsDs = new DataSet<DataItem>(items)
+      const groupsDs = groups ? new DataSet<DataGroup>(groups) : undefined
       if (groupsDs) {
-        timeline = new VisTimeline(containerRef.current!, itemsDs, groupsDs, optionsRef.current ?? {})
+        timeline = new VisTimeline(containerRef.current!, itemsDs, groupsDs, options ?? {})
       } else {
-        timeline = new VisTimeline(containerRef.current!, itemsDs, optionsRef.current ?? {})
+        timeline = new VisTimeline(containerRef.current!, itemsDs, options ?? {})
       }
       timelineRef.current = timeline
       onReady?.(timeline)
-
-      if (containerRef.current && typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(() => timelineRef.current?.redraw())
-        resizeObserver.observe(containerRef.current)
-      }
     }
 
     void init()
 
     return () => {
-      resizeObserver?.disconnect()
-      resizeObserver = null
       timeline?.destroy()
       timelineRef.current = null
     }
@@ -79,34 +60,21 @@ export function VisTimelineCanvas({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Push item changes imperatively to avoid full re-mount on every render.
+  // Push item changes imperatively to avoid full re-mount on every render
   useEffect(() => {
     if (!timelineRef.current) return
     timelineRef.current.setItems(items)
   }, [items])
 
-  // Push group changes imperatively; clear groups when undefined (mode switch).
   useEffect(() => {
-    if (!timelineRef.current) return
-    if (groups) {
-      timelineRef.current.setGroups(groups)
-    } else {
-      timelineRef.current.setGroups([])
-    }
+    if (!timelineRef.current || !groups) return
+    timelineRef.current.setGroups(groups)
   }, [groups])
 
-  // Push option changes imperatively.
-  // Strip start/end to prevent unwanted viewport snap-back after the user has
-  // panned or zoomed — those values are only meaningful on initial mount.
   useEffect(() => {
     if (!timelineRef.current || !options) return
-    const { start: _start, end: _end, ...liveOptions } = options as TimelineOptions & { start?: Date | number | string; end?: Date | number | string }
-    timelineRef.current.setOptions(liveOptions)
+    timelineRef.current.setOptions(options)
   }, [options])
 
   return <div ref={containerRef} className={className ?? "h-64 w-full"} />
 }
-
-// Re-export vis-timeline types so feature slices import from @/lib-ui/vis, not
-// vis-timeline directly. This enforces the D24/D28 module boundary rule.
-export type { DataItem, DataGroup, Timeline, TimelineItem, TimelineOptions }
