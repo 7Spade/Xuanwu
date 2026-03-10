@@ -86,7 +86,7 @@ Design or refactor Copilot customization assets in this order:
 - `docs/copilot/customization/*.md` remains the local reference mirror of the official VS Code customization docs and should be cited rather than paraphrased repeatedly.
 - `.vscode/settings.json` is the effective loader configuration; documentation must describe the configuration that is actually enabled there.
 - `skills/SKILL.md` remains a repository reference baseline, while `.github/skills/` is the active VS Code project skill location.
-- Keep the agents folder intentionally small and consistent: prefer project-specific `xuanwu-<function>.agent.md` files that absorb overlapping personas into one functional agent.
+- Keep the customization folders intentionally small and consistent: prefer project-specific `xuanwu-<function>.*.md` files that absorb overlapping personas, rules, and workflows into functional suites.
 
 ## Canonical Repository Layout
 
@@ -153,6 +153,8 @@ The repository now follows these consolidation rules:
 4. Stable repository references used by prompts must exist under `docs/` or other committed paths.
 5. `README.md` remains the user-facing entry point and must keep its prompt command table synchronized with `.github/prompts/`.
 6. The canonical project-specific agent suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`.
+7. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`.
+8. The canonical prompt suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, and `xuanwu-test-expert`.
 
 ## Required Reference Documents for Customizations
 

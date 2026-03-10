@@ -1,6 +1,6 @@
 ---
 name: xuanwu-test-expert
-description: "Run Next.js preflight with next-devtools: structure sensing, realtime status/metadata analysis, and minimal auto-fix with re-validation."
+description: "Run the canonical Xuanwu Next.js preflight and diagnostics flow, including runtime checks, route audits, next-devtools inspection, metadata analysis, and minimal root-cause remediation."
 agent: "xuanwu-test-expert"
 ---
 
@@ -9,6 +9,15 @@ agent: "xuanwu-test-expert"
 Execute a local Next.js diagnostic preflight for this workspace.
 
 Normative execution contract: [xuanwu-test-expert.instructions.md](../instructions/xuanwu-test-expert.instructions.md)
+
+## Consolidated scope
+
+This is the canonical Xuanwu prompt for the repository's former runtime-diagnostics variants:
+
+- full Next.js diagnostics
+- focused next-devtools checks
+- route rendering and slot audit
+- browser verification with metadata capture
 
 ## Required execution
 
