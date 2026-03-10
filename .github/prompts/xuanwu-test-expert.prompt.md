@@ -17,13 +17,23 @@ Execute a local Next.js diagnostic preflight for this workspace.
    - runtime/build health
    - route-level errors
    - metadata correctness (title, canonical, robots, locale-related metadata)
-5. If issue is confirmed and localized, generate and apply minimal code fix.
-6. Re-validate with browser + next-devtools and return:
+   - tool separation rule: browser interactions via `playwright-browser_*`; server diagnostics via `next-devtools-*`
+5. Apply Playwright execution discipline on every interacted route:
+   - `playwright-browser_navigate`
+   - `playwright-browser_snapshot` (refresh refs)
+   - interaction (`click`/`fill_form`/`type`)
+   - `playwright-browser_snapshot`
+   - `playwright-browser_console_messages`
+   - `playwright-browser_take_screenshot`
+   - never use stale refs from older snapshots
+6. If issue is confirmed and localized, generate and apply minimal code fix.
+7. Re-validate with browser + next-devtools and return:
    - terminal status (started/failed)
    - page URL
    - page title
    - fixed/not fixed state
-7. If blocked, return exact blocker and a safe retry suggestion.
+8. Include coverage status matrix with route state labels: `PASS`, `FAIL`, `BLOCKED`, `EXPECTED_GATED`.
+9. If blocked, return exact blocker and a safe retry suggestion.
 
 ## Output format
 
@@ -32,5 +42,6 @@ Execute a local Next.js diagnostic preflight for this workspace.
 - `structure`: next-devtools index summary (app root, key routes, active server)
 - `diagnostics`: runtime + metadata findings
 - `autofix`: patch summary and affected files, or `SKIPPED` with reason
+- `coverage`: route matrix with `covered/total`, `missing`, and status labels
 - `browser`: `url` + `title`
 - `next_step`: one concrete follow-up action

@@ -20,6 +20,14 @@ applyTo: "**/*xuanwu-test-expert*.{md,yml,yaml,json}"
 - MUST report startup status, page URL, page title, and diagnostics summary.
 - MUST return `BLOCKED` with blocker details if startup or navigation fails.
 
+## Tool separation and Playwright discipline
+
+- MUST use `playwright-browser_*` tools for browser actions and evidence capture.
+- MUST use `next-devtools-*` tools for Next.js server/runtime diagnostics.
+- MUST call `playwright-browser_snapshot` after each navigation before interacting with page refs.
+- MUST use refs from the most recent snapshot only.
+- MUST NOT use browser-eval DOM execution for steps covered by Playwright snapshot workflow.
+
 ## Automated code generation and fix
 
 - MAY auto-generate or auto-fix code only when diagnostics point to a specific root cause.

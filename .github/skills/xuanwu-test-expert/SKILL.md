@@ -23,11 +23,13 @@ This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto
    - Record server URL, app routes, and diagnostic capabilities.
 3. Validate startup and route readiness:
    - Confirm terminal reports successful startup.
+   - If unreachable, retry startup once before marking environment blocker.
 4. Open browser:
    - Open `http://localhost:9002` in VS Code integrated browser.
 5. Analyze realtime status and metadata:
    - Use `next-devtools-nextjs_call` for runtime/build/route diagnostics.
    - Check metadata behavior including title/canonical/robots/locale tags.
+   - Keep tool separation: browser steps with `playwright-browser_*`, server diagnostics with `next-devtools-*`.
 6. Capture evidence:
    - terminal running state
    - page title
@@ -42,6 +44,19 @@ This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto
    - `PASS_WITH_FIX` when fix applied and verified
    - `BLOCKED` with concise blocker details when not ready
 
+## Playwright snapshot discipline
+
+- Always call `playwright-browser_snapshot` after navigation or DOM-changing interaction.
+- Always use refs from the latest snapshot only.
+- Treat stale-ref interaction as invalid execution.
+
+## Route status taxonomy
+
+- `PASS`: expected behavior observed with evidence.
+- `FAIL`: reproducible functional or runtime defect found.
+- `BLOCKED`: environment/system blocker prevents completion.
+- `EXPECTED_GATED`: route is correctly restricted by account/context policy.
+
 ## next-devtools practical features checklist
 
 - Project structure awareness: `next-devtools-nextjs_index`
@@ -49,6 +64,7 @@ This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto
 - Metadata analysis: route-level metadata generation and output checks
 - Patch-and-verify loop: diagnose -> minimal fix -> browser re-check
 - Route-specific troubleshooting without broad refactor
+- Metadata-focused troubleshooting for title/canonical/robots/locale output
 
 ## Guardrails
 
