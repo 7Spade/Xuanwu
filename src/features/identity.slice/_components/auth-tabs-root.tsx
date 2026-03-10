@@ -1,7 +1,14 @@
 
 "use client";
 
-import { Ghost, Loader2 } from "lucide-react";
+/**
+ * Module: auth-tabs-root
+ * Purpose: Compose the authentication dialog card and tabbed entry flow.
+ * Responsibilities: host login/register forms and auxiliary auth actions
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
+import { Ghost, Loader2, ShieldCheck } from "lucide-react";
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
@@ -47,18 +54,19 @@ export function AuthTabsRoot({
       <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
         <LanguageSwitcher />
       </div>
-      <Card className="z-10 w-full max-w-md overflow-hidden rounded-3xl border border-border/55 bg-card/72 shadow-[0_28px_60px_-28px_hsl(var(--foreground)/0.35)] backdrop-blur-2xl ring-1 ring-border/45">
-        <CardHeader className="flex flex-col items-center pb-4 pt-9 sm:pt-10">
-          <div className="group relative flex size-16 items-center justify-center rounded-2xl bg-primary/8 ring-1 ring-primary/20">
-            <span className="block cursor-default select-none text-3xl transition-transform duration-300 group-hover:scale-105">🐢</span>
+      <Card className="z-10 w-full max-w-md overflow-hidden rounded-[2rem] border border-border/55 bg-card/82 shadow-[0_32px_70px_-30px_hsl(var(--foreground)/0.45)] backdrop-blur-2xl ring-1 ring-border/45">
+        <CardHeader className="relative flex flex-col items-center pb-4 pt-8 sm:pt-9">
+          <div className="absolute inset-x-12 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
+          <div className="group relative flex size-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 ring-1 ring-primary/20 shadow-sm shadow-primary/20">
+            <ShieldCheck className="size-7 text-primary/90 transition-transform duration-300 group-hover:scale-105" />
           </div>
         </CardHeader>
 
         <CardContent className="px-5 sm:px-8">
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="mb-7 grid h-11 w-full grid-cols-2 rounded-xl bg-muted/35 p-1 ring-1 ring-border/40">
-              <TabsTrigger value="login" className="rounded-lg text-xs font-semibold tracking-tight transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm">{t('auth.login')}</TabsTrigger>
-              <TabsTrigger value="register" className="rounded-lg text-xs font-semibold tracking-tight transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm">{t('auth.register')}</TabsTrigger>
+            <TabsList className="mb-7 grid h-11 w-full grid-cols-2 rounded-xl border border-border/40 bg-muted/30 p-1">
+              <TabsTrigger value="login" className="rounded-lg text-xs font-semibold tracking-tight text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('auth.login')}</TabsTrigger>
+              <TabsTrigger value="register" className="rounded-lg text-xs font-semibold tracking-tight text-muted-foreground transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">{t('auth.register')}</TabsTrigger>
             </TabsList>
 
             <div className="flex min-h-[292px] flex-col">
@@ -95,9 +103,9 @@ export function AuthTabsRoot({
             {isLoading ? <Loader2 className="animate-spin" /> : <Ghost className="size-4" />}
             {t('auth.guestAccess')}
           </Button>
-          <div className="flex select-none items-center justify-center gap-2 text-[10px] font-medium tracking-[0.12em] text-muted-foreground/50">
+          <div className="flex select-none items-center justify-center gap-2 text-[10px] font-medium tracking-[0.06em] text-muted-foreground/50">
             <span>{t('auth.byLoggingIn')}</span>
-            <span className="flex items-center gap-1.5 text-muted-foreground/70"><span className="text-xs">🐢</span> {t('auth.dimensionSecurityProtocol')}</span>
+            <span className="flex items-center gap-1.5 text-muted-foreground/70"><ShieldCheck className="size-3" /> {t('auth.dimensionSecurityProtocol')}</span>
           </div>
         </CardFooter>
       </Card>
