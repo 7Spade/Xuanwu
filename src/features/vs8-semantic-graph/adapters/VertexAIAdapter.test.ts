@@ -41,6 +41,16 @@ function expectObject(value: unknown, label: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+function getMockCall(fetchMock: ReturnType<typeof vi.fn>, index: number): [string, RequestInit | undefined] {
+  const call = fetchMock.mock.calls[index];
+
+  if (!call) {
+    throw new Error(`Expected fetch call at index ${index}.`);
+  }
+
+  return [String(call[0]), call[1] as RequestInit | undefined];
+}
+
 describe('VertexAIAdapter', () => {
   it('injects authority filter and trace headers when searching', async () => {
     const fetchMock = vi.fn(async () => createMockResponse({ results: [] }));
@@ -58,7 +68,7 @@ describe('VertexAIAdapter', () => {
       topK: 4,
     });
 
-    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    const [url, init] = getMockCall(fetchMock, 0);
     expect(url).toContain('/dataObjects:search');
     expect(init?.headers).toMatchObject({
       Authorization: 'Bearer token-123',
@@ -104,13 +114,13 @@ describe('VertexAIAdapter', () => {
       traceId: 'trace-002',
     });
 
-    const [embeddingUrl, embeddingInit] = fetchMock.mock.calls[0] ?? [];
+    const [embeddingUrl, embeddingInit] = getMockCall(fetchMock, 0);
     expect(String(embeddingUrl)).toContain(DEFAULT_VERTEX_TEXT_EMBEDDING_MODEL);
     expect(embeddingInit?.headers).toMatchObject({
       'x-trace-id': 'trace-002',
     });
 
-    const [upsertUrl, upsertInit] = fetchMock.mock.calls[1] ?? [];
+    const [upsertUrl, upsertInit] = getMockCall(fetchMock, 1);
     expect(String(upsertUrl)).toContain('dataObjectId=tag%3A%3Askill%2Fsafety');
 
     const upsertBody = parseJsonObject(String(upsertInit?.body));

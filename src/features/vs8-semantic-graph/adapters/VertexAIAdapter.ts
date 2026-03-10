@@ -23,11 +23,7 @@ export interface SemanticVectorSearchOptions {
   readonly authority: string;
   readonly topK?: number;
   readonly traceId?: string;
-  readonly outputFields?: {
-    readonly dataFields?: string;
-    readonly vectorFields?: string;
-    readonly metadataFields?: string;
-  };
+  readonly outputFields?: SemanticVectorOutputFields;
 }
 
 export interface SemanticVectorUpsertOptions {
@@ -48,6 +44,12 @@ export interface SemanticVectorMatch {
   readonly id: string;
   readonly score: number;
   readonly metadata: Readonly<Record<string, unknown>>;
+}
+
+export interface SemanticVectorOutputFields {
+  readonly dataFields?: string;
+  readonly vectorFields?: string;
+  readonly metadataFields?: string;
 }
 
 export interface SemanticVectorClient {
@@ -102,6 +104,8 @@ interface VertexVectorSearchResponse {
   }>;
 }
 
+type VertexVectorSearchResult = NonNullable<VertexVectorSearchResponse['results']>[number];
+
 function assertNonEmptyVector(vector: readonly number[], label: string): void {
   if (vector.length === 0) {
     throw new Error(`${label} must not be empty.`);
@@ -109,7 +113,7 @@ function assertNonEmptyVector(vector: readonly number[], label: string): void {
 }
 
 function normalizeSearchScore(
-  searchResult: VertexVectorSearchResponse['results'] extends ReadonlyArray<infer T> ? T : never,
+  searchResult: VertexVectorSearchResult,
 ): number {
   if (typeof searchResult.score === 'number') {
     return searchResult.score;
@@ -136,7 +140,7 @@ export function buildVertexRestrictedValues(authority: string): RestrictedValueE
 
 function resolveOutputFields(
   options: SemanticVectorSearchOptions,
-): Required<SemanticVectorSearchOptions['outputFields']> {
+): Required<SemanticVectorOutputFields> {
   return {
     dataFields: options.outputFields?.dataFields ?? '*',
     vectorFields: options.outputFields?.vectorFields ?? '*',
@@ -175,6 +179,7 @@ export class VertexAIAdapter implements SemanticVectorClient {
     options: SemanticVectorSearchOptions,
   ): Promise<readonly SemanticVectorMatch[]> {
     assertNonEmptyVector(queryVector, 'queryVector');
+    const resolvedOutputFields = resolveOutputFields(options);
 
     const body = {
       vector_search: {
@@ -185,9 +190,9 @@ export class VertexAIAdapter implements SemanticVectorClient {
         filter: buildVertexAuthorityFilter(options.authority),
         top_k: options.topK ?? 10,
         output_fields: {
-          data_fields: resolveOutputFields(options).dataFields,
-          vector_fields: resolveOutputFields(options).vectorFields,
-          metadata_fields: resolveOutputFields(options).metadataFields,
+          data_fields: resolvedOutputFields.dataFields,
+          vector_fields: resolvedOutputFields.vectorFields,
+          metadata_fields: resolvedOutputFields.metadataFields,
         },
       },
     };
