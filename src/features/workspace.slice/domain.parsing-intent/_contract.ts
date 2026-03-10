@@ -1,14 +1,15 @@
-import type { SkillRequirement } from '@/shared-kernel';
+import type {
+  SkillRequirement,
+  ParsingIntentReviewStatus,
+  ParsingIntentSourceType,
+  ParsingIntentStatus,
+} from '@/shared-kernel';
 
-export type ParsingIntentStatus = 'pending' | 'importing' | 'imported' | 'superseded' | 'failed';
-
-export type ParsingIntentSourceType = 'ai' | 'human' | 'system';
-
-export type ParsingIntentReviewStatus =
-  | 'not_required'
-  | 'pending_review'
-  | 'approved'
-  | 'rejected';
+export type {
+  ParsingIntentStatus,
+  ParsingIntentSourceType,
+  ParsingIntentReviewStatus,
+} from '@/shared-kernel';
 
 export interface ParsingIntentContract {
   intentId: string;

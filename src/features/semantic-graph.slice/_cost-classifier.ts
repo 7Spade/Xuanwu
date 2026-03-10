@@ -12,36 +12,13 @@
  * [D21] Tag categories governed by VS8.
  */
 
-// =================================================================
-// CostItemType Enum — Semantic Classification for cost line items
-// =================================================================
+import {
+  CostItemType,
+  type CostItemTypeValue as CostItemType,
+} from '@/shared-kernel';
 
-/**
- * Semantic type for a parsed cost line item.
- *
- * EXECUTABLE   — Physical work that can be decomposed into one or more tasks.
- *                Examples: "保護電驛安裝與配線", "Testing and commissioning", "Foundation"
- * MANAGEMENT   — Administrative, supervisory, or safety management overhead.
- *                Examples: "全職安裝工地一級品管及行政人員", "全職安裝工地領班一人及職安人員一人"
- * RESOURCE     — Warehouse, storage, manpower pool, or resource reservation.
- *                Examples: "倉儲", "設備拆箱 吊掛搬運"
- * FINANCIAL    — Payment milestones, retentions, or financial-only line items.
- *                Examples: "工程尾款"
- * PROFIT       — Profit margin entries not convertible to any executable work.
- *                Examples: "利潤"
- * ALLOWANCE    — Consumables, travel, transportation, or miscellaneous expenses.
- *                Examples: "Consumables 耗材", "配合差旅,運輸,勘查,與工安管理"
- */
-export const CostItemType = {
-  EXECUTABLE: 'EXECUTABLE',
-  MANAGEMENT: 'MANAGEMENT',
-  RESOURCE: 'RESOURCE',
-  FINANCIAL: 'FINANCIAL',
-  PROFIT: 'PROFIT',
-  ALLOWANCE: 'ALLOWANCE',
-} as const
-
-export type CostItemType = (typeof CostItemType)[keyof typeof CostItemType]
+export { CostItemType };
+export type { CostItemType };
 
 export const COST_ITEM_TAG_SLUG = {
   [CostItemType.EXECUTABLE]: 'cost-item-executable',

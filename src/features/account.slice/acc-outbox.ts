@@ -10,7 +10,7 @@ import {
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
 
 import {
   publishAccountEvent,
@@ -18,17 +18,11 @@ import {
   type AccountEventPayloadMap,
 } from './account-event-bus';
 
-export type AccountOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
+export type AccountOutboxLane = OutboxLane;
 
-export interface AccountOutboxRouting {
-  lane: AccountOutboxLane;
-  dlqTier: DlqTier;
-}
+export type AccountOutboxRouting = OutboxRouting;
 
-export interface AccountOutboxAck {
-  lane: AccountOutboxLane;
-  dlqTier: DlqTier;
-}
+export type AccountOutboxAck = OutboxAck;
 
 const DEFAULT_ACCOUNT_OUTBOX_ROUTING: AccountOutboxRouting = {
   lane: 'CRITICAL_LANE',

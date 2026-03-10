@@ -10,19 +10,13 @@ import {
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
 
-export type SkillOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
+export type SkillOutboxLane = OutboxLane;
 
-export interface SkillOutboxRouting {
-  lane: SkillOutboxLane;
-  dlqTier: DlqTier;
-}
+export type SkillOutboxRouting = OutboxRouting;
 
-export interface SkillOutboxAck {
-  lane: SkillOutboxLane;
-  dlqTier: DlqTier;
-}
+export type SkillOutboxAck = OutboxAck;
 
 const DEFAULT_SKILL_OUTBOX_ROUTING: SkillOutboxRouting = {
   lane: 'STANDARD_LANE',

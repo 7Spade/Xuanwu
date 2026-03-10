@@ -33,9 +33,9 @@ export function FirebaseClientProvider({ children }: { children: ReactNode; }) {
       };
     }
 
-    const timeoutId = window.setTimeout(run, 0);
+    const timeoutId = globalThis.setTimeout(run, 0);
     return () => {
-      window.clearTimeout(timeoutId);
+      globalThis.clearTimeout(timeoutId);
     };
   }, []);
 

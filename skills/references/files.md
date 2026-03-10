@@ -15,21 +15,15 @@ import {
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
 import {
   publishAccountEvent,
   type AccountEventKey,
   type AccountEventPayloadMap,
 } from './account-event-bus';
-export type AccountOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
-export interface AccountOutboxRouting {
-  lane: AccountOutboxLane;
-  dlqTier: DlqTier;
-}
-export interface AccountOutboxAck {
-  lane: AccountOutboxLane;
-  dlqTier: DlqTier;
-}
+export type AccountOutboxLane = OutboxLane;
+export type AccountOutboxRouting = OutboxRouting;
+export type AccountOutboxAck = OutboxAck;
 ⋮----
 export async function enqueueAccountOutboxEvent<K extends OrganizationEventKey>(
   eventKey: K,
@@ -361,9 +355,7 @@ const handleCloseCycle = () =>
 
 ## File: src/features/finance.slice/_constants.ts
 ```typescript
-import { CostItemType } from '@/features/semantic-graph.slice';
-import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
-import type { FinanceLifecycleStage } from './_types';
+
 ```
 
 ## File: src/features/finance.slice/_hooks/use-finance-lifecycle.helpers.ts
@@ -1652,7 +1644,10 @@ function makeError(
 
 ## File: src/features/semantic-graph.slice/_cost-classifier.ts
 ```typescript
-export type CostItemType = (typeof CostItemType)[keyof typeof CostItemType]
+import {
+  CostItemType,
+  type CostItemTypeValue as CostItemType,
+} from '@/shared-kernel';
 ⋮----
 export type SemanticTagSlug = (typeof COST_ITEM_TAG_SLUG)[CostItemType]
 export interface CostItemSemanticClassification {
@@ -1694,7 +1689,7 @@ export function shouldMaterializeAsTask(costItemType: CostItemType): boolean
 
 ## File: src/features/semantic-graph.slice/_semantic-authority.ts
 ```typescript
-import type { SearchDomain, TaxonomyDimension } from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
+
 ```
 
 ## File: src/features/semantic-graph.slice/_services.ts
@@ -2359,16 +2354,10 @@ import {
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
-export type SkillOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
-export interface SkillOutboxRouting {
-  lane: SkillOutboxLane;
-  dlqTier: DlqTier;
-}
-export interface SkillOutboxAck {
-  lane: SkillOutboxLane;
-  dlqTier: DlqTier;
-}
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
+export type SkillOutboxLane = OutboxLane;
+export type SkillOutboxRouting = OutboxRouting;
+export type SkillOutboxAck = OutboxAck;
 ⋮----
 export async function enqueueSkillOutboxEvent<K extends OrganizationEventKey>(
   eventKey: K,
@@ -4575,14 +4564,13 @@ export function findDirectFirebaseImports(dir: string): string[]
 
 ## File: src/features/workspace.slice/domain.parsing-intent/_contract.ts
 ```typescript
-import type { SkillRequirement } from '@/shared-kernel';
-export type ParsingIntentStatus = 'pending' | 'importing' | 'imported' | 'superseded' | 'failed';
-export type ParsingIntentSourceType = 'ai' | 'human' | 'system';
-export type ParsingIntentReviewStatus =
-  | 'not_required'
-  | 'pending_review'
-  | 'approved'
-  | 'rejected';
+import type {
+  SkillRequirement,
+  ParsingIntentReviewStatus,
+  ParsingIntentSourceType,
+  ParsingIntentStatus,
+} from '@/shared-kernel';
+⋮----
 export interface ParsingIntentContract {
   intentId: string;
   workspaceId: string;
@@ -5433,6 +5421,21 @@ export async function getWorkspaceGrants(workspaceId: string): Promise<Workspace
 ## File: src/features/workspace.slice/gov.teams/index.ts
 ```typescript
 
+```
+
+## File: src/shared-infra/api-gateway/_cmd-gateway.ts
+```typescript
+import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
+import { dispatchCommand } from '@/shared-infra/gateway-command';
+import type { GatewayCommand, DispatchOptions } from '@/shared-infra/gateway-command';
+export async function cmdApiGateway<TCmd extends GatewayCommand>(
+  command: TCmd,
+  opts?: DispatchOptions
+): Promise<CommandResult>
+export function buildWriteOpts(
+  authority: AuthoritySnapshot | null,
+  traceId?: string
+): DispatchOptions
 ```
 
 ## File: src/shared-infra/api-gateway/_qry-gateway.ts
@@ -7375,6 +7378,12 @@ async function routeToDlq(
 
 ```
 
+## File: src/shared-kernel/constants/finance.ts
+```typescript
+import { CostItemType, type CostItemTypeValue } from '@/shared-kernel/enums/cost-item-type';
+import type { FinanceLifecycleStage } from '@/shared-kernel/types/finance';
+```
+
 ## File: src/shared-kernel/constants/location-units.ts
 ```typescript
 export type LocationUnitKey =
@@ -7931,6 +7940,21 @@ export interface ImplementsTagStaleGuard {
 }
 ```
 
+## File: src/shared-kernel/enums/cost-item-type.ts
+```typescript
+export type CostItemTypeValue = (typeof CostItemType)[keyof typeof CostItemType];
+```
+
+## File: src/shared-kernel/enums/index.ts
+```typescript
+
+```
+
+## File: src/shared-kernel/enums/outbox-lane.ts
+```typescript
+import type { OutboxLane } from '@/shared-kernel/types/outbox-routing';
+```
+
 ## File: src/shared-kernel/infra-contracts/outbox-contract/index.ts
 ```typescript
 export type DlqTier = 'SAFE_AUTO' | 'REVIEW_REQUIRED' | 'SECURITY_BLOCK';
@@ -8091,6 +8115,19 @@ createTraceContext(source?: string): TraceContext;
 
 ```
 
+## File: src/shared-kernel/ontologys/index.ts
+```typescript
+
+```
+
+## File: src/shared-kernel/ontologys/semantic-taxonomy.ts
+```typescript
+import type {
+  SearchDomain,
+  TaxonomyDimension,
+} from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
+```
+
 ## File: src/shared-kernel/ports/i-auth.service.ts
 ```typescript
 export interface AuthUser {
@@ -8212,6 +8249,20 @@ onForegroundMessage(
 ## File: src/shared-kernel/ports/index.ts
 ```typescript
 
+```
+
+## File: src/shared-kernel/types/outbox-routing.ts
+```typescript
+import type { DlqTier } from '@/shared-kernel/infra-contracts/outbox-contract';
+export type OutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
+export interface OutboxRouting {
+  lane: OutboxLane;
+  dlqTier: DlqTier;
+}
+export interface OutboxAck {
+  lane: OutboxLane;
+  dlqTier: DlqTier;
+}
 ```
 
 ## File: src/features/account.slice/domain.profile/_actions.ts
@@ -9785,16 +9836,10 @@ import {
   type OrganizationEventKey,
   type OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
-export type SchedulingOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
-export interface SchedulingOutboxRouting {
-  lane: SchedulingOutboxLane;
-  dlqTier: DlqTier;
-}
-export interface SchedulingOutboxAck {
-  lane: SchedulingOutboxLane;
-  dlqTier: DlqTier;
-}
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
+export type SchedulingOutboxLane = OutboxLane;
+export type SchedulingOutboxRouting = OutboxRouting;
+export type SchedulingOutboxAck = OutboxAck;
 ⋮----
 export async function enqueueSchedulingOutboxEvent<K extends OrganizationEventKey>(
   eventKey: K,
@@ -10271,16 +10316,10 @@ import type {
   OrganizationEventKey,
   OrganizationEventPayloadMap,
 } from '@/features/organization.slice';
-import type { DlqTier } from '@/shared-kernel';
-export type SchedulingOutboxLane = 'STANDARD_LANE' | 'CRITICAL_LANE';
-export interface SchedulingOutboxRouting {
-  lane: SchedulingOutboxLane;
-  dlqTier: DlqTier;
-}
-export interface SchedulingOutboxAck {
-  lane: SchedulingOutboxLane;
-  dlqTier: DlqTier;
-}
+import type { OutboxAck, OutboxLane, OutboxRouting } from '@/shared-kernel';
+export type SchedulingOutboxLane = OutboxLane;
+export type SchedulingOutboxRouting = OutboxRouting;
+export type SchedulingOutboxAck = OutboxAck;
 export interface SchedulingEventPort {
   enqueueSchedulingOutboxEvent<K extends OrganizationEventKey>(
     eventKey: K,
@@ -11545,21 +11584,6 @@ setEditingTask({
 ## File: src/features/workspace.slice/index.ts
 ```typescript
 
-```
-
-## File: src/shared-infra/api-gateway/_cmd-gateway.ts
-```typescript
-import type { AuthoritySnapshot, CommandResult } from '@/shared-kernel';
-import { dispatchCommand } from '@/shared-infra/gateway-command';
-import type { GatewayCommand, DispatchOptions } from '@/shared-infra/gateway-command';
-export async function cmdApiGateway<TCmd extends GatewayCommand>(
-  command: TCmd,
-  opts?: DispatchOptions
-): Promise<CommandResult>
-export function buildWriteOpts(
-  authority: AuthoritySnapshot | null,
-  traceId?: string
-): DispatchOptions
 ```
 
 ## File: src/shared-infra/gateway-query/workforce-scheduling-query.ts

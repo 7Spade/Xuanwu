@@ -68,6 +68,10 @@ export type {
 	ImplementsOutboxContract,
 } from './infra-contracts/outbox-contract';
 export { buildIdempotencyKey } from './infra-contracts/outbox-contract';
+export type { OutboxLane, OutboxRouting, OutboxAck } from './types/outbox-routing';
+export { OUTBOX_LANES } from './enums/outbox-lane';
+export { CostItemType } from './enums/cost-item-type';
+export type { CostItemTypeValue } from './enums/cost-item-type';
 
 export type {
 	VersionGuardInput,
@@ -137,6 +141,11 @@ export type {
 	TaxonomyDimension,
 	TaxonomyNode,
 } from './data-contracts/semantic/semantic-contracts';
+export { SEARCH_DOMAINS, TAXONOMY_DIMENSIONS } from './ontologys/semantic-taxonomy';
+export {
+	FINANCE_LIFECYCLE_STAGES,
+	NON_TASK_COST_ITEM_TYPES,
+} from './constants/finance';
 
 export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';

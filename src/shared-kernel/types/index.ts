@@ -115,3 +115,6 @@ export type { WorkspaceRole, WorkspaceGrant } from './workspace-role';
 
 // ─── Workspace Task ──────────────────────────────────────────────────────────
 export type { WorkspaceTask, TaskWithChildren, Location } from './workspace-task';
+
+// ─── Outbox Routing ──────────────────────────────────────────────────────────
+export type { OutboxLane, OutboxRouting, OutboxAck } from './outbox-routing';
