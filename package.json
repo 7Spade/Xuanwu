@@ -28,7 +28,7 @@
     "test": "vitest run",
     "check": "npm install && npm run lint && npm run typecheck",
     "repomix": "repomix",
-    "repomix:skill": "repomix --skill-generate xuanwu-skill --skill-output .github/skills/xuanwu-skill",
+    "repomix:skill": "repomix --skill-generate xuanwu-skill --skill-output .github/skills/xuanwu-skill --force",
     "repomix:skill:apply": "repomix --skill-generate xuanwu-skill --skill-output .github/skills --force",
     "deploy:firebase": "firebase deploy --except apphosting --config ./src/shared-infra/backend-firebase/firebase.json && npm run deploy:apphosting",
     "deploy:apphosting": "firebase deploy --only apphosting --project xuanwu-i-00708880-4e2d8 --config ./firebase.apphosting.json",
