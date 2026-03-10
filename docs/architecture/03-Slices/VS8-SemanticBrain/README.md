@@ -24,3 +24,14 @@
 - Governance guards: L5 invariant guard（BBB）與 L8 consensus engine。
 - Embedding port: embedding adapter 注入與 batch embedding builder。
 - Output projection helpers: tag snapshot presentation。
+
+## 文件索引
+
+| 文件                    | 用途                                               |
+|-------------------------|----------------------------------------------------|
+| `README.md`             | VS8 願景摘要與實作能力清單（本文件）。             |
+| `architecture.md`       | 目標架構：十層 `centralized-*` 結構、模組對應表、API 邊界。|
+| `architecture-build.md` | 詳細實施計畫：逐階段目錄遷移步驟與驗證清單。       |
+| `01-d21-body-8layers.md`| D21 四層核心不變量。                               |
+| `02-semantic-router.md` | 語義路由規則。                                     |
+| `03-tag-authority.md`   | 標籤權威規則。                                     |

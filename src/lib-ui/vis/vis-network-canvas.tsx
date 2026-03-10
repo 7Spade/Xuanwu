@@ -17,8 +17,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { Data, DataSet, Edge, Network, Node, Options } from "vis-network"
-import "vis-network/styles/vis-network.css"
+import type { Data, Network, Options } from "vis-network"
 
 import type { VisCompatibleDataSet } from "./vis-types"
 
@@ -45,10 +44,7 @@ export interface VisNetworkCanvasProps {
 }
 
 export function VisNetworkCanvas({
-  nodes,
-  edges,
-  nodesDataSet,
-  edgesDataSet,
+  data,
   options,
   onReady,
   className,
@@ -65,16 +61,6 @@ export function VisNetworkCanvas({
   const edgesRef = useRef<Edge[]>(edges ?? [])
 
   useEffect(() => {
-    nodesRef.current = nodes ?? []
-  }, [nodes])
-
-  useEffect(() => {
-    edgesRef.current = edges ?? []
-  }, [edges])
-
-  // Mount once — vis-network manages its own DOM imperatively.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
     if (!containerRef.current) return
 
     // Mode is fixed at mount time; read from props directly (not stale ref needed here).
@@ -82,7 +68,6 @@ export function VisNetworkCanvas({
     isAdapterModeRef.current = adapterMode
 
     let network: Network | null = null
-    let resizeObserver: ResizeObserver | null = null
 
     async function init() {
       let data: Data
@@ -124,18 +109,13 @@ export function VisNetworkCanvas({
     void init()
 
     return () => {
-      resizeObserver?.disconnect()
-      resizeObserver = null
       network?.destroy()
       networkRef.current = null
-      nodesInternalRef.current = null
-      edgesInternalRef.current = null
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Managed mode: diff-based node update.
-  // nodesInternalRef is null in adapter mode (adapter.applyGraphSnapshot handles writes).
-  // vis-network subscribes to DataSet mutations and re-renders only affected elements.
+  // Update data imperatively when props change after mount
   useEffect(() => {
     const ds = nodesInternalRef.current
     if (!ds || nodes === undefined) return
@@ -172,5 +152,5 @@ export function VisNetworkCanvas({
     networkRef.current.setOptions(options)
   }, [options])
 
-  return <div ref={containerRef} className={className ?? "h-full min-h-64 w-full"} />
+  return <div ref={containerRef} className={className ?? "h-full w-full min-h-64"} />
 }

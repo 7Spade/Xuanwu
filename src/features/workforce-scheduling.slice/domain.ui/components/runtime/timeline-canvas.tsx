@@ -214,13 +214,9 @@ export function TimelineCanvas({
   // Wrapper ref for drag-drop event attachment.
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    onMoveItemRef.current = onMoveItem;
-  }, [onMoveItem]);
-
-  useEffect(() => {
-    onDropTaskRef.current = onDropTask;
-  }, [onDropTask]);
+  useEffect(() => { onMoveItemRef.current = onMoveItem; }, [onMoveItem]);
+  useEffect(() => { onDropTaskRef.current = onDropTask; }, [onDropTask]);
+  useEffect(() => () => { isMountedRef.current = false; }, []);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -241,6 +237,12 @@ export function TimelineCanvas({
     () => new Map(items.map((item) => [item.id, item.workspaceId])),
     [items],
   );
+  // Always-current mirror of workspaceIdByItemId for the onMove closure.
+  // onMove uses workspaceIdByItemIdRef.current instead of closing over the
+  // memoized value directly, so timelineOptions does NOT need workspaceIdByItemId
+  // in its dependency array — changes to it are always visible via the ref.
+  const workspaceIdByItemIdRef = useRef(workspaceIdByItemId);
+  useEffect(() => { workspaceIdByItemIdRef.current = workspaceIdByItemId; }, [workspaceIdByItemId]);
 
   const timelineItems = useMemo(() => {
     return items
