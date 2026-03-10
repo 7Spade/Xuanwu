@@ -67,6 +67,7 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/x-arch-sync` | `.github/prompts/x-arch-sync.prompt.md` |
 | `/x-architecture-review-mode` | `.github/prompts/x-architecture-review-mode.prompt.md` |
 | `/x-logic-design-mode` | `.github/prompts/x-logic-design-mode.prompt.md` |
+| `/xuanwu-test-expert` | `.github/prompts/xuanwu-test-expert.prompt.md` |
 | `/x-repomix-bootstrap` | `.github/prompts/x-repomix-bootstrap.prompt.md` |
 
 ## i18n Requirement
