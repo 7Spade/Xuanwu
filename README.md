@@ -43,7 +43,6 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | Command | Prompt File |
 | --- | --- |
 | `/blueprint-generator` | `.github/prompts/blueprint-generator.prompt.md` |
-| `/boundary-check` | `.github/prompts/boundary-check.prompt.md` |
 | `/cicd-deployment-orchestrator` | `.github/prompts/cicd-deployment-orchestrator.prompt.md` |
 | `/create-vertical-slice` | `.github/prompts/create-vertical-slice.prompt.md` |
 | `/documentation-writer` | `.github/prompts/documentation-writer.prompt.md` |

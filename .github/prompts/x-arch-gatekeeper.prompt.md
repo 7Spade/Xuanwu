@@ -1,8 +1,9 @@
 ---
 name: x-arch-gatekeeper
-description: 'Pre-commit architecture compliance check. Validates code diffs against Hard Invariants (D1–D20), DDD boundary rules, and CI gates to ensure no governance violations enter the main branch. Triggers: "pre-commit check", "gate check", "hard invariants", "boundary guard", "ddd check", "aggregate write guard".'
+description: 'Pre-commit architecture compliance check. Validates code diffs against Hard Invariants (D1–D20), DDD boundary rules, and CI gates to ensure no governance violations enter the main branch. Includes boundary-only mode for D3/domain isolation/orchestration checks. Triggers: "pre-commit check", "gate check", "hard invariants", "boundary guard", "ddd check", "aggregate write guard", "boundary-check".'
 agent: 'agent'
 tools: ['repomix/*', 'sequentialthinking/*', 'search/codebase', 'changes']
+argument-hint: 'Optional target path or mode, e.g.: src/features/workspace.slice OR mode=boundary-only'
 ---
 
 # Pre-Commit Architecture Gatekeeper
@@ -15,6 +16,14 @@ Validate the current code changes against all Hard Invariants, DDD boundary rule
 
 1. **Diff Analysis:** Use `#tool:repomix` to generate a change summary of modified files.
 2. **Rule Verification:** Use `#tool:sequential-thinking` to check each item:
+
+### Boundary-only mode
+
+If `mode=boundary-only` (or the input clearly asks for boundary checking), run only:
+- **Aggregate write-protection (D3)**: no writes outside `_actions.ts`
+- **Domain isolation**: no infrastructure dependency leakage into domain layer
+- **Application orchestration correctness**: application coordinates, domain decides
+- **Terminology alignment**: identifiers align with `docs/domain-glossary.md`
 
 ### Hard Invariants (D1–D20)
 
