@@ -1,19 +1,16 @@
 /**
  * Module: timeline-canvas.tsx
  * Purpose: Render schedule items as a vis timeline.
- * Responsibilities: transform schedule items and mount vis Timeline safely
- * Constraints: deterministic logic, respect module boundaries [D24/D28].
- *   vis-data and vis-timeline must NOT be imported at the top level from feature slices;
- *   use the @/lib-ui/vis abstraction layer instead.
+ * Responsibilities: transform schedule items and render via VisTimelineCanvas [D24/D28].
+ * Constraints: must not import vis-data or vis-timeline directly; use @/lib-ui/vis.
  */
 
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-// Types imported from lib-ui/vis barrel — not from vis-timeline directly [D24/D28].
-import type { DataGroup, DataItem, Timeline, TimelineItem, TimelineOptions } from "@/lib-ui/vis";
-import { VisTimelineCanvas } from "@/lib-ui/vis";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
+import { VisTimelineCanvas } from "@/lib-ui/vis";
+import type { DataGroup, DataItem, Timeline, TimelineItem, TimelineOptions } from "@/lib-ui/vis";
 import { cn } from "@/shadcn-ui/utils/utils";
 import type { ScheduleItem } from "@/shared-kernel";
 import { SKILLS } from "@/shared-kernel";
@@ -206,24 +203,39 @@ export function TimelineCanvas({
   onDropTask,
   className,
 }: TimelineCanvasProps) {
-  // Stale-closure refs for callbacks and derived state that changes over time.
+  // Mutable refs for async-safe callbacks — updated on every render without
+  // re-mounting the Timeline.
   const onMoveItemRef = useRef(onMoveItem);
   const onDropTaskRef = useRef(onDropTask);
-  const isMountedRef = useRef(true);
-  // Holds the Timeline instance provided by VisTimelineCanvas.onReady.
+  // Timeline instance obtained via onReady — used by drag-drop and rangechanged handlers.
   const timelineInstanceRef = useRef<Timeline | null>(null);
-  // Outer container ref for drag-drop event listeners.
-  const outerContainerRef = useRef<HTMLDivElement | null>(null);
+  // Mount-guard: prevents async callbacks from firing after component unmounts.
+  const isMountedRef = useRef(true);
+  // Wrapper ref for drag-drop event attachment.
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { onMoveItemRef.current = onMoveItem; }, [onMoveItem]);
   useEffect(() => { onDropTaskRef.current = onDropTask; }, [onDropTask]);
   useEffect(() => () => { isMountedRef.current = false; }, []);
 
-  const membersMap = useMemo(() => new Map(members.map((member) => [member.id, member.name])), [members]);
-  const skillNameBySlug = useMemo(() => new Map(SKILLS.map((skill) => [skill.slug, skill.name])), []);
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => { isMountedRef.current = false; };
+  }, []);
+
+  // ── Data derivation ─────────────────────────────────────────────────────────
+
+  const membersMap = useMemo(
+    () => new Map(members.map((member) => [member.id, member.name])),
+    [members],
+  );
+  const skillNameBySlug = useMemo(
+    () => new Map(SKILLS.map((skill) => [skill.slug, skill.name])),
+    [],
+  );
   const workspaceIdByItemId = useMemo(
     () => new Map(items.map((item) => [item.id, item.workspaceId])),
-    [items]
+    [items],
   );
   // Always-current mirror of workspaceIdByItemId for the onMove closure.
   // onMove uses workspaceIdByItemIdRef.current instead of closing over the
@@ -237,7 +249,10 @@ export function TimelineCanvas({
       .map((item): DataItem | null => {
         const interval = resolveTimelineInterval(item);
         if (!interval) return null;
-        const assigneeNames = item.assigneeIds.map((id) => membersMap.get(id)).filter(Boolean).join(", ");
+        const assigneeNames = item.assigneeIds
+          .map((id) => membersMap.get(id))
+          .filter(Boolean)
+          .join(", ");
         const skillRequirements = formatSkillRequirements(item, skillNameBySlug);
         const titleText = buildTimelineItemTitle(item, skillRequirements, assigneeNames);
 
@@ -276,22 +291,20 @@ export function TimelineCanvas({
     return groups;
   }, [groupMode, items]);
 
-  // Capture the initial window once at mount time so it never triggers a
-  // subsequent setOptions call that would snap the viewport on prop changes.
-  const [initialWindow] = useState(() => resolveInitialWindow(timelineItems));
+  // Capture the initial visible window at mount time. start/end are intentionally
+  // excluded from timelineOptions to prevent the view from jumping when items change.
+  const initialWindowRef = useRef(resolveInitialWindow(timelineItems));
 
-  // Build vis-timeline options.  start/end are included here so VisTimelineCanvas
-  // uses them on initial mount.  VisTimelineCanvas strips start/end from subsequent
-  // setOptions calls to prevent viewport snap-back after the user has panned/zoomed.
-  const timelineOptions = useMemo<TimelineOptions & { throttleRedraw?: number }>(() => ({
+  // ── Timeline options ────────────────────────────────────────────────────────
+  // Rebuild when interactive options or the workspace-group data change.
+  // The template and onMove closures capture groupMode/workspaceIdByItemId/refs.
+  const timelineOptions = useMemo(() => ({
     stack: true,
     groupHeightMode: "fitItems",
     verticalScroll: true,
     selectable: true,
     moveable: enableDrag,
     editable: enableDrag ? { updateTime: true, updateGroup: false } : false,
-    start: initialWindow.start,
-    end: initialWindow.end,
     zoomMin: 1000 * 60 * 15,
     zoomMax: 1000 * 60 * 60 * 24 * 90,
     zoomFriction: 8,
@@ -302,18 +315,20 @@ export function TimelineCanvas({
     orientation: { axis: "top" },
     showCurrentTime: false,
     groupOrder: "content",
-    template: (rawItem) => {
+    template: (rawItem: unknown): HTMLElement => {
       const item = rawItem as TimelineRenderableItem | undefined;
       const taskTitle = typeof item?.taskTitle === "string" ? item.taskTitle : "Untitled";
-      const skillRequirements = Array.isArray(item?.skillRequirements) ? item.skillRequirements : [];
+      const skillRequirements = Array.isArray(item?.skillRequirements)
+        ? (item.skillRequirements as DisplaySkillRequirement[])
+        : [];
       return buildTimelineItemElement(taskTitle, skillRequirements);
     },
-    onMove: (movedItem: TimelineItem, callback) => {
+    onMove: (movedItem: TimelineItem, callback: (item: TimelineItem | null) => void): void => {
       const startDate = new Date(movedItem.start);
       const endDate = movedItem.end ? new Date(movedItem.end) : new Date(startDate);
 
       if (groupMode === "workspace") {
-        const sourceWorkspaceId = workspaceIdByItemIdRef.current.get(String(movedItem.id));
+        const sourceWorkspaceId = workspaceIdByItemId.get(String(movedItem.id));
         const targetWorkspaceId = movedItem.group != null ? String(movedItem.group) : undefined;
         if (sourceWorkspaceId && targetWorkspaceId && sourceWorkspaceId !== targetWorkspaceId) {
           if (isMountedRef.current) callback(null);
@@ -333,41 +348,42 @@ export function TimelineCanvas({
         end: endDate,
         groupId: movedItem.group != null ? String(movedItem.group) : undefined,
       })
-        .then((ok) => { if (isMountedRef.current) callback(ok ? movedItem : null); })
-        .catch(() => { if (isMountedRef.current) callback(null); });
+        .then((ok) => {
+          if (!isMountedRef.current) return;
+          callback(ok ? movedItem : null);
+        })
+        .catch(() => {
+          if (!isMountedRef.current) return;
+          callback(null);
+        });
     },
-  // Dependency notes:
-  // - enableDrag / groupMode: structural options that justify fresh options objects.
-  // - initialWindow: deliberately omitted — captured once via useState so it's a
-  //   stable reference that never changes; including it would be noise and could
-  //   mislead into thinking it may trigger a snap-back.
-  // - workspaceIdByItemId: omitted — onMove reads via workspaceIdByItemIdRef.current
-  //   so the closure is always current without recreating the options object.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [enableDrag, groupMode]);
+  }), [enableDrag, groupMode, workspaceIdByItemId]);
 
-  // Called once by VisTimelineCanvas after the Timeline instance is ready.
-  // Sets up the rangechanged listener for deferred redraws.
-  const handleReady = useCallback((tl: Timeline) => {
+  // ── Timeline ready handler ──────────────────────────────────────────────────
+  const handleTimelineReady = useCallback((tl: Timeline) => {
     timelineInstanceRef.current = tl;
 
+    // Set the initial visible window once — does not re-apply when items change,
+    // so the user's navigation position is preserved across data updates.
+    tl.setWindow(
+      initialWindowRef.current.start,
+      initialWindowRef.current.end,
+      { animation: false },
+    );
+
+    // Debounced redraw on range-pan/zoom (matching original requestAnimationFrame approach).
     let redrawFrame: number | null = null;
-    const scheduleRedraw = () => {
-      if (!isMountedRef.current) return;
+    tl.on("rangechanged", () => {
       if (redrawFrame !== null) cancelAnimationFrame(redrawFrame);
       redrawFrame = requestAnimationFrame(() => {
         redrawFrame = null;
-        if (!isMountedRef.current) return;
         tl.redraw();
       });
-    };
-
-    tl.on("rangechanged", scheduleRedraw);
-    // Recalculate stacked item heights after template DOM is first mounted.
-    scheduleRedraw();
+    });
+    tl.redraw(); // kick off the first layout pass after mount
   }, []);
 
-  // Attach drag-drop handlers to the outer wrapper div (events bubble from timeline).
+  // ── Drag-and-drop handlers ──────────────────────────────────────────────────
   const handleDragOver = useCallback((event: DragEvent) => {
     if (!event.dataTransfer) return;
     if (event.dataTransfer.types.includes("application/x-workspace-task")) {
@@ -380,6 +396,7 @@ export function TimelineCanvas({
     if (!event.dataTransfer) return;
     const payload = event.dataTransfer.getData("application/x-workspace-task");
     if (!payload) return;
+
     event.preventDefault();
 
     let parsed: { taskId?: string } | null = null;
@@ -401,30 +418,27 @@ export function TimelineCanvas({
     await dropHandler({ taskId: parsed.taskId, droppedAt: dropTime });
   }, []);
 
-  // Mount drag-drop listeners on outer div; stable refs means no re-subscription.
+  // Attach drag-drop to wrapper div so the drop target covers the full component area.
   useEffect(() => {
-    const container = outerContainerRef.current;
+    const container = wrapperRef.current;
     if (!container) return;
-    container.addEventListener("dragover", handleDragOver);
-    container.addEventListener("drop", handleDrop);
+    container.addEventListener("dragover", handleDragOver as unknown as EventListener);
+    container.addEventListener("drop", handleDrop as unknown as EventListener);
     return () => {
-      container.removeEventListener("dragover", handleDragOver);
-      container.removeEventListener("drop", handleDrop);
+      container.removeEventListener("dragover", handleDragOver as unknown as EventListener);
+      container.removeEventListener("drop", handleDrop as unknown as EventListener);
     };
   }, [handleDragOver, handleDrop]);
 
   return (
-    <div ref={outerContainerRef} className={cn("relative min-h-[520px] rounded-xl border bg-card p-3", className)}>
-      {/* VisTimelineCanvas owns the Timeline lifecycle; it imports vis-data and
-          vis-timeline/standalone internally so this slice never violates D24/D28. */}
+    <div ref={wrapperRef} className={cn("relative min-h-[520px] rounded-xl border bg-card p-3", className)}>
       <VisTimelineCanvas
         items={timelineItems}
         groups={timelineGroups}
-        options={timelineOptions}
-        onReady={handleReady}
+        options={timelineOptions as TimelineOptions}
+        onReady={handleTimelineReady}
         className="min-h-[500px] w-full"
       />
     </div>
   );
 }
-

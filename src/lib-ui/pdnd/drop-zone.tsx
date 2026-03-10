@@ -1,5 +1,5 @@
 /**
- * Module: atlaskit-drop-zone
+ * Module: pdnd-drop-zone
  * Purpose: Provide a declarative drop zone using @atlaskit/pragmatic-drag-and-drop.
  * Responsibilities: register a DOM element as a drop target and expose drag-over state
  *   with a standard visual indicator using the project's ring aesthetic.
@@ -12,23 +12,23 @@ import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element
 
 import { cn } from "@/shadcn-ui/utils/utils"
 
-export interface AtlaskitDropData {
-  [key: string]: unknown
+export interface PdndDropData {
+  [key: string | symbol]: unknown
 }
 
-interface AtlaskitDropZoneProps {
-  onDrop: (sourceData: AtlaskitDropData) => void
+interface PdndDropZoneProps {
+  onDrop: (sourceData: PdndDropData) => void
   children: ReactNode
   className?: string
   activeClassName?: string
 }
 
-export function AtlaskitDropZone({
+export function PdndDropZone({
   onDrop,
   children,
   className,
   activeClassName,
-}: AtlaskitDropZoneProps) {
+}: PdndDropZoneProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isDraggedOver, setIsDraggedOver] = useState(false)
 
@@ -42,7 +42,7 @@ export function AtlaskitDropZone({
       onDragLeave: () => setIsDraggedOver(false),
       onDrop: ({ source }) => {
         setIsDraggedOver(false)
-        onDrop(source.data as AtlaskitDropData)
+        onDrop(source.data as PdndDropData)
       },
     })
   }, [onDrop])
