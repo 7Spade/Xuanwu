@@ -1,6 +1,13 @@
 'use client';
 
 /**
+ * Module: notification-bell
+ * Purpose: Render the notification center bell and filterable notification popover.
+ * Responsibilities: unread badge display, category filtering, mark-read actions
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
+/**
  * notification-hub.slice — _components/NotificationBell.tsx
  *
  * GitHub-style notification center:
@@ -101,7 +108,7 @@ export function NotificationBell({ accountId }: NotificationBellProps) {
         {/* ── Category tabs ───────────────────────────────────────── */}
         <div className="border-b px-4 py-2">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as FilterTab)}>
-            <TabsList className="h-8 w-full">
+            <TabsList className="w-full">
               {(Object.keys(TAB_LABELS) as FilterTab[]).map((tab) => (
                 <TabsTrigger key={tab} value={tab} className="flex-1 text-xs">
                   {TAB_LABELS[tab]}
