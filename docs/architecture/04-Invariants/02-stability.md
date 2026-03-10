@@ -44,3 +44,4 @@
 - 是否存在 projection 寫入漏掉 S2。
 - 是否存在 SLA 常數散落硬寫。
 - 是否存在 outbox 事件無 DLQ 分級或缺 idempotency-key。
+- 是否存在 `03-Slices` 能力描述與 `src/features/*/index.ts` 匯出不一致（docs-code drift）。

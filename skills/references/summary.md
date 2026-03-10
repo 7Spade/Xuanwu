@@ -45,11 +45,11 @@ This skill contains the following reference files:
 
 ## Statistics
 
-619 files | 11,486 lines
+627 files | 11,519 lines
 
 | Language | Files | Lines |
 |----------|------:|------:|
-| TypeScript | 505 | 8,998 |
+| TypeScript | 513 | 9,031 |
 | TypeScript (TSX) | 114 | 2,488 |
 
 **Largest files:**

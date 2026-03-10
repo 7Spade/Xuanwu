@@ -50,3 +50,18 @@
 - MUST: Finance_Request 採獨立生命週期（`A21`）。
 - MUST: 任務金融顯示狀態僅可經 `task-finance-label-view` 對外暴露（`A22`）。
 - FORBIDDEN: VS9 直接寫回 VS5 任務 Aggregate 狀態。
+
+## 8. Code-backed 回寫契約（Documentation Writeback Contract）
+
+- MUST: 每個 slice `README.md` 都包含 `Implemented Capabilities (from code)`。
+- MUST: capability 清單以 `src/features/{slice}/index.ts` 對外匯出為準，不可臆測內部能力。
+- MUST: 文件中的 action/query/service/component 名稱需可在程式碼中被檢索。
+- SHOULD: 若能力已遷移到其他 slice，需在原 slice 文件標註 migration note。
+- FORBIDDEN: 僅保留抽象敘述而無可驗證能力名稱。
+
+## 9. Next.js 邊界回寫規則
+
+- MUST: 明確標註 server actions 邊界（通常來自 `_actions.ts`）。
+- MUST: 明確標註 read queries 邊界（通常來自 `_queries.ts` / projection read models）。
+- MUST: 明確標註 UI hooks/components 是 client-facing 能力，不可與 aggregate 規則混寫。
+- FORBIDDEN: 將 `src/app` route 組裝責任誤寫為 slice domain 能力。
