@@ -22,7 +22,7 @@
 |------|------|
 | **寫鏈（Command）** | External/L0 → **CQRS Gateway（Write Path · L0A `CMD_API_GW` → L2 `CBG_ENTRY→CBG_AUTH→CBG_ROUTE`）** → L3 Domain Slices → L4 IER → L5 Projection |
 | **讀鏈（Query）** | UI/L0 → **CQRS Gateway（Read Path · L0A `QRY_API_GW` → L6 `QGWAY`）** → L5 Projection Read Model |
-| **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `firebase-client`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
+| **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `firebase-client`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `firebase-admin/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
 
 > **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
 > **CQRS Gateway**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
@@ -313,9 +313,9 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> VIS_DATA_ADP
         end
 
-        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
+        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/firebase-admin）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
             direction LR
-            BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
+            BFN_GW["functions-gateway\nsrc/shared-infra/firebase-admin/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
 
             subgraph ADMIN_ADPTS["Admin SDK Adapters（firebase-admin — 一律在 Cloud Functions 內執行）[D25]"]
                 direction TB
@@ -328,7 +328,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             BFN_GW -.->|"Admin SDK init → 各 Service API 委派"| ADMIN_AUTH_ADP & ADMIN_DB_ADP & ADMIN_MSG_ADP & ADMIN_STORE_ADP & ADMIN_APPCHK_ADP
 
-            BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
+            BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/firebase-admin/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
         end
 
         end
@@ -1183,7 +1183,7 @@ class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCut
 
 | 規則 ID | 層位 | 規則 | 強度 |
 |--------|------|------|------|
-| FI-001 [D25] | L7-B | `firebase-admin` SDK 只允許在 `src/shared-infra/backend-firebase/` 或 `firebase/functions/` 中使用；禁止在 Next.js Server Components、Server Actions、Edge Functions（`src/app/`）直接 import。 | **MUST** |
+| FI-001 [D25] | L7-B | `firebase-admin` SDK 只允許在 `src/shared-infra/firebase-admin/` 或 `firebase/functions/` 中使用；禁止在 Next.js Server Components、Server Actions、Edge Functions（`src/app/`）直接 import。 | **MUST** |
 | FI-002 [D24] | L1→L7-A | 前端 firebase-client SDK 操作必須透過 L1 `SK_PORTS`（`IAuthService`、`IFirestoreRepo` 等）後，由 L7-A `firebase-client/` Adapter 實作；禁止 L3 直接 import `firebase/firestore`。 | **MUST** |
 | FI-003 | L1 | Shared Kernel（`src/shared-kernel/`）禁止依賴 L3 Features（`src/features/`）或 L2/L4/L5/L6 執行層；L1 只可包含純函式、常數與介面定義。 | **MUST** |
 

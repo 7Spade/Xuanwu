@@ -27,7 +27,7 @@ The canonical read chain is:
 ### Runtime boundary
 
 - Pure contracts live in `src/shared-kernel/`
-- Firebase boundary adapters live in `src/shared-infra/firebase-client/` and `src/shared-infra/backend-firebase/`
+- Firebase boundary adapters live in `src/shared-infra/firebase-client/` and `src/shared-infra/firebase-admin/`
 - Query orchestration lives in `src/shared-infra/gateway-query/`
 - Projection materialization lives in `src/shared-infra/projection-bus/`
 

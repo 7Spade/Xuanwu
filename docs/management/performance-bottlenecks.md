@@ -151,7 +151,7 @@ export function getDistance(from: string, to: string): number {
 `SK_STALENESS_CONTRACT` 的雙重定義（見 SC-002）導致潛在的緩存策略不一致：
 
 兩份定義（`shared-kernel/infra-contracts/staleness-contract/index.ts` 與
-`shared-infra/backend-firebase/functions/src/staleness-contract.ts`）目前數值相同，
+`shared-infra/firebase-admin/functions/src/staleness-contract.ts`）目前數值相同，
 但 Firebase Functions 側的定義**缺少 `PROJ_STALE_DEMAND_BOARD: 5_000`** 條目。
 
 - 若 Firebase Functions 側在排班相關邏輯中需要 Demand Board 鮮度常量，

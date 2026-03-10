@@ -40,7 +40,7 @@
    } as const;
    ```
 
-2. `src/shared-infra/backend-firebase/functions/src/staleness-contract.ts` — 定義獨立常量：
+2. `src/shared-infra/firebase-admin/functions/src/staleness-contract.ts` — 定義獨立常量：
    ```typescript
    export const TAG_MAX_STALENESS_MS = 30_000;
    export const PROJ_STALE_CRITICAL_MS = 500;
@@ -61,7 +61,7 @@
 
 ### 修復方案
 
-1. 在 `src/shared-infra/backend-firebase/functions/src/staleness-contract.ts` 改為
+1. 在 `src/shared-infra/firebase-admin/functions/src/staleness-contract.ts` 改為
    從 shared-kernel 重新導出，而非獨立定義
 2. 或在 Firebase Functions 的 `package.json` 加入 `@xuanwu/shared-kernel` 依賴
 
@@ -216,7 +216,7 @@ firebase functions:secrets:set DOCAI_PROCESSOR_NAME
 
 ### 驗證步驟
 
-確認 `src/shared-infra/backend-firebase/functions/src/document-ai/process-document.fn.ts`
+確認 `src/shared-infra/firebase-admin/functions/src/document-ai/process-document.fn.ts`
 中不存在任何 `projects/` 字面量。
 
 ---

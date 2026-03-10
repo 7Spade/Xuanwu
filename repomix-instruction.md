@@ -28,7 +28,7 @@ L4  IER (Event Router)     src/features/*/core.event-bus/
 L5  Projection Bus         src/shared-infra/projection-bus/
 L6  Query Gateway          src/features/*/core/_queries.ts
 L7  Firebase ACL           src/shared/infra/{auth,firestore,messaging,storage}/
-L8  Firebase Infra         src/shared-infra/backend-firebase/
+L8  Firebase Infra         src/shared-infra/firebase-admin/
 L9  Observability          src/app-runtime/ + logging adapters
 ```
 

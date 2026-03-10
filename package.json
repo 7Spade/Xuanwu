@@ -29,12 +29,12 @@
     "check": "npm install && npm run lint && npm run typecheck",
     "repomix": "repomix",
     "repomix:skill": "repomix --skill-generate xuanwu-skill --skill-output .github/skills/xuanwu-skill --force",
-    "deploy:firebase": "firebase deploy --except apphosting --config ./src/shared-infra/backend-firebase/firebase.json && npm run deploy:apphosting",
+    "deploy:firebase": "firebase deploy --except apphosting --config ./src/shared-infra/firebase-admin/firebase.json && npm run deploy:apphosting",
     "deploy:apphosting": "firebase deploy --only apphosting --project xuanwu-i-00708880-4e2d8 --config ./firebase.apphosting.json",
-    "deploy:functions": "firebase deploy --only functions --config ./src/shared-infra/backend-firebase/firebase.json",
-    "deploy:indexes": "firebase deploy --only firestore:indexes --config ./src/shared-infra/backend-firebase/firebase.json",
-    "deploy:firestore-rules": "firebase deploy --only firestore:rules --config ./src/shared-infra/backend-firebase/firebase.json",
-    "deploy:storage-rules": "firebase deploy --only storage --config ./src/shared-infra/backend-firebase/firebase.json"
+    "deploy:functions": "firebase deploy --only functions --config ./src/shared-infra/firebase-admin/firebase.json",
+    "deploy:indexes": "firebase deploy --only firestore:indexes --config ./src/shared-infra/firebase-admin/firebase.json",
+    "deploy:firestore-rules": "firebase deploy --only firestore:rules --config ./src/shared-infra/firebase-admin/firebase.json",
+    "deploy:storage-rules": "firebase deploy --only storage --config ./src/shared-infra/firebase-admin/firebase.json"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.9",

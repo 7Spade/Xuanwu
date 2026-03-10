@@ -34,7 +34,7 @@
 %%    VS0=Foundation（SharedKernel + SharedInfra）  VS1=Identity   VS2=Account      VS3=Skill
 %%    VS4=Organization  VS5=Workspace  VS6=Workforce-Scheduling   VS7=Notification
 %%    VS8=SemanticGraphEngine
-%%    Path Map: VS0=src/shared-kernel + src/shared-kernel/observability + src/shared-infra/firebase-client + src/shared-infra/backend-firebase + src/shared-infra/observability
+%%    Path Map: VS0=src/shared-kernel + src/shared-kernel/observability + src/shared-infra/firebase-client + src/shared-infra/firebase-admin + src/shared-infra/observability
 %%              VS1=src/features/identity.slice   VS2=src/features/account.slice
 %%              VS3=src/features/skill-xp.slice   VS4=src/features/organization.slice
 %%              VS5=src/features/workspace.slice  VS6=src/features/workforce-scheduling.slice
@@ -67,8 +67,8 @@
 %%    ※ L7 分層（責任分配）:
 %%      - L7-Translator = SDK semantics → VS0 standardized ports（IStd* / IMessaging / IDataConnect）
 %%      - L7-FE Functional Adapters = src/shared-infra/firebase-client/*（使用者會話態 / Security Rules 可封閉）
-%%      - L7-BE Functional Adapters = src/shared-infra/backend-firebase/functions/*（Admin / 跨租戶 / 觸發器 / 排程 / Webhook 驗簽）
-%%      - L7-BE-DC Adapter          = src/shared-infra/backend-firebase/dataconnect（受治理 GraphQL schema/connector 契約）
+%%      - L7-BE Functional Adapters = src/shared-infra/firebase-admin/functions/*（Admin / 跨租戶 / 觸發器 / 排程 / Webhook 驗簽）
+%%      - L7-BE-DC Adapter          = src/shared-infra/firebase-admin/dataconnect（受治理 GraphQL schema/connector 契約）
 %%    ※ L8 = 外部 Firebase 平台執行層（SDK Runtime）；在本 repo 僅以邊界模型呈現，非本地實作資料夾
 %%    ※ L10 = AI 執行與治理層（可由 src/app-runtime/ai + shared-infra/ai-* 共同實作；受 L1 契約與 L9 觀測約束）
 %%    ※ L3 Domain Slices = VS1(Identity) · VS2(Account) · VS3(Skill) ·
@@ -92,15 +92,15 @@
 %%        messaging/
 %%        storage/
 %%        analytics/
-%%      shared-infra/backend-firebase/          # VS0-Infra / L7: Backend Firebase execution boundary (server-side)
+%%      shared-infra/firebase-admin/          # VS0-Infra / L7: Backend Firebase execution boundary (server-side)
 %%        functions/                            # Cloud Functions (HTTP/callable/triggers/scheduler)
 %%        dataconnect/                          # Data Connect schema/connector/operations
 %%        firestore/                            # Firestore rules/indexes deploy artifacts
 %%        storage/                              # Storage rules deploy artifacts
 %%  ── L7 Firebase Boundary Folder Ownership（避免前後端職責混淆）──
 %%    src/shared-infra/firebase-client/         = FE ACL（user-session / rules-guarded）
-%%    src/shared-infra/backend-firebase/functions = BE orchestration（admin/cross-tenant/triggers/scheduler/webhook）
-%%    src/shared-infra/backend-firebase/dataconnect = BE query contract（governed GraphQL schema/connector）
+%%    src/shared-infra/firebase-admin/functions = BE orchestration（admin/cross-tenant/triggers/scheduler/webhook）
+%%    src/shared-infra/firebase-admin/dataconnect = BE query contract（governed GraphQL schema/connector）
 %%  ── VS0-Infra Core Folders（非 L7 專屬；依 Layer 分工）──
 %%      shared-infra/external-triggers/         # VS0-Infra / L0: external triggers
 %%      shared-infra/gateway-command/           # VS0-Infra / L2: CBG_ENTRY/CBG_AUTH/CBG_ROUTE orchestration
@@ -134,7 +134,7 @@
 %%      - 純契約/常數/純函式（無 I/O）→ src/shared-kernel/*（VS0-Kernel / L1）
 %%      - Observability 契約（TraceContext/DomainErrorEntry/interfaces）→ src/shared-kernel/observability/*（L1, contract-only）
 %%      - Firebase SDK 邊界（前端）→ src/shared-infra/firebase-client/*（VS0-Infra / L7）
-%%      - Firebase 高權限/伺服流程（後端）→ src/shared-infra/backend-firebase/{functions|dataconnect}/*（VS0-Infra / L7）
+%%      - Firebase 高權限/伺服流程（後端）→ src/shared-infra/firebase-admin/{functions|dataconnect}/*（VS0-Infra / L7）
 %%      - 讀取編排（Read registry）→ src/shared-infra/gateway-query/*（L6, ownership=VS0-Infra）
 %%      - 觀測執行能力（trace provider / metrics recorder / error logger）→ src/shared-infra/observability/*（L9, ownership=VS0-Infra）
 %%      - 領域規則（aggregate/policy/invariant）→ src/features/{slice}.slice/*（L3）
@@ -166,18 +166,18 @@
 %%    寫鏈：shared-infra/external-triggers → shared-infra/api-gateway(command) → shared-infra/gateway-command → *.slice → shared-infra/event-router → shared-infra/projection-bus
 %%    讀鏈：app/UI → shared-infra/api-gateway(query) → shared-infra/gateway-query → shared-infra/projection-bus
 %%    Infra鏈（前端 SDK）：*.slice/projection/query → shared-kernel(SK_PORTS) → shared-infra/firebase-client(FIREBASE_ACL, Web SDK)
-%%    Infra鏈（後端高權限）：L0 or L2 API entry → shared-infra/backend-firebase/functions|dataconnect → Firebase Platform (L8)
+%%    Infra鏈（後端高權限）：L0 or L2 API entry → shared-infra/firebase-admin/functions|dataconnect → Firebase Platform (L8)
 
 %%  ── Firebase 前後端分層與成本決策（Front/Back Decision Matrix）──
 %%    Frontend Firebase（src/shared-infra/firebase-client）適用：
 %%      - 使用者會話內、受 Security Rules 保護的讀寫（個人資料/一般列表/互動狀態）
 %%      - RTDB presence/typing/live-feed 低延遲互動
 %%      - FCM token 綁定、Analytics 遙測上報
-%%    Backend Firebase（src/shared-infra/backend-firebase/functions）必用：
+%%    Backend Firebase（src/shared-infra/firebase-admin/functions）必用：
 %%      - 需要 Admin 權限、跨租戶資料存取、密鑰/機密使用
 %%      - 跨集合/跨聚合一致性寫入、補償交易、批次寫入與高扇出工作
 %%      - Firestore/Storage trigger、排程任務、Webhook 驗簽、對外 HTTP/Callable API
-%%    Data Connect（src/shared-infra/backend-firebase/dataconnect）必用：
+%%    Data Connect（src/shared-infra/firebase-admin/dataconnect）必用：
 %%      - 需要可治理的 GraphQL schema/connector，並以後端策略統一路由資料存取
 %%      - 需要跨前端統一查詢能力與強型別 API 契約時
 %%    成本與效能取捨（邏輯正確優先，成本次之）：
@@ -187,7 +187,7 @@
 %%      - IF 可批次/去抖/聚合後再寫入 THEN 必須在 Backend 端集中處理，以降低寫入次數與出站成本
 %%    Security Closure（身份與安全閉環）:
 %%      - App Check 必須在 external-trigger 入口驗證，未通過請求直接拒絕；不得繞過至 Domain Slice
-%%      - Security Rules 必須以 org/workspace/account 三層租戶鍵約束資料存取；高風險操作必須再經 backend-firebase/functions 驗證
+%%      - Security Rules 必須以 org/workspace/account 三層租戶鍵約束資料存取；高風險操作必須再經 firebase-admin/functions 驗證
 %%      - Rules 變更需搭配回歸測試與版本註記，避免 ACL 漂移
 %%  ── AI Platform Control Plane（Genkit + SaaS Workflow）──
 %%    AI 寫鏈：UI/ServerAction → L10 AI Flow Gateway → Prompt Policy Guard → Tool ACL → Domain Command（L2）
@@ -755,9 +755,9 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> VIS_DATA_ADP
         end
 
-        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
+        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/firebase-admin）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
             direction LR
-            BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
+            BFN_GW["functions-gateway\nsrc/shared-infra/firebase-admin/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
 
             subgraph ADMIN_ADPTS["Admin SDK Adapters（firebase-admin — 一律在 Cloud Functions 內執行）[D25]"]
                 direction TB
@@ -770,7 +770,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             BFN_GW -.->|"Admin SDK init → 各 Service API 委派"| ADMIN_AUTH_ADP & ADMIN_DB_ADP & ADMIN_MSG_ADP & ADMIN_STORE_ADP & ADMIN_APPCHK_ADP
 
-            BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
+            BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/firebase-admin/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
         end
 
         end
@@ -1717,10 +1717,10 @@ class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCut
 %%         THEN MUST NOT 直接傳遞 Account/Workspace 等 rich entity 到 Server Function
 %%  D25 MUST: IF 新增 Firebase 前端能力 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
 %%  D25 MUST: IF 入口涉及受保護資料或可變更狀態 THEN 必須先完成 App Check 驗證（含 token 續期與失效處理）[E7]
-%%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/backend-firebase/functions
-%%  D25 MUST: IF 需要受治理的 GraphQL 資料契約 THEN 必須走 src/shared-infra/backend-firebase/dataconnect
+%%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/firebase-admin/functions
+%%  D25 MUST: IF 需要受治理的 GraphQL 資料契約 THEN 必須走 src/shared-infra/firebase-admin/dataconnect
 %%  D25 SHOULD: IF 可由 Rules 安全完成且為高頻小請求 THEN 優先 firebase-client 以降低 Functions 成本
-%%  D25 SHOULD: IF 為高扇出或可批次流程 THEN 優先 backend-firebase/functions 集中批處理以降低總寫入成本
+%%  D25 SHOULD: IF 為高扇出或可批次流程 THEN 優先 firebase-admin/functions 集中批處理以降低總寫入成本
 %%  D25 SHOULD: IF 為即時訂閱能力 THEN 必須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略 [P7]
 %%  D25 SHOULD: IF 為 AI tool data access THEN 必須由 Genkit tool gateway 統一檢查租戶邊界與可見性 [E8]
 %%  ── Cross-cutting Authority 守則（D26）──

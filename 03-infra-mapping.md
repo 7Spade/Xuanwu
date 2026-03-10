@@ -31,7 +31,7 @@
 ```
 VS0 = src/shared-kernel/* + src/shared-kernel/observability
     + src/shared-infra/firebase-client/*
-    + src/shared-infra/backend-firebase/*
+    + src/shared-infra/firebase-admin/*
     + src/shared-infra/observability
 VS1 = src/features/identity.slice
 VS2 = src/features/account.slice
@@ -66,7 +66,7 @@ VS9 = src/features/finance.slice
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
 | `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/firebase-client/` |
-| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
+| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/firebase-admin/functions/` |
 | `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
 | `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
 | `L10` | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL [E8] | `src/shared-infra/ai-orchestration/` |
@@ -126,7 +126,7 @@ src/shared-infra/
     analytics/               # AnalyticsAdapter（L7-A · firebase/analytics，遙測只寫）
     app-check/               # AppCheckAdapter（L7-A · firebase/app-check）
     vis-data/                # VisDataAdapter（L7-A · vis-data DataSet<> 快取 · [D28]）
-  backend-firebase/
+  firebase-admin/
     functions/               # Cloud Functions（firebase-admin 唯一容器）[D25]
       src/claims/            #   Admin Auth → firebase-admin/auth（自訂 Claims）
       src/gateway/           #   functions-gateway HTTP/Callable 入口
@@ -289,17 +289,17 @@ Firestore onSnapshot (CDC)
 
 ### L7-B 後端 Admin SDK Adapters（firebase-admin SDK — 一律透過 Cloud Functions）[D25]
 
-> **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/backend-firebase/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
+> **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/firebase-admin/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
 
 | Adapter | 實作介面 | 路徑 | 說明 |
 |---------|----------|------|------|
-| `FunctionsGateway` | — | `src/shared-infra/backend-firebase/functions/src/gateway/` | HTTP/Callable 入口；Admin SDK 初始化容器 |
+| `FunctionsGateway` | — | `src/shared-infra/firebase-admin/functions/src/gateway/` | HTTP/Callable 入口；Admin SDK 初始化容器 |
 | `AdminAuthAdapter` | `IAuthService`（BE） | `.../functions/src/claims/` | sole `firebase-admin/auth` 呼叫點（自訂 Claims）|
 | `AdminFirestoreAdapter` | `IFirestoreRepo`（BE） | `.../functions/src/relay/` 與 `.../projection/` | sole `firebase-admin/firestore` 呼叫點（強一致寫入/跨集合 TX）|
 | `AdminMessagingAdapter` | `IMessaging`（BE） | `.../functions/src/` | sole `firebase-admin/messaging` 呼叫點（Server-side FCM 主要通道）|
 | `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
 | `AdminAppCheckAdapter` | — | `.../functions/src/` | sole `firebase-admin/app-check` 呼叫點（服務端 App Check token 驗簽）[D25 E7] |
-| `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
+| `DataConnectGatewayAdapter` | — | `src/shared-infra/firebase-admin/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
 
 ---
 

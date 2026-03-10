@@ -7127,7 +7127,7 @@ export async function qryApiGateway<TParams, TResult>(
 
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/claims/claims-refresh.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/claims/claims-refresh.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7144,7 +7144,7 @@ interface ClaimsRefreshPayload {
 }
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/dlq/dlq-block.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/dlq/dlq-block.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7160,7 +7160,7 @@ interface DlqBlockRecord {
 }
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/dlq/dlq-review.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/dlq/dlq-review.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7177,7 +7177,7 @@ interface DlqReviewRecord {
 }
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/dlq/dlq-safe.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/dlq/dlq-safe.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7194,7 +7194,7 @@ interface DlqSafeRecord {
 function sleep(ms: number): Promise<void>
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/document-ai/process-document.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/document-ai/process-document.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 import { initializeApp, getApps } from "firebase-admin/app";
@@ -7237,7 +7237,7 @@ interface WorkspaceFileRecord {
 function normalizeStoragePath(path: string): string
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/gateway/backup-crud.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/gateway/backup-crud.fn.ts
 ```typescript
 import { initializeApp, getApps } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
@@ -7270,7 +7270,7 @@ async function handleFirestoreRequest(payload: FirestoreRequest)
 async function handleStorageRequest(payload: StorageRequest)
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/gateway/command-gateway.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/gateway/command-gateway.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7294,7 +7294,7 @@ type CommandResult = CommandSuccess | CommandFailure;
 function checkRateLimit(key: string): boolean
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/gateway/google-sheets.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/gateway/google-sheets.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
@@ -7315,28 +7315,28 @@ async function createSheetsClient()
 function normalizeRange(input: string | undefined): string
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/gateway/webhook.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/gateway/webhook.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
 import { randomUUID } from "crypto";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/ier/background.lane.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/ier/background.lane.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
 import type { EventEnvelope } from "../types.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/ier/critical.lane.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/ier/critical.lane.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
 import type { EventEnvelope } from "../types.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/ier/ier.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/ier/ier.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7347,20 +7347,20 @@ export function resolveLane(
 ): "CRITICAL" | "STANDARD" | "BACKGROUND"
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/ier/standard.lane.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/ier/standard.lane.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
 import type { EventEnvelope } from "../types.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/index.ts
+## File: src/shared-infra/firebase-admin/functions/src/index.ts
 ```typescript
 import { initializeApp, getApps } from "firebase-admin/app";
 import { setGlobalOptions } from "firebase-functions/v2";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/observability/domain-errors.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/observability/domain-errors.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7386,7 +7386,7 @@ interface DomainErrorEvent {
 }
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/observability/domain-metrics.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/observability/domain-metrics.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7410,7 +7410,7 @@ interface MetricEvent {
 }
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/projection/critical-proj.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/projection/critical-proj.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7422,7 +7422,7 @@ import {
 } from "../staleness-contract.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/projection/event-funnel.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/projection/event-funnel.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7450,7 +7450,7 @@ function buildProjectionUpdate(envelope: EventEnvelope): Record<string, unknown>
 function checkSla(lane: "CRITICAL" | "STANDARD", processingMs: number): boolean
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/projection/standard-proj.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/projection/standard-proj.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7462,7 +7462,7 @@ import {
 } from "../staleness-contract.js";
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/relay/outbox-relay.fn.ts
+## File: src/shared-infra/firebase-admin/functions/src/relay/outbox-relay.fn.ts
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 ⋮----
@@ -7487,12 +7487,12 @@ function getDlqProcessorUrl(dlqTier: string): string | null
 function sleep(ms: number): Promise<void>
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
+## File: src/shared-infra/firebase-admin/functions/src/staleness-contract.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/backend-firebase/functions/src/types.ts
+## File: src/shared-infra/firebase-admin/functions/src/types.ts
 ```typescript
 import { Timestamp } from "firebase-admin/firestore";
 export interface EventEnvelope {
