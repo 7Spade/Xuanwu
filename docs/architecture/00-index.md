@@ -52,9 +52,9 @@
 
 ## 程式碼參考入口（Repomix Skill）
 
-- `skills/SKILL.md`：Xuanwu codebase reference skill 入口。
-- `skills/references/summary.md`：摘要與統計（先讀）。
-- `skills/references/project-structure.md`：目錄與檔案定位。
-- `skills/references/files.md`：程式內容檢索（`## File: <path>`）。
+- `.github/skills/xuanwu-skill/SKILL.md`：Xuanwu codebase reference skill 入口（VS Code 主動載入）。
+- `.github/skills/xuanwu-skill/references/summary.md`：摘要與統計（先讀）。
+- `.github/skills/xuanwu-skill/references/project-structure.md`：目錄與檔案定位。
+- `.github/skills/xuanwu-skill/references/files.md`：程式內容檢索（`## File: <path>`）。
 
 用途：當 `docs/architecture/*` 需要「從程式碼回寫 capability」時，先用上述入口定位與驗證，再更新對應 slice 文件。

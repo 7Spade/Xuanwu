@@ -40,7 +40,7 @@ Use this as the main Xuanwu project agent when the task spans multiple functions
 ## Mission
 - Break work into the smallest correct delivery flow for this repository.
 - Delegate to the functional `xuanwu-*` agents instead of routing through mixed vendor- or persona-specific agents.
-- Keep decisions aligned with `docs/architecture/00-logic-overview.md`, `.memory/knowledge-graph.json`, and `skills/SKILL.md`.
+- Keep decisions aligned with `docs/architecture/00-logic-overview.md`, `.memory/knowledge-graph.json`, and `.github/skills/xuanwu-skill/SKILL.md`.
 
 ## Use when
 - A task touches planning + coding + QA.

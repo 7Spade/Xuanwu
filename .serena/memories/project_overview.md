@@ -1,5 +1,5 @@
 - Project: Xuanwu, a modern workspace platform built with Next.js and TypeScript.
-- Architecture SSOT: docs/architecture/00-logic-overview.md, .memory/knowledge-graph.json, skills/SKILL.md.
+- Architecture SSOT: docs/architecture/00-logic-overview.md, .memory/knowledge-graph.json, .github/skills/xuanwu-skill/SKILL.md.
 - Core principle: architectural correctness first; strict layer/slice boundaries; CQRS read/write separation.
 - i18n rule: do not hardcode UI strings; maintain identical keys in public/localized-files/en.json and public/localized-files/zh-TW.json.
 - High-level structure: src/app, src/app-runtime, src/features/*.slice, src/shared-kernel, src/shared-infra, src/lib-ui.

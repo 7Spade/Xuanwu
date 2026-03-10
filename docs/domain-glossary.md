@@ -8,7 +8,7 @@ Use these sources in order when validating names and concepts:
 
 1. `docs/architecture/00-logic-overview.md` — canonical architecture, layer, and authority vocabulary
 2. `.memory/knowledge-graph.json` — canonical entity semantics and relationships
-3. `skills/SKILL.md` — repository-wide implementation reference and codebase map
+3. `.github/skills/xuanwu-skill/SKILL.md` — repository-wide implementation reference and codebase map
 
 ## Core Vocabulary
 
