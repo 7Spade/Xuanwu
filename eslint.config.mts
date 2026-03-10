@@ -52,6 +52,7 @@ export default tseslint.config(
   {
     files: ["**/*.{ts,tsx}"],
     rules: {
+      // Allow the repository's underscore-based ignore convention for intentionally unused values.
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }

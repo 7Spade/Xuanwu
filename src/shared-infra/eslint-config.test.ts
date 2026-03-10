@@ -1,5 +1,5 @@
 /**
- * Module: eslint.config.test.ts
+ * Module: eslint-config.test.ts
  * Purpose: verify the repository ESLint flat config loads successfully
  * Responsibilities: exercise CLI config resolution and guard against circular-config regressions
  * Constraints: deterministic logic, respect module boundaries
@@ -28,6 +28,7 @@ describe("eslint.config.mts", () => {
     );
 
     expect(printedConfig).toContain("\"import/order\"");
+    expect(printedConfig).toContain("\"@next/next/no-img-element\"");
     expect(printedConfig).toContain("\"@next/next/no-html-link-for-pages\"");
   });
 });
