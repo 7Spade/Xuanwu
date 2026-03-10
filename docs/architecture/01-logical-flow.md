@@ -25,7 +25,7 @@
 
 ## Auxiliary Slice 邊界（現況）
 
-- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑應對接 VS8 語義索引與 L6 讀取出口。
+- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑應對接 VS8 語義索引與 L6 讀取出口。VS8 架構詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) 與 [`03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md)。
 - `portal.slice`：門戶殼層 state 橋接；不取代 L2/L3 業務決策，不可繞過主鏈。
 
 ## VS9 Finance 流向索引

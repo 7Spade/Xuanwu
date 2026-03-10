@@ -17,11 +17,26 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import type { Data, Network, Options } from "vis-network"
+import type { Data, Edge, Network, Node, Options } from "vis-network"
 
 import type { VisCompatibleDataSet } from "./vis-types"
 
 export type { VisCompatibleDataSet } from "./vis-types"
+
+// Locally-typed DataSet to avoid a top-level import of vis-data (SSR safe).
+// At runtime the value is only accessed inside a dynamic import block.
+type NodeDataSet = {
+  clear(): void
+  update(items: Node[]): void
+  getIds(): (string | number)[]
+  remove(ids: (string | number)[]): void
+}
+type EdgeDataSet = {
+  clear(): void
+  update(items: Edge[]): void
+  getIds(): (string | number)[]
+  remove(ids: (string | number)[]): void
+}
 
 export interface VisNetworkCanvasProps {
   /**
@@ -44,7 +59,10 @@ export interface VisNetworkCanvasProps {
 }
 
 export function VisNetworkCanvas({
-  data,
+  nodes,
+  edges,
+  nodesDataSet,
+  edgesDataSet,
   options,
   onReady,
   className,
@@ -52,9 +70,8 @@ export function VisNetworkCanvas({
   const containerRef = useRef<HTMLDivElement>(null)
   const networkRef = useRef<Network | null>(null)
   // Used in managed mode only; null in adapter mode.
-  const nodesInternalRef = useRef<DataSet<Node> | null>(null)
-  const edgesInternalRef = useRef<DataSet<Edge> | null>(null)
-  const isAdapterModeRef = useRef(false)
+  const nodesInternalRef = useRef<NodeDataSet | null>(null)
+  const edgesInternalRef = useRef<EdgeDataSet | null>(null)
   // Always-current mirrors for managed mode — prevent stale closure snapshots
   // in the async init() when props change before the import promise resolves.
   const nodesRef = useRef<Node[]>(nodes ?? [])
@@ -65,11 +82,12 @@ export function VisNetworkCanvas({
 
     // Mode is fixed at mount time; read from props directly (not stale ref needed here).
     const adapterMode = nodesDataSet !== undefined && edgesDataSet !== undefined
-    isAdapterModeRef.current = adapterMode
 
     let network: Network | null = null
+    let resizeObserver: ResizeObserver | null = null
 
     async function init() {
+      if (!containerRef.current) return
       let data: Data
 
       if (adapterMode) {
@@ -90,9 +108,12 @@ export function VisNetworkCanvas({
         const { DataSet } = await import("vis-data")
         const nodesDs = new DataSet<Node>(nodesRef.current)
         const edgesDs = new DataSet<Edge>(edgesRef.current)
-        nodesInternalRef.current = nodesDs
-        edgesInternalRef.current = edgesDs
-        data = { nodes: nodesDs, edges: edgesDs }
+        nodesInternalRef.current = nodesDs as unknown as NodeDataSet
+        edgesInternalRef.current = edgesDs as unknown as EdgeDataSet
+        data = {
+          nodes: nodesDs as unknown as Data["nodes"],
+          edges: edgesDs as unknown as Data["edges"],
+        }
       }
 
       const { Network: VisNetwork } = await import("vis-network")
@@ -109,23 +130,25 @@ export function VisNetworkCanvas({
     void init()
 
     return () => {
+      resizeObserver?.disconnect()
       network?.destroy()
       networkRef.current = null
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Sync always-current mirrors used in the async init() closure
+  useEffect(() => { nodesRef.current = nodes ?? [] }, [nodes])
+  useEffect(() => { edgesRef.current = edges ?? [] }, [edges])
+
   // Update data imperatively when props change after mount
   useEffect(() => {
     const ds = nodesInternalRef.current
     if (!ds || nodes === undefined) return
-    if (nodes.length === 0) {
-      ds.clear()
-      return
-    }
+    if (nodes.length === 0) { ds.clear(); return }
     ds.update(nodes)
     const incomingIds = new Set<string | number>(
-      nodes.filter(n => n.id !== undefined).map(n => n.id!),
+      nodes.filter((n): n is Node & { id: string | number } => n.id !== undefined).map(n => n.id),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)
@@ -135,13 +158,10 @@ export function VisNetworkCanvas({
   useEffect(() => {
     const ds = edgesInternalRef.current
     if (!ds || edges === undefined) return
-    if (edges.length === 0) {
-      ds.clear()
-      return
-    }
+    if (edges.length === 0) { ds.clear(); return }
     ds.update(edges)
     const incomingIds = new Set<string | number>(
-      edges.filter(e => e.id !== undefined).map(e => e.id as string | number),
+      edges.filter((e): e is Edge & { id: string | number } => e.id !== undefined).map(e => e.id),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)

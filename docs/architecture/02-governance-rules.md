@@ -51,35 +51,35 @@
 
 ## VS8（Memory & Feedback Brain）規則集
 
+> 詳細架構定義請見：
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 現行目錄結構、模組責任、API 邊界
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — 架構流程圖與依賴圖
+
 ### G（Governance）
 
 - `G1`：全域語義標籤 SSOT 由治理流程維護。
-- `G3/G4`：禁止繞過 invariant guard 與 canonical write path。
 - `G7`：跨切片語義訊號必帶 `semanticTagSlugs`。
 
 ### C（Core Domain）
 
-- `C1`：VS8 維護主體圖，不承載因果執行副作用。
-- `C3`：邊權重由 weight calculator 統一計算。
-- `C11`：禁止純向量作最終分類。
+- `C1`：VS8 維護語義索引與事件匯流排，不承載因果執行副作用。
 
 ### E（Compute Engine）
 
 - `E4/E5`：分類與推理必走統一路徑，不可字串硬判。
 - `E6`：推理結果必帶 `inferenceTrace[]`。
-- `E11`：routing engine 只輸出 hint，不執行副作用。
 
 ### O（Output）
 
-- `O1`：對外只經 Port 介面。
-- `O2`：讀取以 projection 為唯一路徑。
+- `O1`：對外只經 `index.ts` Port 介面。
+- `O2`：讀取以 `_queries.ts` / `projections/` 為唯一路徑。
 - `O5/O6`：outbox 與 IER 路徑單一，不可重複定義。
 
 ### B（Boundary）
 
 - `B1`：VS8 禁止直接觸發跨切片副作用。
 - `B3`：AI flow 僅可透過 port 使用 VS8。
-- `B4/B5`：分類學與向量不可互相取代；VS8 不做因果執行。
+- `B4`：分類學與向量不可互相取代；VS8 不做因果執行。
 
 ### D21-MF（記憶回饋閉環）
 

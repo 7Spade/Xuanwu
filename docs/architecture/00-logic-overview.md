@@ -86,7 +86,7 @@ flowchart LR
 - `S4`: SLA 只能引用契約常數，不可硬寫。
 - `D24/D25`: Firebase 邊界隔離（feature 不直連 SDK；admin 僅 functions）。
 - `D26`: cross-cutting authority 出口唯一化（Search / Notification）。
-- `D27`: 成本語義決策由 VS8 提供，VS5 不可自判。
+- `D27`: 成本語義決策由 VS8 提供，VS5 不可自判。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
 - `D29`: Aggregate + outbox 同交易。
 - `D31`: 讀路徑權限投影一致性。
 - `E7/E8`: Security/AppCheck/AI Tool ACL 閉環。

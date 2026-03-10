@@ -16,7 +16,7 @@
 | `VS5` | Workspace | `src/features/workspace.slice` |
 | `VS6` | Scheduling | `src/features/workforce-scheduling.slice` |
 | `VS7` | Notification Hub | `src/features/notification-hub.slice` |
-| `VS8` | Semantic Memory & Feedback Brain | `src/features/semantic-graph.slice` |
+| `VS8` | Semantic Memory & Feedback Brain | `src/features/semantic-graph.slice` — 架構：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [架構圖](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) |
 | `VS9` | Finance | `src/features/finance.slice` |
 
 Auxiliary slices（非 VS 編號）：

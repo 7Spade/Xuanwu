@@ -2,6 +2,10 @@
 
 VS8 是所有領域概念的「語義憲法」。所有業務切片以 Semantic Tag 為統一語言，透過 VS8 進行語義治理與語義索引。
 
+> 架構詳情請見：
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md) — 現行架構定義
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — 架構圖
+
 ## 目錄結構
 
 ```
@@ -14,7 +18,7 @@ semantic-graph.slice/
 ├── _semantic-authority.ts    語義權威 — SEARCH_DOMAINS / TAXONOMY_DIMENSIONS
 ├── _services.ts              語義索引服務 — indexEntity / querySemanticIndex
 ├── _types.ts                 領域型別 — 公開型別 + 內部領域型別
-├── index.ts                  公開 API (Public API)
+├── index.ts                  公開 API (Public API) [D7]
 ├── outbox/
 │   └── tag-outbox.ts         外送廣播 [L10 VS8_IO] — 拓撲異動事件出口
 ├── projections/
@@ -22,11 +26,11 @@ semantic-graph.slice/
 │   ├── graph-selectors.ts    圖譜選擇器 (待實作)
 │   └── tag-snapshot.slice.ts Tag 快照展示 API
 ├── proposal-stream/
-│   └── index.ts              提案串流 [L8 VS8_WIKI]
+│   └── index.ts              提案串流
 ├── subscribers/
 │   └── lifecycle-subscriber.ts 訂閱廣播 [L10 VS8_IO] — 接收 TagLifecycleEvent
 └── wiki-editor/
-    ├── index.ts              維基治理入口 [L8 VS8_WIKI]
+    ├── index.ts              維基治理入口
     └── relationship-visualizer.ts 關係視覺化 (待接入 edge store)
 ```
 
@@ -60,3 +64,4 @@ semantic-graph.slice/
 - **禁止私設標籤 [D21]**：嚴禁在業務切片中直接寫死 `status: "done"`；必須在 VS8 定義語義標籤。
 - **禁止繞過 ACL [D24]**：禁止直接 import Firebase；必須透過 SK_PORTS 接口。
 - **禁止修改 TraceID [R8]**：語義推論鏈條必須完整保留 `traceId`，嚴禁覆蓋。
+- **禁止跨切片副作用 [B1]**：VS8 只輸出語義提示/事件；嚴禁直接觸發其他切片副作用。
