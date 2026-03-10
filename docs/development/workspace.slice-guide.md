@@ -266,8 +266,20 @@ exposed via the facade's public repository surface).
 4. extractInvoiceItems returns WorkItem[]
    Each item has: description, quantity, unitPrice, discount, price, semanticTagSlug, sourceIntentIndex
 
-5. WorkItems are materialised into workspace tasks
+5. [PLANNED] classifyWorkItemsForDictionary (Genkit flow, L10)
+   Runs the three-stage classification pipeline:
+   ├─ Stage 1: resolveOrgTaskTypeByItemName  — exact/alias text match
+   ├─ Stage 2: IEmbeddingPort + VectorStore  — cosine similarity against dictionary embeddings
+   └─ Stage 3: suggestTaskTypeDraftFromAI    — LLM draft for unmatched items
+   Returns:
+   ├─ ClassifiedWorkItem[] — items annotated with taskTypeSlug + requiredSkills
+   └─ DictionaryProposal[] — new entries awaiting user review
+
+6. WorkItems / ClassifiedWorkItems are materialised into workspace tasks
    via createParsingImport (idempotency ledger) + createTask
+
+7. DictionaryProposals are surfaced in the review UI
+   User approves → addOrgTaskTypeAction (VS4) → dictionary enriched for future parses
 ```
 
 ### ParsingIntent States
@@ -278,6 +290,20 @@ exposed via the facade's public repository surface).
 | `processing` | Cloud Function is running the Genkit extraction |
 | `imported` | All items materialised into tasks; `markParsingIntentImported()` called |
 | `superseded` | A newer intent replaced this one; `supersedeParsingIntent()` called |
+
+### Task-Type Classification — Boundary Rules
+
+The classification step crosses slice boundaries (VS5 → VS4 dictionary).  Follow these rules:
+
+- **Load dictionary data in the calling Server Action** (`_form-actions.ts`), then pass it as
+  flow input.  Flows (`classify-work-items.ts`) must never read from Firestore directly.
+- **Write approved proposals through VS4 barrel** — call `addOrgTaskTypeAction` from
+  `@/features/organization.slice`, never from an internal path.
+- **VS8 vector infrastructure** (`IEmbeddingPort`, `VectorStore`) is accessed through the VS8
+  public barrel (`@/features/semantic-graph.slice`) — do not import from sub-paths.
+
+For the full feedback loop design, see
+[`docs/development/semantic-dictionary-guide.md`](semantic-dictionary-guide.md).
 
 ---
 

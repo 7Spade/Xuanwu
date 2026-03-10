@@ -121,3 +121,4 @@ Known baseline after `npm install`:
 4. Relevant `{slice}/index.ts` — slice public API
 5. `DEVELOPMENT.md` — root development guide (workspace.slice, Firestore, Genkit patterns, AI learning loop)
 6. `docs/development/workspace.slice-guide.md` — workspace sub-slice implementation guide
+7. `docs/development/semantic-dictionary-guide.md` — Task-Type/Skill-Type Dictionary feedback loop guide (task classification, vector strategy)

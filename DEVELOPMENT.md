@@ -12,9 +12,10 @@ an MCP-based code intelligence server that exposes symbol-level codebase knowled
 2. [workspace.slice (VS5) Architecture](#2-workspaceslice-vs5-architecture)
 3. [Firestore Usage Patterns](#3-firestore-usage-patterns)
 4. [Genkit AI Integration](#4-genkit-ai-integration)
-5. [AI Feedback Loop — Extending the Knowledge Base](#5-ai-feedback-loop--extending-the-knowledge-base)
-6. [Common Patterns and Anti-Patterns](#6-common-patterns-and-anti-patterns)
-7. [Bootstrap and Validation Commands](#7-bootstrap-and-validation-commands)
+5. [Task-Type & Skill-Type Dictionary — Positive Feedback Loop](#5-task-type--skill-type-dictionary--positive-feedback-loop)
+6. [AI Feedback Loop — Extending the Knowledge Base](#6-ai-feedback-loop--extending-the-knowledge-base)
+7. [Common Patterns and Anti-Patterns](#7-common-patterns-and-anti-patterns)
+8. [Bootstrap and Validation Commands](#8-bootstrap-and-validation-commands)
 
 ---
 
@@ -275,9 +276,10 @@ src/app-runtime/ai/
 ├── dev.ts               — Development server entry point (loads all flows)
 ├── index.ts             — Public exports
 ├── flows/
-│   ├── extract-invoice-items.ts         — OCR → structured line items with semantic tags
-│   ├── adapt-ui-color-to-account-context.ts  — AI-suggested UI colour palette
-│   └── suggest-semantic-dictionary-entry.ts  — Draft task-type / skill-type entries
+│   ├── extract-invoice-items.ts              — OCR → structured line items with semantic tags
+│   ├── suggest-semantic-dictionary-entry.ts  — Draft task-type / skill-type entries (manual prompt)
+│   ├── classify-work-items.ts                — (planned) WorkItem[] → task-type classification + proposals
+│   └── adapt-ui-color-to-account-context.ts  — AI-suggested UI colour palette
 └── schemas/
     ├── docu-parse.ts                    — Invoice extraction I/O schemas
     └── semantic-dictionary-assistant.ts — Semantic dictionary assistant schemas
@@ -396,12 +398,148 @@ export type MyOutput = z.infer<typeof MyOutputSchema>
 
 ---
 
-## 5. AI Feedback Loop — Extending the Knowledge Base
+## 5. Task-Type & Skill-Type Dictionary — Positive Feedback Loop
+
+This is the core AI learning feature: every document the system parses is an opportunity to
+enrich the org-level semantic dictionaries so that the next parse is more accurate.
+
+### 5.1 The Dictionaries
+
+**Owner**: `src/features/organization.slice/gov.semantic/` (VS4)
+
+| Dictionary | Firestore path | Type |
+|---|---|---|
+| Task-Type | `orgSemanticRegistry/{orgId}/taskTypes/{slug}` | `OrgTaskTypeEntry` |
+| Skill-Type | `orgSemanticRegistry/{orgId}/skillTypes/{slug}` | `OrgSkillTypeEntry` |
+
+`OrgTaskTypeEntry` links a task type to the skills it requires (`requiredSkills: SkillRequirement[]`).
+`OrgSkillTypeEntry` is a named skill category with aliases.
+
+Both are managed through the `OrgSemanticDictionaryPanel` UI and the `addOrgTaskTypeAction` /
+`addOrgSkillTypeAction` Server Actions.
+
+### 5.2 Current Gap
+
+After `extractInvoiceItems` runs, each `WorkItem` has:
+
+- `item` — description text
+- `semanticTagSlug` — VS8 cost-item classification (e.g. `cost-item-executable`)
+
+What it does **not** have:
+
+- `taskTypeSlug` — which org-specific task type this item belongs to
+- `requiredSkills` — what skills are needed to perform this task
+
+There is no automatic path from the parsing output to the org dictionaries today.
+
+### 5.3 Positive Feedback Loop Architecture
+
+```
+Parse document
+      ↓
+extractInvoiceItems (Genkit)      → WorkItem[] + semanticTagSlug
+      ↓
+classifyWorkItemsForDictionary    ← reads orgSemanticRegistry (task-types + skill-types)
+  ├─ Stage 1: exact / alias text match  → confidence 0.9–1.0 → tag immediately
+  ├─ Stage 2: vector cosine similarity  → confidence 0.5–1.0 → tag or flag for review
+  └─ Stage 3: LLM fallback (Genkit)     → confidence 0.5     → DictionaryProposal[]
+      ↓
+DictionaryProposal[] surfaced to user
+      ↓
+User approves / edits / dismisses
+      ↓
+addOrgTaskTypeAction / addOrgSkillTypeAction writes approved entries
+→ embedding generated and stored on entry
+      ↓
+orgSemanticRegistry enriched  ──→  (next parse: higher Stage-1/2 hit rate)
+```
+
+### 5.4 Three-Stage Classification Algorithm
+
+| Stage | Method | Confidence | Action |
+|---|---|---|---|
+| 1 | Exact name match (`resolveOrgTaskTypeByItemName`) | 1.0 | Tag immediately |
+| 1 | Alias match | 0.9 | Tag immediately |
+| 2 | Vector cosine similarity ≥ 0.75 | 0.75–1.0 | Tag with confirmation |
+| 2 | Vector cosine similarity 0.5–0.75 | 0.5–0.75 | Flag for review |
+| 3 | LLM suggestion (`suggestTaskTypeDraftFromAI`) | 0.5 | Show proposal for approval |
+| — | No match | 0.0 | Show "uncategorised" warning |
+
+### 5.5 Vector Infrastructure
+
+VS8 already provides the building blocks:
+
+| Component | Location |
+|---|---|
+| `IEmbeddingPort` | `src/features/semantic-graph.slice/core/embeddings/embedding-port.ts` |
+| `VectorStore` (cosine similarity) | `src/features/semantic-graph.slice/core/embeddings/vector-store.ts` |
+
+The recommended strategy is to add an `embedding?: number[]` field to `OrgTaskTypeEntry` and
+`OrgSkillTypeEntry`, generated when an entry is created or updated using the `IEmbeddingPort`.
+
+Embedding text convention:
+```
+dict::task-type/{slug} {name} {aliases joined by space} {description}
+```
+
+Using the `dict::` prefix keeps these embeddings semantically distinct from VS8 `tag::` vectors.
+
+### 5.6 Planned Genkit Flow: `classifyWorkItemsForDictionary`
+
+```ts
+// src/app-runtime/ai/flows/classify-work-items.ts  (to be implemented)
+
+export interface ClassifyWorkItemsInput {
+  orgId: string
+  workItems: WorkItem[]             // from extractInvoiceItems
+  taskTypes: OrgTaskTypeEntry[]     // loaded by the calling Server Action
+  skillTypes: OrgSkillTypeEntry[]
+}
+
+export interface ClassifyWorkItemsOutput {
+  classified: ClassifiedWorkItem[]  // items annotated with taskTypeSlug + requiredSkills
+  proposals: DictionaryProposal[]   // new entries awaiting human review
+}
+
+// Calling pattern (from domain.document-parser/_form-actions.ts):
+const extraction = await extractInvoiceItems({ documentObject: ocrDocument })
+const [taskTypes, skillTypes] = await Promise.all([
+  getOrgTaskTypes(orgId),
+  getOrgSkillTypes(orgId),
+])
+const { classified, proposals } = await classifyWorkItemsForDictionary({
+  orgId, workItems: extraction.workItems, taskTypes, skillTypes,
+})
+// proposals → surface in DictionaryProposalReviewPanel
+```
+
+**Boundary rules** (same as all Genkit flows):
+- ✅ Flow receives data as input — it does NOT read from Firestore directly.
+- ✅ Flow returns data as output — it does NOT write to Firestore.
+- ✅ Firestore reads (loading task-types) and writes (approving proposals) happen in Server Actions.
+
+### 5.7 Feedback Quality Signals
+
+Track these metrics to measure loop health over time:
+
+| Signal | Target |
+|---|---|
+| `exactMatchRate` — % of items matched at Stage 1 | Should grow with each document batch |
+| `vectorMatchRate` — % matched at Stage 2 | Stable once embeddings are populated |
+| `proposalAcceptanceRate` — % of AI proposals approved | Indicates prompt quality |
+| `newEntriesPerParse` — avg new entries added per document | Should decrease as dictionary matures |
+
+For full implementation detail see
+[`docs/development/semantic-dictionary-guide.md`](docs/development/semantic-dictionary-guide.md).
+
+---
+
+## 6. AI Feedback Loop — Extending the Knowledge Base
 
 This section explains how to keep AI assistants aligned with the codebase as it evolves. The
 pattern mirrors how Serena maintains a live code-intelligence layer alongside the source tree.
 
-### 5.1 After Adding a Sub-Slice to workspace.slice
+### 6.1 After Adding a Sub-Slice to workspace.slice
 
 1. **Export from `index.ts`** — Add the public API to the barrel at
    `src/features/workspace.slice/index.ts`.
@@ -411,36 +549,38 @@ pattern mirrors how Serena maintains a live code-intelligence layer alongside th
 4. **Update the skill** — If the sub-slice is significant, update
    `.github/skills/xuanwu-skill/SKILL.md` so agents have current context.
 
-### 5.2 After Adding a Genkit Flow
+### 6.2 After Adding a Genkit Flow
 
 1. Register the flow in `dev.ts` and export from `index.ts`.
 2. Update `src/app-runtime/ai/README.md`.
 3. Add the flow name and I/O contract to the knowledge graph entity `AIRuntime`.
 
-### 5.3 After Adding a Firestore Collection
+### 6.3 After Adding a Firestore Collection
 
 1. Add the path constant to `collection-paths.ts` with a JSDoc comment naming the owner VS.
 2. Add the repository function to the appropriate repository file and re-export from
    `firestore.facade.ts`.
 3. Note the new collection in `docs/persistence-model-overview.md`.
 
-### 5.4 AI Session Initialisation Checklist
+### 6.4 AI Session Initialisation Checklist
 
 When an AI assistant starts a session in this codebase it should:
 
 ```
-1. Read   docs/architecture/00-logic-overview.md        (architecture contract)
-2. Search .memory/knowledge-graph.json                  (entity relationships)
-3. Read   repomix-instruction.md                        (AI behaviour manifest)
-4. Read   this file (DEVELOPMENT.md)                    (feature patterns)
-5. Read   docs/development/workspace.slice-guide.md     (workspace sub-slice detail)
-   if the task touches workspace.slice
+1. Read   docs/architecture/00-logic-overview.md              (architecture contract)
+2. Search .memory/knowledge-graph.json                        (entity relationships)
+3. Read   repomix-instruction.md                              (AI behaviour manifest)
+4. Read   this file (DEVELOPMENT.md)                          (feature patterns)
+5. Read   docs/development/workspace.slice-guide.md           (workspace sub-slice detail)
+   if the task touches workspace.slice or document parsing
+6. Read   docs/development/semantic-dictionary-guide.md       (dictionary feedback loop)
+   if the task touches task-type/skill-type classification or Genkit AI flows
 ```
 
 This initialisation sequence is analogous to Serena loading its semantic index before answering
 code-intelligence queries.
 
-### 5.5 Providing AI Feedback
+### 6.5 Providing AI Feedback
 
 When AI proposes a code change, validate it against:
 
@@ -452,6 +592,7 @@ When AI proposes a code change, validate it against:
 | Projection write uses `applyVersionGuard`? | S2 invariant |
 | New Genkit flow registered in `dev.ts`? | Section 4.4 above |
 | Knowledge graph updated? | `.memory/knowledge-graph.json` |
+| Dictionary feedback loop rules followed? | Section 5 and `semantic-dictionary-guide.md` |
 
 If all checks pass, the change is safe to merge. If not, ask the AI to correct specific
 invariants by citing their codes (e.g. "this violates D24 — remove the direct firebase import
@@ -459,7 +600,7 @@ and route through the facade").
 
 ---
 
-## 6. Common Patterns and Anti-Patterns
+## 7. Common Patterns and Anti-Patterns
 
 ### ✅ Correct Patterns
 
@@ -504,7 +645,7 @@ await updateWorkspace(workspaceId, ai_result)  // ❌ side-effect inside flow
 
 ---
 
-## 7. Bootstrap and Validation Commands
+## 8. Bootstrap and Validation Commands
 
 ```bash
 # Install dependencies (required in a fresh clone or CI)
@@ -534,6 +675,7 @@ npx repomix --config repomix.config.ts
 - [`docs/architecture/03-infra-mapping.md`](docs/architecture/03-infra-mapping.md) — Firebase path/adapter map
 - [`docs/persistence-model-overview.md`](docs/persistence-model-overview.md) — Persistence responsibilities
 - [`docs/development/workspace.slice-guide.md`](docs/development/workspace.slice-guide.md) — Workspace sub-slice implementation guide
+- [`docs/development/semantic-dictionary-guide.md`](docs/development/semantic-dictionary-guide.md) — Task-Type/Skill-Type Dictionary feedback loop guide
 - [`src/app-runtime/ai/README.md`](src/app-runtime/ai/README.md) — Genkit AI runtime reference
 - [`repomix-instruction.md`](repomix-instruction.md) — AI assistant manifest
 - [Serena MCP Server](https://github.com/oraios/serena) — Inspiration for AI code-intelligence patterns
