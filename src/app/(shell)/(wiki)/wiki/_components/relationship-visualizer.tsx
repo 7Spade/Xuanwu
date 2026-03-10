@@ -1,16 +1,15 @@
 /**
  * Module: wiki/_components/relationship-visualizer
  * Purpose: Render a read-only semantic relationship graph with vis-network.
- * Responsibilities: initialize network instance, provide deterministic demo nodes/edges, and clean up resources.
+ * Responsibilities: provide deterministic demo nodes/edges via VisNetworkCanvas.
  * Constraints: client-only rendering; no mutation side effects.
+ *   Must not import vis-data or vis-network directly [D24/D28]; use @/lib-ui/vis.
  */
 
 "use client";
 
-import { useEffect, useRef } from "react";
-import { DataSet } from "vis-data";
-import { Network, type Edge, type Node, type Options } from "vis-network/standalone";
-import "vis-network/styles/vis-network.css";
+import { VisNetworkCanvas } from "@/lib-ui/vis";
+import type { Edge, Node, Options } from "@/lib-ui/vis";
 
 const NODES: readonly Node[] = [
   {
@@ -154,32 +153,20 @@ const NETWORK_OPTIONS: Options = {
 };
 
 export function RelationshipVisualizer() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const network = new Network(
-      containerRef.current,
-      {
-        nodes: new DataSet<Node>([...NODES]),
-        edges: new DataSet<Edge>([...EDGES]),
-      },
-      NETWORK_OPTIONS
-    );
-
-    return () => {
-      network.destroy();
-    };
-  }, []);
-
   return (
     <div className="overflow-hidden rounded-lg border bg-background">
       <div className="flex items-center justify-between border-b bg-muted/20 px-4 py-2">
         <p className="text-sm font-medium">關係視覺化器 (vis-network)</p>
         <p className="text-xs text-muted-foreground">Proposal #104 · semantic routing</p>
       </div>
-      <div ref={containerRef} className="h-[340px] w-full" aria-label="semantic relationship graph" />
+      <div aria-label="semantic relationship graph">
+        <VisNetworkCanvas
+          nodes={[...NODES]}
+          edges={[...EDGES]}
+          options={NETWORK_OPTIONS}
+          className="h-[340px] w-full"
+        />
+      </div>
     </div>
   );
 }

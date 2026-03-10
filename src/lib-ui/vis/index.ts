@@ -7,7 +7,7 @@
  *   Type re-exports keep feature slices from importing vis-* packages directly [D24/D28].
  */
 export { VisNetworkCanvas } from "./vis-network-canvas"
-export type { VisNetworkCanvasProps } from "./vis-network-canvas"
+export type { VisNetworkCanvasProps, VisCompatibleDataSet } from "./vis-network-canvas"
 export { VisTimelineCanvas } from "./vis-timeline-canvas"
 export { VisGraph3dCanvas } from "./vis-graph3d-canvas"
 
