@@ -89,7 +89,8 @@
     "daily": "Daily",
     "audit": "Audit",
     "orgSchedule": "HR Schedule",
-    "demandBoard": "Demand Board"
+    "demandBoard": "Demand Board",
+    "semanticDictionary": "Semantic Dictionary"
   },
   "dimension": {
     "createTitle": "Create Organization",

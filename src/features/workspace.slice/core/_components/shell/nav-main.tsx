@@ -11,6 +11,7 @@ import {
   Calendar,
   MessageSquare,
   History,
+  Library,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -80,6 +81,7 @@ export function NavMain({ pathname, isOrganizationAccount, t }: NavMainProps) {
                   { path: ROUTES.ACCOUNT_SCHEDULE, icon: Calendar, label: t('navigation.schedule') },
                   { path: ROUTES.ACCOUNT_DAILY, icon: MessageSquare, label: t('navigation.daily') },
                   { path: ROUTES.ACCOUNT_AUDIT, icon: History, label: t('navigation.audit') },
+                  { path: ROUTES.ACCOUNT_SEMANTIC_DICTIONARY, icon: Library, label: t('navigation.semanticDictionary') },
                 ].map((item) => (
                   <SidebarMenuSubItem key={item.path}>
                     <SidebarMenuSubButton asChild isActive={isPartiallyActive(item.path)}>
