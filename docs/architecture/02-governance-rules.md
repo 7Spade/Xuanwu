@@ -38,9 +38,13 @@
 | `VD-1` | 語義向量索引由 VS8 `_services.ts` 獨家管理 |
 | `VD-2` | 外部切片透過 `_queries.ts` [D4] 出口查詢語義索引；嚴禁直調 `_services.ts` |
 | `VD-3` | 索引實體（`indexEntity`）須在 Tag 寫入成功後觸發；不可先行索引未確認實體 |
+| `VD-4` | Firestore 向量索引欄位維度必須與嵌入模型一致；禁止跨模型混用向量 |
 | `OT-1` | 新分類法維度只能在 VS8 `_semantic-authority.ts` 定義 |
 | `OT-2` | Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 |
 | `OT-3` | `TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程 |
+| `GT-1` | VS8 Genkit 工具必須透過 `defineTool` 宣告；禁止 AI Flow 直調內部模組 |
+| `GT-2` | AI 分派流程必須合規優先：`verify_compliance` 先於候選人輸出 |
+| `GT-3` | `search_skills` 返回之 `skillId` 作為後續查詢的標準術語依據 |
 | `D28` | 視覺化元件禁止直連 Firebase，必須經 `VisDataAdapter` |
 | `D29` | Transactional outbox：Aggregate 與 outbox 同交易 |
 | `D30` | hop-limit 循環防禦；SECURITY_BLOCK 禁止自動 replay |
@@ -59,34 +63,46 @@
 
 ## VS8：語義智慧匹配架構（SIMA）規則集
 
-> VS8 定位：**基於語義的智慧匹配架構（Semantic Intelligent Matching Architecture）**，透過整合知識圖譜（Knowledge Graph）、向量數據庫（Vector Database）、技能本體論/分類法（Skills Ontology / Taxonomy），解決人力資源中的複雜分派問題。
+> VS8 定位：**基於語義的智慧匹配架構（Semantic Intelligent Matching Architecture）**，透過整合知識圖譜（Knowledge Graph / 邏輯大腦）、向量數據庫（Vector Database / 記憶模塊）、技能本體論/分類法（Skills Ontology / 語言定義），解決人力資源中的複雜分派問題。
+>
+> **Firestore 集合**：`employees`（候選人 + skillEmbedding）、`tasks`（分派請求）、`skills`（本體論 + embedding）
+>
+> **三工具分派引擎**：`search_skills`（術語標準化）、`match_candidates`（向量匹配）、`verify_compliance`（合規優先驗證）
 >
 > 詳細架構定義請見：
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、模組責任、API 邊界
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — HR 分派流程圖、知識圖譜圖、向量匹配流程圖
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、Firestore Schema、Genkit 工具規格
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — Genkit 工具整合圖、HR 分派序列圖、Firestore 集合關聯圖
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md`](03-Slices/VS8-SemanticBrain/architecture-build.md) — Phase 1-4 實施計畫
 
 ### G（Governance — 語義治理）
 
 - `G1`：全域語義標籤 SSOT 由 VS8 `_semantic-authority.ts` 與 `_aggregate.ts` 維護；嚴禁其他切片自行管理 Tag 語義。
 - `G7`：跨切片語義訊號必帶 `semanticTagSlugs`；嚴禁傳遞裸字串標籤。
 
-### KG（Knowledge Graph — 知識圖譜）
+### KG（Knowledge Graph — 知識圖譜 / 邏輯大腦）
 
 - `KG-1`：圖譜邊（`SemanticEdge`）只能透過 VS8 `_actions.ts` 寫入；嚴禁外部切片直接建立邊。
 - `KG-2`：邊的 `weight`（關係強度）啟用後視為不可變；修改須走更新命令。
 - `KG-3`：寫入圖譜邊前必須通過循環依賴偵測（`_aggregate.ts`）；禁止 A→B→A 循環圖。
 
-### VD（Vector Database — 向量數據庫）
+### VD（Vector Database — 向量數據庫 / 記憶模塊）
 
 - `VD-1`：語義向量索引由 VS8 `_services.ts` 獨家管理；外部切片不可直接讀寫索引內部結構。
 - `VD-2`：所有索引查詢必須透過 VS8 `_queries.ts` 出口 [D4]；嚴禁繞過出口直調 `_services.ts`。
 - `VD-3`：索引實體（`indexEntity`）須在 Tag 寫入成功後觸發；不可先行索引未確認的實體。
+- `VD-4`：Firestore 向量索引欄位（`employees.skillEmbedding`、`skills.embedding`）維度必須與所選嵌入模型一致；禁止跨模型混用嵌入向量。
 
-### OT（Ontology / Taxonomy — 技能本體論）
+### OT（Ontology / Taxonomy — 技能本體論 / 語言定義）
 
 - `OT-1`：新分類法維度（`TaxonomyDimension`）只能在 VS8 `_semantic-authority.ts` 定義；嚴禁其他切片自行添加維度。
 - `OT-2`：Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 Firestore。
 - `OT-3`：`TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程（`99-checklist.md`）。
+
+### GT（Genkit Tools — AI 工具整合）
+
+- `GT-1`：VS8 Genkit 工具（`search_skills` / `match_candidates` / `verify_compliance`）必須透過 `defineTool` 在 Genkit 中宣告；禁止在 AI Flow 中直接呼叫內部模組。
+- `GT-2`：AI 分派流程必須遵守「合規優先」順序：若任務含 `requiredCertifications`，必須先呼叫 `verify_compliance`，不合規候選人排除後才能輸出。
+- `GT-3`：`search_skills` 返回的 `skillId` 必須作為後續 `match_candidates` 的標準術語依據；禁止 AI 自行發明未經本體論驗證的技能術語。
 
 ### B（Boundary — 邊界約束）
 
@@ -113,11 +129,13 @@
 - 禁止在 VS8 以外的切片定義新分類法維度（`OT-1`）。
 - 禁止外部切片直接建立 SemanticEdge 圖譜邊（`KG-1`）。
 - 禁止繞過 `_queries.ts` 直調 VS8 `_services.ts`（`VD-2`）。
+- 禁止 VS8 Genkit 工具跳過 `verify_compliance` 合規優先步驟直接輸出候選人（`GT-2`）。
+- 禁止 AI Flow 使用未在 `skills` 集合驗證過的技能術語（`GT-3`）。
 
 ## 跨切片強制規則（摘要）
 
 - VS5：任務生命週期與金融入口門檻（`A19/A20`）。
-- VS8：語義智慧匹配架構規則（`KG/VD/OT/G/B + D21-MF`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
+- VS8：語義智慧匹配架構規則（`KG/VD/OT/G/GT/B + D21-MF`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
 - VS9：Finance_Request 獨立狀態機與回饋投影（`A21/A22`）。
 - VS6/VS7：排班與通知均不得繞過事件/投影鏈路。
 

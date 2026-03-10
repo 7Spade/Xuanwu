@@ -204,3 +204,140 @@ flowchart LR
 | **Firebase 邊界** | 禁止直連 Firebase SDK | [D24] |
 | **副作用邊界** | VS8 只輸出語義提示/匹配結果；不執行跨切片副作用 | [B1] |
 | **分類法驗證邊界** | Tag 路徑必須通過 `validateTaxonomyAssignment` | [OT-2] |
+
+---
+
+## 八、Genkit AI 工具整合（三工具分派引擎）
+
+```mermaid
+flowchart TD
+  subgraph "輸入"
+    TASK["任務請求\n(TaskDocument)"]
+  end
+
+  subgraph "Genkit Flow: vs8-dispatch-flow"
+    direction TB
+    FLOW["dispatchFlow\n_dispatch-flow.ts"]
+
+    subgraph "工具一：search_skills\n（支柱三 語言定義）"
+      T1["search_skills\ngenkit-tools/"]
+    end
+
+    subgraph "工具二：match_candidates\n（支柱二 記憶模塊）"
+      T2["match_candidates\ngenkit-tools/"]
+    end
+
+    subgraph "工具三：verify_compliance\n（支柱一 邏輯大腦）"
+      T3["verify_compliance\ngenkit-tools/"]
+    end
+  end
+
+  subgraph "Firestore 集合"
+    FS_SKILLS[("skills\n(+ Vector Index)\n技能本體論")]
+    FS_EMP[("employees\n(+ Vector Index)\n候選人池")]
+    FS_TASKS[("tasks\n分派請求")]
+  end
+
+  subgraph "輸出"
+    OUT["匹配候選集\nSemanticSearchHit[]\n+ inferenceTrace"]
+  end
+
+  TASK --> FLOW
+  FLOW -- "1. 術語標準化" --> T1
+  FLOW -- "2. 向量匹配" --> T2
+  FLOW -- "3. 合規驗證（優先）" --> T3
+
+  T1 -- "querySemanticIndex\n(domain: skill)" --> FS_SKILLS
+  T2 -- "Vector Search\n(employees.skillEmbedding)" --> FS_EMP
+  T3 -- "certifications 比對" --> FS_EMP
+
+  T1 --> FLOW
+  T2 --> FLOW
+  T3 --> FLOW
+
+  FLOW --> OUT
+
+  style T1 fill:#6c5ce7,color:#fff
+  style T2 fill:#0984e3,color:#fff
+  style T3 fill:#00b894,color:#fff
+  style FS_SKILLS fill:#fdcb6e,color:#2d3436
+  style FS_EMP fill:#fdcb6e,color:#2d3436
+```
+
+---
+
+## 九、Firestore 集合關聯圖（資料模型）
+
+```mermaid
+erDiagram
+  TASKS {
+    string taskId PK
+    string title
+    string[] requiredSkillSlugs
+    string[] requiredCertifications
+    string complexityLevel
+    number[] requirementsEmbedding
+    string status
+  }
+
+  EMPLOYEES {
+    string employeeId PK
+    string name
+    string[] skillSlugs
+    string[] certifications
+    string availabilityStatus
+    number[] skillEmbedding
+  }
+
+  SKILLS {
+    string skillId PK
+    string name
+    string[] aliases
+    string[] taxonomyPath
+    string dimension
+    number[] embedding
+  }
+
+  TASKS ||--o{ SKILLS : "requiredSkillSlugs (refs)"
+  EMPLOYEES ||--o{ SKILLS : "skillSlugs (refs)"
+  TASKS ||--o{ EMPLOYEES : "分派（系統外部）"
+```
+
+---
+
+## 十、AI 分派調用序列圖（Prompt Engineering 強制順序）
+
+```mermaid
+sequenceDiagram
+  participant AI as Genkit AI Agent
+  participant T3 as verify_compliance<br/>(邏輯大腦)
+  participant T1 as search_skills<br/>(語言定義)
+  participant T2 as match_candidates<br/>(記憶模塊)
+  participant FS as Firestore
+
+  Note over AI: 接收 Task 請求
+
+  AI->>T1: 不確定術語？→ search_skills(query)
+  T1->>FS: querySemanticIndex(skills)
+  FS-->>T1: SkillDocument[]
+  T1-->>AI: 標準術語確認
+
+  Note over AI: 使用標準術語進行匹配
+
+  AI->>T2: match_candidates(taskRequirementsText)
+  T2->>FS: Vector Search (employees)
+  FS-->>T2: 候選人清單（按相似度排序）
+  T2-->>AI: EmployeeDocument[] + similarityScore
+
+  Note over AI: 合規驗證（必須先於輸出）
+
+  loop 每位候選人
+    AI->>T3: verify_compliance(employeeId, requiredCertifications)
+    T3->>FS: employees.certifications 比對
+    FS-->>T3: certifications 資料
+    T3-->>AI: { isCompliant, missingCertifications }
+  end
+
+  Note over AI: 輸出合規候選集（B1：不執行分派）
+  AI-->>AI: 輸出 SemanticSearchHit[] + inferenceTrace
+```
