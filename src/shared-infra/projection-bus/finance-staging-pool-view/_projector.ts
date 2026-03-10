@@ -25,11 +25,11 @@
  * [R8] traceId from the originating EventEnvelope propagated.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------

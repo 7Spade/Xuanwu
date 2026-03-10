@@ -21,9 +21,9 @@
  *   R2  ??CRITICAL_LANE semantics: high-priority, not synchronous.
  */
 
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { OrganizationRole } from '@/shared-kernel';
 import {
   assertSafeFirestoreDocId,

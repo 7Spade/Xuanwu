@@ -5,10 +5,10 @@
  */
 
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { createConverter } from '@/shared-infra/frontend-firebase/firestore/firestore.converter';
-import { collection, query, orderBy, limit } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocuments } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { createConverter } from '@/shared-infra/firebase-client/firestore/firestore.converter';
+import { collection, query, orderBy, limit } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocuments } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { AuditProjectionEntry } from './_projector';
 

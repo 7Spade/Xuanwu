@@ -1,4 +1,4 @@
-import { deleteWorkspaceStorageObject } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { deleteWorkspaceStorageObject } from '@/shared-infra/firebase-client/storage/storage.facade'
 
 export async function deleteVersionStorageObjects(
   storagePaths: readonly string[]

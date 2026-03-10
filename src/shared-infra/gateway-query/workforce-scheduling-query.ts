@@ -11,8 +11,8 @@ import {
   type OrgEligibleMemberView,
   type OrgMemberSkillWithTier,
 } from '@/shared-infra/projection-bus';
-import { db } from '@/shared-infra/frontend-firebase';
-import { fetchScheduleItems } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { db } from '@/shared-infra/firebase-client';
+import { fetchScheduleItems } from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   collection,
   query,
@@ -21,8 +21,8 @@ import {
   limit,
   onSnapshot,
   type Unsubscribe,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 
 export async function getScheduleItemsFromGateway(

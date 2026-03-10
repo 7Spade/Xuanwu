@@ -15,12 +15,12 @@
  * Consumers: import from '@/features/semantic-graph.slice'.
  */
 
-import { Timestamp, getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { Timestamp, getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
   deleteDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   commandSuccess,
   commandFailureFrom,

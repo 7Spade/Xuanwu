@@ -16,7 +16,7 @@ import {
   db,
   ensureAppCheckInitialized,
   storage,
-} from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client';
 
 import { FirebaseContext } from '../contexts/firebase-context';
 

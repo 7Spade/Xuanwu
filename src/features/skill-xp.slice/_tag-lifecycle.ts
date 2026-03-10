@@ -20,14 +20,14 @@
  */
 
 
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collectionGroup,
   query,
   where,
   getDocs,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type {
   TagUpdatedPayload,
   TagDeprecatedPayload,

@@ -18,9 +18,9 @@
 
 import { useEffect } from 'react';
 
-import { auth, db } from '@/shared-infra/frontend-firebase';
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { onSnapshot, doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { auth, db } from '@/shared-infra/firebase-client';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { onSnapshot, doc } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ImplementsTokenRefreshContract } from '@/shared-kernel';
 
 // Marker ??confirms this module fulfils Party 3 of the SK_TOKEN_REFRESH_CONTRACT [S6]

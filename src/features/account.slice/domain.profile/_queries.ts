@@ -8,8 +8,8 @@
 
 import {
   getUserProfile as getUserProfileFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
-import { subscribeToDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
+import { subscribeToDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 import type { Account } from "@/shared-kernel"
 
 /**

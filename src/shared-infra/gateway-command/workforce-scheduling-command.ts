@@ -12,13 +12,13 @@ import {
   setScheduleItemDateRange,
   setScheduleItemStatus,
   unassignMemberFromScheduleItem,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   setDocument,
   updateDocument,
   arrayUnion,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleItem } from '@/shared-kernel';
 
 export interface GatewayWriteOp {

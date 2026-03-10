@@ -6,7 +6,7 @@
 
 import {
   getAuditLogs as getAuditLogsFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 
 import type { AuditLog } from "./_types"
 

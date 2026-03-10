@@ -14,7 +14,7 @@
 import {
   createTeam as createTeamFacade,
   updateTeamMembers as updateTeamMembersFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   type CommandResult,
   commandSuccess,

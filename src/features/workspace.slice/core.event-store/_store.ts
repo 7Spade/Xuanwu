@@ -11,7 +11,7 @@ import {
   appendDomainEvent as appendDomainEventRepo,
   getDomainEvents as getDomainEventsRepo,
   type StoredWorkspaceEvent,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 
 export type { StoredWorkspaceEvent };
 

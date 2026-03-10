@@ -1,4 +1,4 @@
-import { uploadWorkspaceDocument } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadWorkspaceDocument } from '@/shared-infra/firebase-client/storage/storage.facade'
 
 export async function uploadRawFile(
   workspaceId: string,

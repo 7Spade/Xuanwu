@@ -7,7 +7,7 @@
  * [T5] TAG_SNAPSHOT consumers MUST NOT write — these are read-only queries.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { AccountScheduleProjection, AccountScheduleAssignment } from './_projector';
 

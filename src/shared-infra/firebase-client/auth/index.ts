@@ -6,5 +6,5 @@
  */
 
 export type { IAuthService, AuthUser } from '@/shared-kernel';
-export { authService } from '@/shared-infra/frontend-firebase';
+export { authService } from '@/shared-infra/firebase-client';
 

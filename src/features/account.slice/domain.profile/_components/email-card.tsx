@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
-import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter";
+import { authAdapter } from "@/shared-infra/firebase-client/auth/auth.adapter";
 
 interface EmailCardProps {
   currentEmail: string;

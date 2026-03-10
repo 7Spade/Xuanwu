@@ -5,7 +5,7 @@
  * Used exclusively by workspace-application/_scope-guard.ts.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 
 import type { WorkspaceScopeGuardView } from './_read-model';

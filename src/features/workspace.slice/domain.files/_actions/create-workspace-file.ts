@@ -1,5 +1,5 @@
-import { createWorkspaceFile as createFileFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter'
+import { createWorkspaceFile as createFileFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 
 import type { CreateWorkspaceFileInput } from '../_types'

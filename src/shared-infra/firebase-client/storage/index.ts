@@ -9,5 +9,5 @@
 
 export type { IFileStore, UploadOptions } from '@/shared-kernel';
 export { StorageAdapter, storageAdapter } from './storage.adapter';
-export { fileStore } from '@/shared-infra/frontend-firebase';
+export { fileStore } from '@/shared-infra/firebase-client';
 

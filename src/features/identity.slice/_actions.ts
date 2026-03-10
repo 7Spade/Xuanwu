@@ -6,7 +6,7 @@
  */
 
 import { createUserAccount } from '@/features/account.slice'
-import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter"
+import { authAdapter } from "@/shared-infra/firebase-client/auth/auth.adapter"
 import {
   type CommandResult,
   commandSuccess,

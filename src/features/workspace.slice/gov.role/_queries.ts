@@ -4,7 +4,7 @@
  * Read queries for workspace-level role management.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { Workspace } from '../core/_types';
 

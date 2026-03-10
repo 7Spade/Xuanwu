@@ -5,4 +5,4 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-export { firebaseConfig } from '@/shared-infra/frontend-firebase';
+export { firebaseConfig } from '@/shared-infra/firebase-client';

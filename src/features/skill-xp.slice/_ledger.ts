@@ -19,7 +19,7 @@
  * NOTE: `tier` is intentionally absent from this schema (Invariant #12).
  */
 
-import { addDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { addDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 
 // ---------------------------------------------------------------------------
 // Types

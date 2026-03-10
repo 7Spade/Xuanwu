@@ -16,8 +16,8 @@ import {
   updateOrganizationSettings as updateOrganizationSettingsFacade,
   deleteOrganization as deleteOrganizationFacade,
   createTeam as createTeamFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
-import { uploadOrganizationAvatar as uploadOrganizationAvatarFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
+import { uploadOrganizationAvatar as uploadOrganizationAvatarFacade } from "@/shared-infra/firebase-client/storage/storage.facade";
 import {
   type CommandResult,
   commandSuccess,

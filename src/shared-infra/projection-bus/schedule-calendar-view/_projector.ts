@@ -18,11 +18,11 @@
  * Feed path: IER STANDARD_LANE → FUNNEL → STD_PROJ_LANE → here.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 

@@ -15,8 +15,8 @@
  * Invariant #1: This BC only writes its own aggregate.
  */
 
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,

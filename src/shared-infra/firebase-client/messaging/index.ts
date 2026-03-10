@@ -7,5 +7,5 @@
  */
 
 export type { IMessaging, PushNotificationPayload } from '@/shared-kernel';
-export { messagingAdapter } from '@/shared-infra/frontend-firebase';
+export { messagingAdapter } from '@/shared-infra/firebase-client';
 

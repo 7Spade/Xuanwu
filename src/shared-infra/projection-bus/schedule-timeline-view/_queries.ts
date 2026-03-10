@@ -12,13 +12,13 @@
  * UI must read via L6 Query Gateway; direct Firebase access is prohibited [D5].
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   getDocs,
   collection,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { ScheduleTimelineMemberView } from './_projector';
 

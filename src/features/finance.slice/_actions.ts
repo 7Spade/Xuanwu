@@ -7,7 +7,7 @@
 
 import {
   saveFinanceAggregateState as saveFinanceAggregateStateFacade,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 
 import type { FinanceAggregateState } from './_types';
 

@@ -10,7 +10,7 @@
 import {type ReactNode} from 'react';
 import { useReducer, useContext, useEffect } from 'react';
 
-import { authAdapter } from '@/shared-infra/frontend-firebase/auth/auth.adapter';
+import { authAdapter } from '@/shared-infra/firebase-client/auth/auth.adapter';
 
 import { AuthContext, type AuthAction, type AuthState } from '../contexts/auth-context';
 

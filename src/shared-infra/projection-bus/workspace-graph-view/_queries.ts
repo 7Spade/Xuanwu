@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { WorkspaceGraphView, GraphNode, GraphEdge } from './_projector';
 

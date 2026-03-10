@@ -8,7 +8,7 @@
  * [S3] SK_READ_CONSISTENCY: EVENTUAL_READ (display) vs STRONG_READ (transactions).
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { WalletBalanceView } from './_projector';
 

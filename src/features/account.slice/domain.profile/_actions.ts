@@ -11,8 +11,8 @@
 import {
   createUserAccount as createUserAccountFacade,
   updateUserProfile as updateUserProfileFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
-import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
+import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/firebase-client/storage/storage.facade";
 import {
   type CommandResult,
   commandSuccess,

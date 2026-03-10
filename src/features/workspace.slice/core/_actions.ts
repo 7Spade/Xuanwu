@@ -28,8 +28,8 @@ import {
   createWorkspaceLocation as createWorkspaceLocationFacade,
   updateWorkspaceLocation as updateWorkspaceLocationFacade,
   deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
-import { uploadWorkspaceAvatar as uploadWorkspaceAvatarFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
+import { uploadWorkspaceAvatar as uploadWorkspaceAvatarFacade } from "@/shared-infra/firebase-client/storage/storage.facade"
 import {
   type CommandResult,
   commandSuccess,

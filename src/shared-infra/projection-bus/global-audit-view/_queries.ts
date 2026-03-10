@@ -1,8 +1,8 @@
 // projection.global-audit-view · queries · 00-logic-overview.md [R8]
 // Read-only access to GLOBAL_AUDIT_VIEW. T5-equivalent: consumers MUST NOT write here.
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, where, limit, query as firestoreQuery } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, where, limit, query as firestoreQuery } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { GlobalAuditRecord, GlobalAuditQuery } from './_projector';
 

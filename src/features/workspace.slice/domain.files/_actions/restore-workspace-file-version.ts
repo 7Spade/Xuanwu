@@ -1,4 +1,4 @@
-import { restoreWorkspaceFileVersion as restoreVersionFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { restoreWorkspaceFileVersion as restoreVersionFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 
 export async function restoreWorkspaceFileVersion(

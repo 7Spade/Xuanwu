@@ -12,7 +12,7 @@ import {
   getProjectionVersion as getProjectionVersionRepo,
   upsertProjectionVersion as upsertProjectionVersionRepo,
   type ProjectionVersionRecord,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 
 export type { ProjectionVersionRecord };
 

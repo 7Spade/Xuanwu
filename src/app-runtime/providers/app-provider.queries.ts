@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { db } from '@/shared-infra/frontend-firebase'
+import { db } from '@/shared-infra/firebase-client'
 import {
   collection,
   getDocs,
@@ -13,8 +13,8 @@ import {
   query,
   type Unsubscribe,
   where,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
-import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils'
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
+import { snapshotToRecord } from '@/shared-infra/firebase-client/firestore/firestore.utils'
 import type { Account } from '@/shared-kernel'
 
 export function subscribeToAccountsForUser(

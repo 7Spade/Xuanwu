@@ -13,9 +13,9 @@
  */
 
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { Account } from '@/shared-kernel';

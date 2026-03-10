@@ -1,4 +1,4 @@
-import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 
 import type { WorkspaceFile } from '../_types'
 

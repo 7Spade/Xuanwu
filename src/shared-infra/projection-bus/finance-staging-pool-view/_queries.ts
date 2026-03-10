@@ -5,14 +5,14 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   getDocs,
   query,
   type QueryDocumentSnapshot,
   type DocumentData,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { FinanceStagingEntry, FinanceStagingStatus } from './_projector';
 
