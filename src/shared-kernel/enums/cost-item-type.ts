@@ -14,4 +14,5 @@ export const CostItemType = {
   ALLOWANCE: 'ALLOWANCE',
 } as const;
 
-export type CostItemTypeValue = (typeof CostItemType)[keyof typeof CostItemType];
+export type CostItemType = (typeof CostItemType)[keyof typeof CostItemType];
+export type CostItemTypeValue = CostItemType;

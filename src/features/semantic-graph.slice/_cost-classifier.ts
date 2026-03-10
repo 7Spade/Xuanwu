@@ -12,13 +12,9 @@
  * [D21] Tag categories governed by VS8.
  */
 
-import {
-  CostItemType,
-  type CostItemTypeValue as CostItemType,
-} from '@/shared-kernel';
+import { CostItemType } from '@/shared-kernel';
 
 export { CostItemType };
-export type { CostItemType };
 
 export const COST_ITEM_TAG_SLUG = {
   [CostItemType.EXECUTABLE]: 'cost-item-executable',

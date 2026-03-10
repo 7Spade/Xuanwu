@@ -6,6 +6,14 @@
 
 本視圖呈現系統三條主鏈（**Canonical Chains**）的端到端流向與各 VS0–VS8 子圖結構。Infra 鏈依 SDK 分成 A（前端 Client SDK）與 B（後端 Admin SDK）兩路，合計仍視為三條主鏈。
 
+### VS0-Kernel Canonical 模組對齊（2026-03）
+
+- `OutboxLane / OutboxRouting / OutboxAck` 已集中至 `src/shared-kernel/types/outbox-routing.ts`，各切片 outbox 以型別別名相容引用。
+- `CostItemType` 已集中至 `src/shared-kernel/enums/cost-item-type.ts`，VS8 分類器僅持有分類邏輯，不再重複宣告詞彙常數。
+- Finance 生命週期常數與非任務成本集合已集中至 `src/shared-kernel/constants/finance.ts`；`finance.slice/_constants.ts` 保留相容 re-export。
+- Finance 生命週期守衛/正規化規則已集中至 `src/shared-kernel/directives/finance-lifecycle.directive.ts`；claim draft 轉換管線已集中至 `src/shared-kernel/pipes/finance-claim.pipe.ts`。
+- `SEARCH_DOMAINS / TAXONOMY_DIMENSIONS` 已集中至 `src/shared-kernel/ontologys/semantic-taxonomy.ts`；`semantic-graph.slice/_semantic-authority.ts` 保留相容 shim。
+
 ---
 
 ## 三條主鏈（Infra 鏈細分 A/B 兩路 · 唯一排序判準）

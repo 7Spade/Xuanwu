@@ -7,12 +7,17 @@
 
 import { classifyCostItem } from '@/features/semantic-graph.slice';
 import type { DocumentParserItemsExtractedPayload } from '@/features/workspace.slice';
+import {
+  buildClaimLineItems,
+  clampRemainingQuantity,
+  getNextStageFromAction,
+  hasValidClaimSelection,
+  isActiveParsingIntentStatus,
+  normalizeLifecycleStage,
+} from '@/shared-kernel';
 
 import type {
-  FinanceClaimDraftEntry,
-  FinanceClaimLineItem,
   FinanceDirectiveItem,
-  FinanceLifecycleStage,
 } from '../_types';
 
 export function buildDirectiveItem(
@@ -70,69 +75,11 @@ export function buildDirectiveItemFromParsingIntentLineItem(
   };
 }
 
-export function isActiveParsingIntentStatus(status: string | undefined): boolean {
-  return status === 'pending'
-    || status === 'importing'
-    || status === 'imported'
-    || status === 'failed';
-}
-
-export function normalizeLifecycleStage(stage: string | undefined): FinanceLifecycleStage {
-  if (
-    stage === 'claim-preparation'
-    || stage === 'claim-submitted'
-    || stage === 'claim-approved'
-    || stage === 'invoice-requested'
-    || stage === 'payment-term'
-    || stage === 'payment-received'
-    || stage === 'completed'
-  ) {
-    return stage;
-  }
-  return 'claim-preparation';
-}
-
-export function clampRemainingQuantity(item: FinanceDirectiveItem, persistedRemaining: number | undefined): number {
-  if (typeof persistedRemaining !== 'number' || Number.isNaN(persistedRemaining)) {
-    return item.remainingQuantity;
-  }
-  return Math.max(0, Math.min(item.totalQuantity, persistedRemaining));
-}
-
-export function hasValidClaimSelection(
-  directiveItems: readonly FinanceDirectiveItem[],
-  claimDraft: Readonly<Record<string, FinanceClaimDraftEntry>>,
-): boolean {
-  return directiveItems.some((item) => {
-    const draft = claimDraft[item.id];
-    if (!draft?.selected) return false;
-    return draft.quantity > 0 && draft.quantity <= item.remainingQuantity;
-  });
-}
-
-export function buildClaimLineItems(
-  directiveItems: readonly FinanceDirectiveItem[],
-  claimDraft: Readonly<Record<string, FinanceClaimDraftEntry>>,
-): FinanceClaimLineItem[] {
-  return directiveItems.flatMap((item) => {
-    const draft = claimDraft[item.id];
-    if (!draft?.selected) return [];
-    if (draft.quantity <= 0 || draft.quantity > item.remainingQuantity) return [];
-
-    return [{
-      itemId: item.id,
-      name: item.name,
-      quantity: draft.quantity,
-      unitPrice: item.unitPrice,
-      lineAmount: item.unitPrice * draft.quantity,
-    } satisfies FinanceClaimLineItem];
-  });
-}
-
-export function getNextStageFromAction(currentStage: FinanceLifecycleStage): FinanceLifecycleStage {
-  if (currentStage === 'claim-submitted') return 'claim-approved';
-  if (currentStage === 'claim-approved') return 'invoice-requested';
-  if (currentStage === 'invoice-requested') return 'payment-term';
-  if (currentStage === 'payment-term') return 'payment-received';
-  return currentStage;
-}
+export {
+  isActiveParsingIntentStatus,
+  normalizeLifecycleStage,
+  clampRemainingQuantity,
+  hasValidClaimSelection,
+  buildClaimLineItems,
+  getNextStageFromAction,
+};

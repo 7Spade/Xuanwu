@@ -146,6 +146,16 @@ export {
 	FINANCE_LIFECYCLE_STAGES,
 	NON_TASK_COST_ITEM_TYPES,
 } from './constants/finance';
+export {
+	isActiveParsingIntentStatus,
+	normalizeLifecycleStage,
+	getNextStageFromAction,
+} from './directives/finance-lifecycle.directive';
+export {
+	clampRemainingQuantity,
+	hasValidClaimSelection,
+	buildClaimLineItems,
+} from './pipes/finance-claim.pipe';
 
 export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';
