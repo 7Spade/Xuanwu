@@ -181,6 +181,15 @@ export {
 	assertSafeFirestoreDocId,
 } from './validators/firestore-doc-id.validator';
 export { resolvePreferredTraceId } from './utils/trace.utils';
+export * from './constants';
+export type {
+	TraceContext,
+	ITraceProvider,
+	EventCounters,
+	IMetricsRecorder,
+	DomainErrorEntry,
+	IErrorLogger,
+} from './observability';
 
 export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';
