@@ -30,10 +30,10 @@ import "vis-network/styles/vis-network.css"
  * Used so VisNetworkCanvas can accept pre-created DataSets from VisDataAdapter
  * without importing vis-data or shared-infra types directly. [D24/D28]
  */
-export interface VisCompatibleDataSet {
-  add(data: unknown): unknown
-  update(data: unknown): unknown
-  remove(id: unknown): unknown
+export interface VisCompatibleDataSet<T = unknown> {
+  add(data: T | T[]): unknown
+  update(data: T | T[]): unknown
+  remove(id: string | number | Array<string | number>): unknown
   clear(): void
 }
 
@@ -50,8 +50,8 @@ export interface VisNetworkCanvasProps {
    * → vis-network reacts automatically (reactive DataSet subscription).
    * When provided, `nodes`/`edges` array props are ignored.
    */
-  nodesDataSet?: VisCompatibleDataSet
-  edgesDataSet?: VisCompatibleDataSet
+  nodesDataSet?: VisCompatibleDataSet<Node>
+  edgesDataSet?: VisCompatibleDataSet<Edge>
   options?: Options
   onReady?: (network: Network) => void
   className?: string
@@ -154,7 +154,7 @@ export function VisNetworkCanvas({
     }
     ds.update(nodes)
     const incomingIds = new Set<string | number>(
-      nodes.flatMap(n => (n.id !== undefined ? [n.id] : [])),
+      nodes.filter(n => n.id !== undefined).map(n => n.id as string | number),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)
@@ -170,7 +170,7 @@ export function VisNetworkCanvas({
     }
     ds.update(edges)
     const incomingIds = new Set<string | number>(
-      edges.flatMap(e => (e.id !== undefined ? [e.id as string | number] : [])),
+      edges.filter(e => e.id !== undefined).map(e => e.id as string | number),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)

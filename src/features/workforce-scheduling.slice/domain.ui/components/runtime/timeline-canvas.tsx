@@ -2,21 +2,17 @@
  * Module: timeline-canvas.tsx
  * Purpose: Render schedule items as a vis timeline.
  * Responsibilities: transform schedule items and mount vis Timeline safely
- * Constraints: deterministic logic, respect module boundaries
+ * Constraints: deterministic logic, respect module boundaries [D24/D28].
+ *   vis-data and vis-timeline must NOT be imported at the top level from feature slices;
+ *   use the @/lib-ui/vis abstraction layer instead.
  */
 
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
-import { DataSet } from "vis-data";
-import {
-  Timeline,
-  type DataGroup,
-  type DataItem,
-  type TimelineItem,
-  type TimelineOptions,
-} from "vis-timeline/standalone";
-import "vis-timeline/styles/vis-timeline-graph2d.min.css";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+// Types imported from lib-ui/vis barrel — not from vis-timeline directly [D24/D28].
+import type { DataGroup, DataItem, Timeline, TimelineItem, TimelineOptions } from "@/lib-ui/vis";
+import { VisTimelineCanvas } from "@/lib-ui/vis";
 
 import { cn } from "@/shadcn-ui/utils/utils";
 import type { ScheduleItem } from "@/shared-kernel";
@@ -210,18 +206,18 @@ export function TimelineCanvas({
   onDropTask,
   className,
 }: TimelineCanvasProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const timelineRef = useRef<Timeline | null>(null);
+  // Stale-closure refs for callbacks and derived state that changes over time.
   const onMoveItemRef = useRef(onMoveItem);
   const onDropTaskRef = useRef(onDropTask);
+  const isMountedRef = useRef(true);
+  // Holds the Timeline instance provided by VisTimelineCanvas.onReady.
+  const timelineInstanceRef = useRef<Timeline | null>(null);
+  // Outer container ref for drag-drop event listeners.
+  const outerContainerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    onMoveItemRef.current = onMoveItem;
-  }, [onMoveItem]);
-
-  useEffect(() => {
-    onDropTaskRef.current = onDropTask;
-  }, [onDropTask]);
+  useEffect(() => { onMoveItemRef.current = onMoveItem; }, [onMoveItem]);
+  useEffect(() => { onDropTaskRef.current = onDropTask; }, [onDropTask]);
+  useEffect(() => () => { isMountedRef.current = false; }, []);
 
   const membersMap = useMemo(() => new Map(members.map((member) => [member.id, member.name])), [members]);
   const skillNameBySlug = useMemo(() => new Map(SKILLS.map((skill) => [skill.slug, skill.name])), []);
@@ -229,6 +225,12 @@ export function TimelineCanvas({
     () => new Map(items.map((item) => [item.id, item.workspaceId])),
     [items]
   );
+  // Always-current mirror of workspaceIdByItemId for the onMove closure.
+  // onMove uses workspaceIdByItemIdRef.current instead of closing over the
+  // memoized value directly, so timelineOptions does NOT need workspaceIdByItemId
+  // in its dependency array — changes to it are always visible via the ref.
+  const workspaceIdByItemIdRef = useRef(workspaceIdByItemId);
+  useEffect(() => { workspaceIdByItemIdRef.current = workspaceIdByItemId; }, [workspaceIdByItemId]);
 
   const timelineItems = useMemo(() => {
     return items
@@ -274,169 +276,154 @@ export function TimelineCanvas({
     return groups;
   }, [groupMode, items]);
 
-  const initialWindow = useMemo(() => resolveInitialWindow(timelineItems), [timelineItems]);
+  // Capture the initial window once at mount time so it never triggers a
+  // subsequent setOptions call that would snap the viewport on prop changes.
+  const [initialWindow] = useState(() => resolveInitialWindow(timelineItems));
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-    let isEffectActive = true;
+  // Build vis-timeline options.  start/end are included here so VisTimelineCanvas
+  // uses them on initial mount.  VisTimelineCanvas strips start/end from subsequent
+  // setOptions calls to prevent viewport snap-back after the user has panned/zoomed.
+  const timelineOptions = useMemo<TimelineOptions & { throttleRedraw?: number }>(() => ({
+    stack: true,
+    groupHeightMode: "fitItems",
+    verticalScroll: true,
+    selectable: true,
+    moveable: enableDrag,
+    editable: enableDrag ? { updateTime: true, updateGroup: false } : false,
+    start: initialWindow.start,
+    end: initialWindow.end,
+    zoomMin: 1000 * 60 * 15,
+    zoomMax: 1000 * 60 * 60 * 24 * 90,
+    zoomFriction: 8,
+    throttleRedraw: 32,
+    timeAxis: { scale: "day", step: 1 },
+    snap: null,
+    margin: { item: 12, axis: 8 },
+    orientation: { axis: "top" },
+    showCurrentTime: false,
+    groupOrder: "content",
+    template: (rawItem) => {
+      const item = rawItem as TimelineRenderableItem | undefined;
+      const taskTitle = typeof item?.taskTitle === "string" ? item.taskTitle : "Untitled";
+      const skillRequirements = Array.isArray(item?.skillRequirements) ? item.skillRequirements : [];
+      return buildTimelineItemElement(taskTitle, skillRequirements);
+    },
+    onMove: (movedItem: TimelineItem, callback) => {
+      const startDate = new Date(movedItem.start);
+      const endDate = movedItem.end ? new Date(movedItem.end) : new Date(startDate);
 
-    const dataSet = new DataSet<DataItem>(timelineItems);
-    const groupDataSet = timelineGroups ? new DataSet<DataGroup>(timelineGroups) : undefined;
-
-    const options: TimelineOptions & { throttleRedraw?: number } = {
-      stack: true,
-      groupHeightMode: "fitItems",
-      verticalScroll: true,
-      selectable: true,
-      moveable: enableDrag,
-      editable: enableDrag ? { updateTime: true, updateGroup: false } : false,
-      start: initialWindow.start,
-      end: initialWindow.end,
-      zoomMin: 1000 * 60 * 15,
-      zoomMax: 1000 * 60 * 60 * 24 * 90,
-      zoomFriction: 8,
-      throttleRedraw: 32,
-      timeAxis: { scale: "day", step: 1 },
-      snap: null,
-      margin: { item: 12, axis: 8 },
-      orientation: { axis: "top" },
-      showCurrentTime: false,
-      groupOrder: "content",
-      template: (rawItem) => {
-        const item = rawItem as TimelineRenderableItem | undefined;
-        const taskTitle = typeof item?.taskTitle === "string" ? item.taskTitle : "Untitled";
-        const skillRequirements = Array.isArray(item?.skillRequirements) ? item.skillRequirements : [];
-        return buildTimelineItemElement(taskTitle, skillRequirements);
-      },
-      onMove: (movedItem: TimelineItem, callback) => {
-        const startDate = new Date(movedItem.start);
-        const endDate = movedItem.end ? new Date(movedItem.end) : new Date(startDate);
-
-        if (groupMode === "workspace") {
-          const sourceWorkspaceId = workspaceIdByItemId.get(String(movedItem.id));
-          const targetWorkspaceId = movedItem.group != null ? String(movedItem.group) : undefined;
-          if (sourceWorkspaceId && targetWorkspaceId && sourceWorkspaceId !== targetWorkspaceId) {
-            if (isEffectActive) {
-              callback(null);
-            }
-            return;
-          }
-        }
-
-        const moveHandler = onMoveItemRef.current;
-
-        if (!moveHandler) {
-          if (isEffectActive) {
-            callback(movedItem);
-          }
+      if (groupMode === "workspace") {
+        const sourceWorkspaceId = workspaceIdByItemIdRef.current.get(String(movedItem.id));
+        const targetWorkspaceId = movedItem.group != null ? String(movedItem.group) : undefined;
+        if (sourceWorkspaceId && targetWorkspaceId && sourceWorkspaceId !== targetWorkspaceId) {
+          if (isMountedRef.current) callback(null);
           return;
         }
-
-        moveHandler({
-          itemId: String(movedItem.id),
-          start: startDate,
-          end: endDate,
-          groupId: movedItem.group != null ? String(movedItem.group) : undefined,
-        })
-          .then((ok) => {
-            if (!isEffectActive) return;
-            callback(ok ? movedItem : null);
-          })
-          .catch(() => {
-            if (!isEffectActive) return;
-            callback(null);
-          });
-      },
-    };
-
-    const timeline = groupDataSet
-      ? new Timeline(containerRef.current, dataSet, groupDataSet, options)
-      : new Timeline(containerRef.current, dataSet, options);
-    timelineRef.current = timeline;
-
-    let redrawFrame: number | null = null;
-    const scheduleRedraw = () => {
-      if (!isEffectActive) return;
-      if (redrawFrame !== null) {
-        cancelAnimationFrame(redrawFrame);
       }
-      redrawFrame = requestAnimationFrame(() => {
-        redrawFrame = null;
-        if (!isEffectActive) return;
-        timeline.redraw();
-      });
-    };
 
-    timeline.on("rangechanged", scheduleRedraw);
-
-    // Recalculate stacked item heights after template DOM is mounted.
-    scheduleRedraw();
-
-    const container = containerRef.current;
-    const resizeObserver = new ResizeObserver(() => {
-      scheduleRedraw();
-    });
-    resizeObserver.observe(container);
-
-    const handleDragOver = (event: DragEvent) => {
-      if (!event.dataTransfer) return;
-      if (event.dataTransfer.types.includes("application/x-workspace-task")) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "copy";
-      }
-    };
-
-    const handleDrop = async (event: DragEvent) => {
-      if (!event.dataTransfer) return;
-
-      const payload = event.dataTransfer.getData("application/x-workspace-task");
-      if (!payload) return;
-
-      event.preventDefault();
-
-      let parsed: { taskId?: string } | null = null;
-      try {
-        parsed = JSON.parse(payload) as { taskId?: string };
-      } catch {
+      const moveHandler = onMoveItemRef.current;
+      if (!moveHandler) {
+        if (isMountedRef.current) callback(movedItem);
         return;
       }
 
-      if (!parsed?.taskId) return;
+      moveHandler({
+        itemId: String(movedItem.id),
+        start: startDate,
+        end: endDate,
+        groupId: movedItem.group != null ? String(movedItem.group) : undefined,
+      })
+        .then((ok) => { if (isMountedRef.current) callback(ok ? movedItem : null); })
+        .catch(() => { if (isMountedRef.current) callback(null); });
+    },
+  // Dependency notes:
+  // - enableDrag / groupMode: structural options that justify fresh options objects.
+  // - initialWindow: deliberately omitted — captured once via useState so it's a
+  //   stable reference that never changes; including it would be noise and could
+  //   mislead into thinking it may trigger a snap-back.
+  // - workspaceIdByItemId: omitted — onMove reads via workspaceIdByItemIdRef.current
+  //   so the closure is always current without recreating the options object.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [enableDrag, groupMode]);
 
-      const timelineInstance = timelineRef.current;
-      const dropHandler = onDropTaskRef.current;
-      if (!timelineInstance || !dropHandler) return;
+  // Called once by VisTimelineCanvas after the Timeline instance is ready.
+  // Sets up the rangechanged listener for deferred redraws.
+  const handleReady = useCallback((tl: Timeline) => {
+    timelineInstanceRef.current = tl;
 
-      const eventProps = timelineInstance.getEventProperties(event as unknown as Event);
-      const dropTime = eventProps.time;
-      if (!(dropTime instanceof Date) || Number.isNaN(dropTime.getTime())) return;
-
-      await dropHandler({
-        taskId: parsed.taskId,
-        droppedAt: dropTime,
+    let redrawFrame: number | null = null;
+    const scheduleRedraw = () => {
+      if (!isMountedRef.current) return;
+      if (redrawFrame !== null) cancelAnimationFrame(redrawFrame);
+      redrawFrame = requestAnimationFrame(() => {
+        redrawFrame = null;
+        if (!isMountedRef.current) return;
+        tl.redraw();
       });
     };
 
+    tl.on("rangechanged", scheduleRedraw);
+    // Recalculate stacked item heights after template DOM is first mounted.
+    scheduleRedraw();
+  }, []);
+
+  // Attach drag-drop handlers to the outer wrapper div (events bubble from timeline).
+  const handleDragOver = useCallback((event: DragEvent) => {
+    if (!event.dataTransfer) return;
+    if (event.dataTransfer.types.includes("application/x-workspace-task")) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "copy";
+    }
+  }, []);
+
+  const handleDrop = useCallback(async (event: DragEvent) => {
+    if (!event.dataTransfer) return;
+    const payload = event.dataTransfer.getData("application/x-workspace-task");
+    if (!payload) return;
+    event.preventDefault();
+
+    let parsed: { taskId?: string } | null = null;
+    try {
+      parsed = JSON.parse(payload) as { taskId?: string };
+    } catch {
+      return;
+    }
+    if (!parsed?.taskId) return;
+
+    const tl = timelineInstanceRef.current;
+    const dropHandler = onDropTaskRef.current;
+    if (!tl || !dropHandler) return;
+
+    const eventProps = tl.getEventProperties(event as unknown as Event);
+    const dropTime = eventProps.time;
+    if (!(dropTime instanceof Date) || Number.isNaN(dropTime.getTime())) return;
+
+    await dropHandler({ taskId: parsed.taskId, droppedAt: dropTime });
+  }, []);
+
+  // Mount drag-drop listeners on outer div; stable refs means no re-subscription.
+  useEffect(() => {
+    const container = outerContainerRef.current;
+    if (!container) return;
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("drop", handleDrop);
-
     return () => {
-      isEffectActive = false;
-      timeline.off("rangechanged", scheduleRedraw);
-      resizeObserver.disconnect();
-      if (redrawFrame !== null) {
-        cancelAnimationFrame(redrawFrame);
-      }
       container.removeEventListener("dragover", handleDragOver);
       container.removeEventListener("drop", handleDrop);
-      timeline.destroy();
-      timelineRef.current = null;
     };
-  }, [enableDrag, groupMode, initialWindow.end, initialWindow.start, timelineGroups, timelineItems, workspaceIdByItemId]);
+  }, [handleDragOver, handleDrop]);
 
   return (
-    <div className={cn("relative min-h-[520px] rounded-xl border bg-card p-3", className)}>
-      <div ref={containerRef} className="min-h-[500px] w-full" />
+    <div ref={outerContainerRef} className={cn("relative min-h-[520px] rounded-xl border bg-card p-3", className)}>
+      {/* VisTimelineCanvas owns the Timeline lifecycle; it imports vis-data and
+          vis-timeline/standalone internally so this slice never violates D24/D28. */}
+      <VisTimelineCanvas
+        items={timelineItems}
+        groups={timelineGroups}
+        options={timelineOptions}
+        onReady={handleReady}
+        className="min-h-[500px] w-full"
+      />
     </div>
   );
 }
