@@ -26,8 +26,9 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 
 ### Instructions and customization hygiene
 
-- Keep always-on instructions concise; move specialized workflows into prompts, skills, agents, or scoped instructions.
+- Keep always-on instructions concise; move specialized workflows into prompts, skills, agents, hooks, or scoped instructions according to `.github/README.md`.
 - Reuse existing repository documents with links instead of duplicating long policy text.
+- Use the official VS Code customization taxonomy from `docs/copilot/customization/overview.md` before introducing or renaming customization assets.
 - Do not use local folder names or terminology that conflict with official VS Code Copilot concepts.
 
 ### i18n
@@ -53,7 +54,7 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 1. Read `docs/architecture/00-logic-overview.md` when business logic is involved.
 2. Confirm relevant entities in `.memory/knowledge-graph.json`.
 3. Reuse established repository patterns from `skills/SKILL.md` and existing code.
-4. For Copilot customization changes, follow `.github/README.md` before editing `.github/agents`, `.github/hooks`, `.github/instructions`, `.github/prompts`, or `.github/skills`.
+4. For Copilot customization changes, follow `.github/README.md` first, then the matching spec under `docs/copilot/customization/`, before editing `.github/agents`, `.github/hooks`, `.github/instructions`, `.github/prompts`, or `.github/skills`.
 
 ## Companion Files
 

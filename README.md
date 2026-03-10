@@ -20,14 +20,13 @@ If no site key is provided, App Check is skipped by design and the app continues
 
 This repository uses VS Code Copilot customizations with a repository guide:
 
-- Development guide: `.github/README.md`
+- Canonical customization maintenance guide: `.github/README.md`
+- Official/local customization reference set: `docs/copilot/customization/*.md`
 - Global workspace instructions: `.github/copilot-instructions.md`
 - Multi-agent shared conventions: `AGENTS.md`
-- File-scoped rules: `.github/instructions/*.instructions.md`
-- Workspace custom agents: `.github/agents/*.agent.md`
-- Workspace hooks: `.github/hooks/*.json`
-- Workspace prompt files: `.github/prompts/*.prompt.md`
-- Workspace skills: `.github/skills/*/SKILL.md`
+- Live repository customizations: `.github/instructions/*.instructions.md`, `.github/agents/*.agent.md`, `.github/hooks/*.json`, `.github/prompts/*.prompt.md`, `.github/skills/*/SKILL.md`
+- Reference-only codebase baseline for prompts/agents: `skills/SKILL.md`
+- Loader settings for VS Code discovery: `.vscode/settings.json`
 - Nested agent instructions: `src/**/AGENTS.md`
 
 To ensure nested instructions are applied in VS Code:
@@ -35,7 +34,7 @@ To ensure nested instructions are applied in VS Code:
 - Enable `chat.useNestedAgentsMdFiles` (experimental)
 - Enable `chat.useCustomAgentHooks` when using agent-scoped hooks
 
-Use `Chat: Open Chat Customizations` and Chat `Diagnostics` in VS Code to inspect loaded instructions, prompts, agents, hooks, and skills.
+Use `Chat: Open Chat Customizations` and Chat `Diagnostics` in VS Code to inspect loaded instructions, prompts, agents, hooks, and skills. For ownership, consolidation, and when-to-use guidance, prefer `.github/README.md` over this root README.
 
 ### Prompt Command Table（`/指令`）
 
@@ -44,7 +43,6 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | Command | Prompt File |
 | --- | --- |
 | `/blueprint-generator` | `.github/prompts/blueprint-generator.prompt.md` |
-| `/boundary-check` | `.github/prompts/boundary-check.prompt.md` |
 | `/cicd-deployment-orchestrator` | `.github/prompts/cicd-deployment-orchestrator.prompt.md` |
 | `/create-vertical-slice` | `.github/prompts/create-vertical-slice.prompt.md` |
 | `/documentation-writer` | `.github/prompts/documentation-writer.prompt.md` |
@@ -66,7 +64,6 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/ui-ux-consistency-sync` | `.github/prompts/ui-ux-consistency-sync.prompt.md` |
 | `/x-arch-adr` | `.github/prompts/x-arch-adr.prompt.md` |
 | `/x-arch-audit` | `.github/prompts/x-arch-audit.prompt.md` |
-| `/x-arch-auditor` | `.github/prompts/x-arch-auditor.prompt.md` |
 | `/x-arch-docs` | `.github/prompts/x-arch-docs.prompt.md` |
 | `/x-arch-gatekeeper` | `.github/prompts/x-arch-gatekeeper.prompt.md` |
 | `/x-arch-graph-pruner` | `.github/prompts/x-arch-graph-pruner.prompt.md` |

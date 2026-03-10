@@ -23,7 +23,7 @@ This document provides a stable high-level map of the repository for Copilot pro
 | `.github/prompts/` | Slash-command prompt files |
 | `.github/skills/` | Project Agent Skills |
 
-See `.github/README.md` for the detailed customization development guide.
+See `.github/README.md` for the canonical repository customization development guide, and `docs/copilot/customization/*.md` for the corresponding VS Code reference specs.
 
 ## Application Layout
 

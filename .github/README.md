@@ -22,6 +22,37 @@ Copilot customizations in this repository must stay aligned with:
 - Entity semantics: `.memory/knowledge-graph.json`
 - Codebase reference baseline: `skills/SKILL.md`
 
+## Customization Selection Matrix
+
+Use the official VS Code customization taxonomy first, then map it to the repository layout below.
+
+| Need | Primary customization type | Activation model | Repository home | Do not use when |
+| --- | --- | --- | --- | --- |
+| Stable rules that apply to every task | Always-on instructions | Automatic in every chat | `.github/copilot-instructions.md`, `AGENTS.md` | The guidance is file-specific or workflow-specific |
+| Narrow rules for file types, frameworks, or authoring tasks | File-based instructions | Automatic when `applyTo` or task semantics match | `.github/instructions/*.instructions.md` | The content is a reusable slash workflow or agent persona |
+| Repeatable task invoked with `/command` | Prompt files | Manual slash-command invocation | `.github/prompts/*.prompt.md` | The behavior needs persistent tool boundaries or subagent orchestration |
+| Specialized persona with constrained tools or handoffs | Custom agents | Selected explicitly or invoked as subagents | `.github/agents/*.agent.md` | The content is just a rule set or one-off prompt body |
+| Portable, on-demand capability with resources/scripts | Agent Skills | Loaded when relevant or invoked via `/` | `.github/skills/<skill>/SKILL.md` | The content only defines project policy or folder ownership |
+| Deterministic automation at lifecycle boundaries | Hooks | Triggered by lifecycle event | `.github/hooks/*.json` and agent `hooks:` frontmatter | The behavior can be expressed as normal instructions or prompts |
+| Marketplace-delivered customization bundles | Agent plugins | Installed through VS Code plugin settings | `chat.plugins.*` settings, not repository folders | The customization is local to this repository |
+
+## Repository Design Workflow
+
+Design or refactor Copilot customization assets in this order:
+
+1. Start from `docs/copilot/customization/overview.md` to choose the correct customization type.
+2. Use the corresponding official/local spec before editing files:
+   - instructions → `docs/copilot/customization/custom-instructions.md`
+   - prompts → `docs/copilot/customization/prompt-files.md`
+   - agents → `docs/copilot/customization/custom-agents.md`
+   - skills → `docs/copilot/customization/agent-skills.md`
+   - hooks → `docs/copilot/customization/hooks.md`
+   - plugins → `docs/copilot/customization/agent-plugins.md`
+3. Update this guide first when folder ownership, terminology, or consolidation rules change.
+4. Keep `.github/copilot-instructions.md` lean and move scoped or workflow-specific content into the correct customization type.
+5. Keep loader settings aligned in `.vscode/settings.json` so discovery matches the documented repository layout.
+6. Sync user-facing entry points (`README.md`, prompt references, and stable links) after structural changes.
+
 ## Design Principles
 
 1. **One customization type, one responsibility**
@@ -46,6 +77,15 @@ Copilot customizations in this repository must stay aligned with:
 
 5. **Only link to real files**
    - Prompt, skill, and agent references must resolve to files that exist in the repository.
+
+## Consolidation Rules
+
+- `.github/README.md` is the canonical repository maintenance guide for Copilot customization structure, ownership, and consolidation decisions.
+- `.github/copilot-instructions.md` is only for concise always-on rules; it must not become a duplicate catalog of agents, prompts, or hooks.
+- `README.md` is the user-facing quick entry point; keep only the high-level navigation and prompt command catalog there.
+- `docs/copilot/customization/*.md` remains the local reference mirror of the official VS Code customization docs and should be cited rather than paraphrased repeatedly.
+- `.vscode/settings.json` is the effective loader configuration; documentation must describe the configuration that is actually enabled there.
+- `skills/SKILL.md` remains a repository reference baseline, while `.github/skills/` is the active VS Code project skill location.
 
 ## Canonical Repository Layout
 

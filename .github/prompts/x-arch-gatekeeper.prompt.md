@@ -1,8 +1,20 @@
 ---
 name: x-arch-gatekeeper
-description: 'Pre-commit architecture compliance check. Validates code diffs against Hard Invariants (D1–D20), DDD boundary rules, and CI gates to ensure no governance violations enter the main branch. Triggers: "pre-commit check", "gate check", "hard invariants", "boundary guard", "ddd check", "aggregate write guard".'
+description: >
+  Pre-commit architecture compliance check for Hard Invariants (D1–D20),
+  DDD boundaries, and CI gates. Supports boundary-only mode.
+triggers:
+  - pre-commit check
+  - gate check
+  - hard invariants
+  - mode=boundary-only
+  - boundary-check
+  - ddd boundary
+  - aggregate write guard
+  - domain isolation
 agent: 'agent'
 tools: ['repomix/*', 'sequentialthinking/*', 'search/codebase', 'changes']
+argument-hint: 'Optional target path or mode, e.g.: src/features/workspace.slice OR mode=boundary-only'
 ---
 
 # Pre-Commit Architecture Gatekeeper
@@ -14,7 +26,36 @@ Validate the current code changes against all Hard Invariants, DDD boundary rule
 ## Execution Steps
 
 1. **Diff Analysis:** Use `#tool:repomix` to generate a change summary of modified files.
-2. **Rule Verification:** Use `#tool:sequential-thinking` to check each item:
+2. **Rule Verification:** Use `#tool:sequential-thinking` to check each item in **Hard Invariants**, **DDD Boundary Rules**, and **CI Gates**.
+
+### Boundary-only mode
+
+If input argument is exactly `mode=boundary-only`, run boundary-only checks.
+Also treat natural-language requests containing these phrases as boundary-only:
+
+**Mode triggers**
+- `boundary-check`
+- `ddd boundary`
+- `aggregate write guard`
+- `domain isolation`
+
+**Checks to execute in boundary-only mode**
+- **Aggregate write-protection (D3)**: no writes outside `_actions.ts`
+  - Find direct Firestore writes (`setDoc`, `updateDoc`, `deleteDoc`, `addDoc`) outside `_actions.ts`
+- **Domain isolation**: no infrastructure dependency leakage into domain layer
+  - Domain layer must not import infrastructure SDK/adapter modules
+  - No direct cross-BC writes; cross-BC access must use Query Gateway or published events
+- **Application orchestration correctness**: application coordinates, domain decides
+- **Terminology alignment**: identifiers align with `docs/domain-glossary.md`
+
+Boundary-only findings format:
+
+```
+Violation: <path:line>
+Type: [D3 | Domain-Isolation | Orchestration | Terminology]
+Why: <brief reason>
+Fix: <minimal actionable correction>
+```
 
 ### Hard Invariants (D1–D20)
 
