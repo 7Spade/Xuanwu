@@ -1,23 +1,10 @@
-import type { Timestamp } from '@/shared-kernel/ports'
-
-export interface WorkspaceFileVersion {
-  versionId: string;
-  versionNumber: number;
-  versionName: string;
-  size: number;
-  uploadedBy: string;
-  createdAt: Timestamp | Date; // Can be Date for client-side, becomes Timestamp on server
-  downloadURL: string;
-  storagePath?: string;
-}
-
-export interface WorkspaceFile {
-  id: string;
-  name: string;
-  type: string;
-  currentVersionId: string;
-  updatedAt: Timestamp | Date; // Can be Date for client-side, becomes Timestamp on server
-  versions: WorkspaceFileVersion[];
-}
-
-export type CreateWorkspaceFileInput = Omit<WorkspaceFile, 'id' | 'updatedAt'>;
+/**
+ * @deprecated 🛑 型別定義已集中管理。
+ * 請優先從 `@/shared-kernel/types` 引用。
+ * 定義位置：src/shared-kernel/types/workspace-file.ts
+ */
+export type {
+  WorkspaceFileVersion,
+  WorkspaceFile,
+  CreateWorkspaceFileInput,
+} from '@/shared-kernel/types/workspace-file';

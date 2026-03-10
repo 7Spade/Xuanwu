@@ -1,18 +1,15 @@
 /**
- * Module: _types.ts
- * Purpose: Finance lifecycle and claim drafting domain types.
- * Responsibilities: Type contracts for finance UI, state machine, and read snapshot.
+ * Module: finance.ts
+ * Purpose: Centralized finance domain type definitions.
+ * Responsibilities: Finance lifecycle stages, claim drafting, and aggregate state types.
  * Constraints: deterministic logic, respect module boundaries
- *
- * @deprecated 🛑 型別定義已集中管理。
- * 請優先從 `@/shared-kernel/types/finance` 引用 FinanceLifecycleStage、FinanceClaimDraftEntry、
- * FinanceClaimLineItem、FinanceStrongReadSnapshot。
- * 注意：FinanceDirectiveItem 與 FinanceAggregateState 因依賴 semantic-graph.slice 的 CostItemTypeValue，暫維持本地定義。
- * 定義位置（部分）：src/shared-kernel/types/finance.ts
  */
 
-import type { CostItemTypeValue } from '@/features/semantic-graph.slice';
-import type { ReadConsistencyMode } from '@/shared-kernel';
+import type { ReadConsistencyMode } from '@/shared-kernel/infra-contracts/read-consistency';
+
+// CostItemTypeValue is re-exported from semantic-graph.slice as an alias for CostItemType
+// It remains referenced from the feature slice to preserve the cross-BC import contract.
+export type { ReadConsistencyMode };
 
 export type FinanceLifecycleStage =
   | 'claim-preparation'
@@ -29,7 +26,8 @@ export interface FinanceDirectiveItem {
   readonly sourceDocument: string;
   readonly intentId: string;
   readonly semanticTagSlug: string;
-  readonly costItemType: CostItemTypeValue;
+  /** CostItemType value — references the semantic classification from VS8. */
+  readonly costItemType: string;
   readonly unitPrice: number;
   readonly totalQuantity: number;
   readonly remainingQuantity: number;

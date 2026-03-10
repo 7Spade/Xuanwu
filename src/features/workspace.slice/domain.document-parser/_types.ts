@@ -1,29 +1,41 @@
+/**
+ * Module: domain.document-parser/_types.ts
+ * Purpose: Document parser domain types.
+ * Responsibilities: Define ParsedLineItem and ParsingIntent with semantic-graph semantic field types.
+ * Constraints: deterministic logic, respect module boundaries
+ *
+ * @deprecated 🛑 基礎品牌型別與匯入狀態型別已集中管理。
+ * 請優先從 `@/shared-kernel/types` 引用 IntentID、SourcePointer、ParsingImport、ParsingImportStatus。
+ * 定義位置：src/shared-kernel/types/document-parser.ts
+ * 注意：ParsedLineItem 與 ParsingIntent 因依賴 semantic-graph.slice 具體型別，暫維持本地定義。
+ */
+
 import type {
   CostItemType,
   ParserBillingModeValue,
   ParserLineItemTypeValue,
   ParserRoutingStatusValue,
-} from '@/features/semantic-graph.slice'
-import type { SkillRequirement } from '@/shared-kernel'
-import type { Timestamp } from '@/shared-kernel/ports'
+} from '@/features/semantic-graph.slice';
+import type { SkillRequirement } from '@/shared-kernel';
+import type { Timestamp } from '@/shared-kernel/ports';
 
 // ParsingIntentSourceType, ParsingIntentReviewStatus, and ParsingIntentStatus are owned by
-// business.parsing-intent/_contract.ts [D20] ??the single source of truth for this sub-domain contract.
+// business.parsing-intent/_contract.ts [D20] — the single source of truth for this sub-domain contract.
 import type {
   ParsingIntentSourceType,
   ParsingIntentReviewStatus,
   ParsingIntentStatus,
-} from '../domain.parsing-intent/_contract'
+} from '../domain.parsing-intent/_contract';
 
 // =================================================================
-// Brand Types ??nominal type safety for cross-module references
+// Brand Types — nominal type safety for cross-module references
 // =================================================================
 
-/** Branded ID for a ParsingIntent document ??prevents mixing with plain strings. */
-export type IntentID = string & { readonly _brand: 'IntentID' }
+/** Branded ID for a ParsingIntent document — prevents mixing with plain strings. */
+export type IntentID = string & { readonly _brand: 'IntentID' };
 
-/** Branded pointer to a source file download URL ??immutable contract anchor. */
-export type SourcePointer = string & { readonly _brand: 'SourcePointer' }
+/** Branded pointer to a source file download URL — immutable contract anchor. */
+export type SourcePointer = string & { readonly _brand: 'SourcePointer' };
 
 export interface ParsedLineItem {
   name: string;
@@ -32,7 +44,7 @@ export interface ParsedLineItem {
   discount?: number;
   subtotal: number;
   /**
-   * Layer-2 Semantic Classification (VS8) ??set during the document parse phase.
+   * Layer-2 Semantic Classification (VS8) — set during the document parse phase.
    * Indicates whether this item can be decomposed into executable tasks or whether
    * it represents a non-task entry (financial, management overhead, profit, etc.).
    * The semantic router (Layer 3) uses this field to decide which domain model
@@ -62,11 +74,11 @@ export interface ParsedLineItem {
   requiredSkills?: SkillRequirement[];
 }
 
-// Re-export so existing consumers of this module continue to work [D20 ??import from slice index].
+// Re-export so existing consumers of this module continue to work [D20 — import from slice index].
 export type { ParsingIntentSourceType, ParsingIntentReviewStatus };
 
 export interface ParsingIntent {
-  /** Branded ID ??use `IntentID` cast when constructing references. */
+  /** Branded ID — use `IntentID` cast when constructing references. */
   id: IntentID;
   workspaceId: string;
   sourceFileName: string;
@@ -84,7 +96,7 @@ export interface ParsingIntent {
   /** Optional lineage root for multi-version intent chains. */
   baseIntentId?: IntentID;
   lineItems: ParsedLineItem[];
-  /** Skill requirements extracted from the document ??fed to organization.schedule proposals. */
+  /** Skill requirements extracted from the document — fed to organization.schedule proposals. */
   skillRequirements?: SkillRequirement[];
   /** Provenance metadata for AI/human/system origin tracing. */
   parserVersion?: string;

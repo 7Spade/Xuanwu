@@ -7,25 +7,70 @@
 ```text
 src/
 ├── shared-kernel/              # 🔷 L1 · VS0 (全域契約中心)
+│   ├── constants/              # 🔢 全域常數（狀態/角色/路由/設定）
 │   ├── data-contracts/         # 📄 基礎資料契約 [#8]
+│   ├── directives/             # 🛡️ 橫切行為指令（守衛/冪等/TraceID/安全邊界）
+│   ├── enums/                  # 🔖 可迭代字串聯合值陣列
 │   ├── infra-contracts/        # ⚙️ 基礎設施行為契約 (S1-S6)
+│   ├── logics/                 # 🧮 跨切片共用純函式邏輯（推導/計算/轉換）
+│   ├── observability/          # 👁️ 可觀測性契約（L1 contracts only, no runtime）
+│   ├── ontologys/              # 🧠 領域概念本體（概念詞彙/語義命名空間/關係定義）
+│   ├── pipes/                  # 🔄 跨切片純粹資料轉換管道（Mapping/Projection/Normalization）
 │   ├── ports/                  # 🔌 Infrastructure Ports [D24]
+│   ├── schemas/                # ✅ 跨切片共用 Zod 驗證 Schema
+│   ├── types/                  # 🗂️ 跨切片集中型別定義 [D19]
 │   └── index.ts                # [D7] 唯一公開出口 (所有切片僅能從此引用)
 ```
 
 ## 子目錄職責
 
+- `constants/`
+	- 放置全域常數定義（狀態中繼資料、角色 metadata、路由路徑、應用設定）。
+	- 使用 `as const` 與映射物件；禁止使用 `enum` 關鍵字（見 `enums/README.md`）。
+
 - `data-contracts/`
 	- 放置跨切片共用的資料契約（例如 event envelope、authority snapshot、skill requirement、command result）。
 	- 作為領域與基礎設施之間的共同語義基線（對應 [#8]）。
+
+- `directives/`
+	- 放置橫切行為指令的純規格定義：守衛評估函式、冪等鍵格式生成、TraceID 格式守衛、安全邊界常數。
+	- 僅含純函式與常數；具體 middleware 實作留在 L0/L2/L7。
+
+- `enums/`
+	- 放置可迭代的字串聯合值陣列（`readonly string[]`）。
+	- 不使用 TypeScript `enum` 關鍵字（詳見 `enums/README.md`）。
 
 - `infra-contracts/`
 	- 放置全域基礎設施行為契約與限制，包含 S1～S6（Outbox、Version Guard、Read Consistency、Staleness、Resilience、Token Refresh）。
 	- 所有切片必須引用契約常數，禁止硬編碼行為與 SLA 數值。
 
+- `logics/`
+	- 放置跨切片共用的無副作用純函式（推導、計算、狀態機轉換、數值運算、文字格式化）。
+	- 確定性（Deterministic）、無 I/O、無狀態——被 2 個以上切片使用才移入。
+
+- `observability/`
+	- 放置可觀測性契約（TraceContext、DomainErrorEntry 等型別與介面）。
+	- 只允許 L1 契約；禁止 runtime sink（console/network/db）、mutable counter、clock 實作。
+
+- `ontologys/`
+	- 放置系統領域概念本體：核心概念詞彙、語義命名空間常數、概念關係型別定義。
+	- 回答「系統中的概念是什麼」；不含業務流程邏輯與 I/O。
+
+- `pipes/`
+	- 放置跨切片共用的純粹資料形狀轉換函式（Mapping、Projection、Normalization、Serialization）。
+	- 與 `logics/` 的界線：logics 做「計算/判斷」，pipes 做「形狀轉換」。
+
 - `ports/`
 	- 定義依賴倒置介面（Infrastructure Ports），供 feature slices 透過介面使用底層能力。
 	- 依 [D24]，feature slice 不可直接 `import firebase/*`，必須經由 ports/adapter 邊界存取。
+
+- `schemas/`
+	- 放置跨切片共用的 Zod 驗證 Schema 與衍生型別（`z.infer<typeof schema>`）。
+	- 作為資料邊界守衛（Route Handler/Server Action 輸入驗證）的共用契約。
+
+- `types/`
+	- 放置跨切片集中型別定義（實體型別、Value Objects、跨 BC 資料結構）。
+	- 依 [D19]，原本散落在各切片 `_types.ts` 的跨 BC 型別統一收斂於此。
 
 - `index.ts`
 	- 共享核心層的唯一公開出口。

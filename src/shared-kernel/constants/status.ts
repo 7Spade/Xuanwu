@@ -1,21 +1,20 @@
 /**
- * @fileoverview shared/constants/status.ts ??Domain status / lifecycle state metadata.
+ * @fileoverview shared/constants/status.ts — Domain status / lifecycle state metadata.
  *
  * Centralises the labelled, coloured descriptors for every status / state string union
- * used across the domain model.  Note: all types are now canonical in their feature slices:
- * `@/shared-kernel` and `@/features/workspace.slice`.
+ * used across the domain model.  All types are now canonical in shared-kernel/types:
  *
  * Covered union types:
- *   - ScheduleStatus          (??@/shared-kernel/data-contracts/scheduling/schedule-contract)
- *   - WorkspaceLifecycleState (??@/features/workspace.slice)
- *   - AuditLogType            (??@/features/workspace.slice)
- *   - InviteState             (??@/shared-kernel ??PartnerInvite.inviteState)
- *   - Presence                (??@/shared-kernel ??MemberReference.presence)
- *   - NotificationType        (??@/shared-kernel ??Notification.type)
+ *   - ScheduleStatus          (→ @/shared-kernel/data-contracts/scheduling/schedule-contract)
+ *   - WorkspaceLifecycleState (→ @/shared-kernel/types/workspace)
+ *   - AuditLogType            (→ @/shared-kernel/types/audit-log)
+ *   - InviteState             (→ @/shared-kernel → PartnerInvite.inviteState)
+ *   - Presence                (→ @/shared-kernel → MemberReference.presence)
+ *   - NotificationType        (→ @/shared-kernel → Notification.type)
  */
 
-import type { AuditLogType } from '@/features/workspace.slice';
-import type { WorkspaceLifecycleState } from '@/features/workspace.slice';
+import type { AuditLogType } from '@/shared-kernel/types/audit-log';
+import type { WorkspaceLifecycleState } from '@/shared-kernel/types/workspace';
 import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------

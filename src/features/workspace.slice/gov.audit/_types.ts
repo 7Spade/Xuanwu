@@ -1,21 +1,6 @@
-import type { Timestamp } from '@/shared-kernel/ports'
-
-export type AuditLogType = 'create' | 'update' | 'delete' | 'security';
-
-export interface AuditLog {
-  id: string;
-  accountId: string;
-  workspaceId?: string;
-  workspaceName?: string;
-  recordedAt: Timestamp; // Event Timestamp
-  actor: string;
-  actorId?: string;
-  action: string;
-  target: string;
-  type: AuditLogType;
-  metadata?: {
-    before?: unknown;
-    after?: unknown;
-    ip?: string;
-  };
-}
+/**
+ * @deprecated 🛑 型別定義已集中管理。
+ * 請優先從 `@/shared-kernel/types` 引用。
+ * 定義位置：src/shared-kernel/types/audit-log.ts
+ */
+export type { AuditLogType, AuditLog } from '@/shared-kernel/types/audit-log';

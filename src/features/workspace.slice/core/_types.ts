@@ -1,71 +1,14 @@
-import type { Timestamp } from '@/shared-kernel/ports'
-
-import type { WorkspaceFile } from '../domain.files/_types'
-import type { WorkspaceIssue } from '../domain.issues/_types'
-import type { WorkspaceTask } from '../domain.tasks/_types'
-import type { WorkspaceGrant } from '../gov.role/_types'
-
-export type WorkspaceLifecycleState = 'preparatory' | 'active' | 'stopped';
-
-/** Designated role-holders for a workspace (經理/督導/安衛). */
-export interface WorkspacePersonnel {
-  managerId?: string;
-  supervisorId?: string;
-  safetyOfficerId?: string;
-}
-
-export interface CapabilitySpec {
-  id: string;
-  name: string;
-  type: 'ui' | 'api' | 'data' | 'governance' | 'monitoring';
-  status: 'stable' | 'beta';
-  description: string;
-}
-
-export interface Capability extends CapabilitySpec {
-  config?: object;
-}
-
-export interface Address {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  details?: string;
-}
-
 /**
- * WorkspaceLocation — a sub-location within a workspace (廠區子地點).
- * Per docs/prd-schedule-workforce-skills.md FR-L1/FR-L2/FR-L3.
- * Workspace OWNER can create/edit/delete sub-locations.
+ * @deprecated 🛑 型別定義已集中管理。
+ * 請優先從 `@/shared-kernel/types` 引用。
+ * 定義位置：src/shared-kernel/types/workspace.ts
  */
-export interface WorkspaceLocation {
-  locationId: string;
-  label: string;        // e.g. "A棟 2F 東北角", "主會議室"
-  description?: string;
-  capacity?: number;    // max number of people (optional)
-}
-
-export interface Workspace {
-  id: string;
-  dimensionId: string; // The ID of the User or Organization this workspace belongs to.
-  name: string;
-  photoURL?: string;
-  lifecycleState: WorkspaceLifecycleState;
-  visibility: 'visible' | 'hidden';
-  scope: string[];
-  protocol: string; // Default protocol template
-  capabilities: Capability[];
-  grants: WorkspaceGrant[];
-  teamIds: string[];
-  tasks?: Record<string, WorkspaceTask>;
-  issues?: Record<string, WorkspaceIssue>;
-  files?: Record<string, WorkspaceFile>;
-  address?: Address; // The physical address of the entire workspace.
-  /** Sub-locations within this workspace (廠區子地點). FR-L1. */
-  locations?: WorkspaceLocation[];
-  /** Designated role-holders (經理 | 督導 | 安衛). */
-  personnel?: WorkspacePersonnel;
-  createdAt: Timestamp;
-}
+export type {
+  WorkspaceLifecycleState,
+  WorkspacePersonnel,
+  CapabilitySpec,
+  Capability,
+  Address,
+  WorkspaceLocation,
+  Workspace,
+} from '@/shared-kernel/types/workspace';
