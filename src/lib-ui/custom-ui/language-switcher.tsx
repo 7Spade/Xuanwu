@@ -24,9 +24,16 @@ const LOCALE_NAMES: Record<Locale, string> = {
   "zh-TW": "common.languageTraditionalChinese",
 }
 
-export function LanguageSwitcher() {
+const DEFAULT_TRIGGER_CLASS_NAME = "rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+
+interface LanguageSwitcherProps {
+  triggerClassName?: string
+}
+
+export function LanguageSwitcher({ triggerClassName }: LanguageSwitcherProps) {
   const { locale, setLocale, t } = useI18n()
   const [isMounted, setIsMounted] = useState(false)
+  const triggerClasses = triggerClassName ?? DEFAULT_TRIGGER_CLASS_NAME
 
   useEffect(() => {
     setIsMounted(true)
@@ -38,7 +45,7 @@ export function LanguageSwitcher() {
         variant="ghost"
         suppressHydrationWarning
         aria-label={t("common.switchLanguage")}
-        className="rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+        className={triggerClasses}
       >
         <Globe className="size-4" />
         <span className="sr-only">{t("common.switchLanguage")}</span>
@@ -52,7 +59,7 @@ export function LanguageSwitcher() {
         <IconButton
           variant="ghost"
           suppressHydrationWarning
-          className="rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+          className={triggerClasses}
         >
           <Globe className="size-4" />
           <span className="sr-only">{t("common.switchLanguage")}</span>

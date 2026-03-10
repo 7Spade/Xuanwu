@@ -19,10 +19,17 @@ import {
   DropdownMenuTrigger,
 } from "@/shadcn-ui/dropdown-menu"
 
-export function ModeToggle() {
+const DEFAULT_TRIGGER_CLASS_NAME = "relative rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+
+interface ModeToggleProps {
+  triggerClassName?: string
+}
+
+export function ModeToggle({ triggerClassName }: ModeToggleProps) {
   const { setTheme } = useTheme()
   const { t } = useI18n()
   const [isMounted, setIsMounted] = useState(false)
+  const triggerClasses = triggerClassName ?? DEFAULT_TRIGGER_CLASS_NAME
 
   useEffect(() => {
     setIsMounted(true)
@@ -34,7 +41,7 @@ export function ModeToggle() {
         variant="ghost"
         suppressHydrationWarning
         aria-label={t("common.toggleTheme")}
-        className="relative rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+        className={triggerClasses}
       >
         <Sun className="size-4" />
         <span className="sr-only">{t("common.toggleTheme")}</span>
@@ -48,7 +55,7 @@ export function ModeToggle() {
         <IconButton
           variant="ghost"
           suppressHydrationWarning
-          className="relative rounded-xl ring-1 ring-zinc-300/50 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/80 hover:ring-zinc-300/70 focus-visible:ring-2 focus-visible:ring-zinc-500/70 active:scale-[0.98] dark:ring-white/10"
+          className={triggerClasses}
         >
           <Sun className="size-4 rotate-0 scale-100 transition-all duration-200 dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute size-4 rotate-90 scale-0 transition-all duration-200 dark:rotate-0 dark:scale-100" />
