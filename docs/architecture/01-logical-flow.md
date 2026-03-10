@@ -260,6 +260,9 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 AUDIT_V["projection.global-audit-view\n每條記錄含 traceId [R8]"]
                 TAG_SNAP["projection.tag-snapshot\n[S4: TAG_MAX_STALENESS]\nT5 消費方禁止寫入"]
                 SEM_GOV_V["projection.semantic-governance-view\n治理頁 Read Model（wiki/proposal/relationship）\n顯示線路：L5→L6→UI"]
+                MEM_SNIPPET_V["projection.memory-snippet-view\n解析前提示片段（semanticTagSlug/org/workspace）\n供 L10 flow pre-parse retrieval"]
+                FEEDBACK_PATTERN_V["projection.feedback-pattern-view\n人工修正模式聚合（高頻修正/覆寫建議）\n供 L10 flow post-parse calibration"]
+                MEMORY_QUALITY_V["projection.memory-quality-view\n回饋採納率/誤判率/信心校準曲線\n供 L9 觀測與治理頁"]
                 TASK_V["projection.tasks-view\n任務清單（createdAt 批次間\n→ sourceIntentIndex 批次內）[D27-Order]\napplyVersionGuard() [S2]"]
                 WS_GRAPH_V["projection.workspace-graph-view\n任務依賴 Nodes/Edges 拓撲\n[VS5 vis-network 消費格式]\napplyVersionGuard() [S2]"]
                 FINANCE_STAGE_V["projection.finance-staging-pool [#A20]\n待請款池：已驗收未請款任務清單\n消費 TaskAcceptedConfirmed（CRITICAL_LANE）\n狀態：PENDING | LOCKED_BY_FINANCE\napplyVersionGuard() [S2]"]
@@ -268,7 +271,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             IER ==>|"[#9] 唯一 Projection 寫入路徑"| FUNNEL
             CRIT_PROJ --> WS_SCOPE_V & ORG_ELIG_V & WALLET_V & ACL_PROJ_V
-            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & TASK_V & WS_GRAPH_V & FINANCE_STAGE_V & TASK_FIN_LABEL_V
+            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & MEM_SNIPPET_V & FEEDBACK_PATTERN_V & MEMORY_QUALITY_V & TASK_V & WS_GRAPH_V & FINANCE_STAGE_V & TASK_FIN_LABEL_V
 
             FUNNEL -->|stream offset| PROJ_VER
             WS_ESTORE -.->|"[#9] replay → rebuild"| FUNNEL
@@ -360,6 +363,9 @@ SK_OBS_PATH -.->|"contract -> runtime"| OBS_PATH
 %% ─── VS8 Semantic Cognition Engine（語義認知引擎）
 %% ─── 架構正確性優先原則（Architectural Correctness First）：G/C/E/O/B 五系列規則為 VS8 完整正式規範
 %% ───   奧卡姆剃刀 = 正確抽象（正確的職責邊界、清晰的語義層次），而非最少程式碼或最快實作
+%% ─── 當前落地焦點：Memory & Feedback Brain（不變量不變，實作優先順序收斂）
+%% ───   Parse 前：L6 檢索 memory-snippet-view / feedback-pattern-view
+%% ───   Parse 後：人工修正事件 → L4 IER → L5 聚合投影 → 下一輪提示
 %% ─── 四層架構（可維護視圖）：
 %% ───   ① Governance（治理）: registry / protocol / guards / portal
 %% ───   ② Core Domain（核心語義域）: CTA / hierarchy / vector / tag entities
@@ -484,6 +490,7 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
             direction LR
             LIFECYCLE_SUB["subscribers/lifecycle-subscriber.ts\n標籤生命週期事件訂閱"]
             TAG_OUTBOX["outbox/tag-outbox.ts\n【VS8 唯一 outbox 節點 [O5]】\n[SK_OUTBOX: SAFE_AUTO]\n路徑：tag-outbox→RELAY→IER→L5 FUNNEL→tag-snapshot\n標籤異動廣播出口 [O6]"]
+            FEEDBACK_OB["outbox/feedback-outbox.ts\n解析回饋廣播出口（REVIEW_REQUIRED by policy）\n路徑：feedback-outbox→RELAY→IER→L5 feedback-pattern-view"]
         end
 
         subgraph VS8_RL["4.3 decision-policy · 語義決策輸出（src/features/semantic-graph.slice/decision）[D21-5 D8 D27 E4~E6]"]

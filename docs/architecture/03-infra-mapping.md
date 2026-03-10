@@ -23,7 +23,7 @@
 | `VS5` | Workspace | 工作空間與任務 |
 | `VS6` | Workforce Scheduling | 排班與職能配對 |
 | `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
-| `VS8` | Semantic Graph Engine | 語義圖譜引擎 |
+| `VS8` | Semantic Memory & Feedback Brain | 語義治理 + 記憶檢索 + 回饋閉環（保留四層邊界） |
 | `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
 
 ### 目標路徑（Source Path）
@@ -207,6 +207,9 @@ Firestore onSnapshot (CDC)
 | `global-audit-view` | 全域審計（含 traceId [R8]） |
 | `tag-snapshot` | 語義標籤快照（TAG_MAX_STALENESS T5，禁止直接寫入） |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L5 投影 |
+| `memory-snippet-view` | 解析前可檢索記憶片段（semanticTagSlug / org / workspace） |
+| `feedback-pattern-view` | 人工修正模式聚合（高頻修正 / 覆寫建議） |
+| `memory-quality-view` | 記憶品質與採納率指標（供 L9 治理觀測） |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；供 vis-network 消費 [D28] |
 | `task-semantic-view` | 任務語義視圖 [O3]；同時包含 `required_skills`（Graph REQUIRES 邊）與 `eligible_persons`（skill-matcher 推理）；兩者缺一則投影不完整 |
 | `causal-audit-log` | 因果審計日誌 [O4]；每條記錄必含 `inferenceTrace[]` + `traceId`（從 event-envelope 讀取，禁止重新生成）|
@@ -244,6 +247,9 @@ Firestore onSnapshot (CDC)
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
 | `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5 O2] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
+| `memory-snippet-view` | 解析前可檢索記憶片段；L10 pre-parse retrieval 唯一讀模型來源之一 | [D21-MF1] |
+| `feedback-pattern-view` | 人工修正模式聚合；L10 post-parse calibration 唯一讀模型來源之一 | [D21-MF1 D21-MF2] |
+| `memory-quality-view` | 記憶採納率/誤判率/信心校準指標 | [D21-MF3] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
 | `task-semantic-view` | 任務語義視圖（required_skills + eligible_persons）；VS5 消費以顯示任務語義資訊；投影不完整時禁止對外提供 | [O3] |
 | `causal-audit-log` | 因果審計日誌（inferenceTrace[] + traceId）；合規稽核路徑 | [O4 R8] |
@@ -253,7 +259,7 @@ Firestore onSnapshot (CDC)
 
 > **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
 >
-> **VS8 提供**：scheduling combo matching→VS6, task semantic tags→VS5, classifyCostItem→document-parser
+> **VS8 提供**：scheduling combo matching→VS6, task semantic tags→VS5, classifyCostItem→document-parser, memory/feedback hints→L10
 
 ---
 
@@ -350,6 +356,10 @@ Firestore onSnapshot (CDC)
 > **遷移原則**：所有待遷移項目以**架構正確性優先原則**為最高指引。遷移是**結構性修正（Structural Correction）**，而非補丁式修補。G/C/E/O/B 規則落地是消除 VS8 P1-P10 架構缺陷的正式規範實作，遵循奧卡姆剃刀：正確的抽象與職責邊界，而非最少實作。
 
 - [ ] D24 違規：43 個檔案仍直接 import `firebase/*` → 須遷移至 FIREBASE_ACL Adapter
+- [ ] VS8 Memory & Feedback MVP：`memory-snippet-view` / `feedback-pattern-view` / `memory-quality-view` 三投影上線 [D21-MF1~3]
+- [ ] `feedback-outbox` + IER 路徑完成（人工修正事件化，禁止 UI 直寫規則）[D21-MF2 O1]
+- [ ] L10 pre-parse retrieval 僅走 L6 讀模型（禁止直讀 VS8 內部）[D21-MF1 T5]
+- [ ] D21-MF1~MF3 合規檢核加入 PR Gate
 - [ ] VS8 Semantic Graph Compute Engine（四層語義引擎正式落地）[D21]
 - [ ] VS8 G/C/E/O/B 正規規則落地：skill-matcher、ISemanticClassificationPort、ISkillMatchPort、ISemanticFeedbackPort Port 介面實作 [O1 E4 E7]
 - [ ] VS8 projection.task-semantic-view 實作：required_skills（REQUIRES 邊）+ eligible_persons（skill-matcher）[O3]

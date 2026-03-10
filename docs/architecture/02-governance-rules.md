@@ -123,6 +123,9 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[D7]` | 跨切片引用只能透過 `{slice}/index.ts` 公開 API |
 | `[D21]` | VS8 四層語義引擎：Governance → Core Domain → Compute Engine → Output |
 | `[D21-*]` | VS8 語義擴展不變量（D21-1~D21-10、D21-A~D21-K、D21-S~D21-X，共 27 條）；完整定義見下方 §D21 各子節（一~六） |
+| `[D21-MF1]` | VS8 Memory&Feedback 閉環：Parse 前只能讀 L5 `memory-snippet-view` / `feedback-pattern-view`，禁止直讀內部圖存儲 |
+| `[D21-MF2]` | 人工修正必須事件化（feedback event），經 L4/L5 投影後才能重用；禁止 UI 直接覆寫分類規則 |
+| `[D21-MF3]` | 回饋採納與誤判率必須進 `memory-quality-view` 並暴露 L9 指標，用於信心閾值治理 |
 | `[T5]` | 業務 Slice 僅能訂閱 `projections/tag-snapshot.slice.ts`，嚴禁直接存取 `graph/adjacency-list.ts` |
 | `[D22]` | 程式碼禁止出現裸字串 tag_name；全域引用 TE1~TE6，組織自訂用 `OrgTagRef(orgId, tagSlug)` |
 | `[D27-A]` | 語義感知路由：所有分發邏輯必須先調用 `policy-mapper/` 轉換語義標籤 |
@@ -201,6 +204,8 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - 用戶新增重複語義標籤時禁止靜默建立，embeddings 必須即時提示 [D21-U]
 - VS8 禁止直接寫入 VS3 XP aggregate/ledger [A17]
 - VS5 任務/品質流程禁止直接 mutate VS3 XP；必須透過 IER 事件進入 VS3 [#2 D9 A17]
+- 禁止以人工修正結果直接改寫 VS8 內部權重或 taxonomy；必須經 ISemanticFeedbackPort + 事件投影閉環 [D21-MF2 O1]
+- 禁止 L10 flow 直接讀取 VS8 內部 adjacency/vector 狀態作提示；只能走 L6 對外讀模型 [D21-MF1 T5]
 - vis-network / vis-timeline / vis-graph3d 禁止直連 Firebase；必須透過 `VisDataAdapter` DataSet<> 消費 [D28]
 - `VisDataAdapter` 禁止在多個元件重複建立 Firebase 訂閱；DataSet<> 快取必須為唯一寫入點 [D28]
 - 禁止在 Aggregate Transaction 外部先寫 Aggregate 再補寫 Outbox（雙重寫入模式）[D29]
@@ -432,6 +437,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D21-V` | 提案鎖定機制：Pending-Sync 標籤的路由權重凍結為 0.5 直到共識達成 |
 | `D21-W` | 跨組織透明性：所有標籤修改紀錄對全域公開 |
 | `D21-X` | 語義自動激發：用戶建立 A→B 關聯時，causality-tracer 自動建議節點 C |
+
+**七、Memory & Feedback 落地剖面（D21-MF）**
+
+| 規則 | 等級 | 說明 |
+|------|------|------|
+| `D21-MF1` | MUST | Parse 前檢索來源限定為 `memory-snippet-view`、`feedback-pattern-view`（L6 暴露） |
+| `D21-MF2` | MUST | 人工修正（分類/標籤/物化決策）必須先事件化，再由 L5 聚合，不得直接改規則 |
+| `D21-MF3` | SHOULD | `memory-quality-view` 需提供採納率、回退率、信心分佈，支援閾值調整與審查 |
 
 ### D22–D23：Tag 語義守則
 

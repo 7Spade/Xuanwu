@@ -220,6 +220,15 @@
 %%  ── VS8 正規規則體系（G/C/E/O/B Series · RULESET-MUST）──
 %%  ── 設計動機：G/C/E/O/B 五系列規則是 VS8 P1-P10 架構缺陷的完整正式規範（Formal Specification）；
 %%  ──   遵循架構正確性優先原則，奧卡姆剃刀 = 正確抽象非最少程式碼；任何違規必須結構性修正，禁止補丁覆蓋
+%%  ── VS8 當前落地焦點（2026Q1）──
+%%  目標：在不破壞 G/C/E/O/B 與 D21 不變量前提下，將 VS8 的實作優先級收斂為「Memory + Feedback Brain」。
+%%  Scope-In（先做）:
+%%    1) Parse 前提示：由 L6 提供可檢索記憶提示（memory snippets / feedback patterns）
+%%    2) Parse 後回饋：人工修正與最終落地結果事件化，經 L4→L5 形成可重用讀模型
+%%    3) 決策可追溯：所有語義分類與路由輸出必帶 inferenceTrace[]（E6）
+%%  Scope-Out（後做）:
+%%    - 不先引入新副作用執行器；VS8 仍只輸出語義建議與投影（B1/B5）
+%%    - 不新增繞過 Port 的直接調用路徑（O1/B3）
 %%    G1=CTA-ssot（全域語義 SSOT；未 Active slug 不可引用）
 %%    G2=tag-lifecycle-unidirectional（Draft→Active→Stale→Deprecated；禁止跳躍/逆向）
 %%    G3=invariant-guard-supreme（最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill）
@@ -693,6 +702,9 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
                 AUDIT_V["projection.global-audit-view\n每條記錄含 traceId [R8]"]
                 TAG_SNAP["projection.tag-snapshot\n[S4: TAG_MAX_STALENESS]\nT5 消費方禁止寫入"]
                 SEM_GOV_V["projection.semantic-governance-view\n治理頁 Read Model（wiki/proposal/relationship）\n顯示線路：L5→L6→UI"]
+                MEM_SNIPPET_V["projection.memory-snippet-view\n解析前提示片段（semanticTagSlug/org/workspace）\n供 L10 flow pre-parse retrieval"]
+                FEEDBACK_PATTERN_V["projection.feedback-pattern-view\n人工修正模式聚合（高頻修正/覆寫建議）\n供 L10 flow post-parse calibration"]
+                MEMORY_QUALITY_V["projection.memory-quality-view\n回饋採納率/誤判率/信心校準曲線\n供 L9 觀測與治理頁"]
                 TASK_V["projection.tasks-view\n任務清單（createdAt 批次間\n→ sourceIntentIndex 批次內）[D27-Order]\napplyVersionGuard() [S2]"]
                 WS_GRAPH_V["projection.workspace-graph-view\n任務依賴 Nodes/Edges 拓撲\n[VS5 vis-network 消費格式]\napplyVersionGuard() [S2]"]
                 FINANCE_STAGE_V["projection.finance-staging-pool [#A20]\n待請款池：已驗收未請款任務清單\n消費 TaskAcceptedConfirmed（CRITICAL_LANE）\n狀態：PENDING | LOCKED_BY_FINANCE\napplyVersionGuard() [S2]"]
@@ -701,7 +713,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
 
             IER ==>|"[#9] 唯一 Projection 寫入路徑"| FUNNEL
             CRIT_PROJ --> WS_SCOPE_V & ORG_ELIG_V & WALLET_V & ACL_PROJ_V
-            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & TASK_V & WS_GRAPH_V & FINANCE_STAGE_V & TASK_FIN_LABEL_V
+            STD_PROJ --> WS_PROJ & ACC_SCHED_V & CAL_PROJ & TL_PROJ & ACC_PROJ_V & ORG_PROJ_V & SKILL_V & AUDIT_V & TAG_SNAP & SEM_GOV_V & MEM_SNIPPET_V & FEEDBACK_PATTERN_V & MEMORY_QUALITY_V & TASK_V & WS_GRAPH_V & FINANCE_STAGE_V & TASK_FIN_LABEL_V
 
             FUNNEL -->|stream offset| PROJ_VER
             WS_ESTORE -.->|"[#9] replay → rebuild"| FUNNEL
