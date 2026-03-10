@@ -117,7 +117,7 @@ Portal bootstrap is non-blocking by design:
 
 All `src/app/**/loading.tsx` boundaries and key parallel slot loading states (`@sidebar`, `@header`, `@businesstab`, `@reports`) use `@/shadcn-ui/skeleton` as the canonical loading primitive.
 
-`@businesstab/*/loading.tsx` is now centralized through `@/shadcn-ui/custom-ui/workspace-businesstab-loading` to keep skeleton optics deterministic across capability tabs and avoid per-route drift.
+`@businesstab/*/loading.tsx` is now centralized through `@/lib-ui/custom-ui/workspace-businesstab-loading` to keep skeleton optics deterministic across capability tabs and avoid per-route drift.
 
 ### Modal Motion Rhythm
 

@@ -10,7 +10,7 @@ import { useTeamManagement } from "@/features/organization.slice"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { 
   Dialog, 
   DialogContent, 

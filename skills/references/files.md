@@ -8523,7 +8523,7 @@ onForegroundMessage(
 ```typescript
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { PersonalSkillPanel } from "@/features/skill-xp.slice"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 export function AccountSkillsSection()
 ⋮----
 title=
@@ -8532,7 +8532,7 @@ title=
 ## File: src/features/account.slice/user.profile/_components/user-settings-view.tsx
 ```typescript
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { AccountSkillsSection } from "./account-skills-section"
 import { UserSettings } from "./user-settings"
 export function UserSettingsView()
@@ -8835,7 +8835,7 @@ import { Ghost, Loader2 } from "lucide-react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn-ui/card";
-import { LanguageSwitcher } from "@/shadcn-ui/custom-ui";
+import { LanguageSwitcher } from "@/lib-ui/custom-ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import { LoginForm } from "./login-form";
 import { RegisterForm } from "./register-form";
@@ -8991,7 +8991,7 @@ export interface NotificationHubStats {
 ## File: src/features/organization.slice/core/_components/org-settings-view.tsx
 ```typescript
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
-import { PageHeader } from "@/shadcn-ui/custom-ui";
+import { PageHeader } from "@/lib-ui/custom-ui";
 import { OrgSettings } from "./org-settings";
 export function OrgSettingsView()
 ⋮----
@@ -9015,7 +9015,7 @@ import { useApp } from "@/app-runtime/providers/app-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import {
   Dialog,
   DialogContent,
@@ -9048,7 +9048,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import {
   Dialog,
   DialogContent,
@@ -9077,7 +9077,7 @@ import { useApp } from "@/app-runtime/providers/app-provider"
 import { useTeamManagement } from "@/features/organization.slice"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import type { MemberReference, Team } from "@/shared-kernel"
 ⋮----
@@ -9097,7 +9097,7 @@ import { useTeamManagement } from "@/features/organization.slice"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import {
   Dialog,
   DialogContent,
@@ -9162,7 +9162,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '@/app-runtime/providers/app-provider';
 import { useAccount } from '@/features/workspace.slice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { PageHeader } from '@/shadcn-ui/custom-ui';
+import { PageHeader } from '@/lib-ui/custom-ui';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/shadcn-ui/empty';
 import { ScrollArea } from '@/shadcn-ui/scroll-area';
 import type { ScheduleItem } from '@/shared-kernel';
@@ -9525,7 +9525,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
-import { PageHeader } from "@/shadcn-ui/custom-ui";
+import { PageHeader } from "@/lib-ui/custom-ui";
 import { Input } from "@/shadcn-ui/input";
 import { ROUTES } from "@/shared-kernel/constants/routes";
 interface WorkspaceListHeaderProps {
@@ -13339,7 +13339,7 @@ import { PermissionTree } from "@/features/account.slice"
 import { AccountGrid } from "@/features/organization.slice"
 import { Badge } from "@/shadcn-ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { AccountAuditComponent } from "../../gov.audit/_components/audit.account-view"
 import { useApp } from "../_hooks/use-app"
 import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces"
@@ -13360,7 +13360,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import type { OrgEligibleMemberView } from "@/shared-infra/projection-bus"
 import { getAllOrgMembersView } from "@/shared-infra/projection-bus"
@@ -13478,7 +13478,7 @@ import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { useStorage } from '@/features/workspace.slice/domain.files';
 import { Button } from '@/shadcn-ui/button';
-import { PageHeader } from '@/shadcn-ui/custom-ui';
+import { PageHeader } from '@/lib-ui/custom-ui';
 import {
   Dialog,
   DialogContent,
@@ -13713,7 +13713,7 @@ import {
   BreadcrumbSeparator,
 } from "@/shadcn-ui/breadcrumb";
 import { Button } from "@/shadcn-ui/button";
-import { LanguageSwitcher, ModeToggle } from "@/shadcn-ui/custom-ui";
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 import type { Account } from '@/shared-kernel'

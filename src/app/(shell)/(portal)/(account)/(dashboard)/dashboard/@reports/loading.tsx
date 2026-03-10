@@ -1,4 +1,4 @@
-import { NexusSkeletonBlock, RouteStreamShell } from "@/shadcn-ui/custom-ui";
+import { NexusSkeletonBlock, RouteStreamShell } from "@/lib-ui/custom-ui";
 
 export default function ReportsLoading() {
   return (

@@ -4,7 +4,7 @@
  * Responsibilities: render low-jank placeholders for header and tab-content regions.
  * Constraints: deterministic logic, respect module boundaries
  */
-import { NexusSkeletonBlock, RouteStreamShell } from "@/shadcn-ui/custom-ui";
+import { NexusSkeletonBlock, RouteStreamShell } from "@/lib-ui/custom-ui";
 
 export default function WorkspaceDetailRouteLoading() {
   return (

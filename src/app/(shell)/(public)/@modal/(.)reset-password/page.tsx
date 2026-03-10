@@ -13,7 +13,7 @@ import { Suspense } from "react"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { ResetPasswordForm } from "@/features/identity.slice"
-import { NexusDialogShell } from "@/shadcn-ui/custom-ui"
+import { NexusDialogShell } from "@/lib-ui/custom-ui"
 
 function ResetPasswordModalContent() {
   const router = useRouter()

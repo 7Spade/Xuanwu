@@ -17,7 +17,7 @@ import { buildTaskTree } from '@/features/workspace.slice/_task.rules';
 import { useWorkspace } from '@/features/workspace.slice/core';
 import { useStorage } from '@/features/workspace.slice/domain.files';
 import { Button } from '@/shadcn-ui/button';
-import { PageHeader } from '@/shadcn-ui/custom-ui';
+import { PageHeader } from '@/lib-ui/custom-ui';
 import {
   Dialog,
   DialogContent,

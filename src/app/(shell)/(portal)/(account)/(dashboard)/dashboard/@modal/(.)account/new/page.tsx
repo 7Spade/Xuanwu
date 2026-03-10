@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { AccountNewForm } from "@/features/organization.slice"
-import { NexusDialogShell } from "@/shadcn-ui/custom-ui"
+import { NexusDialogShell } from "@/lib-ui/custom-ui"
 
 export default function AccountNewModalPage() {
   const router = useRouter()

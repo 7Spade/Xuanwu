@@ -19,7 +19,7 @@ src/shadcn-ui/
 import { Button } from "@/shadcn-ui/button"
 import { cn } from "@/shadcn-ui/utils/utils"
 import { useToast } from "@/shadcn-ui/hooks/use-toast"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { PageHeader } from "@/lib-ui/custom-ui/page-header"
 ```
 
 ## CLI

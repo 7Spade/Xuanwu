@@ -4,7 +4,7 @@
  * Responsibilities: keep shell continuity with low-noise skeleton blocks.
  * Constraints: deterministic logic, respect module boundaries
  */
-import { NexusSkeletonBlock, RouteStreamShell } from "@/shadcn-ui/custom-ui";
+import { NexusSkeletonBlock, RouteStreamShell } from "@/lib-ui/custom-ui";
 
 export default function WorkspacesRouteLoading() {
   return (

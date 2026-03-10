@@ -11,7 +11,7 @@ import { useEffect, useState } from "react"
 
 import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { useTheme } from "@/app-runtime/providers/theme-provider"
-import IconButton from "@/shadcn-ui/custom-ui/icon-button"
+import IconButton from "@/lib-ui/custom-ui/icon-button"
 import {
   DropdownMenu,
   DropdownMenuContent,

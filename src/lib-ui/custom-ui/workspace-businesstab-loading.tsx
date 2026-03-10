@@ -4,7 +4,7 @@
  * Responsibilities: centralize loading optics and keep parallel-route placeholders consistent.
  * Constraints: deterministic logic, respect module boundaries
  */
-import { RouteStreamShell } from "@/shadcn-ui/custom-ui/route-stream-shell";
+import { RouteStreamShell } from "@/lib-ui/custom-ui/route-stream-shell";
 import { Skeleton } from "@/shadcn-ui/skeleton";
 
 export type WorkspaceBusinessTabLoadingPreset =

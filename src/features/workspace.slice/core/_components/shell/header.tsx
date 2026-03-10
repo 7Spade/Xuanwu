@@ -25,7 +25,7 @@ import {
   BreadcrumbSeparator,
 } from "@/shadcn-ui/breadcrumb";
 import { Button } from "@/shadcn-ui/button";
-import { LanguageSwitcher, ModeToggle } from "@/shadcn-ui/custom-ui";
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 import type { Account } from '@/shared-kernel'

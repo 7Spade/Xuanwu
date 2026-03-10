@@ -4,7 +4,7 @@
  * Responsibilities: avoid header jump during parallel route transitions.
  * Constraints: deterministic logic, respect module boundaries
  */
-import { ParallelSlotHeaderLoading } from "@/shadcn-ui/custom-ui";
+import { ParallelSlotHeaderLoading } from "@/lib-ui/custom-ui";
 
 export default function DashboardHeaderSlotLoading() {
   return <ParallelSlotHeaderLoading titleWidthClassName="w-52" searchWidthClassName="w-80" />;

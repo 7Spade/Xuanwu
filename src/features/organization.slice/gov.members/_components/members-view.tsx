@@ -8,7 +8,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { Badge } from "@/shadcn-ui/badge"
 import { Button } from "@/shadcn-ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { 
   Dialog,

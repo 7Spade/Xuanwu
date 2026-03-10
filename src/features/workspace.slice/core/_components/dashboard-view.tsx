@@ -15,7 +15,7 @@ import { PermissionTree } from "@/features/account.slice"
 import { AccountGrid } from "@/features/organization.slice"
 import { Badge } from "@/shadcn-ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card"
-import { PageHeader } from "@/shadcn-ui/custom-ui"
+import { PageHeader } from "@/lib-ui/custom-ui"
 
 import { AccountAuditComponent } from "../../gov.audit/_components/audit.account-view"
 import { useApp } from "../_hooks/use-app"

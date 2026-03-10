@@ -30,12 +30,12 @@
 ## Usage
 
 ```ts
-import { LanguageSwitcher } from "@/shadcn-ui/custom-ui/language-switcher"
-import { ModeToggle } from "@/shadcn-ui/custom-ui/mode-toggle"
-import { PageHeader } from "@/shadcn-ui/custom-ui/page-header"
+import { LanguageSwitcher } from "@/lib-ui/custom-ui/language-switcher"
+import { ModeToggle } from "@/lib-ui/custom-ui/mode-toggle"
+import { PageHeader } from "@/lib-ui/custom-ui/page-header"
 
 // 或使用 barrel 匯入
-import { GlobalCommandPalette, NexusToaster } from "@/shadcn-ui/custom-ui"
+import { GlobalCommandPalette, NexusToaster } from "@/lib-ui/custom-ui"
 ```
 
 ## Notes

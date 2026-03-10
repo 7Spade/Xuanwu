@@ -4,7 +4,7 @@
  * Responsibilities: keep global shell frame stable during slot hydration.
  * Constraints: deterministic logic, respect module boundaries
  */
-import { NexusSkeletonBlock } from "@/shadcn-ui/custom-ui";
+import { NexusSkeletonBlock } from "@/lib-ui/custom-ui";
 
 export default function SidebarSlotLoading() {
   return (

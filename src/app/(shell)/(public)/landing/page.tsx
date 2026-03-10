@@ -14,7 +14,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider"
 import { LoginForm, RegisterForm, ResetPasswordForm } from "@/features/identity.slice"
 import { completeRegistration, signIn } from "@/features/identity.slice/_actions"
 import { Button } from "@/shadcn-ui/button"
-import { LanguageSwitcher, ModeToggle, NexusDialogShell } from "@/shadcn-ui/custom-ui"
+import { LanguageSwitcher, ModeToggle, NexusDialogShell } from "@/lib-ui/custom-ui"
 import { toast } from "@/shadcn-ui/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs"
 
