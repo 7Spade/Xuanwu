@@ -1,67 +1,81 @@
-# VS8: Semantic Graph (The Brain) — 全域語義中樞
+# VS8：語義智慧匹配架構（Semantic Intelligent Matching Architecture）
 
-VS8 是所有領域概念的「語義憲法」。所有業務切片以 Semantic Tag 為統一語言，透過 VS8 進行語義治理與語義索引。
+VS8 是全系統語義權威，定位為「**基於語義的智慧匹配架構（SIMA）**」，透過整合三大核心支柱解決人力資源中的複雜分派問題：
+
+| 支柱 | 技術 | 核心功能 |
+|------|------|---------|
+| **支柱一** | 知識圖譜（Knowledge Graph） | 技能/角色/任務有向關係圖（IS_A、REQUIRES）；支援依賴推理與繼承展開 |
+| **支柱二** | 向量數據庫（Vector Database） | 語義相似度索引；支援模糊語義查詢（跨域 `querySemanticIndex`） |
+| **支柱三** | 技能本體論/分類法（Skills Ontology） | 層次化技能分類體系（`TAXONOMY_DIMENSIONS`）；支援粗細粒度搜尋縮放 |
 
 > 架構詳情請見：
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md) — 現行架構定義
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — 架構圖
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、模組責任、API 邊界
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — HR 分派流程圖、知識圖譜圖、向量匹配流程圖
 
 ## 目錄結構
 
 ```
 semantic-graph.slice/
-├── _actions.ts               命令入口 [D3] — 所有 Tag 寫入必須經由此處
-├── _aggregate.ts             聚合根 — 時序衝突偵測 + 分類法驗證
-├── _bus.ts                   Tag 事件匯流排 [T1] — onTagEvent / publishTagEvent
-├── _cost-classifier.ts       成本分類器 [D8] — 純函式，無副作用
-├── _queries.ts               查詢出口 [D4] — QGWAY_SEARCH read-out port
-├── _semantic-authority.ts    語義權威 — SEARCH_DOMAINS / TAXONOMY_DIMENSIONS
-├── _services.ts              語義索引服務 — indexEntity / querySemanticIndex
-├── _types.ts                 領域型別 — 公開型別 + 內部領域型別
-├── index.ts                  公開 API (Public API) [D7]
-├── outbox/
-│   └── tag-outbox.ts         外送廣播 [L10 VS8_IO] — 拓撲異動事件出口
+├── index.ts               公開 API 唯一出口 [D7]
+├── _semantic-authority.ts [支柱三] TAXONOMY_DIMENSIONS / SEARCH_DOMAINS
+├── _aggregate.ts          [支柱三] validateTaxonomyAssignment + 時序衝突偵測
+├── _services.ts           [支柱二] 語義向量索引：indexEntity / querySemanticIndex
+├── _queries.ts            [D4] 查詢出口（包裝 _services.ts）[VD-2]
+├── _types.ts              領域型別（含 SemanticEdge / SemanticRelationType 等）
+├── _actions.ts            [D3] Tag / 圖譜邊寫入命令入口 [KG-1]
+├── _bus.ts                Tag 生命週期事件匯流排 [T1]
+├── _cost-classifier.ts    [D27] 純函式成本語義分類器
 ├── projections/
-│   ├── context-selectors.ts  語義情境投影 (待實作)
-│   ├── graph-selectors.ts    圖譜選擇器 (待實作)
-│   └── tag-snapshot.slice.ts Tag 快照展示 API
-├── proposal-stream/
-│   └── index.ts              提案串流
-├── subscribers/
-│   └── lifecycle-subscriber.ts 訂閱廣播 [L10 VS8_IO] — 接收 TagLifecycleEvent
-└── wiki-editor/
-    ├── index.ts              維基治理入口
-    └── relationship-visualizer.ts 關係視覺化 (待接入 edge store)
+│   ├── context-selectors.ts   語義情境選擇器（支柱一輸出，待實作）
+│   ├── graph-selectors.ts     知識圖譜選擇器（支柱一 N-hop 遍歷，待實作）
+│   └── tag-snapshot.slice.ts  Tag 快照展示 API
+├── wiki-editor/           分類法維基治理視圖（支柱三管理入口）
+│   ├── index.ts
+│   └── relationship-visualizer.ts  知識圖譜視覺化（待接入 edge store）
+├── proposal-stream/       技能/標籤修訂提案串流
+│   └── index.ts
+├── subscribers/           訂閱外部事件（TagLifecycleEvent）
+│   └── lifecycle-subscriber.ts
+└── outbox/                外送語義事件
+    └── tag-outbox.ts
 ```
 
 ## 架構規則
 
 | 規則 | 說明 |
 |------|------|
-| [D3] | 所有 Tag 寫入必須透過 `_actions.ts`，嚴禁直接寫 Firestore |
+| [D3] | 所有 Tag / 圖譜邊寫入必須透過 `_actions.ts`，嚴禁直接寫 Firestore |
 | [D4] | 所有讀取透過 `_queries.ts` 出口 |
-| [D7] | 公開 API 僅暴露 `index.ts` 中的選擇器與命令；內部模組隱藏 |
+| [D7] | 公開 API 僅暴露 `index.ts`；內部模組隱藏 |
 | [D8] | Tag 業務邏輯在此 slice，不下放至 shared-kernel |
-| [D21]| 新 Tag 分類只能在 VS8 定義 |
-| [D24]| 禁止直接 import Firebase；必須走 SK_PORTS 接口 |
-| [D26]| VS8 擁有 `_actions.ts` / `_services.ts`；不寄生 shared-kernel |
+| [D21] | 新 Tag 分類只能在 VS8 定義 |
+| [D24] | 禁止直接 import Firebase；必須走 SK_PORTS 接口 |
+| [D27] | 成本語義決策在此 slice；VS5 不可自判 |
+| [B1] | VS8 只輸出語義提示；嚴禁直接觸發跨切片副作用 |
+| [KG-1] | 知識圖譜邊只能透過 `_actions.ts` 寫入 |
+| [VD-1] | 向量索引由 `_services.ts` 獨家管理 |
+| [VD-2] | 外部切片透過 `_queries.ts` 查詢語義索引；嚴禁直調 `_services.ts` |
+| [OT-1] | 新分類法維度只能在 `_semantic-authority.ts` 定義 |
+| [OT-2] | Tag 路徑必須通過 `validateTaxonomyAssignment` 驗證 |
 | [T1] | 外部切片訂閱 `onTagEvent()`；嚴禁自行維護 Tag 資料 |
 
-## 外部消費者公開 API
+## 公開 API 摘要
 
-| 匯出項 | 來源 | 用途 |
-|--------|------|------|
-| `onTagEvent` / `publishTagEvent` | `_bus.ts` | Tag 事件訂閱與發布 |
-| `querySemanticIndex` | `_services.ts` | Global Search 語義索引查詢 |
-| `indexEntity` / `removeFromIndex` | `_services.ts` | 語義索引管理 |
-| `SEARCH_DOMAINS` / `TAXONOMY_DIMENSIONS` | `_semantic-authority.ts` | 搜尋域與分類法常數 |
-| `classifyCostItem` / `classifyParserLineItem` | `_cost-classifier.ts` | 成本項目語義分類 |
-| `getTagSnapshotPresentationMap` | `projections/tag-snapshot.slice.ts` | UI Tag 快照展示 |
-| `SemanticIndexEntry` | `_types.ts` | 語義索引型別 |
+| 類型 | 主要匯出 | 對應支柱 |
+|------|---------|---------|
+| 分類法（本體論） | `TAXONOMY_DIMENSIONS`、`validateTaxonomyAssignment` | 支柱三 |
+| 語義索引（向量） | `indexEntity`、`querySemanticIndex`、`getIndexStats` | 支柱二 |
+| 知識圖譜型別 | `SemanticEdge`、`SemanticRelationType` | 支柱一 |
+| Tag 命令 | `upsertTagWithConflictCheck`、`assignSemanticTag`、`removeTag` | 三大支柱 |
+| Tag 事件匯流排 | `onTagEvent`、`publishTagEvent` | 生命週期 |
+| 成本語義分類 | `classifyCostItem`、`classifyParserLineItem` | D27 |
+| Tag 快照展示 | `getTagSnapshotPresentationMap` | 投影輸出 |
 
 ## 絕對禁止項
 
-- **禁止私設標籤 [D21]**：嚴禁在業務切片中直接寫死 `status: "done"`；必須在 VS8 定義語義標籤。
+- **禁止私設標籤 [D21]**：嚴禁在業務切片中直接寫死語義分類；必須在 VS8 定義標準 Tag。
 - **禁止繞過 ACL [D24]**：禁止直接 import Firebase；必須透過 SK_PORTS 接口。
 - **禁止修改 TraceID [R8]**：語義推論鏈條必須完整保留 `traceId`，嚴禁覆蓋。
-- **禁止跨切片副作用 [B1]**：VS8 只輸出語義提示/事件；嚴禁直接觸發其他切片副作用。
+- **禁止跨切片副作用 [B1]**：VS8 只輸出語義提示；嚴禁直接觸發其他切片副作用。
+- **禁止外部定義分類法維度 [OT-1]**：新維度只能在 `_semantic-authority.ts` 定義。
+- **禁止直接建立圖譜邊 [KG-1]**：圖譜邊只能透過 `_actions.ts` 寫入。

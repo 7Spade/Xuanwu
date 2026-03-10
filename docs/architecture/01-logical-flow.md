@@ -23,9 +23,33 @@
 - B 路（`L7-B`）：Admin 權限、跨租戶、排程/Webhook、高扇出協調。
 - `firebase-admin` 僅允許在 `functions` 容器內使用（`D25`）。
 
+## VS8：語義智慧匹配架構在邏輯流中的定位
+
+VS8（`semantic-graph.slice`）是 L3 Domain Slice 中的語義中樞，透過三大支柱為其他切片提供語義匹配能力：
+
+```
+分派請求（VS5/VS6）
+  │
+  ├─ [支柱三] _semantic-authority.ts → 分類法維度過濾
+  ├─ [支柱二] _services.ts         → 向量相似度搜尋
+  └─ [支柱一] graph-selectors.ts   → 知識圖譜關係展開 (IS_A / REQUIRES)
+  │
+  └─→ global-search.slice → 呼叫方（語義提示，非最終決策 [B1]）
+```
+
+**寫路徑（Tag 命令）**：`L0A → L2 → VS8._actions.ts [D3] → Tag 事件匯流排 [T1] → L4 → L5`
+
+**讀路徑（語義查詢）**：`global-search.slice → VS8._queries.ts [D4] → _services.ts → SemanticSearchHit[]`
+
+**分類法管理路徑**：`wiki-editor → _actions.ts [D3] → validateTaxonomyAssignment [OT-2] → Firestore`
+
+詳細架構定義：
+- [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、模組責任、API 邊界
+- [`03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — HR 分派流程圖、知識圖譜圖、向量匹配流程圖
+
 ## Auxiliary Slice 邊界（現況）
 
-- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑應對接 VS8 語義索引與 L6 讀取出口。VS8 架構詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) 與 [`03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md)。
+- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑對接 VS8 語義索引（支柱二 `querySemanticIndex`）與 L6 讀取出口。
 - `portal.slice`：門戶殼層 state 橋接；不取代 L2/L3 業務決策，不可繞過主鏈。
 
 ## VS9 Finance 流向索引
@@ -78,5 +102,8 @@ flowchart TD
 
 - 若看見讀鏈直接回寫，視為違規。
 - 若看見 feature 直連 Firebase SDK，視為違規。
-- 若看見 VS8 直接執行副作用，視為違規。
+- 若看見 VS8 直接執行副作用（非語義提示輸出），視為違規 [B1]。
 - 若看見除 `global-search.slice` 之外的跨域搜尋權威入口，視為違規。
+- 若看見 VS8 以外的切片定義新分類法維度，視為違規 [OT-1]。
+- 若看見外部切片直接建立 SemanticEdge，視為違規 [KG-1]。
+- 若看見外部切片繞過 `_queries.ts` 直調 VS8 `_services.ts`，視為違規 [VD-2]。

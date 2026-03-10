@@ -32,7 +32,15 @@
 | `D24-D` | Client -> Server 僅 plain DTO，不可傳 rich entity |
 | `D25` | Next.js server/edge/action 禁止直接 import `firebase-admin` |
 | `D26` | Cross-cutting authority 不得寄生 shared-kernel |
-| `D27` | 成本語義由 VS8 決策，VS5 document-parser 不可自判 |
+| `D27` | 成本語義由 VS8 `_cost-classifier.ts` 決策，VS5 document-parser 不可自判 |
+| `KG-1` | 知識圖譜邊（SemanticEdge）只能透過 VS8 `_actions.ts` 寫入 |
+| `KG-3` | 寫入圖譜邊前必須通過循環依賴偵測（`_aggregate.ts`） |
+| `VD-1` | 語義向量索引由 VS8 `_services.ts` 獨家管理 |
+| `VD-2` | 外部切片透過 `_queries.ts` [D4] 出口查詢語義索引；嚴禁直調 `_services.ts` |
+| `VD-3` | 索引實體（`indexEntity`）須在 Tag 寫入成功後觸發；不可先行索引未確認實體 |
+| `OT-1` | 新分類法維度只能在 VS8 `_semantic-authority.ts` 定義 |
+| `OT-2` | Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 |
+| `OT-3` | `TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程 |
 | `D28` | 視覺化元件禁止直連 Firebase，必須經 `VisDataAdapter` |
 | `D29` | Transactional outbox：Aggregate 與 outbox 同交易 |
 | `D30` | hop-limit 循環防禦；SECURITY_BLOCK 禁止自動 replay |
@@ -49,42 +57,47 @@
 - `global-search.slice`：跨域搜尋權威出口（D26）。
 - `portal.slice`：門戶 state 橋接切片（不編入 VS1~VS9）。
 
-## VS8（Memory & Feedback Brain）規則集
+## VS8：語義智慧匹配架構（SIMA）規則集
 
+> VS8 定位：**基於語義的智慧匹配架構（Semantic Intelligent Matching Architecture）**，透過整合知識圖譜（Knowledge Graph）、向量數據庫（Vector Database）、技能本體論/分類法（Skills Ontology / Taxonomy），解決人力資源中的複雜分派問題。
+>
 > 詳細架構定義請見：
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 現行目錄結構、模組責任、API 邊界
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — 架構流程圖與依賴圖
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、模組責任、API 邊界
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — HR 分派流程圖、知識圖譜圖、向量匹配流程圖
 
-### G（Governance）
+### G（Governance — 語義治理）
 
-- `G1`：全域語義標籤 SSOT 由治理流程維護。
-- `G7`：跨切片語義訊號必帶 `semanticTagSlugs`。
+- `G1`：全域語義標籤 SSOT 由 VS8 `_semantic-authority.ts` 與 `_aggregate.ts` 維護；嚴禁其他切片自行管理 Tag 語義。
+- `G7`：跨切片語義訊號必帶 `semanticTagSlugs`；嚴禁傳遞裸字串標籤。
 
-### C（Core Domain）
+### KG（Knowledge Graph — 知識圖譜）
 
-- `C1`：VS8 維護語義索引與事件匯流排，不承載因果執行副作用。
+- `KG-1`：圖譜邊（`SemanticEdge`）只能透過 VS8 `_actions.ts` 寫入；嚴禁外部切片直接建立邊。
+- `KG-2`：邊的 `weight`（關係強度）啟用後視為不可變；修改須走更新命令。
+- `KG-3`：寫入圖譜邊前必須通過循環依賴偵測（`_aggregate.ts`）；禁止 A→B→A 循環圖。
 
-### E（Compute Engine）
+### VD（Vector Database — 向量數據庫）
 
-- `E4/E5`：分類與推理必走統一路徑，不可字串硬判。
-- `E6`：推理結果必帶 `inferenceTrace[]`。
+- `VD-1`：語義向量索引由 VS8 `_services.ts` 獨家管理；外部切片不可直接讀寫索引內部結構。
+- `VD-2`：所有索引查詢必須透過 VS8 `_queries.ts` 出口 [D4]；嚴禁繞過出口直調 `_services.ts`。
+- `VD-3`：索引實體（`indexEntity`）須在 Tag 寫入成功後觸發；不可先行索引未確認的實體。
 
-### O（Output）
+### OT（Ontology / Taxonomy — 技能本體論）
 
-- `O1`：對外只經 `index.ts` Port 介面。
-- `O2`：讀取以 `_queries.ts` / `projections/` 為唯一路徑。
-- `O5/O6`：outbox 與 IER 路徑單一，不可重複定義。
+- `OT-1`：新分類法維度（`TaxonomyDimension`）只能在 VS8 `_semantic-authority.ts` 定義；嚴禁其他切片自行添加維度。
+- `OT-2`：Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 Firestore。
+- `OT-3`：`TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程（`99-checklist.md`）。
 
-### B（Boundary）
+### B（Boundary — 邊界約束）
 
-- `B1`：VS8 禁止直接觸發跨切片副作用。
-- `B3`：AI flow 僅可透過 port 使用 VS8。
-- `B4`：分類學與向量不可互相取代；VS8 不做因果執行。
+- `B1`：VS8 只輸出語義提示/匹配結果；嚴禁直接觸發跨切片副作用（分派決策由呼叫方負責）。
+- `B3`：AI flow 僅可透過 port 使用 VS8；嚴禁 L10 直接寫 VS8 內部模組。
+- `B4`：分類學路徑與向量相似度不可互相取代；兩者必須各司其職。
 
 ### D21-MF（記憶回饋閉環）
 
 - `D21-MF1`：L10 pre-parse 僅能讀 `memory-snippet-view` / `feedback-pattern-view`。
-- `D21-MF2`：人工修正必須事件化，不可直接覆寫分類規則。
+- `D21-MF2`：人工修正必須事件化，不可直接覆寫分類法規則。
 - `D21-MF3`：採納率與誤判率必須落到 `memory-quality-view` 並進 L9 指標。
 
 ## Forbidden（精簡主清單）
@@ -93,15 +106,18 @@
 - 禁止 Transaction 外雙重寫入（先 aggregate 後 outbox）。
 - 禁止 Feature slice 直連 `firebase/*`、`firebase-admin`。
 - 禁止 Query 路徑反向驅動 Command 路徑。
-- 禁止 VS8 直接觸發 VS5/VS6/VS7 副作用。
+- 禁止 VS8 直接觸發 VS5/VS6/VS7 副作用（僅輸出語義提示 [B1]）。
 - 禁止繞過 `VisDataAdapter` 直連可視化資料來源。
 - 禁止繞過 `acl-projection` 在讀路徑重算高成本鑑權。
 - 禁止在非 `global-search.slice` 內建立平行的跨域搜尋權威出口。
+- 禁止在 VS8 以外的切片定義新分類法維度（`OT-1`）。
+- 禁止外部切片直接建立 SemanticEdge 圖譜邊（`KG-1`）。
+- 禁止繞過 `_queries.ts` 直調 VS8 `_services.ts`（`VD-2`）。
 
 ## 跨切片強制規則（摘要）
 
 - VS5：任務生命週期與金融入口門檻（`A19/A20`）。
-- VS8：語義計算與邊界規則（`G/C/E/O/B + D21-MF`）。
+- VS8：語義智慧匹配架構規則（`KG/VD/OT/G/B + D21-MF`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
 - VS9：Finance_Request 獨立狀態機與回饋投影（`A21/A22`）。
 - VS6/VS7：排班與通知均不得繞過事件/投影鏈路。
 

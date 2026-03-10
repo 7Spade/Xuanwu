@@ -16,7 +16,7 @@
 | `VS5` | Workspace | `src/features/workspace.slice` |
 | `VS6` | Scheduling | `src/features/workforce-scheduling.slice` |
 | `VS7` | Notification Hub | `src/features/notification-hub.slice` |
-| `VS8` | Semantic Memory & Feedback Brain | `src/features/semantic-graph.slice` — 架構：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [架構圖](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) |
+| `VS8` | 語義智慧匹配架構（SIMA） | `src/features/semantic-graph.slice` — 架構：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [架構圖](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) |
 | `VS9` | Finance | `src/features/finance.slice` |
 
 Auxiliary slices（非 VS 編號）：
@@ -116,3 +116,41 @@ Auxiliary slices（非 VS 編號）：
 2. 導入 adapter/port 合規檢查（D24/D25/D31）。
 3. 收斂 projection 與 query 命名（L5/L6 一致）。
 4. 以 `99-checklist.md` 做 PR gate。
+
+## VS8 語義智慧匹配架構基礎設施映射
+
+VS8 = 語義智慧匹配架構（SIMA），透過三大支柱解決人力資源複雜分派問題。詳細設計見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
+
+### 三大支柱基礎設施對應
+
+| 支柱 | 現行實作 | 資料存儲 | 模組路徑 |
+|------|---------|---------|---------|
+| **支柱一：知識圖譜** | `SemanticEdge` 有向關係圖（IS_A / REQUIRES） | Firestore（via SK_PORTS [D24]） | `_types.ts`、`_actions.ts`、`projections/graph-selectors.ts`（待實作） |
+| **支柱二：向量數據庫** | `SemanticIndexEntry` 全記憶體語義索引 | 記憶體（當前）→ 外部向量 DB（規劃） | `_services.ts`、`_queries.ts` |
+| **支柱三：技能本體論** | `TAXONOMY_DIMENSIONS`、`TaxonomyTree` 層次分類法 | `_semantic-authority.ts` 靜態常數 + Firestore（Tag 路徑） | `_semantic-authority.ts`、`_aggregate.ts` |
+
+### VS8 模組 → Layer 映射
+
+| 模組 | Layer | 角色 |
+|------|-------|------|
+| `_actions.ts` | L3 → L4 (outbox) | Tag / 圖譜邊寫入命令 [D3] |
+| `_services.ts` | L3 (internal) | 向量索引管理 [VD-1] |
+| `_queries.ts` | L3 → L6 (via global-search) | QGWAY_SEARCH 讀出埠 [D4] [VD-2] |
+| `_semantic-authority.ts` | L1 (constants) | 分類法常數；被 L3/L6 消費 [OT-1] |
+| `_aggregate.ts` | L3 (pure domain) | 時序衝突 + 分類法驗證 [OT-2] |
+| `_bus.ts` | L3 → L5 (events) | Tag 生命週期事件匯流排 [T1] |
+| `_cost-classifier.ts` | L3 (pure) | 成本語義分類（被 VS5 消費） [D27] |
+| `projections/` | L5 → L6 | 語義投影讀取（知識圖譜、Tag 快照） |
+| `outbox/` | L3 → L4 | 拓撲異動外送廣播 |
+| `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent 訂閱廣播 |
+
+### VS8 外部依賴與接口
+
+| 消費方向 | 接口 | 規則 |
+|---------|------|------|
+| VS8 → `shared-kernel` | `TAXONOMY_DIMENSIONS`、`CentralizedTagEntry`（型別合約） | [D19] 合約在 SK，邏輯在 VS8 |
+| VS8 → `shared-infra/projection-bus` | `publishTagEvent` → `_tag-funnel.ts` | [T1] 事件匯流排出口 |
+| VS8 → Firebase (L7-A) | 透過 SK_PORTS 讀寫 Tag 文件 | [D24] 禁止直連 |
+| `global-search.slice` → VS8 | `querySemanticIndex` / `SEARCH_DOMAINS` | [VD-2] 唯一讀出埠 |
+| `workspace.slice` → VS8 | `classifyCostItem` / `classifyParserLineItem` | [D27] 成本語義 |
+| `finance.slice` → VS8 | 成本分類器型別 | [D27] |

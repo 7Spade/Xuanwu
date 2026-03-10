@@ -1,31 +1,34 @@
-# VS8-SemanticBrain
+# VS8 — 語義智慧匹配架構（Semantic Intelligent Matching Architecture）
 
-## 一眼摘要
+## 定位
 
-- 用途：提供語義治理與標籤權威，輸出可供各切片消費的語義決策與索引能力。
-- 核心功能：Tag 生命週期治理、時序衝突偵測、語義索引、成本分類器、Tag 事件匯流排。
-- 解決痛點：
-  1. 各切片各自解讀標籤語義，導致分類與決策結果不一致。
-  2. 成本語義判斷分散在業務切片，造成決策漂移與不可審計。
-  3. 缺乏跨切片統一的 Tag 事件訂閱機制。
+VS8 是全系統語義權威，定位為「**基於語義的智慧匹配架構（SIMA）**」，透過整合三大核心支柱解決人力資源中的複雜分派問題：
 
-## Implemented Capabilities（from code）
+| 支柱 | 技術 | 解決的問題 |
+|------|------|---------|
+| **支柱一** | 知識圖譜（Knowledge Graph） | 技能依賴推理：「A REQUIRES B」、「X IS_A Y」的關係圖建模 |
+| **支柱二** | 向量數據庫（Vector Database） | 語義差距：「資深工程師」≈ 「senior engineer」的模糊匹配 |
+| **支柱三** | 技能本體論/分類法（Skills Ontology） | 層次過濾：從「軟體工程」縮放到「後端開發 > 資深工程師」 |
 
-- Aggregate 邏輯：時序衝突偵測 + 分類法驗證。
-- 命令 actions：Tag upsert/assign/remove。
-- Tag 事件匯流排：`onTagEvent` / `publishTagEvent` [T1]。
-- 查詢服務：語義索引查詢/統計。
-- 成本分類器：`classifyCostItem*` + `shouldMaterializeAsTask`（parser Layer-2 判定）。
-- Tag 快照展示：`getTagSnapshotPresentationMap`。
+VS8 只輸出語義提示/匹配結果；**不執行分派副作用** [B1]。
+
+## 核心功能
+
+- **Tag 生命週期治理**：`upsertTagWithConflictCheck`、`assignSemanticTag`、`removeTag`、Tag 事件匯流排（`onTagEvent`/`publishTagEvent` [T1]）。
+- **分類法驗證**（支柱三）：`validateTaxonomyAssignment`、`TAXONOMY_DIMENSIONS`。
+- **語義向量索引**（支柱二）：`indexEntity`、`querySemanticIndex`、`getIndexStats`。
+- **知識圖譜型別**（支柱一）：`SemanticEdge`、`SemanticRelationType`（IS_A / REQUIRES）。
+- **成本語義分類**：`classifyCostItem*`、`shouldMaterializeAsTask` [D27]。
+- **Tag 快照展示**：`getTagSnapshotPresentationMap`。
 
 ## 文件索引
 
-| 文件                     | 用途                                                               |
-|--------------------------|--------------------------------------------------------------------|
-| `README.md`              | VS8 願景摘要與實作能力清單（本文件）。                              |
-| `architecture.md`        | 現行架構：目錄結構、模組責任、API 邊界、架構不變量。               |
-| `architecture-diagrams.md`| 架構圖：流程圖、層位圖、依賴圖（Mermaid）。                       |
-| `architecture-build.md`  | 詳細實施計畫：下一階段目錄遷移步驟與驗證清單。                      |
-| `01-d21-body-8layers.md` | D21 四層核心不變量。                                                |
-| `02-semantic-router.md`  | 語義路由規則。                                                      |
-| `03-tag-authority.md`    | 標籤權威規則。                                                      |
+| 文件 | 用途 |
+|------|------|
+| `README.md` | VS8 願景摘要與實作能力清單（本文件）。 |
+| `architecture.md` | **三大支柱設計**：支柱定義、模組責任表、公開 API 邊界、架構不變量清單。 |
+| `architecture-diagrams.md` | **架構圖**：三大支柱全覽、HR 分派流程圖、知識圖譜關係圖、向量匹配流程圖、分類法層次圖（Mermaid）。 |
+| `architecture-build.md` | 詳細實施計畫：下一階段向量 DB 持久化、圖譜遍歷引擎建構步驟。 |
+| `01-d21-body-8layers.md` | D21 四層核心不變量。 |
+| `02-semantic-router.md` | 語義路由規則。 |
+| `03-tag-authority.md` | 標籤權威規則（分類法 + 生命週期）。 |
