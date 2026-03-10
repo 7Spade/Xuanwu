@@ -44,7 +44,7 @@ export function NexusDialogShell({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          "max-w-2xl rounded-2xl bg-background/96 p-6 shadow-2xl ring-1 ring-zinc-300/50 backdrop-blur-xl dark:ring-white/10",
+          "!left-1/2 !top-1/2 !translate-x-[-50%] !translate-y-[-50%] w-[min(92vw,42rem)] rounded-2xl bg-background/96 p-6 shadow-2xl ring-1 ring-zinc-300/50 backdrop-blur-xl dark:ring-white/10",
           contentClassName,
         )}
       >

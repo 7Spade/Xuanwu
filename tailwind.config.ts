@@ -1,10 +1,16 @@
+/**
+ * Module: tailwind.config
+ * Purpose: Configure Tailwind scanning scope and theme tokens.
+ * Responsibilities: define content globs, design tokens, and plugin wiring
+ * Constraints: deterministic logic, respect module boundaries
+ */
 import type {Config} from 'tailwindcss';
 
 const sansFontStack = ['ui-sans-serif', 'system-ui', 'sans-serif'];
 
 export default {
   darkMode: ['class'],
-  content: ['./src/{app,app-runtime,config,features,portal,shadcn-ui,shared,shell}/**/*.{ts,tsx,mdx}'],
+	content: ['./src/**/*.{ts,tsx,mdx}'],
   theme: {
   	extend: {
   		fontFamily: {

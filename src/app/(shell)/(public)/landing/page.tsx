@@ -126,6 +126,7 @@ export default function LandingPage() {
         onOpenChange={setIsLoginOpen}
         title={t("auth.enterDimension")}
         description={t("common.appDescription")}
+        contentClassName="max-w-md p-5 sm:p-6"
       >
         <Tabs defaultValue="signin" className="pt-2">
           <TabsList className="mb-4 grid h-11 w-full grid-cols-2 rounded-xl bg-muted/30 p-1">
@@ -169,6 +170,7 @@ export default function LandingPage() {
         onOpenChange={setIsResetOpen}
         title={t("auth.resetPassword")}
         description={t("auth.sendEmail")}
+        contentClassName="max-w-md p-5 sm:p-6"
       >
         <div className="pt-2">
           <ResetPasswordForm
