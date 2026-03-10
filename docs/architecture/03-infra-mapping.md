@@ -4,7 +4,7 @@
 >
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md)
 
-本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、L7 Firebase Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
+本視圖提供 **VS0–VS9 路徑對照表、標準目錄結構、L7 Firebase Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
 供落地實作與基礎設施對接時快速定位目標路徑。
 
 ---
@@ -75,69 +75,14 @@ VS9 = src/features/finance.slice
 
 ## 標準目錄結構（Standard Directory Structure）
 
-### Feature Slice 標準結構
+本視圖僅保留「路徑權威與邊界」；詳細模板以 `00-logic-overview.md` 標準目錄段落為準。最小必備分層如下：
 
-```
-src/features/{slice}/
-  index.ts                   # 公開 API（跨切片只能 import 此檔）
-  _actions.ts                # 所有 mutation [D3]
-  _queries.ts                # 所有 read [D4]
-  core/                      # Aggregate + Domain Events + ValueObjects
-    _aggregate.ts
-    _domain-events.ts
-  application/               # Use Cases / Application Services
-    _use-cases.ts
-  _components/               # UI 元件（"use client" 允許）
-  _hooks/                    # React Hooks（"use client" 允許）
-  _projector.ts              # Projection 投影器（引用 SK_VERSION_GUARD [S2]）
-  _outbox.ts                 # OUTBOX 宣告（必須聲明 DLQ 分級 [S1]）
-```
-
-### Shared Kernel 結構
-
-```
-src/shared-kernel/
-  skill-tier/                # getTier() 純函式 [D12]
-  outbox-contract/           # SK_OUTBOX_CONTRACT [S1]
-  version-guard/             # SK_VERSION_GUARD [S2]
-  read-consistency/          # SK_READ_CONSISTENCY [S3]
-  staleness-contract/        # SK_STALENESS_CONTRACT [S4]
-  resilience-contract/       # SK_RESILIENCE_CONTRACT [S5]
-  token-refresh-contract/    # SK_TOKEN_REFRESH_CONTRACT [S6]
-  observability/             # trace-identifier types（注入點在 L2）
-  ports/                     # SK_PORTS（IAuthService / IFirestoreRepo / IMessaging / IFileStore）
-```
-
-### Shared Infra 結構
-
-```
-src/shared-infra/
-  api-gateway/               # L0A CMD_API_GW + QRY_API_GW（讀寫分流入口）
-  gateway-command/           # L2 CBG_ENTRY + CBG_AUTH + CBG_ROUTE（Write Path Pipeline）
-  gateway-query/             # L6 read-model-registry（Read Path Routes）
-  event-router/              # L4 IER（outbox-relay-worker / lane-router / dlq）
-  projection-bus/            # L5 event-funnel + projectors
-  frontend-firebase/
-    auth/                    # AuthAdapter（L7-A · firebase/auth）
-    firestore/               # FirestoreAdapter（L7-A · firebase/firestore）
-    realtime-database/       # RTDBAdapter（L7-A · firebase/database，即時通訊）
-    messaging/               # FCMAdapter（L7-A · firebase/messaging · R8 traceId）
-    storage/                 # StorageAdapter（L7-A · firebase/storage）
-    analytics/               # AnalyticsAdapter（L7-A · firebase/analytics，遙測只寫）
-    app-check/               # AppCheckAdapter（L7-A · firebase/app-check）
-    vis-data/                # VisDataAdapter（L7-A · vis-data DataSet<> 快取 · [D28]）
-  backend-firebase/
-    functions/               # Cloud Functions（firebase-admin 唯一容器）[D25]
-      src/claims/            #   Admin Auth → firebase-admin/auth（自訂 Claims）
-      src/gateway/           #   functions-gateway HTTP/Callable 入口
-      src/ier/               #   IER 三條 Lane
-      src/projection/        #   Projection Workers
-      src/relay/             #   Outbox Relay Worker
-      src/document-ai/       #   Document AI integration
-    dataconnect/             # GraphQL 資料契約（受治理 GraphQL）[D25]
-  observability/             # L9 metrics/trace/errors
-  ai-orchestration/          # L10 Genkit Flow Gateway
-```
+- `src/features/{slice}`：L3 業務切片，公開 API 經 `index.ts`。
+- `src/shared-kernel`：L1 契約/常數/純函式（No I/O）。
+- `src/shared-infra/{api-gateway,gateway-command,event-router,projection-bus,gateway-query}`：L0A/L2/L4/L5/L6 執行路徑。
+- `src/shared-infra/frontend-firebase`：L7-A firebase-client Adapter。
+- `src/shared-infra/backend-firebase/{functions,dataconnect}`：L7-B backend 邊界（含 firebase-admin 唯一容器）。
+- `src/shared-infra/{observability,ai-orchestration}`：L9/L10 橫切能力。
 
 ---
 

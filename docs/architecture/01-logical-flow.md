@@ -6,13 +6,9 @@
 
 本視圖呈現系統三條主鏈（**Canonical Chains**）的端到端流向與各 VS0–VS8 子圖結構。Infra 鏈依 SDK 分成 A（前端 Client SDK）與 B（後端 Admin SDK）兩路，合計仍視為三條主鏈。
 
-### VS0-Kernel Canonical 模組對齊（2026-03）
+### VS0-Kernel Canonical 對齊（精簡）
 
-- `OutboxLane / OutboxRouting / OutboxAck` 已集中至 `src/shared-kernel/types/outbox-routing.ts`，各切片 outbox 以型別別名相容引用。
-- `CostItemType` 已集中至 `src/shared-kernel/enums/cost-item-type.ts`，VS8 分類器僅持有分類邏輯，不再重複宣告詞彙常數。
-- Finance 生命週期常數與非任務成本集合已集中至 `src/shared-kernel/constants/finance.ts`；`finance.slice/_constants.ts` 保留相容 re-export。
-- Finance 生命週期守衛/正規化規則已集中至 `src/shared-kernel/directives/finance-lifecycle.directive.ts`；claim draft 轉換管線已集中至 `src/shared-kernel/pipes/finance-claim.pipe.ts`。
-- `SEARCH_DOMAINS / TAXONOMY_DIMENSIONS` 已集中至 `src/shared-kernel/ontologys/semantic-taxonomy.ts`；`semantic-graph.slice/_semantic-authority.ts` 保留相容 shim。
+- 模組對齊細節（型別集中、常數集中、相容 shim）統一以 `03-infra-mapping.md` 的遷移清單為準；本檔僅保留鏈路與流向。
 
 ---
 
@@ -31,20 +27,10 @@
 
 ## Firebase 路由決策（L7-A firebase-client SDK vs L7-B functions→firebase-admin）
 
-> **欄位說明**：`路由層級` = 應使用的 SDK / 路徑；`強度` = MUST（架構強制）/ SHOULD（推薦做法）
-
-| 情境 | 路由層級 | 強度 |
-|------|----------|------|
-| UI 操作（讀取/訂閱）、App Check 初始化、Analytics 遙測 | **L7-A** `frontend-firebase`（firebase-client SDK） | SHOULD |
-| **firebase-admin SDK 任何使用場景** | **L7-B** `functions`（Cloud Functions 唯一容器）| **MUST** |
-| Admin 權限 / 自訂 Claims / 跨租戶操作 | **L7-B** `functions` | **MUST** |
-| Webhook 驗簽 / Scheduler / 高扇出批次協調 | **L7-B** `functions` | **MUST** |
-| 高頻小請求且 Security Rules 足以保護 | **L7-A** `frontend-firebase`（降低 Functions 調用成本） | SHOULD |
-| 即時訂閱（presence / typing / live-feed） | **L7-A** `frontend-firebase/realtime-database`（RTDBAdapter） | SHOULD |
-| 視覺化圖表資料（vis-network / vis-timeline / vis-graph3d） | **L7-A** `frontend-firebase/vis-data`（VisDataAdapter · DataSet<> 快取）[D28] | **MUST** |
-| 受治理 GraphQL 資料契約 | **L7-B** `functions/dataconnect`（DataConnectGatewayAdapter） | **MUST** |
-| 受保護資料或可變更狀態 | 先完成 App Check 驗證（含 token 續期與失效處理）再進入 L2/L3 | **MUST [E7]** |
-| AI tool data access | 必須由 Genkit tool gateway 統一代理（role/scope/tenant 驗證 + 審計追蹤）；禁止 AI flow 直接呼叫 `firebase/*` | **MUST [E8]** |
+- `L7-A`：使用者會話內讀寫、即時訂閱、遙測；以 Security Rules 可封閉為前提。
+- `L7-B`：凡涉及 `firebase-admin`、高權限、跨租戶、Webhook/排程/高扇出協調，一律走 functions。
+- App Check 與 Tool ACL 屬強制閉環：命中受保護入口或 AI tool access 時必審 [E7][E8]。
+- 詳細情境矩陣與 Adapter 映射請見 `03-infra-mapping.md`（L7 區段）。
 
 > **FORBIDDEN**：Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin` [D25]
 

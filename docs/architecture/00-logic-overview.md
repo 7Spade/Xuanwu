@@ -45,16 +45,11 @@
 %%      src/shared-infra/*                  = VS0-Infra Plane（L0/L2/L4/L5/L6/L7/L9/L10 執行層；L8 為外部平台執行目標）
 %%      L0/L2/L4/L5/L6 基礎設施主路徑：src/shared-infra/{external-triggers|gateway-command|event-router|outbox-relay|dlq-manager|projection-bus|gateway-query}
 %%      Legacy 相容路徑（僅過渡，不作為目標架構）：src/features/infra.*
-%%      src/shared-infra/projection-bus     = VS0-Infra（L5 Projection Bus）
-%%      src/shared-infra/observability      = VS0-Infra（L9 Observability Runtime）
 %%    命名規則：VS0=Foundation Index（L1+L0+L2+L4+L5+L6+L7+L8+L9+L10）；VS1~VS8=業務切片編號（L3）
 %%    VS0 識別規格（文件/審查一律使用）:
 %%      VS0-Kernel = src/shared-kernel/*（pure contracts/constants/functions，禁止 I/O）
 %%      VS0-Infra  = src/shared-infra/*（L0/L2/L4/L5/L6/L7/L9/L10 execution plane；L8 為外部 runtime target）
-%%      Observability 分層規則：L1 只允許 observability contracts；L9 runtime sink/counter/trace provider 只允許在 src/shared-infra/observability
 %%      禁止只寫「VS0」而不標註 -Kernel 或 -Infra（避免語義歧義）
-%%      VS0 視圖分拆規則：同一 VS0 會在圖中拆為「L1 VS0-Kernel」與「L0/L2/L4/L5/L6~L9 VS0-Infra」兩塊呈現；
-%%      此為 Layer 可讀性分圖，非領域切割（Domain Ownership 仍同屬 VS0/Foundation）
 %%  ── Cross-cutting Authorities（跨切片權威）──
 %%    global-search.slice  = 語義門戶（唯一跨域搜尋權威 · 對接 VS8 語義索引）
 %%    notification-hub.slice = 反應中樞（VS7 增強 · 唯一副作用出口 · 標籤感知路由）
@@ -221,14 +216,9 @@
 %%  ── 設計動機：G/C/E/O/B 五系列規則是 VS8 P1-P10 架構缺陷的完整正式規範（Formal Specification）；
 %%  ──   遵循架構正確性優先原則，奧卡姆剃刀 = 正確抽象非最少程式碼；任何違規必須結構性修正，禁止補丁覆蓋
 %%  ── VS8 當前落地焦點（2026Q1）──
-%%  目標：在不破壞 G/C/E/O/B 與 D21 不變量前提下，將 VS8 的實作優先級收斂為「Memory + Feedback Brain」。
-%%  Scope-In（先做）:
-%%    1) Parse 前提示：由 L6 提供可檢索記憶提示（memory snippets / feedback patterns）
-%%    2) Parse 後回饋：人工修正與最終落地結果事件化，經 L4→L5 形成可重用讀模型
-%%    3) 決策可追溯：所有語義分類與路由輸出必帶 inferenceTrace[]（E6）
-%%  Scope-Out（後做）:
-%%    - 不先引入新副作用執行器；VS8 仍只輸出語義建議與投影（B1/B5）
-%%    - 不新增繞過 Port 的直接調用路徑（O1/B3）
+%%  目標：在不破壞 G/C/E/O/B 與 D21 不變量前提下，將 VS8 實作優先級收斂為「Memory + Feedback Brain」。
+%%  Parse 前：L6 提供 memory-snippet-view / feedback-pattern-view；Parse 後：修正事件化並經 L4→L5 聚合。
+%%  強制：推理輸出必帶 inferenceTrace[]（E6）；禁止新增副作用執行器（B1/B5）與繞過 Port 路徑（O1/B3）。
 %%    G1=CTA-ssot（全域語義 SSOT；未 Active slug 不可引用）
 %%    G2=tag-lifecycle-unidirectional（Draft→Active→Stale→Deprecated；禁止跳躍/逆向）
 %%    G3=invariant-guard-supreme（最高裁決權；COMPLIANCE TaskNode 必須有 cert_required Skill）

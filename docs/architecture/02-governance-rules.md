@@ -12,22 +12,14 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 ## 架構正確性優先原則（Architectural Correctness First Principle）
 
-> 本文件所有規則以**架構正確性（Architectural Correctness）**為最高裁決標準。任何設計決策皆以**正規架構（Formal Architecture）**的結構正確性為優先，而非以短期進度、局部便利或表面效率為由妥協架構品質。
+本文件採用「架構正確性優先」作為最高裁決標準：
 
-所謂的「**奧卡姆剃刀**」在工程語境中的真正含義，並非單純追求最少程式碼或最快開發速度，而是**透過正確的抽象與合理的結構，使系統在保持完整性的前提下達到必要且充分的簡潔**。過度追求快速交付或最小實作，往往導致責任混亂、邊界模糊與耦合擴散，最終形成難以維護與演進的「義大利麵式架構（Spaghetti Architecture）」。
+- 先維持層級、邊界、權威出口正確，再討論實作速度與篇幅。
+- 奧卡姆剃刀在本專案意義是「正確抽象後的必要簡潔」，不是最少程式碼。
+- 允許精簡敘事，不允許削弱規則約束或跨層旁路。
+- 架構違規採結構性修正（Structural Correction），不以補丁掩蓋。
 
-本系統架構設計必須同時滿足以下三個長期性原則：
-
-**① 結構穩定與一致性（Consistency & Stability）**  
-系統的邊界、層級、職責與資料流應具有清晰且可預測的結構。所有模組必須遵循一致的設計規則與架構模式，使整體系統在擴展、重構與協作時仍能保持結構穩定，而不因局部變更而產生混亂或耦合擴散。
-
-**② 本質與簡約（Essence & Simplicity）**  
-簡約並非「減少設計」，而是**去除不必要複雜度，保留問題本質所需的最合理結構**。真正的簡單來自於正確的抽象層次、明確的責任分離與清楚的系統語義，而不是透過省略架構或忽略邊界來達成表面上的簡單。
-
-**③ 可持續性與演進（Sustainability & Evolution）**  
-架構的價值在於支撐系統的長期發展。設計時必須考慮未來的擴展、重構與能力演進，使系統能在需求變化與規模成長下仍保持可理解、可維護與可治理，而不需要不斷以補丁式方式修復結構問題。
-
-> ⚠️ **架構違規零容忍（Zero Tolerance）**：架構錯誤不應被容忍或掩蓋。當系統出現違反邊界、破壞層級、責任混亂或耦合擴散等問題時，正確的工程行為應是**直接進行結構性修正或重構（Structural Correction）**，而非以暫時性的修補、包裝或繞過方式維持表面上的可運行。任何試圖以補丁掩蓋結構問題的做法，最終只會放大系統複雜度並加速架構劣化。**架構正確性優先於短期進度、局部便利與表面效率。**
+完整背景敘述以 `00-logic-overview.md` 為準。
 
 ---
 
@@ -85,16 +77,10 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 ### 本輪必審範圍
 
-1. **VS0–VS8**：每個編號域必須有明確層位與單一職責
-   - `VS0`：L1+L0+L2+L4+L5+L6+L7+L9+L10（L8 = Firebase 外部平台，不在 VS0 管轄）
-   - `VS1–VS8`：L3
-   - VS0 檢核：每個 VS0 路徑必須標明 `VS0-Kernel` 或 `VS0-Infra`（不得混稱）
-2. **D1–D27**：列為 Mandatory Gate（D27 為 Extension Gate，命中場景必審）
-   - `E7/E8`：AI/Firebase Security 閉環 Gate（命中 AI flow 或受保護入口時必審）
-3. **TE1–TE6**：語義引用必須強型別，禁止裸字串 `tagSlug`
-4. **S1–S6**：契約與 SLA 僅能引用 `SK_*` 常數，禁止硬寫
-5. **L/R/A**：Layer 合規 / Rule 合規 / Atomicity 合規 必須同時成立
-6. **Boundary Serialization Gate**：Client → Server action 僅允許 Command DTO（plain object）
+1. **Layer Gate**：VS0/VS1–VS8 層位與權責必須一致（VS0 標註 Kernel/Infra，不得混稱）。
+2. **Rule Gate**：D1–D27 為 Mandatory；命中 AI/受保護入口時 `E7/E8` 必審。
+3. **Type & Contract Gate**：TE1–TE6 強型別引用；S1–S6 僅可引用 `SK_*` 常數。
+4. **Atomicity Gate**：L/R/A 同時成立；Client→Server 僅允許 Command DTO（plain object）。
 
 ### Rule Canonicality（單一定義治理）
 
@@ -105,11 +91,9 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 ### No-Smell 定義（Code Review Checklist）
 
-- 無重複定義：同一規則只保留一個主定義
-- 無邊界污染：Feature Slice 不跨邊界 mutate、不直連 `firebase/*` [D24]
-- 無語義漂移：tag 語義必須來自「VS8 CTA 全域標籤」或「VS4 組織標籤治理」合法來源 [D21-1 D22]
-- 無一致性破口：Projection 全量遵守 S2；SLA 全量遵守 S4
-- 無副作用旁路：通知與搜尋必須經 D26 權威出口
+- 無重複定義：同規則只允許一個 Canonical body。
+- 無邊界污染：Feature Slice 不得跨層 mutate，不得直連 `firebase/*` [D24]。
+- 無一致性破口：Projection 遵守 S2、SLA 遵守 S4、副作用經 D26 權威出口。
 
 ---
 
