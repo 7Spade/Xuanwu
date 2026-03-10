@@ -11,7 +11,7 @@
  *  - vis-data's `DataSet<T>`  — the actual runtime object created by VisXxxCanvas
  *    components in managed mode.
  *  - VisDataAdapter's `VisDataSet<T>`  — the minimal interface in
- *    `src/shared-infra/frontend-firebase/vis-data/vis-data.adapter.ts`.
+ *    `src/shared-infra/firebase-client/vis-data/vis-data.adapter.ts`.
  *
  * Generic parameter T preserves the item type (Node, Edge, DataItem, DataGroup, …).
  *

@@ -1,6 +1,6 @@
 /**
  * Module: index.ts
- * Purpose: Firestore export surface for frontend-firebase boundary
+ * Purpose: Firestore export surface for firebase-client boundary
  * Responsibilities: expose db, repo, read/write adapters, and facade exports
  * Constraints: deterministic logic, respect module boundaries
  */

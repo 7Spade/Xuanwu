@@ -1,6 +1,6 @@
 /**
  * Module: index.ts
- * Purpose: Analytics export surface for frontend-firebase boundary
+ * Purpose: Analytics export surface for firebase-client boundary
  * Responsibilities: expose analytics client and adapter helpers
  * Constraints: deterministic logic, respect module boundaries
  */

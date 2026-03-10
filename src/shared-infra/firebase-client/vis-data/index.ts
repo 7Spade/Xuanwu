@@ -6,7 +6,7 @@
  */
 
 /**
- * infra.frontend-firebase.vis-data — Public API [D28]
+ * infra.firebase-client.vis-data — Public API [D28]
  *
  * [D24] Unique legal vis-* DataSet writing point.
  * [D28] vis-network / vis-timeline / vis-graph3d consume read-only.

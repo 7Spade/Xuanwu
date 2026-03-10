@@ -16,9 +16,9 @@ const {
   mockReconcileTaskFacade: vi.fn(),
 }));
 
-vi.mock('@/shared-infra/frontend-firebase/firestore/firestore.facade', async () => {
+vi.mock('@/shared-infra/firebase-client/firestore/firestore.facade', async () => {
   const actual = await vi.importActual<typeof import('@/shared-infra/firebase-client/firestore/firestore.facade')>(
-    '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+    '@/shared-infra/firebase-client/firestore/firestore.facade'
   );
 
   return {

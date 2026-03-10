@@ -56,7 +56,7 @@ flowchart TD
     DOM --> PORTS[L1 SK_PORTS]
     PB --> PORTS
     QG --> PORTS
-    PORTS --> A[L7-A frontend-firebase]
+    PORTS --> A[L7-A firebase-client]
     CBG --> B[L7-B functions/admin]
     A --> L8[L8 Firebase Runtime]
     B --> L8

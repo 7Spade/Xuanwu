@@ -8,7 +8,7 @@
 src/shared/infra     (ACL Adapters — implements SK_PORTS)
   └──> src/shared-infra  ← THIS LAYER
          ├── backend-firebase/   (Cloud Functions, project config)
-         ├── frontend-firebase/  (Firestore/Storage rules, indexes)
+         ├── firebase-client/  (Firestore/Storage rules, indexes)
          └── ...                 (future: other cloud infra)
               └──> Firebase Cloud Platform (L8)
 ```
@@ -31,7 +31,7 @@ src/shared-infra/
 │       └── src/
 │           └── ...                 # Cloud Function handlers
 │
-└── frontend-firebase/              # Client-side Firebase (security rules, indexes)
+└── firebase-client/              # Client-side Firebase (security rules, indexes)
     ├── firestore/                  # Firestore configuration
     │   ├── firestore.rules         # Security rules (deployed via Firebase CLI)
     │   └── firestore.indexes.json  # Composite index definitions
@@ -60,12 +60,12 @@ Cloud Functions live in `backend-firebase/functions/` and are compiled as a **se
 
 ## Security Rules
 
-Firestore and Storage security rules are the authoritative access control for the Firebase backend. They are maintained in `frontend-firebase/`:
+Firestore and Storage security rules are the authoritative access control for the Firebase backend. They are maintained in `firebase-client/`:
 
 | File | Scope |
 |------|-------|
-| `frontend-firebase/firestore/firestore.rules` | All Firestore read/write access |
-| `frontend-firebase/storage/storage.rules` | Cloud Storage bucket access |
+| `firebase-client/firestore/firestore.rules` | All Firestore read/write access |
+| `firebase-client/storage/storage.rules` | Cloud Storage bucket access |
 
 Rules are deployed via `firebase deploy --only firestore:rules,storage:rules`.
 

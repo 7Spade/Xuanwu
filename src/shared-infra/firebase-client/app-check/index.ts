@@ -1,6 +1,6 @@
 /**
  * Module: index.ts
- * Purpose: App Check export surface for frontend-firebase boundary
+ * Purpose: App Check export surface for firebase-client boundary
  * Responsibilities: expose client singleton and adapter helpers
  * Constraints: deterministic logic, respect module boundaries
  */

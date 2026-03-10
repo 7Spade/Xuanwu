@@ -5,7 +5,7 @@
  *       Feature slices must NOT hardcode collection paths directly.
  *
  * Usage:
- *   import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
+ *   import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
  *   const ref = db.collection(COLLECTIONS.accounts).doc(orgId);
  */
 

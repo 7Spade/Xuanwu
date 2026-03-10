@@ -11,7 +11,7 @@ const { getParsingIntentsMock } = vi.hoisted(() => ({
   getParsingIntentsMock: vi.fn(),
 }));
 
-vi.mock('@/shared-infra/frontend-firebase/firestore/firestore.facade', () => ({
+vi.mock('@/shared-infra/firebase-client/firestore/firestore.facade', () => ({
   getParsingIntents: getParsingIntentsMock,
 }));
 

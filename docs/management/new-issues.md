@@ -59,8 +59,8 @@
 
 [🔍 證據]
 - Browser performance resource list 擷取到上述 URL，耗時約 209ms。
-- 相關初始化點：`src/shared-infra/frontend-firebase/analytics/analytics.client.ts:15`。
-- Firebase config 檔未含 `measurementId`：`src/shared-infra/frontend-firebase/config/firebase.config.ts:8`。
+- 相關初始化點：`src/shared-infra/firebase-client/analytics/analytics.client.ts:15`。
+- Firebase config 檔未含 `measurementId`：`src/shared-infra/firebase-client/config/firebase.config.ts:8`。
 
 [🛠 建議]
 - 對 analytics script 注入加上「有效 measurement id」前置檢查。

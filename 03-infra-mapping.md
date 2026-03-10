@@ -30,7 +30,7 @@
 
 ```
 VS0 = src/shared-kernel/* + src/shared-kernel/observability
-    + src/shared-infra/frontend-firebase/*
+    + src/shared-infra/firebase-client/*
     + src/shared-infra/backend-firebase/*
     + src/shared-infra/observability
 VS1 = src/features/identity.slice
@@ -65,7 +65,7 @@ VS9 = src/features/finance.slice
 | `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
-| `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/frontend-firebase/` |
+| `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/firebase-client/` |
 | `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
 | `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
 | `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
@@ -117,7 +117,7 @@ src/shared-infra/
   gateway-query/             # L6 read-model-registry（Read Path Routes）
   event-router/              # L4 IER（outbox-relay-worker / lane-router / dlq）
   projection-bus/            # L5 event-funnel + projectors
-  frontend-firebase/
+  firebase-client/
     auth/                    # AuthAdapter（L7-A · firebase/auth）
     firestore/               # FirestoreAdapter（L7-A · firebase/firestore）
     realtime-database/       # RTDBAdapter（L7-A · firebase/database，即時通訊）
@@ -268,13 +268,13 @@ Firestore onSnapshot (CDC)
 > Firebase SDK 唯一合法呼叫層 [D24 D25]
 >
 > **三層分離原則**：
-> - **L7-A `firebase-client` SDK**（瀏覽器/Next.js client context）→ `frontend-firebase/` Client Adapters
+> - **L7-A `firebase-client` SDK**（瀏覽器/Next.js client context）→ `firebase-client/` Client Adapters
 > - **L7-B `firebase-admin` SDK**（Admin 特權 API）→ L7-B 後端 Adapters
 > - **`functions`（Cloud Functions）→ `firebase-admin` 一律透過 functions** [D25]
 >
 > **路由決策矩陣**（何時用 L7-A vs L7-B）→ [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)
 
-### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/frontend-firebase/`）
+### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/firebase-client/`）
 
 | Adapter | 實作介面 | 路徑 | 說明 |
 |---------|----------|------|------|

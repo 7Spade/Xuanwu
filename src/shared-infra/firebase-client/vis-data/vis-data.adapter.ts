@@ -6,7 +6,7 @@
  */
 
 /**
- * infra.frontend-firebase.vis-data — vis-data.adapter.ts
+ * infra.firebase-client.vis-data — vis-data.adapter.ts
  *
  * [D28] VisDataAdapter — L7-A vis-data DataSet<> local cache.
  *

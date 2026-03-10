@@ -5,7 +5,7 @@
  *       Feature slices must NOT build raw Storage paths directly.
  *
  * Usage:
- *   import { StoragePaths } from '@/shared-infra/frontend-firebase/storage/storage-path.resolver';
+ *   import { StoragePaths } from '@/shared-infra/firebase-client/storage/storage-path.resolver';
  *   const path = StoragePaths.dailyPhoto(accountId, workspaceId, fileId, fileName);
  */
 

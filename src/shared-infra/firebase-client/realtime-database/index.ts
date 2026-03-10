@@ -1,6 +1,6 @@
 /**
  * Module: index.ts
- * Purpose: RTDB export surface for frontend-firebase boundary
+ * Purpose: RTDB export surface for firebase-client boundary
  * Responsibilities: expose RTDB client and notification adapter API
  * Constraints: deterministic logic, respect module boundaries
  */

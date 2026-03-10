@@ -70,8 +70,8 @@ export async function publishAccountEvent<K extends AccountEventKey>(
 import {
   createUserAccount as createUserAccountFacade,
   updateUserProfile as updateUserProfileFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
-import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
+import { uploadProfilePicture as uploadProfilePictureFacade } from "@/shared-infra/firebase-client/storage/storage.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -110,7 +110,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
-import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter";
+import { authAdapter } from "@/shared-infra/firebase-client/auth/auth.adapter";
 interface EmailCardProps {
   currentEmail: string;
 }
@@ -219,8 +219,8 @@ export function useUser()
 ```typescript
 import {
   getUserProfile as getUserProfileFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
-import { subscribeToDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
+import { subscribeToDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 import type { Account } from "@/shared-kernel"
 export async function getUserProfile(userId: string): Promise<Account | null>
 export function subscribeToUserProfile(
@@ -236,9 +236,9 @@ export function subscribeToUserProfile(
 
 ## File: src/features/account.slice/domain.wallet/_actions.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { runTransaction, serverTimestamp, type Transaction } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, doc } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { runTransaction, serverTimestamp, type Transaction } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,
@@ -284,9 +284,9 @@ const checkReady = () =>
 
 ## File: src/features/account.slice/domain.wallet/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc, collection, query, orderBy, limit, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc, collection, query, orderBy, limit, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { Account, Wallet } from '@/shared-kernel';
 export async function getWalletBalance(accountId: string): Promise<number>
 export function subscribeToWalletBalance(
@@ -324,9 +324,9 @@ export function useAccountPolicy(accountId: string | null)
 
 ## File: src/features/account.slice/gov.policy/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AccountPolicy } from './_actions';
 export async function getAccountPolicy(policyId: string): Promise<AccountPolicy | null>
 export function subscribeToAccountPolicies(
@@ -377,9 +377,9 @@ export function useAccountRole(accountId: string | null)
 
 ## File: src/features/account.slice/gov.role/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AccountRoleRecord } from './_actions';
 export async function getAccountRole(
   accountId: string,
@@ -405,7 +405,7 @@ export function subscribeToAccountRoles(
 ```typescript
 import {
   saveFinanceAggregateState as saveFinanceAggregateStateFacade,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import type { FinanceAggregateState } from './_types';
 export async function saveFinanceAggregateState(
   state: FinanceAggregateState,
@@ -479,7 +479,7 @@ const handleCloseCycle = () =>
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { listWorkflowStates } from '@/features/workspace.slice';
 import type { WorkspaceEventBus } from '@/features/workspace.slice';
-import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { getParsingIntents } from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import { saveFinanceAggregateState } from '../_actions';
 import { getFinanceAggregateState } from '../_queries';
 import { fetchFinanceStrongReadSnapshot } from '../_services/finance-strong-read';
@@ -534,7 +534,7 @@ async function refreshStrongReadSnapshot()
 ```typescript
 import {
   getFinanceAggregateState as getFinanceAggregateStateFacade,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import type { FinanceAggregateState } from './_types';
 export async function getFinanceAggregateState(
   workspaceId: string,
@@ -543,7 +543,7 @@ export async function getFinanceAggregateState(
 
 ## File: src/features/finance.slice/_services/finance-aggregate-query-gateway.ts
 ```typescript
-import { getParsingIntents } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { getParsingIntents } from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import { executeQuery, registerQuery } from '@/shared-infra/gateway-query';
 import type { FinanceStrongReadSnapshot } from '../_types';
 ⋮----
@@ -626,7 +626,7 @@ export function executeSearch(
 ## File: src/features/identity.slice/_actions.ts
 ```typescript
 import { createUserAccount } from '@/features/account.slice'
-import { authAdapter } from "@/shared-infra/frontend-firebase/auth/auth.adapter"
+import { authAdapter } from "@/shared-infra/firebase-client/auth/auth.adapter"
 import {
   type CommandResult,
   commandSuccess,
@@ -710,9 +710,9 @@ const handleSend = async () =>
 ## File: src/features/identity.slice/_token-refresh-listener.ts
 ```typescript
 import { useEffect } from 'react';
-import { auth, db } from '@/shared-infra/frontend-firebase';
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { onSnapshot, doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { auth, db } from '@/shared-infra/firebase-client';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { onSnapshot, doc } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ImplementsTokenRefreshContract } from '@/shared-kernel';
 ⋮----
 export function useTokenRefreshListener(accountId: string | null | undefined): void
@@ -874,12 +874,12 @@ interface NotificationListProps {
 import {
   createAccountNotification,
   trackAnalyticsEvent,
-} from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client';
 import {
   doc,
   getDoc,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { db } from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
 export interface NotificationDeliveryInput {
   title: string;
   message: string;
@@ -938,7 +938,7 @@ import {
   setAccountNotificationRead,
   subscribeAccountNotifications,
   trackAnalyticsEvent,
-} from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client';
 import type { Notification } from '@/shared-kernel';
 type Unsubscribe = () => void;
 export function subscribeToNotifications(
@@ -1130,8 +1130,8 @@ import {
   updateOrganizationSettings as updateOrganizationSettingsFacade,
   deleteOrganization as deleteOrganizationFacade,
   createTeam as createTeamFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
-import { uploadOrganizationAvatar as uploadOrganizationAvatarFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
+import { uploadOrganizationAvatar as uploadOrganizationAvatarFacade } from "@/shared-infra/firebase-client/storage/storage.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -1227,9 +1227,9 @@ export function useOrganizationManagement()
 
 ## File: src/features/organization.slice/core/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase'
-import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+import { db } from '@/shared-infra/firebase-client'
+import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 import type { Account } from '@/shared-kernel'
 export async function getOrganization(orgId: string): Promise<Account | null>
 export function subscribeToOrganization(
@@ -1248,7 +1248,7 @@ export function subscribeToOrganization(
 import {
   recruitOrganizationMember,
   dismissOrganizationMember,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -1281,9 +1281,9 @@ export function useMemberManagement()
 
 ## File: src/features/organization.slice/gov.members/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase'
-import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+import { db } from '@/shared-infra/firebase-client'
+import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 import type { Account, MemberReference } from '@/shared-kernel'
 export async function getOrgMembers(orgId: string): Promise<MemberReference[]>
 export function subscribeToOrgMembers(
@@ -1303,7 +1303,7 @@ import {
   createTeam as createTeamFacade,
   sendPartnerInvite as sendPartnerInviteFacade,
   dismissPartnerMember as dismissPartnerMemberFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -1341,9 +1341,9 @@ export function usePartnerManagement()
 
 ## File: src/features/organization.slice/gov.partners/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, doc, onSnapshot, orderBy, query, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, doc, onSnapshot, orderBy, query, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { Account, PartnerInvite, Team } from '@/shared-kernel';
 export async function getOrgPartners(orgId: string): Promise<Team[]>
 export function subscribeToOrgPartners(
@@ -1363,8 +1363,8 @@ export function subscribeToOrgPartnerInvites(
 
 ## File: src/features/organization.slice/gov.policy/_actions.ts
 ```typescript
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,
@@ -1421,9 +1421,9 @@ export function useOrgPolicy(orgId: string | null)
 
 ## File: src/features/organization.slice/gov.policy/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, query, where, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { OrgPolicy } from './_actions';
 export async function getOrgPolicy(policyId: string): Promise<OrgPolicy | null>
 export function subscribeToOrgPolicies(
@@ -1624,9 +1624,9 @@ onClick=
 
 ## File: src/features/organization.slice/gov.semantic/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { OrgSkillTypeEntry, OrgTaskTypeEntry } from './_types';
 export async function getOrgTaskType(
   orgId: string,
@@ -1642,12 +1642,12 @@ export async function getOrgSkillTypes(orgId: string): Promise<OrgSkillTypeEntry
 
 ## File: src/features/organization.slice/gov.semantic/_registry.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   deleteDocument,
   setDocument,
   updateDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { SkillRequirement } from '@/shared-kernel';
 import type {
   OrgSkillTypeEntry,
@@ -1716,7 +1716,7 @@ export function resolveOrgTaskTypeByItemName(
 import {
   createTeam as createTeamFacade,
   updateTeamMembers as updateTeamMembersFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -1748,9 +1748,9 @@ export function useTeamManagement()
 
 ## File: src/features/organization.slice/gov.teams/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { Account, Team } from '@/shared-kernel';
 export async function getOrgTeams(orgId: string): Promise<Team[]>
 export function subscribeToOrgTeams(
@@ -2028,12 +2028,12 @@ export function buildTagEntity(input: TagEntityFactoryInput): TagEntity
 
 ## File: src/features/semantic-graph.slice/core/tags/_actions.ts
 ```typescript
-import { Timestamp, getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { Timestamp, getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
   deleteDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   commandSuccess,
   commandFailureFrom,
@@ -3001,7 +3001,7 @@ export function getProposalHistory(tagSlug: TagSlugRef): readonly RelationshipPr
 
 ## File: src/features/skill-xp.slice/_actions.ts
 ```typescript
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,
@@ -3044,7 +3044,7 @@ export async function removeOrgSkillTagAction(
 
 ## File: src/features/skill-xp.slice/_aggregate.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import { appendXpLedgerEntry } from './_ledger';
 ⋮----
 export interface AccountSkillRecord {
@@ -3100,7 +3100,7 @@ export function PersonalSkillPanel()
 
 ## File: src/features/skill-xp.slice/_ledger.ts
 ```typescript
-import { addDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { addDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 export interface XpLedgerEntry {
   accountId: string;
   skillId: string;
@@ -3117,9 +3117,9 @@ export async function appendXpLedgerEntry(
 
 ## File: src/features/skill-xp.slice/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface AccountSkillEntry {
   accountId: string;
@@ -3149,9 +3149,9 @@ export async function applySkillXpDeducted(
 
 ## File: src/features/skill-xp.slice/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { OrgSkillRecognitionRecord } from './_org-recognition';
 import type { AccountSkillEntry } from './_projector';
 import type { OrgSkillTagEntry } from './_tag-pool';
@@ -3180,14 +3180,14 @@ export async function getMemberSkillRecognitions(
 
 ## File: src/features/skill-xp.slice/_tag-lifecycle.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collectionGroup,
   query,
   where,
   getDocs,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type {
   TagUpdatedPayload,
   TagDeprecatedPayload,
@@ -3213,12 +3213,12 @@ export async function handleTagDeletedForPool(
 
 ## File: src/features/skill-xp.slice/_tag-pool.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
   deleteDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 export interface OrgSkillTagEntry {
   orgId: string;
@@ -4569,7 +4569,7 @@ import {
   appendDomainEvent as appendDomainEventRepo,
   getDomainEvents as getDomainEventsRepo,
   type StoredWorkspaceEvent,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 ⋮----
 export async function appendDomainEvent(
   workspaceId: string,
@@ -4600,8 +4600,8 @@ import {
   createWorkspaceLocation as createWorkspaceLocationFacade,
   updateWorkspaceLocation as updateWorkspaceLocationFacade,
   deleteWorkspaceLocation as deleteWorkspaceLocationFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
-import { uploadWorkspaceAvatar as uploadWorkspaceAvatarFacade } from "@/shared-infra/frontend-firebase/storage/storage.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
+import { uploadWorkspaceAvatar as uploadWorkspaceAvatarFacade } from "@/shared-infra/firebase-client/storage/storage.facade"
 import {
   type CommandResult,
   commandSuccess,
@@ -5191,15 +5191,15 @@ const importItems = () =>
 
 ## File: src/features/workspace.slice/core/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   onSnapshot,
   orderBy,
   type Unsubscribe,
   query,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { snapshotToRecord } from '@/shared-infra/firebase-client/firestore/firestore.utils';
 import type { WorkspaceIssue } from '../domain.issues/_types';
 import type { WorkspaceTask } from '../domain.tasks/_types';
 export function subscribeToWorkspaceTasks(
@@ -5321,7 +5321,7 @@ export function clearOrgPolicyCache(): void
 
 ## File: src/features/workspace.slice/domain.application/_outbox.ts
 ```typescript
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
 import { buildIdempotencyKey, type DlqTier } from '@/shared-kernel';
 import type {
@@ -5426,7 +5426,7 @@ export async function runTransaction<T>(
 import {
   toggleDailyLogLike,
   addDailyLogComment as addDailyLogCommentFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   type CommandResult,
   commandSuccess,
@@ -5450,7 +5450,7 @@ export async function addDailyLogComment(
 import {
   addBookmark,
   removeBookmark,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 export async function toggleBookmark(
   userId: string,
   logId: string,
@@ -5650,15 +5650,15 @@ const handlePost = async () =>
 
 ## File: src/features/workspace.slice/domain.daily/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { getDailyLogs as getDailyLogsFacade } from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import { db } from '@/shared-infra/firebase-client';
+import { getDailyLogs as getDailyLogsFacade } from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   collection,
   onSnapshot,
   orderBy,
   query,
   type Unsubscribe,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.read.adapter";
+} from "@/shared-infra/firebase-client/firestore/firestore.read.adapter";
 import type { DailyLog, DailyLogComment } from "./_types";
 export async function getDailyLogs(
   accountId: string,
@@ -5864,9 +5864,9 @@ export async function extractDataFromDocument(
 
 ## File: src/features/workspace.slice/domain.document-parser/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { SUBCOLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { SUBCOLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ParsingIntent } from './_types';
 export function subscribeToParsingIntents(
   workspaceId: string,
@@ -5881,7 +5881,7 @@ export function subscribeToParsingIntents(
 
 ## File: src/features/workspace.slice/domain.files/_actions/add-workspace-file-version.ts
 ```typescript
-import { addWorkspaceFileVersion as addVersionFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { addWorkspaceFileVersion as addVersionFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 import type { WorkspaceFileVersion } from '../_types'
 export async function addWorkspaceFileVersion(
@@ -5894,8 +5894,8 @@ export async function addWorkspaceFileVersion(
 
 ## File: src/features/workspace.slice/domain.files/_actions/create-workspace-file.ts
 ```typescript
-import { createWorkspaceFile as createFileFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter'
+import { createWorkspaceFile as createFileFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 import type { CreateWorkspaceFileInput } from '../_types'
 export async function createWorkspaceFile(
@@ -5906,7 +5906,7 @@ export async function createWorkspaceFile(
 
 ## File: src/features/workspace.slice/domain.files/_actions/delete-version-storage-objects.ts
 ```typescript
-import { deleteWorkspaceStorageObject } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { deleteWorkspaceStorageObject } from '@/shared-infra/firebase-client/storage/storage.facade'
 export async function deleteVersionStorageObjects(
   storagePaths: readonly string[]
 ): Promise<void>
@@ -5914,7 +5914,7 @@ export async function deleteVersionStorageObjects(
 
 ## File: src/features/workspace.slice/domain.files/_actions/deregister-workspace-file.ts
 ```typescript
-import { deleteWorkspaceFile as deleteFileFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { deleteWorkspaceFile as deleteFileFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 export async function deregisterWorkspaceFile(
   workspaceId: string,
@@ -5929,7 +5929,7 @@ export async function deregisterWorkspaceFile(
 
 ## File: src/features/workspace.slice/domain.files/_actions/restore-workspace-file-version.ts
 ```typescript
-import { restoreWorkspaceFileVersion as restoreVersionFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { restoreWorkspaceFileVersion as restoreVersionFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 export async function restoreWorkspaceFileVersion(
   workspaceId: string,
@@ -5940,7 +5940,7 @@ export async function restoreWorkspaceFileVersion(
 
 ## File: src/features/workspace.slice/domain.files/_actions/upload-daily-photo.ts
 ```typescript
-import { uploadDailyPhoto as uploadDailyPhotoFacade } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadDailyPhoto as uploadDailyPhotoFacade } from '@/shared-infra/firebase-client/storage/storage.facade'
 export async function uploadDailyPhoto(
   accountId: string,
   workspaceId: string,
@@ -5950,7 +5950,7 @@ export async function uploadDailyPhoto(
 
 ## File: src/features/workspace.slice/domain.files/_actions/upload-profile-picture.ts
 ```typescript
-import { uploadProfilePicture as uploadProfilePictureFacade } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadProfilePicture as uploadProfilePictureFacade } from '@/shared-infra/firebase-client/storage/storage.facade'
 export async function uploadProfilePicture(
   userId: string,
   file: File
@@ -5959,7 +5959,7 @@ export async function uploadProfilePicture(
 
 ## File: src/features/workspace.slice/domain.files/_actions/upload-raw-file.ts
 ```typescript
-import { uploadWorkspaceDocument } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadWorkspaceDocument } from '@/shared-infra/firebase-client/storage/storage.facade'
 export async function uploadRawFile(
   workspaceId: string,
   fileId: string,
@@ -5970,7 +5970,7 @@ export async function uploadRawFile(
 
 ## File: src/features/workspace.slice/domain.files/_actions/upload-task-attachment.ts
 ```typescript
-import { uploadTaskAttachment as uploadTaskAttachmentFacade } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadTaskAttachment as uploadTaskAttachmentFacade } from '@/shared-infra/firebase-client/storage/storage.facade'
 export async function uploadTaskAttachment(
   workspaceId: string,
   file: File
@@ -6189,7 +6189,7 @@ export function useWorkspaceFilters(
 
 ## File: src/features/workspace.slice/domain.files/_queries/get-workspace-files.ts
 ```typescript
-import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { getWorkspaceFiles as getWorkspaceFilesFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import type { WorkspaceFile } from '../_types'
 export async function getWorkspaceFiles(workspaceId: string): Promise<WorkspaceFile[]>
 ```
@@ -6201,14 +6201,14 @@ export async function getWorkspaceFiles(workspaceId: string): Promise<WorkspaceF
 
 ## File: src/features/workspace.slice/domain.files/_queries/subscribe-workspace-files.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase'
+import { db } from '@/shared-infra/firebase-client'
 import {
   collection,
   onSnapshot,
   orderBy,
   query,
   type Unsubscribe,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 import type { WorkspaceFile } from '../_types'
 export function subscribeToWorkspaceFiles(
   workspaceId: string,
@@ -6227,7 +6227,7 @@ import {
   createIssue as createIssueFacade,
   addCommentToIssue as addCommentToIssueFacade,
   resolveIssue as resolveIssueFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 import {
   type CommandResult,
   commandSuccess,
@@ -6361,7 +6361,7 @@ import {
   deleteTask as deleteTaskFacade,
   getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
   reconcileTask as reconcileTaskFacade,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   type CommandResult,
   commandSuccess,
@@ -6639,7 +6639,7 @@ import {
   getWorkspaceTask as getWorkspaceTaskFacade,
   getTaskBySourceIntentId as getTaskBySourceIntentIdFacade,
   getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import type { WorkspaceTask } from "./_types";
 export async function getWorkspaceTasks(
   workspaceId: string
@@ -6734,10 +6734,10 @@ export async function handleIssueResolvedForWorkflow(
 
 ## File: src/features/workspace.slice/domain.workflow/_persistence.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, limit, query, type QueryDocumentSnapshot, type DocumentData, where } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, limit, query, type QueryDocumentSnapshot, type DocumentData, where } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { WorkflowAggregateState, WorkflowStage } from './_aggregate';
 const workflowPath = (workspaceId: string, workflowId: string)
 const workflowCollectionPath = (workspaceId: string)
@@ -6820,7 +6820,7 @@ export function toAuditProjectionQuery(
 
 ## File: src/features/workspace.slice/gov.audit/_actions.ts
 ```typescript
-import { addDocument, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { addDocument, serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
 import type { CommandResult } from '@/shared-kernel';
 import type { AuditLog } from './_types';
@@ -6964,7 +6964,7 @@ export function useWorkspaceAudit()
 ```typescript
 import {
   getAuditLogs as getAuditLogsFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 import type { AuditLog } from "./_types"
 export async function getAuditLogs(
   accountId: string,
@@ -7019,7 +7019,7 @@ const handleRevokeGrant = async (grantId: string) =>
 ```typescript
 import {
   getWorkspaceGrants as getWorkspaceGrantsFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 import type { WorkspaceGrant } from "../gov.role/_types"
 export async function getWorkspaceGrants(
   workspaceId: string
@@ -7041,7 +7041,7 @@ export async function getWorkspaceGrants(
 import {
   grantIndividualWorkspaceAccess,
   revokeIndividualWorkspaceAccess,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   type CommandResult,
   commandSuccess,
@@ -7072,7 +7072,7 @@ export function useWorkspaceRole(workspaceId: string | null, userId: string | nu
 
 ## File: src/features/workspace.slice/gov.role/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { Workspace } from '../core/_types';
 import type { WorkspaceGrant } from './_types';
 export async function getWorkspaceGrant(
@@ -7633,7 +7633,7 @@ async withGuard<T>(
 
 ```
 
-## File: src/shared-infra/frontend-firebase/analytics/analytics.adapter.ts
+## File: src/shared-infra/firebase-client/analytics/analytics.adapter.ts
 ```typescript
 import { logEvent, setUserId } from 'firebase/analytics';
 import { analytics } from './analytics.client';
@@ -7647,18 +7647,18 @@ export function trackAnalyticsEvent(
 export function bindAnalyticsUser(userId: string | null): void
 ```
 
-## File: src/shared-infra/frontend-firebase/analytics/analytics.client.ts
+## File: src/shared-infra/firebase-client/analytics/analytics.client.ts
 ```typescript
 import { getAnalytics, type Analytics } from 'firebase/analytics';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/analytics/index.ts
+## File: src/shared-infra/firebase-client/analytics/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/app-check/app-check.adapter.ts
+## File: src/shared-infra/firebase-client/app-check/app-check.adapter.ts
 ```typescript
 import { getToken } from 'firebase/app-check';
 import { appCheck, initAppCheck } from './app-check.client';
@@ -7666,7 +7666,7 @@ export function ensureAppCheckInitialized(): void
 export async function getAppCheckToken(): Promise<string | null>
 ```
 
-## File: src/shared-infra/frontend-firebase/app-check/app-check.client.ts
+## File: src/shared-infra/firebase-client/app-check/app-check.client.ts
 ```typescript
 import {
   ReCaptchaV3Provider,
@@ -7679,45 +7679,45 @@ function canInitializeAppCheck(): boolean
 export function initAppCheck(): AppCheck | null
 ```
 
-## File: src/shared-infra/frontend-firebase/app-check/index.ts
+## File: src/shared-infra/firebase-client/app-check/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/app.client.ts
+## File: src/shared-infra/firebase-client/app.client.ts
 ```typescript
 import { getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { firebaseConfig } from './config/firebase.config';
 ```
 
-## File: src/shared-infra/frontend-firebase/auth/auth.client.ts
+## File: src/shared-infra/firebase-client/auth/auth.client.ts
 ```typescript
 import { getAuth, type Auth } from 'firebase/auth';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/config/firebase.config.ts
+## File: src/shared-infra/firebase-client/config/firebase.config.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firebase.config.ts
+## File: src/shared-infra/firebase-client/firebase.config.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/collection-paths.ts
+## File: src/shared-infra/firebase-client/firestore/collection-paths.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.client.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.client.ts
 ```typescript
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.converter.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.converter.ts
 ```typescript
 import {
   type DocumentData,
@@ -7735,12 +7735,12 @@ fromFirestore(
 ): T
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.facade.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.facade.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.read.adapter.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.read.adapter.ts
 ```typescript
 import {
 	collection,
@@ -7785,13 +7785,13 @@ export const subscribeToDocument = <T extends object>(
 ): Unsubscribe =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.utils.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.utils.ts
 ```typescript
 import type { QuerySnapshot } from "firebase/firestore"
 export function snapshotToRecord<T extends
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.write.adapter.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.write.adapter.ts
 ```typescript
 import {
 	arrayRemove,
@@ -7826,12 +7826,12 @@ export const updateDocument = (path: string, data: DocumentData) =>
 export const deleteDocument = (path: string) =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/index.ts
+## File: src/shared-infra/firebase-client/firestore/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/account.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/account.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -7866,7 +7866,7 @@ export const updateOrganizationSettings = async (organizationId: string, setting
 export const deleteOrganization = async (organizationId: string): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/audit.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/audit.repository.ts
 ```typescript
 import {
   collection,
@@ -7886,7 +7886,7 @@ export const getAuditLogs = async (
 ): Promise<AuditLog[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/daily.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/daily.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -7923,12 +7923,12 @@ export const getDailyLogs = async (
 ): Promise<DailyLog[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/index.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/projection.registry.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/projection.registry.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -7954,7 +7954,7 @@ export const upsertProjectionVersion = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/schedule.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/schedule.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8007,7 +8007,7 @@ export const getScheduleItems = async (
 ): Promise<ScheduleItem[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/user.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/user.repository.ts
 ```typescript
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
 import type { Account } from '@/shared-kernel'
@@ -8030,7 +8030,7 @@ export const removeBookmark = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.document-parser.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.document-parser.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8076,7 +8076,7 @@ export const getParsingIntentById = async (
 ): Promise<ParsingIntent | null> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.files.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.files.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8116,7 +8116,7 @@ export const getWorkspaceFilesFromSubcollection = async (
 ): Promise<WorkspaceFile[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.finance.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.finance.repository.ts
 ```typescript
 import { getDocument } from '../firestore.read.adapter';
 import { setDocument } from '../firestore.write.adapter';
@@ -8174,7 +8174,7 @@ export async function saveFinanceAggregateState(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.issues.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.issues.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8214,7 +8214,7 @@ export const getWorkspaceIssues = async (
 ): Promise<WorkspaceIssue[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.parsing-imports.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.parsing-imports.repository.ts
 ```typescript
 import { serverTimestamp, doc, getDoc, runTransaction } from 'firebase/firestore';
 import type { ParsingImport, ParsingImportStatus } from '@/features/workspace.slice';
@@ -8240,7 +8240,7 @@ export const updateParsingImportStatus = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-business.tasks.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-business.tasks.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8304,7 +8304,7 @@ export const reconcileTask = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.event-store.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-core.event-store.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8335,7 +8335,7 @@ export const getDomainEvents = async (
 ): Promise<StoredWorkspaceEvent[]> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/repositories/workspace-core.repository.ts
+## File: src/shared-infra/firebase-client/firestore/repositories/workspace-core.repository.ts
 ```typescript
 import {
   serverTimestamp,
@@ -8430,7 +8430,7 @@ export const deleteWorkspaceLocation = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/version-guard.middleware.ts
+## File: src/shared-infra/firebase-client/firestore/version-guard.middleware.ts
 ```typescript
 export type VersionGuardResult = 'allow' | 'discard';
 export function applyFirestoreVersionGuard(
@@ -8443,23 +8443,23 @@ export function allowFirestoreWrite(
 ): boolean
 ```
 
-## File: src/shared-infra/frontend-firebase/index.ts
+## File: src/shared-infra/firebase-client/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/messaging/messaging.client.ts
+## File: src/shared-infra/firebase-client/messaging/messaging.client.ts
 ```typescript
 import { getMessaging, type Messaging } from 'firebase/messaging';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/realtime-database/index.ts
+## File: src/shared-infra/firebase-client/realtime-database/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/realtime-database/notification-rtdb.adapter.ts
+## File: src/shared-infra/firebase-client/realtime-database/notification-rtdb.adapter.ts
 ```typescript
 import {
   limitToLast,
@@ -8512,13 +8512,13 @@ export async function setAccountNotificationRead(
 ): Promise<void>
 ```
 
-## File: src/shared-infra/frontend-firebase/realtime-database/realtime-database.client.ts
+## File: src/shared-infra/firebase-client/realtime-database/realtime-database.client.ts
 ```typescript
 import { getDatabase, type Database } from 'firebase/database';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage-path.resolver.ts
+## File: src/shared-infra/firebase-client/storage/storage-path.resolver.ts
 ```typescript
 dailyPhoto(accountId: string, workspaceId: string, fileId: string, fileName: string): string
 taskAttachment(workspaceId: string, fileId: string, fileName: string): string
@@ -8526,13 +8526,13 @@ userAvatar(userId: string): string
 workspaceDocument(workspaceId: string, fileId: string, versionId: string, fileName: string): string
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.client.ts
+## File: src/shared-infra/firebase-client/storage/storage.client.ts
 ```typescript
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 import { app } from '../app.client';
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.facade.ts
+## File: src/shared-infra/firebase-client/storage/storage.facade.ts
 ```typescript
 import { getFileDownloadURL } from './storage.read.adapter';
 import { deleteFile, uploadFile } from './storage.write.adapter';
@@ -8568,7 +8568,7 @@ export const deleteWorkspaceStorageObject = async (
 ): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.read.adapter.ts
+## File: src/shared-infra/firebase-client/storage/storage.read.adapter.ts
 ```typescript
 import { ref, getDownloadURL, listAll, type ListResult } from 'firebase/storage';
 import { storage } from './storage.client';
@@ -8576,7 +8576,7 @@ export const getFileDownloadURL = (path: string): Promise<string> =>
 export const listFiles = (path: string): Promise<ListResult> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.write.adapter.ts
+## File: src/shared-infra/firebase-client/storage/storage.write.adapter.ts
 ```typescript
 import {
   ref,
@@ -8594,12 +8594,12 @@ export const uploadFile = (
 export const deleteFile = (path: string): Promise<void> =>
 ```
 
-## File: src/shared-infra/frontend-firebase/vis-data/index.ts
+## File: src/shared-infra/firebase-client/vis-data/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/vis-data/vis-data.adapter.ts
+## File: src/shared-infra/firebase-client/vis-data/vis-data.adapter.ts
 ```typescript
 export interface VisDataSet<T> {
   add(data: T | T[]): unknown;
@@ -8698,13 +8698,13 @@ import {
   setScheduleItemDateRange,
   setScheduleItemStatus,
   unassignMemberFromScheduleItem,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   setDocument,
   updateDocument,
   arrayUnion,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleItem } from '@/shared-kernel';
 export interface GatewayWriteOp {
   path: string;
@@ -8816,8 +8816,8 @@ import {
   type OrgEligibleMemberView,
   type OrgMemberSkillWithTier,
 } from '@/shared-infra/projection-bus';
-import { db } from '@/shared-infra/frontend-firebase';
-import { fetchScheduleItems } from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+import { db } from '@/shared-infra/firebase-client';
+import { fetchScheduleItems } from '@/shared-infra/firebase-client/firestore/firestore.facade';
 import {
   collection,
   query,
@@ -8826,8 +8826,8 @@ import {
   limit,
   onSnapshot,
   type Unsubscribe,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 export async function getScheduleItemsFromGateway(
   accountId: string,
@@ -8870,7 +8870,7 @@ export function subscribeToWorkspaceTimelineItemsFromGateway(
 ## File: src/shared-infra/outbox-relay/_relay.ts
 ```typescript
 import { getDlqLevel, type DlqEntry } from '@/shared-infra/dlq-manager';
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   query,
@@ -8881,8 +8881,8 @@ import {
   type QuerySnapshot,
   type DocumentData,
   type DocumentChange,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { updateDoc, setDoc, type serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { updateDoc, setDoc, type serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
 import type { OutboxStatus as SharedOutboxStatus } from '@/shared-kernel';
 export type OutboxStatus = SharedOutboxStatus;
@@ -8931,7 +8931,7 @@ async function routeToDlq(
 
 ## File: src/shared-infra/projection-bus/_funnel.shared.ts
 ```typescript
-import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { arrayUnion, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 export async function executeAggregateWriteOp(op: {
   path: string;
   data: Record<string, unknown>;
@@ -8998,7 +8998,7 @@ import {
   getProjectionVersion as getProjectionVersionRepo,
   upsertProjectionVersion as upsertProjectionVersionRepo,
   type ProjectionVersionRecord,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade';
+} from '@/shared-infra/firebase-client/firestore/firestore.facade';
 ⋮----
 export async function getProjectionVersion(
   projectionName: string
@@ -9038,10 +9038,10 @@ export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void
 
 ## File: src/shared-infra/projection-bus/account-audit/_projector.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc, collection } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp, setDoc } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { addDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc, collection } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp, setDoc } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { addDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 export interface AuditProjectionEntry {
   id: string;
   accountId: string;
@@ -9062,10 +9062,10 @@ export async function appendAuditEntry(
 
 ## File: src/shared-infra/projection-bus/account-audit/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { createConverter } from '@/shared-infra/frontend-firebase/firestore/firestore.converter';
-import { collection, query, orderBy, limit } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocuments } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { createConverter } from '@/shared-infra/firebase-client/firestore/firestore.converter';
+import { collection, query, orderBy, limit } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocuments } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AuditProjectionEntry } from './_projector';
 export async function getAccountAuditEntries(
   accountId: string,
@@ -9080,9 +9080,9 @@ export async function getAccountAuditEntries(
 
 ## File: src/shared-infra/projection-bus/account-schedule/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface AccountScheduleProjection {
   accountId: string;
@@ -9117,7 +9117,7 @@ export async function applyScheduleCompleted(
 
 ## File: src/shared-infra/projection-bus/account-schedule/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AccountScheduleProjection, AccountScheduleAssignment } from './_projector';
 export async function getAccountScheduleProjection(
   accountId: string
@@ -9134,9 +9134,9 @@ export async function getAccountActiveAssignments(
 
 ## File: src/shared-infra/projection-bus/account-skill-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface AccountSkillEntry {
   readonly tagSlug: string;
@@ -9169,7 +9169,7 @@ export async function applySkillXpDeducted(params: {
 
 ## File: src/shared-infra/projection-bus/account-skill-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AccountSkillEntry, AccountSkillView } from './_projector';
 export async function getAccountSkillView(
   accountId: string
@@ -9190,9 +9190,9 @@ export async function getAllAccountSkills(
 
 ## File: src/shared-infra/projection-bus/account-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { Account } from '@/shared-kernel';
@@ -9234,7 +9234,7 @@ export async function applyAuthoritySnapshot(
 
 ## File: src/shared-infra/projection-bus/account-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { AccountViewRecord } from './_projector';
 export async function getAccountView(accountId: string): Promise<AccountViewRecord | null>
@@ -9253,11 +9253,11 @@ export async function getAccountMembershipTag(
 
 ## File: src/shared-infra/projection-bus/acl-projection/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export type AclPermission = 'read' | 'write' | 'admin' | 'none';
 type AclProjectionRecord = Omit<AclProjectionEntry, 'updatedAt'> & {
@@ -9291,7 +9291,7 @@ export async function applyAclPermissionRevoked(
 
 ## File: src/shared-infra/projection-bus/acl-projection/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AclProjectionEntry, AclPermission } from './_projector';
 ⋮----
 export async function getAclProjectionEntry(
@@ -9319,8 +9319,8 @@ import type {
   ScheduleProposalCancelledPayload,
   ScheduleAssignRejectedPayload,
 } from '@/features/organization.slice';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { arrayUnion, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
@@ -9351,7 +9351,7 @@ async function _closeScheduleItem(
 
 ## File: src/shared-infra/projection-bus/demand-board/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   getDocs,
   collection,
@@ -9359,8 +9359,8 @@ import {
   where,
   orderBy,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';
 export async function getDemandBoardItem(
   orgId: string,
@@ -9382,11 +9382,11 @@ export async function getDemandBoardItemsByStatus(
 
 ## File: src/shared-infra/projection-bus/finance-staging-pool/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export type FinanceStagingStatus = 'PENDING' | 'LOCKED_BY_FINANCE';
 export interface FinanceStagingEntry {
@@ -9422,14 +9422,14 @@ export async function applyFinanceStagingRemoved(
 
 ## File: src/shared-infra/projection-bus/finance-staging-pool/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   getDocs,
   query,
   type QueryDocumentSnapshot,
   type DocumentData,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { FinanceStagingEntry, FinanceStagingStatus } from './_projector';
 export async function getFinanceStagingPool(orgId: string): Promise<FinanceStagingEntry[]>
 export async function getFinanceStagingByStatus(
@@ -9446,9 +9446,9 @@ export async function getPendingFinanceStagingItems(orgId: string): Promise<Fina
 
 ## File: src/shared-infra/projection-bus/global-audit-view/_projector.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDoc, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDoc, serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { EventEnvelope } from '@/shared-kernel';
 export interface GlobalAuditRecord {
   readonly auditEventId: string;
@@ -9473,8 +9473,8 @@ export async function applyAuditEvent(
 
 ## File: src/shared-infra/projection-bus/global-audit-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, where, limit, query as firestoreQuery } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, where, limit, query as firestoreQuery } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { GlobalAuditRecord, GlobalAuditQuery } from './_projector';
 export async function getGlobalAuditEvents(
   query: GlobalAuditQuery = {}
@@ -9497,9 +9497,9 @@ export async function getGlobalAuditEventsByWorkspace(
 
 ## File: src/shared-infra/projection-bus/org-eligible-member-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface OrgEligibleMemberEntry {
   orgId: string;
@@ -9544,9 +9544,9 @@ export async function updateOrgMemberEligibility(
 
 ## File: src/shared-infra/projection-bus/org-eligible-member-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { SkillTier } from '@/shared-kernel';
 import { resolveSkillTier } from '@/shared-kernel';
 import type { OrgEligibleMemberEntry } from './_projector';
@@ -9588,9 +9588,9 @@ export async function getOrgEligibleMembersWithTier(
 
 ## File: src/shared-infra/projection-bus/organization-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { Account } from '@/shared-kernel';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface OrganizationViewRecord {
@@ -9628,7 +9628,7 @@ export async function applyMemberLeft(
 
 ## File: src/shared-infra/projection-bus/organization-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { OrganizationViewRecord } from './_projector';
 export async function getOrganizationView(orgId: string): Promise<OrganizationViewRecord | null>
 export async function getOrganizationMemberIds(orgId: string): Promise<string[]>
@@ -9641,11 +9641,11 @@ export async function getOrganizationMemberIds(orgId: string): Promise<string[]>
 
 ## File: src/shared-infra/projection-bus/schedule-calendar-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 export interface CalendarSlot {
@@ -9695,13 +9695,13 @@ export async function applyScheduleCalendarRemove(params: {
 
 ## File: src/shared-infra/projection-bus/schedule-calendar-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   getDocs,
   collection,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleCalendarDayView } from './_projector';
 export async function getScheduleCalendarDay(
   orgId: string,
@@ -9719,11 +9719,11 @@ export async function getAllScheduleCalendarDays(
 
 ## File: src/shared-infra/projection-bus/schedule-timeline-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { ScheduleItem } from '@/shared-kernel';
 export interface TimelineBlock {
@@ -9775,13 +9775,13 @@ export async function applyTimelineRemove(params: {
 
 ## File: src/shared-infra/projection-bus/schedule-timeline-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   getDocs,
   collection,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { ScheduleTimelineMemberView } from './_projector';
 export async function getScheduleTimelineForMember(
   orgId: string,
@@ -9799,11 +9799,11 @@ export async function getAllScheduleTimelines(
 
 ## File: src/shared-infra/projection-bus/semantic-governance-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export type ProposalStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN';
 export interface GovernanceProposal {
@@ -9859,13 +9859,13 @@ export async function applyTagRelationshipsUpdated(params: {
 
 ## File: src/shared-infra/projection-bus/semantic-governance-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   getDocs,
   collection,
   type QueryDocumentSnapshot,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type {
   SemanticGovernanceTagView,
   GovernanceProposal,
@@ -9890,8 +9890,8 @@ export async function getAllSemanticGovernanceViews(): Promise<SemanticGovernanc
 
 ## File: src/shared-infra/projection-bus/tag-snapshot/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { TagCreatedPayload, TagUpdatedPayload, TagDeprecatedPayload, TagDeletedPayload } from '@/shared-kernel';
 export interface TagSnapshotEntry {
@@ -9920,9 +9920,9 @@ export async function applyTagDeleted(payload: TagDeletedPayload): Promise<void>
 
 ## File: src/shared-infra/projection-bus/tag-snapshot/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { TagSnapshotEntry } from './_projector';
 export async function getTagSnapshot(tagSlug: string): Promise<TagSnapshotEntry | null>
 export async function getAllTagSnapshots(): Promise<TagSnapshotEntry[]>
@@ -9936,11 +9936,11 @@ export async function getActiveTagSnapshots(): Promise<TagSnapshotEntry[]>
 
 ## File: src/shared-infra/projection-bus/task-finance-label-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export type FinanceLabelStatus =
   | 'ACCEPTED'
@@ -9975,7 +9975,7 @@ export async function applyTaskAcceptedLabel(
 
 ## File: src/shared-infra/projection-bus/task-finance-label-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { TaskFinanceLabelEntry } from './_projector';
 export async function getTaskFinanceLabel(
   taskId: string
@@ -9992,11 +9992,11 @@ export async function getTaskFinanceLabels(
 
 ## File: src/shared-infra/projection-bus/tasks-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export type TaskStatus =
   | 'IN_PROGRESS'
@@ -10036,15 +10036,15 @@ export async function applyTaskStatusChanged(
 
 ## File: src/shared-infra/projection-bus/tasks-view/_queries.ts
 ```typescript
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   getDocs,
   query,
   type QueryDocumentSnapshot,
   type DocumentData,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { TaskViewEntry, TaskStatus } from './_projector';
 export async function getTaskViewEntry(
   workspaceId: string,
@@ -10064,9 +10064,9 @@ export async function getTasksViewByStatus(
 
 ## File: src/shared-infra/projection-bus/wallet-balance/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface WalletBalanceView {
   readonly accountId: string;
@@ -10100,7 +10100,7 @@ export async function syncWalletBalanceFromAggregate(
 
 ## File: src/shared-infra/projection-bus/wallet-balance/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { WalletBalanceView } from './_projector';
 export async function getWalletBalanceView(
   accountId: string
@@ -10115,11 +10115,11 @@ export async function getDisplayWalletBalance(accountId: string): Promise<number
 
 ## File: src/shared-infra/projection-bus/workspace-graph-view/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface GraphNode {
   id: string;
@@ -10164,7 +10164,7 @@ export async function applyGraphNodeRemoved(
 
 ## File: src/shared-infra/projection-bus/workspace-graph-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { WorkspaceGraphView, GraphNode, GraphEdge } from './_projector';
 export async function getWorkspaceGraphView(
   workspaceId: string
@@ -10180,9 +10180,9 @@ export async function getWorkspaceGraphEdges(workspaceId: string): Promise<Graph
 
 ## File: src/shared-infra/projection-bus/workspace-scope-guard/_projector.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { WorkspaceScopeGuardView } from './_read-model';
 export async function initScopeGuardView(
@@ -10202,7 +10202,7 @@ export async function applyGrantEvent(
 
 ## File: src/shared-infra/projection-bus/workspace-scope-guard/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 import type { WorkspaceScopeGuardView } from './_read-model';
 import { buildAuthoritySnapshot } from './_read-model';
@@ -10223,9 +10223,9 @@ export async function queryWorkspaceAccess(
 ## File: src/shared-infra/projection-bus/workspace-view/_projector.ts
 ```typescript
 import type { Workspace } from '@/features/workspace.slice';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 export interface WorkspaceViewRecord {
   workspaceId: string;
@@ -10255,7 +10255,7 @@ export async function applyCapabilityUpdate(
 
 ## File: src/shared-infra/projection-bus/workspace-view/_queries.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { WorkspaceViewRecord } from './_projector';
 export async function getWorkspaceView(workspaceId: string): Promise<WorkspaceViewRecord | null>
 export async function getWorkspaceCapabilities(workspaceId: string): Promise<string[]>
@@ -11020,9 +11020,9 @@ title=
 
 ## File: src/features/account.slice/gov.policy/_actions.ts
 ```typescript
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { getDocument, Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   assertSafeFirestoreDocId,
   type CommandResult,
@@ -11072,9 +11072,9 @@ export async function deleteAccountPolicy(policyId: string, traceId?: string): P
 
 ## File: src/features/account.slice/gov.role/_actions.ts
 ```typescript
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { OrganizationRole } from '@/shared-kernel';
 import {
   assertSafeFirestoreDocId,
@@ -11250,8 +11250,8 @@ const handleSelect = (callback: () => void) =>
 
 ## File: src/features/identity.slice/_claims-handler.ts
 ```typescript
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
 import { assertSafeFirestoreDocId, type EventEnvelope } from '@/shared-kernel';
 async function emitRefreshSignal(accountId: string, traceId: string): Promise<void>
@@ -11475,11 +11475,11 @@ import type {
 
 ## File: src/features/skill-xp.slice/_org-recognition.ts
 ```typescript
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { findSkill } from '@/shared-kernel';
 import { enqueueSkillOutboxEvent } from './skill-outbox';
 export type SkillRecognitionStatus = 'active' | 'revoked';
@@ -12229,7 +12229,7 @@ import {
   supersedeParsingIntent as supersedeParsingIntentFacade,
   updateParsingImportStatus as updateParsingImportStatusFacade,
   updateParsingIntentStatus as updateParsingIntentStatusFacade,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+} from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import type { SkillRequirement } from '@/shared-kernel'
 import type { Timestamp } from '@/shared-kernel'
 import type {
@@ -12447,7 +12447,7 @@ setEditingTask({
                 });
 ```
 
-## File: src/shared-infra/frontend-firebase/auth/auth.adapter.ts
+## File: src/shared-infra/firebase-client/auth/auth.adapter.ts
 ```typescript
 import {
   signInWithEmailAndPassword,
@@ -12476,7 +12476,7 @@ onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void
 getCurrentUser(): AuthUser | null
 ```
 
-## File: src/shared-infra/frontend-firebase/auth/auth.types.ts
+## File: src/shared-infra/firebase-client/auth/auth.types.ts
 ```typescript
 import type { User as FirebaseUser, UserCredential } from 'firebase/auth';
 import type { AuthUser } from '@/shared-kernel';
@@ -12484,12 +12484,12 @@ import type { AuthUser } from '@/shared-kernel';
 export function mapFirebaseUser(user: FirebaseUser): AuthUser
 ```
 
-## File: src/shared-infra/frontend-firebase/auth/index.ts
+## File: src/shared-infra/firebase-client/auth/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.adapter.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.adapter.ts
 ```typescript
 import {
   collection,
@@ -12514,7 +12514,7 @@ onSnapshot<T>(
 ): () => void
 ```
 
-## File: src/shared-infra/frontend-firebase/firestore/firestore.types.ts
+## File: src/shared-infra/firebase-client/firestore/firestore.types.ts
 ```typescript
 import type {
   DocumentData,
@@ -12535,12 +12535,12 @@ export interface VersionedProjectionDoc extends FirestoreTimestampedDoc {
 }
 ```
 
-## File: src/shared-infra/frontend-firebase/messaging/index.ts
+## File: src/shared-infra/firebase-client/messaging/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/messaging/messaging.adapter.ts
+## File: src/shared-infra/firebase-client/messaging/messaging.adapter.ts
 ```typescript
 import { getToken, onMessage } from 'firebase/messaging';
 import type { IMessaging, PushNotificationPayload } from '@/shared-kernel';
@@ -12556,7 +12556,7 @@ async getToken(): Promise<string | null>
 onForegroundMessage(callback: (payload: PushNotificationPayload) => void): () => void
 ```
 
-## File: src/shared-infra/frontend-firebase/messaging/messaging.types.ts
+## File: src/shared-infra/firebase-client/messaging/messaging.types.ts
 ```typescript
 export interface FcmData {
   readonly [key: string]: string;
@@ -12571,12 +12571,12 @@ export interface FcmMessage {
 }
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/index.ts
+## File: src/shared-infra/firebase-client/storage/index.ts
 ```typescript
 
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.adapter.ts
+## File: src/shared-infra/firebase-client/storage/storage.adapter.ts
 ```typescript
 import type { IFileStore, UploadOptions } from '@/shared-kernel';
 import { getFileDownloadURL } from './storage.read.adapter';
@@ -12588,7 +12588,7 @@ async getDownloadURL(path: string): Promise<string>
 async deleteFile(path: string): Promise<void>
 ```
 
-## File: src/shared-infra/frontend-firebase/storage/storage.types.ts
+## File: src/shared-infra/firebase-client/storage/storage.types.ts
 ```typescript
 import type {
   StorageReference,
