@@ -27,22 +27,28 @@
 
 3. Application boundary
 - command 執行、scope guard、policy engine、transaction runner、outbox 建立。
+- org policy cache：`registerOrgPolicyCache` / `getCachedOrgPolicy` / `getAllCachedPolicies` / `clearOrgPolicyCache`。
 
 4. Governance
 - `gov.role`: workspace role assign/revoke/query。
 - `gov.audit`: audit log write/query 與 timeline UI。
+- `gov.audit-convergence`: audit bridge / query adapter（`toAuditProjectionQuery`）。
 - `gov.members`: member grants 與成員面板。
 
 5. Domain capabilities
 - `domain.files`: 檔案建立、版本管理、復原、上傳（daily/task/profile/raw）。
 - `domain.document-parser`: ParsingIntent 建立/導入狀態追蹤/訂閱。
+- `domain.parsing-intent`: ParsingIntent 數位孿生契約（`createParsingIntentContract` / `markParsingIntentContract` / `supersedeParsingIntent`）。
 - `domain.tasks`: task CRUD、批次導入、sourceIntent 對應查詢。
 - `domain.workflow`: stage transition、blockedBy(issue) 處理、workflow 持久化。
 - `domain.daily`: 日誌建立/聚合與互動。
 - `domain.quality-assurance` / `domain.acceptance`: QA 與驗收能力入口。
 - `domain.issues`: issue 建立/留言/解決。
 
-6. Finance migration note
+6. Workspace rules
+- `filterVisibleWorkspaces` / `hasWorkspaceAccess` / `isWorkspaceVisibleToUser` / `buildTaskTree`（純函數謂詞，無 SDK 依賴）。
+
+7. Finance migration note
 - VS5 的 finance capability 已遷移到 `@/features/finance.slice`（VS9）。
 - `workspace.slice` 目前僅保留 backward-compatible re-export。
 

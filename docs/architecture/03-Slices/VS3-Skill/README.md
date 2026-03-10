@@ -16,10 +16,12 @@
 ## Implemented Capabilities (from code)
 
 - XP aggregate actions: `addSkillXp` / `deductSkillXp`（server action 入口）。
-- Domain operations: `addXp` / `deductXp` / `getSkillXp`，含 XP 邊界常數。
+- Org skill tag server actions: `addOrgSkillTagAction` / `removeOrgSkillTagAction`（Invariant T2）。
+- Domain operations: `addXp` / `deductXp` / `getSkillXp`，含 XP 邊界常數（`SKILL_XP_MAX` / `SKILL_XP_MIN`）。
 - Ledger model: `XpLedgerEntry`（每次 XP 變更需記帳）。
 - Projection handlers: `applySkillXpAdded` / `applySkillXpDeducted`。
-- Tag pool: add/remove/ref-count，並支援 TagLifecycle 被動同步。
+- Tag pool: add/remove/ref-count（`addSkillTagToPool` / `removeSkillTagFromPool` / `incrementTagRefCount` / `decrementTagRefCount`），並支援 TagLifecycle 被動同步。
+- Tag lifecycle subscriber: `handleTagUpdatedForPool` / `handleTagDeprecatedForPool` / `handleTagDeletedForPool`（由 projection.event-funnel 呼叫，`R3`）。
 - Org skill recognition: grant/revoke recognition。
 - Read queries: account skill view、org skill tags、member recognitions。
 - UI: `PersonalSkillPanel`。

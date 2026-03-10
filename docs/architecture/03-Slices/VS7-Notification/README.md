@@ -18,6 +18,7 @@
 - Hub actions: dispatch、routing rule register/unregister、manual trigger dispatch。
 - Hub services: tag-aware routing decision、subscription registry、projection-bus subscriber、hub stats。
 - Hub contracts: notification category / semantic type / priority / channel。
+- Notification authority constants: `NOTIFICATION_CHANNELS` / `NOTIFICATION_PRIORITIES` / `NOTIFICATION_PRIORITY_ORDER`。
 - User notification domain: deliver、subscribe、mark-read、notifications hook。
 - Governance router: notification router registration。
 - UI: notification bell、badge、list。

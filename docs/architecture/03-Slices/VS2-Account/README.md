@@ -15,10 +15,11 @@
 
 ## Implemented Capabilities (from code)
 
-- Profile domain: user profile create/update/query + settings/security/preferences UI.
+- Profile domain: user profile create/update/query + settings/security/preferences UI（含 `AccountSkillsSection`）。
 - Wallet domain: credit/debit、balance query、transactions subscription、wallet hook。
-- Governance role: assign/revoke/query account role，並觸發 claims refresh（`S6`）。
+- Governance role: assign/revoke/query account role，並觸發 claims refresh（`S6`）；role UI：`PermissionMatrixView` / `PermissionTree`。
 - Governance policy: create/update/delete/query account policies。
+- Domain rules: `isOwner` / `getUserTeams` / `getUserTeamIds`（純函數謂詞，無 SDK 依賴）。
 - Account event bus: `publishAccountEvent` / `onAccountEvent`。
 
 ## Boundary Note

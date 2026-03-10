@@ -19,4 +19,4 @@
 - UI: `WorkspaceFinance` finance view。
 - Action: `saveFinanceAggregateState`。
 - Query: `getFinanceAggregateState`。
-- Types: `FinanceAggregateState`、`FinanceLifecycleStage`、claim line item 與 strong-read snapshot contract。
+- Types: `FinanceAggregateState`、`FinanceLifecycleStage`、`FinanceDirectiveItem`、claim line item 與 strong-read snapshot contract。

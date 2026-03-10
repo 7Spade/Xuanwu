@@ -18,6 +18,8 @@
 - Aggregate logic: temporal conflict detection + taxonomy validation。
 - Mutation actions: tag upsert/assign/remove、semantic edge add/remove、tag lifecycle register/activate/transition。
 - Query services: semantic index query/stats、eligible tags、relation edges、stale tag warnings。
+- Semantic authority constants: `SEARCH_DOMAINS` / `TAXONOMY_DIMENSIONS`。
+- Tag entity factory: `buildTagEntity`（composition root 用於 seed TE1~TE6 nodes）。
 - Neural/causality queries: semantic distance、isolated nodes、affected nodes、causality chain。
 - Cost classification: `classifyCostItem*` + `shouldMaterializeAsTask`（parser Layer-2 判定）。
 - CTA ops: centralized tag CRUD + lifecycle event publish。
