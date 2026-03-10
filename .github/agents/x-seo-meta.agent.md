@@ -2,6 +2,7 @@
 name: 'SEO Meta'
 description: 'SEO 與 Metadata 策略師。負責 generateMetadata、sitemap.ts 與語義化結構。'
 tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

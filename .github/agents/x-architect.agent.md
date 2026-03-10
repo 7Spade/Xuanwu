@@ -2,6 +2,7 @@
 name: 'Architect'
 description: '架構規劃師。專精 Next.js App Router 與 Firestore 模型設計。'
 tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'filesystem/*', 'memory/*', 'sequentialthinking/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

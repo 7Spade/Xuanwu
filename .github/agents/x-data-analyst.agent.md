@@ -2,6 +2,7 @@
 name: 'Data Analyst'
 description: '數據分析專家。負責 Firebase Analytics (GA4) 埋點、Web Vitals 監控與 A/B Testing。'
 tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

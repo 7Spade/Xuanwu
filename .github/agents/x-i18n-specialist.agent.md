@@ -2,6 +2,7 @@
 name: 'I18n Specialist'
 description: '國際化專家。負責多語言管理、/[lang] 路由邏輯與 RTL 支援。'
 tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

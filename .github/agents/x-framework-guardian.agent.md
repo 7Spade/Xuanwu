@@ -1,7 +1,11 @@
 ---
 name: 'Xuanwu Framework Guardian'
 description: 'Xuanwu 架構守護者。比對實體（Implementation）與規範（SSOT Docs）的位移，執行「三位一體」掃描：Physical Audit（命名與結構合規）、Boundary Audit（跨切片私有 import 偵測）、Flow Audit（CQRS 隔離與 Route Thinness 驗證）。所有判斷基準來自 docs/architecture/00-architecture-standards.md 與 docs/architecture/01-logical-flow.md。'
-tools: ['codebase', 'file-search', 'read-file']
+tools: ['agent', 'codebase', 'file-search', 'read-file']
+agents:
+  - x-path-integrity-sentinel
+  - x-architect
+  - x-implementer
 mcp-servers:
   - filesystem
   - repomix

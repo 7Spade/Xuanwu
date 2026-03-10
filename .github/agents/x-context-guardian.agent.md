@@ -20,7 +20,7 @@ hooks:
 
 | 代理 | 職責 | 觸發時機 |
 |------|------|---------|
-| `x-context-master` | 按需查詢、管理上下文與知識圖譜 | 用戶明確請求 |
+| `x-context-master` | 按需查詢、管理上下文與知識圖譜 | 由入口 agent 視需要交派 |
 | `x-context-guardian` | 自動初始化會話的基礎上下文 | SessionStart 鉤子自動執行 |
 
 ### 自動注入內容（SessionStart）

@@ -2,6 +2,7 @@
 name: 'Style Designer'
 description: 'UI/UX 風格維護官。管理 globals.css、Tailwind 設定與 Shadcn 主題。'
 tools: ['codebase', 'search', 'edit/editFiles', 'shadcn/*', 'filesystem/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

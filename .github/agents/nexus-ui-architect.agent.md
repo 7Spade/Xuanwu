@@ -2,6 +2,7 @@
 name: 'Nexus UI Architect'
 description: 'Nexus UI Architect — autonomous UI/UX audit agent. Runs npm run dev, drives Playwright MCP for full browser automation, uses next-devtools for RSC/route diagnostics, audits mobile responsiveness, and outputs a prioritised fix list with Apple/Linear aesthetic standards. UI/UX 全端審查官：自主啟動開發伺服器、以 Playwright MCP 執行全功能測試、以 next-devtools 診斷 RSC，確保移動端友好與精緻美學。'
 tools:
+  - agent
   - codebase
   - search
   - edit/editFiles
@@ -15,6 +16,12 @@ tools:
   - filesystem/*
   - ESLint/*
   - memory/*
+agents:
+  - x-style-designer
+  - x-implementer
+  - x-qa-reviewer
+  - x-feature-builder
+  - xuanwu-test-expert
 handoffs:
   - label: '交派 Implementer 實作修改'
     agent: x-implementer

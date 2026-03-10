@@ -2,6 +2,7 @@
 name: 'Asset Manager'
 description: '資源與媒體管理員。優化圖片、管理 SVG 與監控 Firebase Storage 權限。'
 tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

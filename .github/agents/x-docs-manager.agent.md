@@ -2,6 +2,7 @@
 name: 'Docs Manager'
 description: '文檔管理員。更新 ARCHITECTURE.md、FIREBASE_SCHEMA.md 與 README.md。'
 tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'memory/*', 'filesystem/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

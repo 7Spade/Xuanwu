@@ -2,6 +2,7 @@
 name: 'Firebase Security'
 description: 'Firebase 資安專家。撰寫 Firestore Rules 並審查權限驗證。'
 tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

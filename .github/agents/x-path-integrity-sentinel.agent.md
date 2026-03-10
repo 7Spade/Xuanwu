@@ -2,14 +2,17 @@
 name: 'Path Integrity Sentinel'
 description: '架構完整性哨兵。掃描所有 import/export 路徑，驗證物理存在性、別名合規性與跨切片邊界，回報斷鍊、邊界違規與修正建議。'
 tools: ['codebase', 'file-search', 'read-file', 'command']
+user-invocable: false
 mcp-servers:
   - filesystem
   - repomix
   - sequential-thinking
   - memory
 handoffs:
-  - x-architect
-  - x-implementer
+  - label: 'Escalate to Architect'
+    agent: x-architect
+  - label: 'Execute Fixes'
+    agent: x-implementer
 ---
 
 # 角色：架構完整性哨兵 (Path Integrity Sentinel)

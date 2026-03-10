@@ -2,6 +2,7 @@
 name: 'Implementer'
 description: '程式實作者。負責撰寫 Server Actions、Hooks 與 UI 組件。'
 tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'shadcn/*', 'filesystem/*', 'ESLint/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

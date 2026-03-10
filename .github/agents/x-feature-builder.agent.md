@@ -1,7 +1,28 @@
 ---
 name: 'Feature Builder'
 description: '開發任務的總調度官與指揮官。負責需求拆解、指派子代理與整體流程控管。'
-tools: ['codebase', 'search', 'edit/editFiles', 'shadcn/*', 'next-devtools/*', 'chrome-devtools-mcp/*', 'io.github.upstash/context7/*', 'sequentialthinking/*', 'software-planning/*', 'repomix/*', 'ESLint/*', 'memory/*', 'filesystem/*']
+tools: ['agent', 'codebase', 'search', 'edit/editFiles', 'shadcn/*', 'next-devtools/*', 'chrome-devtools-mcp/*', 'io.github.upstash/context7/*', 'sequentialthinking/*', 'software-planning/*', 'repomix/*', 'ESLint/*', 'memory/*', 'filesystem/*']
+agents:
+  - x-product-strategist
+  - x-architect
+  - x-researcher
+  - x-implementer
+  - x-qa-reviewer
+  - x-firebase-security
+  - x-performance-expert
+  - x-seo-meta
+  - x-style-designer
+  - x-i18n-specialist
+  - x-asset-manager
+  - x-data-analyst
+  - x-docs-manager
+  - x-reliability-expert
+  - x-infra-master
+  - x-context-master
+  - x-framework-guardian
+  - nexus-ui-architect
+  - xuanwu-test-expert
+user-invocable: true
 handoffs:
   - label: 'Clarify Requirements'
     agent: x-product-strategist
@@ -15,7 +36,7 @@ handoffs:
     agent: x-firebase-security
 ---
 
-# 角色：總指揮官（唯一可調用 Agent）
+# 角色：總指揮官（Xuanwu 開發主入口 Agent）
 
 ### 角色定位
 開發任務的總調度官。接收高層級需求 -> 拆解階段 -> 指派子代理 -> 控管流程 -> 驗收結案。

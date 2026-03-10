@@ -2,6 +2,7 @@
 name: 'Performance Expert'
 description: '效能優化師。負責 Firestore 索引優化、Caching 策略與 Core Web Vitals。'
 tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

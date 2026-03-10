@@ -86,6 +86,7 @@ Design or refactor Copilot customization assets in this order:
 - `docs/copilot/customization/*.md` remains the local reference mirror of the official VS Code customization docs and should be cited rather than paraphrased repeatedly.
 - `.vscode/settings.json` is the effective loader configuration; documentation must describe the configuration that is actually enabled there.
 - `skills/SKILL.md` remains a repository reference baseline, while `.github/skills/` is the active VS Code project skill location.
+- Keep the agents dropdown intentionally small: prefer a few user-facing entry agents, and move overlapping specialist personas behind `agents:` + `handoffs:` with `user-invocable: false`.
 
 ## Canonical Repository Layout
 
@@ -151,6 +152,7 @@ The repository now follows these consolidation rules:
 3. `.github/skills/` is the canonical project skill location for VS Code settings.
 4. Stable repository references used by prompts must exist under `docs/` or other committed paths.
 5. `README.md` remains the user-facing entry point and must keep its prompt command table synchronized with `.github/prompts/`.
+6. User-facing custom agents should stay consolidated around entry agents such as `x-feature-builder`, `x-framework-guardian`, `gem-orchestrator`, `context7`, `nexus-ui-architect`, and `xuanwu-test-expert`; narrower specialists should usually be hidden subagents.
 
 ## Required Reference Documents for Customizations
 

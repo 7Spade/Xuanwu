@@ -2,6 +2,7 @@
 name: 'Context Master'
 description: '現代化上下文助手。專精於使用 context7 MCP 管理複雜的大規模專案上下文與知識圖譜。'
 tools: ['codebase', 'search', 'io.github.upstash/context7/*', 'memory/*', 'repomix/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

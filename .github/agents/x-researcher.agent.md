@@ -2,6 +2,7 @@
 name: 'Researcher'
 description: '技術調研專家。快速分析現有代碼庫與 Firebase 配置。'
 tools: ['codebase', 'search', 'repomix/*', 'filesystem/*', 'memory/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

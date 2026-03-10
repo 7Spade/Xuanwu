@@ -2,6 +2,7 @@
 name: 'QA Reviewer'
 description: '品質校驗員。負責執行 Build、Lint 與檢查代碼規範。'
 tools: ['codebase', 'search', 'runCommands', 'ESLint/*', 'filesystem/*']
+user-invocable: false
 handoffs:
   - label: 'Report to Feature Builder'
     agent: x-feature-builder

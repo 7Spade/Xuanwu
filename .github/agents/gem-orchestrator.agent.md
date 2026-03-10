@@ -1,6 +1,14 @@
 ---
 description: "Coordinates multi-agent workflows, delegates tasks, synthesizes results via runSubagent"
 name: gem-orchestrator
+tools: ['agent']
+agents:
+  - gem-researcher
+  - gem-planner
+  - gem-implementer
+  - gem-devops
+  - gem-reviewer
+  - gem-documentation-writer
 disable-model-invocation: true
 user-invocable: true
 ---
