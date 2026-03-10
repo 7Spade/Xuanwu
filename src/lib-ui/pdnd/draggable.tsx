@@ -1,5 +1,5 @@
 /**
- * Module: atlaskit-draggable
+ * Module: pdnd-draggable
  * Purpose: Make any element draggable using @atlaskit/pragmatic-drag-and-drop.
  * Responsibilities: register a DOM element as a draggable source and manage
  *   dragging state for visual feedback.
@@ -12,23 +12,23 @@ import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 import { cn } from "@/shadcn-ui/utils/utils"
 
-export interface AtlaskitDragData {
-  [key: string]: unknown
+export interface PdndDragData {
+  [key: string | symbol]: unknown
 }
 
-interface AtlaskitDraggableProps {
-  data: AtlaskitDragData
+interface PdndDraggableProps {
+  data: PdndDragData
   children: ReactNode
   className?: string
   draggingClassName?: string
 }
 
-export function AtlaskitDraggable({
+export function PdndDraggable({
   data,
   children,
   className,
   draggingClassName,
-}: AtlaskitDraggableProps) {
+}: PdndDraggableProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
 

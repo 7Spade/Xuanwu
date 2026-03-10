@@ -5,16 +5,23 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-// Drag-and-drop
+// @dnd-kit drag-and-drop
 export {
   SortableList,
   DragHandle,
-  AtlaskitDropZone,
-  AtlaskitDraggable,
   type DragHandleProps,
-  type AtlaskitDropData,
-  type AtlaskitDragData,
 } from "./dnd"
+
+// @atlaskit/pragmatic-drag-and-drop
+export {
+  PdndDropZone,
+  PdndDraggable,
+  PdndSortableItem,
+  type PdndDropData,
+  type PdndDragData,
+  type PdndSortableData,
+  type Edge,
+} from "./pdnd"
 
 // Visualisation
 export { VisNetworkCanvas, VisTimelineCanvas, VisGraph3dCanvas } from "./vis"
