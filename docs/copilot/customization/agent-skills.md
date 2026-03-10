@@ -128,7 +128,7 @@ The skill body contains the instructions, guidelines, and examples that Copilot 
 * Examples of the expected input and output
 * References to any included scripts or resources
 
-You can reference files within the skill directory using relative paths. For example, to reference a script in your skill directory, use `[test script](./test-template.js)`.
+You can reference files within the skill directory using relative paths. For example, to reference a script in your skill directory, use `./test-template.js`.
 
 ## Example skills
 
