@@ -44,6 +44,11 @@
 | `A21` | Finance_Request 獨立生命週期 |
 | `A22` | Finance 狀態回饋必經 L5 label projection |
 
+補充實作對照（2026-03-11）：
+
+- `global-search.slice`：跨域搜尋權威出口（D26）。
+- `portal.slice`：門戶 state 橋接切片（不編入 VS1~VS9）。
+
 ## VS8（Memory & Feedback Brain）規則集
 
 ### G（Governance）
@@ -91,6 +96,7 @@
 - 禁止 VS8 直接觸發 VS5/VS6/VS7 副作用。
 - 禁止繞過 `VisDataAdapter` 直連可視化資料來源。
 - 禁止繞過 `acl-projection` 在讀路徑重算高成本鑑權。
+- 禁止在非 `global-search.slice` 內建立平行的跨域搜尋權威出口。
 
 ## 跨切片強制規則（摘要）
 

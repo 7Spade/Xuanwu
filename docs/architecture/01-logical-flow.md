@@ -23,6 +23,11 @@
 - B 路（`L7-B`）：Admin 權限、跨租戶、排程/Webhook、高扇出協調。
 - `firebase-admin` 僅允許在 `functions` 容器內使用（`D25`）。
 
+## Auxiliary Slice 邊界（現況）
+
+- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑應對接 VS8 語義索引與 L6 讀取出口。
+- `portal.slice`：門戶殼層 state 橋接；不取代 L2/L3 業務決策，不可繞過主鏈。
+
 ## VS9 Finance 流向索引
 
 - 入口：`TaskAcceptedConfirmed` 經 L4 `CRITICAL_LANE` 進入 L5 `finance-staging-pool`（`A20`）。
@@ -74,3 +79,4 @@ flowchart TD
 - 若看見讀鏈直接回寫，視為違規。
 - 若看見 feature 直連 Firebase SDK，視為違規。
 - 若看見 VS8 直接執行副作用，視為違規。
+- 若看見除 `global-search.slice` 之外的跨域搜尋權威入口，視為違規。

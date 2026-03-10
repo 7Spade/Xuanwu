@@ -1,6 +1,6 @@
 ﻿# [索引 ID: @VS-STD] 00 - Slice Standard
 
-本檔定義 VS1~VS9 文檔與實作的共同結構。
+本檔定義 VS1~VS9 文檔與實作的共同結構，並規範 auxiliary slices 的回寫方式。
 
 ## 1. Slice 文檔必要結構（依層級責任與邊界界定）
 
@@ -58,6 +58,12 @@
 - MUST: 文件中的 action/query/service/component 名稱需可在程式碼中被檢索。
 - SHOULD: 若能力已遷移到其他 slice，需在原 slice 文件標註 migration note。
 - FORBIDDEN: 僅保留抽象敘述而無可驗證能力名稱。
+
+### 8.2 Auxiliary Slices 回寫規則
+
+- MUST: `global-search.slice` 文件標註其為跨域搜尋唯一權威出口（D26）。
+- MUST: `portal.slice` 文件標註其為 portal shell state bridge，不承載跨切片寫入協調。
+- MUST: 若 auxiliary slice 新增 public API，需同步更新對應架構文檔與審查清單。
 
 ### 8.1 Repomix 參考流程（建議）
 

@@ -19,6 +19,13 @@
 | `VS8` | Semantic Memory & Feedback Brain | `src/features/semantic-graph.slice` |
 | `VS9` | Finance | `src/features/finance.slice` |
 
+Auxiliary slices（非 VS 編號）：
+
+| Slice | 角色 | 目標路徑 |
+|---|---|---|
+| `global-search.slice` | Cross-domain search authority | `src/features/global-search.slice` |
+| `portal.slice` | Portal shell state bridge | `src/features/portal.slice` |
+
 ## Layer 對照
 
 | Layer | 職責 | 路徑 |

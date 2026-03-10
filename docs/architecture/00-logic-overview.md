@@ -30,6 +30,11 @@
 - `VS0`: Foundation（`VS0-Kernel` + `VS0-Infra`）
 - `VS1~VS9`: 業務切片（Identity/Account/Skill/Organization/Workspace/Scheduling/Notification/Semantic/Finance）
 
+### Auxiliary Feature Slices（現況補充）
+
+- `global-search.slice`：跨切片搜尋權威出口（D26）。
+- `portal.slice`：門戶殼層狀態橋接，承載 portal state 公開 hook。
+
 ### Horizontal（L0~L10）
 
 - `L0`: External Triggers
@@ -96,6 +101,7 @@ flowchart LR
 - 禁止 feature slice 直連 `firebase/*` 或 `firebase-admin`。
 - 禁止讀路徑回呼寫路徑形成反向環。
 - 禁止 VS8 直接執行跨切片副作用（僅輸出語義提示/事件）。
+- 禁止在任一業務切片重建平行的跨域搜尋入口（必須統一走 `global-search.slice`）。
 
 完整 Forbidden 清單請見 `02-governance-rules.md`。
 

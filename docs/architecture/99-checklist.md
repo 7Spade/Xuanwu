@@ -42,6 +42,7 @@
 - [ ] 跨域搜尋只經 `global-search.slice`。
 - [ ] 通知副作用只經 `notification-hub.slice`。
 - [ ] 其他業務 slice 僅產生事實事件，不直接做搜尋聚合或通知發送策略。
+- [ ] `portal.slice` 僅承載 portal state bridge，不包含跨切片寫入協調責任。
 
 ## 6a. Finance Gate（VS9 / #A20 / #A21 / #A22）
 - [ ] `Finance_Staging_Pool` 寫入來源只來自 L5 投影鏈路（`TaskAcceptedConfirmed`），無直接人工或跨 slice 寫入（`#A20`）。

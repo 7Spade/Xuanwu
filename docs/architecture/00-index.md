@@ -33,6 +33,11 @@
 - `docs/architecture/04-Invariants/`
 - `docs/architecture/06-DecisionLogic/`
 
+### Auxiliary Slices（非 VS 編號）
+
+- `global-search.slice`：跨域搜尋權威出口（D26）。
+- `portal.slice`：門戶殼層狀態與組裝橋接。
+
 ### Slice 索引（VS1~VS9）
 
 - `VS1`: `docs/architecture/03-Slices/VS1-Identity/`
@@ -44,6 +49,11 @@
 - `VS7`: `docs/architecture/03-Slices/VS7-Notification/`
 - `VS8`: `docs/architecture/03-Slices/VS8-SemanticBrain/`
 - `VS9`: `docs/architecture/03-Slices/VS9-Finance/`
+
+實作現況補充（程式碼存在但不編入 VS1~VS9）：
+
+- `src/features/global-search.slice/`
+- `src/features/portal.slice/`
 
 ## 審查入口
 
@@ -58,3 +68,5 @@
 - `skills/references/files.md`：程式內容檢索（`## File: <path>`）。
 
 用途：當 `docs/architecture/*` 需要「從程式碼回寫 capability」時，先用上述入口定位與驗證，再更新對應 slice 文件。
+
+目前 skill 統計基線（2026-03-11）：`627 files | 11,519 lines`。

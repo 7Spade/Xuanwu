@@ -1,5 +1,14 @@
 # VS5-Workspace
 
+## 一眼摘要
+
+- 用途：承接工作空間內文件、任務、流程與協作操作，是業務執行面的主工作台切片。
+- 核心功能：workspace item/task/workflow lifecycle、document parser + semantic classification bridge（`#A14` `D27`）、finance stage gate 與 request lifecycle 對接（`#A15` `#A21` `#A22`）。
+- 解決痛點：
+	1. 工作項目（檔案/任務/流程）狀態分散，難以維持單一真實來源。
+	2. 文件解析與語義判斷未串接時，任務產生與成本語義容易失真。
+	3. 任務與財務生命週期耦合過深，導致責任邊界不清與回寫風險。
+
 - Workspace item/task/workflow lifecycle
 - Document parser + semantic classification bridge (`#A14` `D27`)
 - Finance stage gate and request lifecycle (`#A15` `#A21` `#A22`)
