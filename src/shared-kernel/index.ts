@@ -156,6 +156,11 @@ export {
 	hasValidClaimSelection,
 	buildClaimLineItems,
 } from './pipes/finance-claim.pipe';
+export {
+	isSafeFirestoreDocId,
+	assertSafeFirestoreDocId,
+} from './validators/firestore-doc-id.validator';
+export { resolvePreferredTraceId } from './utils/trace.utils';
 
 export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';

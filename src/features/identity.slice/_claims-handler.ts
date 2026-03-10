@@ -40,7 +40,7 @@
 import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
 import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
-import type { EventEnvelope } from '@/shared-kernel';
+import { assertSafeFirestoreDocId, type EventEnvelope } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
 // Internal ??TOKEN_REFRESH_SIGNAL emission
@@ -55,11 +55,8 @@ import type { EventEnvelope } from '@/shared-kernel';
  * Per [SK_TOKEN_REFRESH_CONTRACT: CLIENT_TOKEN_REFRESH_OBLIGATION].
  */
 async function emitRefreshSignal(accountId: string, traceId: string): Promise<void> {
-  // Guard against path-traversal: accountId must be a safe Firestore document ID
-  // (alphanumeric, hyphens, underscores only ??no slashes or special chars).
-  if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
-  }
+  // Guard against path-traversal: accountId must be a safe Firestore document ID.
+  assertSafeFirestoreDocId(accountId, 'accountId');
   await setDocument(`${COLLECTIONS.tokenRefreshSignals}/${accountId}`, {
     accountId,
     reason: 'claims:refreshed',

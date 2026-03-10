@@ -20,6 +20,7 @@ import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collecti
 import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
 import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import {
+  assertSafeFirestoreDocId,
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
@@ -39,9 +40,7 @@ import { enqueueAccountLifecycleOutboxEvent } from '../acc-outbox';
  */
 async function emitPolicyChangedRefreshSignal(accountId: string, traceId?: string): Promise<void> {
   // Guard against path-traversal: accountId must be a safe Firestore document ID.
-  if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
-  }
+  assertSafeFirestoreDocId(accountId, 'accountId');
   await updateDocument(`${COLLECTIONS.tokenRefreshSignals}/${accountId}`, {
     accountId,
     reason: 'policy:changed',

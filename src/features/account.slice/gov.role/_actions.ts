@@ -26,6 +26,7 @@ import { Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.
 import { setDocument, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
 import type { OrganizationRole } from '@/shared-kernel';
 import {
+  assertSafeFirestoreDocId,
   type CommandResult,
   commandSuccess,
   commandFailureFrom,
@@ -208,11 +209,8 @@ async function emitTokenRefreshSignal(
   reason: TokenRefreshReason,
   traceId?: string
 ): Promise<void> {
-  // Guard against path-traversal: accountId must be a safe Firestore document ID
-  // (alphanumeric, hyphens, underscores only ??no slashes or special chars).
-  if (!/^[\w-]+$/.test(accountId)) {
-    throw new Error(`Invalid accountId format ??must match /^[\\w-]+$/`);
-  }
+  // Guard against path-traversal: accountId must be a safe Firestore document ID.
+  assertSafeFirestoreDocId(accountId, 'accountId');
   const signal: TokenRefreshSignal = {
     accountId,
     reason,

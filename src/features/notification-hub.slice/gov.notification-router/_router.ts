@@ -17,6 +17,7 @@
  */
 
 import { registerSubscriber } from '@/shared-infra/event-router';
+import { resolvePreferredTraceId } from '@/shared-kernel';
 
 import { deliverNotification } from '../domain.notification';
 
@@ -43,15 +44,6 @@ function getStringField(record: Record<string, unknown>, key: string): string | 
   return typeof value === 'string' ? value : null;
 }
 
-function resolveTraceId(
-  envelopeTraceId: string | undefined,
-  payload: Record<string, unknown>,
-): string | undefined {
-  if (typeof envelopeTraceId === 'string') return envelopeTraceId;
-  const payloadTraceId = payload.traceId;
-  return typeof payloadTraceId === 'string' ? payloadTraceId : undefined;
-}
-
 export function registerNotificationRouter(): RouterRegistration {
   const unsubscribers: Array<() => void> = [];
 
@@ -74,7 +66,7 @@ export function registerNotificationRouter(): RouterRegistration {
         sourceId: scheduleItemId,
         workspaceId,
         // [R8] forward traceId from the originating event envelope
-        traceId: resolveTraceId(envelope.traceId, envelope.payload),
+        traceId: resolvePreferredTraceId(envelope.traceId, envelope.payload),
       });
     }, 'STANDARD_LANE')
   );
@@ -98,7 +90,7 @@ export function registerNotificationRouter(): RouterRegistration {
         sourceId: policyId,
         workspaceId: orgId,
         // [R8] forward traceId from the originating event envelope
-        traceId: resolveTraceId(envelope.traceId, envelope.payload),
+        traceId: resolvePreferredTraceId(envelope.traceId, envelope.payload),
       });
     }, 'STANDARD_LANE')
   );
@@ -120,7 +112,7 @@ export function registerNotificationRouter(): RouterRegistration {
         sourceId: scheduleItemId,
         workspaceId,
         // [R8] forward traceId from the originating event envelope
-        traceId: resolveTraceId(envelope.traceId, envelope.payload),
+        traceId: resolvePreferredTraceId(envelope.traceId, envelope.payload),
       });
     }, 'STANDARD_LANE')
   );
@@ -141,7 +133,7 @@ export function registerNotificationRouter(): RouterRegistration {
         sourceId: orgId,
         workspaceId: orgId,
         // [R8] forward traceId from the originating event envelope
-        traceId: resolveTraceId(envelope.traceId, envelope.payload),
+        traceId: resolvePreferredTraceId(envelope.traceId, envelope.payload),
       });
     }, 'STANDARD_LANE')
   );
