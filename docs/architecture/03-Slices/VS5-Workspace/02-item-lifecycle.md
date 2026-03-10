@@ -12,7 +12,7 @@
 
 - `D27-Order`: `WorkspaceItem -> WorkspaceTask -> WorkspaceSchedule` 禁止跳級。
 - `#A15`: `Acceptance=OK` 前不得進入 Finance。
-- `#A16`: outstanding amount > 0 時不得 completed。
+- `#A21`: outstanding amount > 0 時不得 completed。
 
 ## Event Discipline
 

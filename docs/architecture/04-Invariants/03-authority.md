@@ -33,6 +33,6 @@
 ## 5. 決策權邊界
 
 - `#A14` 成本分類與任務物化決策由 VS8 + VS5 gate 主導。
-- `#A15/#A16` Finance gate 與多輪請款循環不得被其他 slice 繞過。
+- `#A15/#A21/#A22` Finance gate、請款生命週期與狀態回饋投影不得被其他 slice 繞過。
 - `A17` XP 寫入權限僅在 VS3，VS8 只提供語義與 policy lookup。
 - `A18` 組織自訂 task-type / skill-type 語義必須走 VS4 `org-semantic-registry`（`org-task-type-registry` + `org-skill-type-registry`），並以 org namespace 寫入 tag-snapshot。
