@@ -34,7 +34,7 @@ To ensure nested instructions are applied in VS Code:
 - Enable `chat.useNestedAgentsMdFiles` (experimental)
 - Enable `chat.useCustomAgentHooks` when using agent-scoped hooks
 
-Use `Chat: Open Chat Customizations` and Chat `Diagnostics` in VS Code to inspect loaded instructions, prompts, agents, hooks, and skills. The agents dropdown is intentionally consolidated around a small set of entry agents; most specialist helpers remain in `.github/agents/` as hidden subagents. For ownership, consolidation, and when-to-use guidance, prefer `.github/README.md` over this root README.
+Use `Chat: Open Chat Customizations` and Chat `Diagnostics` in VS Code to inspect loaded instructions, prompts, agents, hooks, and skills. The repository now uses a compact project-specific `xuanwu-*.agent.md` suite for consistency across planning, coding, UI, quality, docs, ops, and diagnostics. For ownership, consolidation, and when-to-use guidance, prefer `.github/README.md` over this root README.
 
 ### Prompt Command Table（`/指令`）
 
