@@ -5,10 +5,7 @@ Folder-specific rules for drag-and-drop implementation under `src/lib-ui/pdnd`.
 ## Ownership
 
 - This folder is owned by `@atlaskit/pragmatic-drag-and-drop*`.
-- Canonical dependencies:
-- `@atlaskit/pragmatic-drag-and-drop`
-- `@atlaskit/pragmatic-drag-and-drop-hitbox`
-- `@atlaskit/pragmatic-drag-and-drop-react-drop-indicator`
+- Canonical dependencies: `@atlaskit/pragmatic-drag-and-drop`, `@atlaskit/pragmatic-drag-and-drop-hitbox`, `@atlaskit/pragmatic-drag-and-drop-react-drop-indicator`.
 
 ## Hard Rules
 
