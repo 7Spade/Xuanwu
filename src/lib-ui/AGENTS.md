@@ -18,7 +18,8 @@ Instructions for third-party library UI building blocks in `src/lib-ui/`.
 
 | Directory | Libraries | Notes |
 |-----------|-----------|-------|
-| `dnd/` | `@dnd-kit/*`, `@atlaskit/pragmatic-drag-and-drop*` | Client only |
+| `dnd/` | `@dnd-kit/core`, `@dnd-kit/sortable` | Client only |
+| `pdnd/` | `@atlaskit/pragmatic-drag-and-drop`, `@atlaskit/pragmatic-drag-and-drop-hitbox`, `@atlaskit/pragmatic-drag-and-drop-react-drop-indicator` | Client only |
 | `vis/` | `vis-data`, `vis-network`, `vis-timeline`, `vis-graph3d` | Client only; imperative DOM APIs |
 | `tanstack/` | `@tanstack/react-query`, `react-table`, `react-virtual`, `react-form` | `TanstackQueryProvider` goes in app-runtime providers |
 | `state/` | `xstate`, `@xstate/react`, `zustand` | Utility factories, not components |

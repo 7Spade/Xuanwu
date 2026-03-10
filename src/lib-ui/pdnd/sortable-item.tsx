@@ -1,5 +1,5 @@
 /**
- * Module: atlaskit-sortable-item
+ * Module: pdnd-sortable-item
  * Purpose: Provide a sortable list item that is both draggable and a drop target,
  *   using @atlaskit/pragmatic-drag-and-drop-hitbox for edge detection and
  *   @atlaskit/pragmatic-drag-and-drop-react-drop-indicator for visual feedback.
@@ -23,15 +23,15 @@ import { cn } from "@/shadcn-ui/utils/utils"
 
 export type { Edge }
 
-export interface AtlaskitSortableData {
+export interface PdndSortableData {
   [key: string | symbol]: unknown
 }
 
-interface AtlaskitSortableItemProps {
+interface PdndSortableItemProps {
   /** Data attached to this item as both a drag source and drop target. */
-  data: AtlaskitSortableData
+  data: PdndSortableData
   /** Called when another item is dropped onto this item. */
-  onDrop: (args: { sourceData: AtlaskitSortableData; closestEdge: Edge | null }) => void
+  onDrop: (args: { sourceData: PdndSortableData; closestEdge: Edge | null }) => void
   children: ReactNode
   className?: string
   /** CSS class applied while this item is being dragged. Defaults to `"opacity-40"`. */
@@ -54,23 +54,23 @@ interface AtlaskitSortableItemProps {
  *
  * @example
  * ```tsx
- * <AtlaskitSortableItem
+ * <PdndSortableItem
  *   data={{ id: item.id }}
  *   onDrop={({ sourceData, closestEdge }) => reorder(sourceData.id, item.id, closestEdge)}
  *   gap="8px"
  * >
  *   <MyCard item={item} />
- * </AtlaskitSortableItem>
+ * </PdndSortableItem>
  * ```
  */
-export function AtlaskitSortableItem({
+export function PdndSortableItem({
   data,
   onDrop,
   children,
   className,
   draggingClassName,
   gap,
-}: AtlaskitSortableItemProps) {
+}: PdndSortableItemProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null)
@@ -99,7 +99,7 @@ export function AtlaskitSortableItem({
         onDrop: ({ self, source }) => {
           setClosestEdge(null)
           onDrop({
-            sourceData: source.data as AtlaskitSortableData,
+            sourceData: source.data as PdndSortableData,
             closestEdge: extractClosestEdge(self.data),
           })
         },
