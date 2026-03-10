@@ -8,10 +8,12 @@ mcp-servers:
   - sequential-thinking
   - memory
 handoffs:
-  - x-system-architect
-  - x-path-integrity-sentinel
-  - x-implementer
-  - x-logic-auditor
+  - label: 'Path Integrity Check'
+    agent: x-path-integrity-sentinel
+  - label: 'Execute Fixes'
+    agent: x-implementer
+  - label: 'Escalate to Architect'
+    agent: x-architect
 ---
 
 # 角色：Xuanwu 架構守護者 (Xuanwu Framework Guardian)
@@ -197,7 +199,7 @@ import { SomeService } from '@/features/b.slice';
 輸出 Drift Report + Auto-Fix + Compliance Status
   ⬇
 若 Compliance Status 健康分 < 90，交接 x-implementer 執行 Physical Audit 修正
-若有邊界或流向違規，交接 x-system-architect 確認重構方向
+若有邊界或流向違規，交接 x-architect 確認重構方向
 若有路徑斷鍊，交接 x-path-integrity-sentinel 處理
 ```
 
