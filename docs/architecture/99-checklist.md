@@ -61,7 +61,7 @@
 - [ ] 若變更跨切片規則或 ACL，附上本檔勾選結果與例外說明。
 
 ## 8a. Docs 回寫驗證（skills）
-- [ ] 若更新 `03-Slices` capability 文檔，已以 `skills/SKILL.md` 與 `skills/references/*` 完成程式碼定位與交叉驗證。
+- [ ] 若更新 `03-Slices` capability 文檔，已以 `.github/skills/xuanwu-skill/SKILL.md` 與 `.github/skills/xuanwu-skill/references/*` 完成程式碼定位與交叉驗證。
 - [ ] `Implemented Capabilities (from code)` 與對應 `src/features/{slice}/index.ts` 匯出一致。
 
 ## 9. Folder Placement Gate（新增檔案必答）
