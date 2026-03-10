@@ -30,3 +30,24 @@ export {
 
 // State management
 export { createMachineContext, createSafeContext, createNamedStore } from "./state"
+
+// shadcn/ui (project-level re-exports)
+export { cn } from "./shadcn-ui/utils/utils"
+export { Button, buttonVariants } from "./shadcn-ui/button"
+export { Input } from "./shadcn-ui/input"
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "./shadcn-ui/dialog"
+export { Toaster } from "./shadcn-ui/toaster"
+
+// custom project UI
+export * from "./custom-ui"

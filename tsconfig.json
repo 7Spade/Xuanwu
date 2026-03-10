@@ -20,10 +20,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/shadcn-ui": ["./src/shadcn-ui"],
-      "@/shadcn-ui/*": ["./src/shadcn-ui/*"],
-      "@/shadcn-ui/lib/utils": ["./src/shadcn-ui/utils/utils"],
-      "@/shadcn-ui/hooks": ["./src/shadcn-ui/hooks"],
+      "@/shadcn-ui": ["./src/lib-ui/shadcn-ui"],
+      "@/shadcn-ui/*": ["./src/lib-ui/shadcn-ui/*"],
+      "@/shadcn-ui/lib/utils": ["./src/lib-ui/shadcn-ui/utils/utils"],
+      "@/shadcn-ui/hooks": ["./src/lib-ui/shadcn-ui/hooks"],
       "@/lib-ui": ["./src/lib-ui"],
       "@/lib-ui/*": ["./src/lib-ui/*"]
     }
