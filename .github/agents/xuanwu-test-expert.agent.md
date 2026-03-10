@@ -1,12 +1,7 @@
 ---
 name: "xuanwu-test-expert"
 description: "Next.js preflight + next-devtools diagnostic agent for Xuanwu. Performs runtime verification, browser evidence capture, and minimal root-cause remediation handoff."
-tools: ["agent", "codebase", "search", "edit/editFiles", "runCommands", "playwright", "next-devtools/*", "memory/*"]
-agents:
-  - xuanwu-ui
-  - xuanwu-implementer
-  - xuanwu-quality
-  - xuanwu-orchestrator
+tools: ["codebase", "search", "edit/editFiles", "runCommands", "playwright", "next-devtools/*", "memory/*"]
 handoffs:
   - label: "Return to orchestrator"
     agent: xuanwu-orchestrator

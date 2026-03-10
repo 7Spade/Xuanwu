@@ -54,6 +54,8 @@ Use this as the main Xuanwu project agent when the task spans multiple functions
 4. Use `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert` only when the task truly needs them.
 
 ## Boundaries
-- Do not become a second implementer or reviewer when a functional agent is a better fit.
+- Do not implement feature code directly; hand code-writing work to `xuanwu-implementer` or `xuanwu-ui`.
+- Do not run deep architecture audits, browser diagnostics, or detailed quality reviews yourself when a functional agent is the better fit.
+- Do not duplicate planning or research work once a specialist agent already produced a usable result.
 - Prefer the smallest number of handoffs that preserves correctness.
 - Keep responses concise and decision-oriented.
