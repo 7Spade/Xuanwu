@@ -5,6 +5,7 @@
 > 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md) · 基礎設施路徑請見 [`03-infra-mapping.md`](./03-infra-mapping.md)
 
 本視圖呈現系統三條主鏈（**Canonical Chains**）的端到端流向與各 VS0–VS8 子圖結構。Infra 鏈依 SDK 分成 A（前端 Client SDK）與 B（後端 Admin SDK）兩路，合計仍視為三條主鏈。
+其中 **VS8 的本次重設計以 Vertex AI target-state 為優先**：傳統 `adjacency-list` / `semantic-edge-store` / 手動維護標籤關係僅保留為過渡期相容描述，新的語義查詢與向量化寫入以 **Vertex Vector Index + Metadata Filter** 為主。
 
 ---
 
@@ -14,13 +15,13 @@
 |------|------|
 | **寫鏈（Command）** | External/L0 → **CQRS Gateway（Write Path · L0A `CMD_API_GW` → L2 `CBG_ENTRY→CBG_AUTH→CBG_ROUTE`）** → L3 Domain Slices → L4 IER → L5 Projection |
 | **讀鏈（Query）** | UI/L0 → **CQRS Gateway（Read Path · L0A `QRY_API_GW` → L6 `QGWAY`）** → L5 Projection Read Model |
-| **Infra 鏈（firebase · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（firebase-admin）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）→ L7-B `backend-firebase/functions`（Cloud Functions · Admin SDK 唯一容器；不經 L1 SK_PORTS）→ L8 Firebase Runtime；**`firebase-admin` 一律透過 functions [D25]** |
+| **Infra 鏈（firebase + vertex-ai · A/B 兩路）** | **A（firebase-client）**：L3/L5/L6 → L1 SK_PORTS → L7-A `frontend-firebase`（FIREBASE_ACL · Client SDK Adapters） → L8 Firebase Runtime<br>**B（backend-admin / ai）**：L0 `EXT_WEBHOOK`（外部觸發直達）/ L2 `CBG_ROUTE`（高權限/批次協調入口）/ L4 語義事件同步 → L7-B `backend-firebase/functions` + `Vertex AI Adapter`（Cloud Functions 協調、Vertex Vector Index upsert / search；不經 L1 SK_PORTS）→ L8 Firebase Runtime / Vertex Vector Index；**`firebase-admin` 一律透過 functions [D25]** |
 
 > **規則**：三條主鏈並列，Infra 鏈 A/B 為同一 Infra 鏈之前後端形態；不得把 Command/Query/Infra 壓成單一線性排序。
 > **CQRS Gateway**：L0A 入口（`CMD_API_GW` / `QRY_API_GW`）、L2 Command Gateway（CBG_ENTRY/CBG_AUTH/CBG_ROUTE）、L6 Query Gateway（QGWAY + routes）三者在架構上同屬「統一 CQRS 閘道」，以讀寫分離為唯一切割線；不得再拆成三個獨立閘道概念。
 > **Command 鏈硬不變量**：所有寫入必須先經 `CMD_API_GW → CBG_ENTRY → CBG_AUTH`，由 L2 注入唯一 `traceId` 並完成權限驗證，之後才可進入 L3。
 > **Query 鏈硬不變量**：所有讀取必須先經 `QRY_API_GW → QGWAY`；UI 僅可讀取 L5 物化視圖，禁止直接讀取 L3 Aggregate / raw state。
-> **Infra 鏈硬不變量**：L7-A `frontend-firebase` 與 L7-B `backend-firebase/functions` 是同一 Infra 鏈的前後端分流；Feature Slice 不得旁路至 Firebase SDK 或直接寫入 L5 Projection。
+> **Infra 鏈硬不變量**：L7-A `frontend-firebase` 與 L7-B `backend-firebase/functions + Vertex AI Adapter` 是同一 Infra 鏈的前後端分流；Feature Slice 不得旁路至 Firebase SDK、Vertex AI API、或直接寫入 L5 Projection。
 
 ---
 
@@ -189,7 +190,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             RELAY["outbox-relay-worker（src/shared-infra/outbox-relay）\n【共用 Infra・所有 OUTBOX 共享】\n掃描：Firestore onSnapshot (CDC)\n[R9] 要求來源必須帶 traceId；以 AsyncLocalStorage 傳遞上下文至異步函式鏈\n投遞：OUTBOX → IER 對應 Lane\n失敗：retry backoff → 3次失敗 → DLQ\n監控：relay_lag → L9(Observability)"]
 
             subgraph IER_CORE["⚙️ IER Core（src/shared-infra/event-router）"]
-                IER[["integration-event-router\n統一事件出口 [#9]\n[R8] 保留 envelope.traceId 禁止覆蓋\n[D30] hopCount++ → hopCount ≥ 4 → 攔截 + SECURITY_BLOCK + CircularDependencyDetected 告警"]]
+                IER[["integration-event-router\n統一事件出口 [#9]\n[R8] 保留 envelope.traceId 禁止覆蓋\n[D30] hopCount++ → hopCount ≥ 4 → 攔截 + SECURITY_BLOCK + CircularDependencyDetected 告警\nVS8 target-state：語義變更將異步同步至 Vertex Vector Index"]]
             end
 
             subgraph IER_LANES["🚦 優先級三道分層（src/shared-infra/event-router）[P1]"]
@@ -305,9 +306,10 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             AC_TRANSLATOR_L7 -.-> VIS_DATA_ADP
         end
 
-        subgraph FIREBASE_BACKEND["🔥 L7-B · functions（firebase-admin 唯一容器 · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE → L7-B → L8"]
+        subgraph FIREBASE_BACKEND["🔥 L7-B · functions + Vertex AI Adapter（backend orchestration / admin / vector sync · src/shared-infra/backend-firebase）[D25]\nfirebase-admin 一律透過 Cloud Functions；Vertex AI 呼叫亦由 L7-B 代理\n禁止在 Next.js server/edge/Server Actions/Edge Functions 直接使用\n高權限 / 跨租戶 / Admin Claims / Webhook 驗簽 / 批次協調 / 向量索引同步\n流程：L0 EXT_WEBHOOK / L2 CBG_ROUTE / L4 semantic sync → L7-B → L8"]
             direction LR
             BFN_GW["functions-gateway\nsrc/shared-infra/backend-firebase/functions\nAdmin 權限 / 跨租戶協調 / Trigger / Scheduler / Webhook 驗簽\nfirebase-admin SDK 初始化唯一容器\n對外 HTTP/Callable API 入口"]
+            VERTEX_ADP["vertex-ai.adapter.ts\nVertex AI Adapter（target-state）\ntext-embedding-004 向量化\nMetadata Filter / authority Restricted Value\ntraceId 透傳至 Vertex API"]
 
             subgraph ADMIN_ADPTS["Admin SDK Adapters（firebase-admin — 一律在 Cloud Functions 內執行）[D25]"]
                 direction TB
@@ -319,6 +321,8 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             end
 
             BFN_GW -.->|"Admin SDK init → 各 Service API 委派"| ADMIN_AUTH_ADP & ADMIN_DB_ADP & ADMIN_MSG_ADP & ADMIN_STORE_ADP & ADMIN_APPCHK_ADP
+            BFN_GW -.->|"semantic sync / vector query"| VERTEX_ADP
+            VERTEX_ADP -.->|"upsert/search"| VERTEX_IDX
 
             BDC_GW["dataconnect-gateway-adapter\nsrc/shared-infra/backend-firebase/dataconnect\n治理化 GraphQL schema/connector/operations\n跨前端一致查詢契約"]
         end
@@ -336,6 +340,7 @@ subgraph SHARED_INFRA_PLANE["🧩 Shared Infrastructure Plane（VS0-Infra：L0/L
             F_APPCHK[("Firebase App Check\nfirebase/app-check\nfirebase-admin/app-check")]
             F_DC[("Data Connect\nfirebase/data-connect")]
             F_FUNCTIONS[("Cloud Functions Runtime\nfirebase-admin/app\n初始化 Admin SDK 的唯一容器")]
+            VERTEX_IDX[("Vertex AI Vector Search\nindexes/semantic-vector-search\nmetadata filter + vector search")]
         end
 
         subgraph OBS_LAYER["⬜ L9 · Observability（src/shared-infra/observability）"]
@@ -394,9 +399,9 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
 
         subgraph VS8_CL["2.1 semantic-core-domain（src/features/semantic-graph.slice/core）[D21-A D21-B D21-C D21-D]"]
             direction LR
-            CTA["centralized-tag.aggregate (CTA)\n【全域語義字典・唯一真相】\ntagSlug / label / category\ndeprecatedAt / deleteRule\n生命週期守護：Draft→Active→Stale→Deprecated [D21-4]"]
+            CTA["centralized-tag.aggregate (CTA)\n【全域語義字典・唯一真相】\ntagSlug / label / category\ndeprecatedAt / deleteRule\n生命週期守護：Draft→Active→Stale→Deprecated [D21-4]\nTarget-state：Metadata Filter authority source"]
             HIER["hierarchy-manager.ts\n確保每個新標籤掛載至少一個父節點 [D21-C]"]
-            VEC["embeddings/vector-store.ts\n向量隨標籤定義同步刷新 [D21-D]"]
+            VEC["embeddings/vector-store.ts\nPhase 1：過渡期 session cache / test stub\nPhase 2：以 Vertex Vector Index 成為唯一正式向量真相 [D21-D AI-001]"]
             subgraph TAG_ENTS["🏷️ Semantic Tag Entities（src/shared-kernel/data-contracts/tag-authority）(TE1~TE6) [D21-A]"]
                 direction LR
                 TE_UL["TE1 · tag::user-level\ncategory: user_level"]
@@ -417,10 +422,10 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
 
         subgraph VS8_SL["3.1 graph-engine（src/features/semantic-graph.slice/graph）[D21-E D21-F D21-9 D21-10 C2 C3]"]
             direction LR
-            EDGE_STORE["semantic-edge-store.ts\n【邊關係登錄中心 · 唯一邊圖操作點 [E1]】\n5 種合法邊類型 [C2]：\n  REQUIRES（Task→Skill）\n  HAS_SKILL（Person→Skill）\n  IS_A（Skill→Skill 繼承）\n  DEPENDS_ON（Task→Task 前置）\n  TRIGGERS（Task→Task 完成觸發）\nweight ∈ [0,1]（REQUIRES←granularity；HAS_SKILL←xp/tier）[C3]\n禁止業務端自定義邊類型・禁止硬寫 weight [C2 C3]"]
+            EDGE_STORE["semantic-edge-store.ts\nLegacy graph compatibility / governance only\n過渡期保留邊關係審查與回溯\n主查詢改由 Vertex Vector Search + Metadata Filter\n禁止業務端自定義邊類型・禁止硬寫 weight [C2 C3]"]
             WT_CALC["weight-calculator.ts\n【語義相似度統一出口 · 禁止業務端自行加權 [E2]】\ncomputeSimilarity(a,b) [D21-E]"]
             CTX_ATTN["context-attention.ts\n【Workspace 情境過濾 · 注意力隔離 [E12]】\nfilterByContext(slugs, wsCtx) [D21-F]"]
-            TOPO_OPS["adjacency-list.ts\n拓撲閉包計算（禁止業務端直連 [T5 E3]）\ngetTransitiveRequirements / isSupersetOf / findCriticalPath [D21-10]"]
+            TOPO_OPS["adjacency-list.ts\nLegacy topology compatibility（非主查詢路徑）\n禁止業務端直連 [T5 E3]\nTarget-state：Metadata Filter 先縮範，再由治理規則補充驗證"]
             EDGE_STORE -.-> WT_CALC
             EDGE_STORE -.-> TOPO_OPS
         end
@@ -466,7 +471,7 @@ subgraph VS8["🧠 VS8 · Semantic Cognition Engine（src/features/semantic-grap
 
         subgraph VS8_PROJ["4.1 projections · 讀側投影（src/features/semantic-graph.slice/output/projections）[D21-7 T5 O2~O4]"]
             direction LR
-            TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5 O2】\n[D21-7] 讀取必須經 projection.tag-snapshot\nT1 新切片訂閱事件即可擴展"]
+            TAG_RO["semantic-tag-projection\n【業務端唯一合法讀取出口 · T5 O2】\n[D21-7] 讀取必須經 projection.tag-snapshot\n內容來自 Vertex metadata mirror + governance projection\nT1 新切片訂閱事件即可擴展"]
             GRAPH_SEL["projections/graph-selectors.ts\n圖結構唯讀查詢"]
             CTX_SEL["projections/context-selectors.ts\nWorkspace 語義上下文"]
             TASK_SEM_V["projection.task-semantic-view [O3]\nrequired_skills（來自 REQUIRES 邊）\neligible_persons（來自 skill-matcher 推理）\n兩者缺一則投影不完整不得對外提供"]

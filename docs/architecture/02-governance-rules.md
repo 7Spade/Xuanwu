@@ -8,6 +8,8 @@
 Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見 `00-logic-overview.md`；
 若本文件文字描述與 `00-logic-overview.md` 有衝突，以 `00-logic-overview.md` 為準。
 
+> **VS8 重設計說明**：本文件同步收錄 **VS8 → Vertex AI** 的 target-state 治理規則。凡提到 `adjacency-list`、`semantic-edge-store`、手動維護標籤關係或 Firestore 圖資料結構者，均視為過渡期相容描述；新的語義座標、相似度檢索與多租戶隔離，以 **Vertex Vector Search + Metadata Filter** 為優先。
+
 ---
 
 ## 架構正確性優先原則（Architectural Correctness First Principle）
@@ -82,6 +84,41 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 ---
 
+## Agent Persona：Xuanwu-VertexAI-Architect
+
+- **角色名稱**：`Xuanwu-VertexAI-Architect`
+- **核心任務**：執行 VS8 的 AI 剃刀重構，將傳統圖譜節點遷移至 Vertex AI 向量空間
+- **職責 1 — 架構合規審查**：所有 Vertex AI 交互仍必須遵循三條主鏈，不得繞過 L2 / L4 / L6
+- **職責 2 — 語義向量化轉型**：將 VS8 語義權威從 Firestore/圖遍歷主導，收斂為 CTA + Vertex Metadata Filter 的雙層治理
+- **職責 3 — 精簡化治理**：VS8 只保留語義座標代理、治理審查與輸出契約；不得承載 XP、任務狀態或通知策略
+
+---
+
+## VS8 → Vertex AI Migration Audit（AI 遷移審查）
+
+### 過時邏輯標註（待退場 / Legacy）
+
+- `adjacency-list` 作為業務主查詢路徑
+- `semantic-edge-store` 作為跨切片語義讀取入口
+- 手動維護 Tag 關係並以 Firestore 圖資料結構作為語義查詢主來源
+- `vector-store.ts` 作為 production 向量真相來源
+
+### 新增介面清單（L10 / L7-B Target-State）
+
+- `EmbeddingGenerator`：負責以 `text-embedding-004` 產生語義向量
+- `SimilarityMatcher`：負責對接 Vertex Vector Search 的 nearest-neighbor 查詢
+- `MetadataFilterBuilder`：負責把 `authority`、`tagSlug`、`category` 等治理欄位轉為 filterable metadata
+- `VertexVectorIndexer`：負責將 Tag lifecycle 寫入同步到 `indexes/semantic-vector-search`
+- `GenkitVectorSearchTool`：作為 L10 AI Runtime 對 Vector Search 的唯一 Tool 入口
+
+### B1 驗證結論
+
+- **允許**：`TagLifecycleEvent → L4 IER → L7-B Vertex AI Adapter → Vertex Vector Index` 的非同步索引同步
+- **原因**：這是基礎設施層的語義索引同步，不是 VS8 直接驅動 VS5/VS6/VS7 的業務副作用
+- **禁止**：VS8 直接觸發任務物化、排班執行、通知發送，或任何跨切片狀態改寫 [B1]
+
+---
+
 ## Single Source of Truth（消除雙重真相）
 
 - **SLA 契約唯一來源**：所有延遲 / 新鮮度 / Worker Pool 配額邊界只能引用 `SK_STALENESS_CONTRACT`；禁止在圖、規則或實作中硬寫數值
@@ -137,6 +174,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `[D27-A]` | 語義感知路由：所有分發邏輯必須先調用 `policy-mapper/` 轉換語義標籤 |
 | `[D24]` | Feature slice 禁止直接 import `firebase/*`，必須走 `SK_PORTS` |
 | `[D26]` | `global-search` = 唯一搜尋權威；`notification-hub` = 唯一副作用出口 |
+| `[AI-001]` | 所有寫入 VS8 的 Tag 必須先以 `text-embedding-004` 向量化，並帶上 `authority` metadata filter / restricted value |
 | `[#A12]` | Global Search = 唯一跨域搜尋出口，禁止各 Slice 自建搜尋邏輯 |
 | `[#A13]` | Notification Hub = 唯一副作用出口，業務 Slice 只產生事件不決定通知策略 |
 | `[#A14]` | `ParsedLineItem.(costItemType, semanticTagSlug)` (Layer-2) 由 VS8 `_cost-classifier.ts` 標注；Layer-3 只允許 EXECUTABLE 物化為 tasks |
@@ -389,7 +427,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 | 規則 | 說明 |
 |------|------|
-| `D21-1` | 語義唯一性（雙層）：全域語義由 VS8 CTA 定義；組織自訂 task-type/skill-type 由 VS4 org-semantic-registry 定義 |
+| `D21-1` | 語義唯一性（雙層）：全域語義由 VS8 CTA 定義；CTA 的 `tagSlug / category / lifecycle` 必須鏡像為 Vertex Vector Index 的 Metadata Filter 欄位以執行查詢約束；組織自訂 task-type/skill-type 由 VS4 org-semantic-registry 定義，並同步為 authority-scoped metadata |
 | `D21-2` | 標籤強型別化：禁止使用隱性字串傳遞語義，所有引用必須指向 TE1–TE6 有效 tagSlug |
 
 **二、圖譜與推理引擎（Compute Engine · VS8_SL / VS8_NG）**
@@ -427,7 +465,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D21-A` | 雙層註冊律：全域概念在 `core/tag-definitions.ts`；組織概念在 VS4 `org-semantic-registry` |
 | `D21-B` | Schema 鎖定：標籤元數據必須符合 `core/schemas` 定義 |
 | `D21-C` | 無孤立節點：每個新標籤必須透過 `hierarchy-manager.ts` 掛載至少一個有效父級節點 |
-| `D21-D` | 向量一致性：`vector-store.ts` 向量必須隨 `core/tag-definitions.ts` 同步刷新，延遲 ≤ 60s |
+| `D21-D` | 向量一致性：正式向量真相來源為 Vertex Vector Index；`vector-store.ts` 僅允許作為過渡期 session cache / test stub，且向量同步延遲必須受 `SK_STALENESS_CONTRACT` 約束 |
 | `D21-E` | 權重透明化：語義相似度計算必須由 `weight-calculator.ts` 統一輸出，禁止消費方自行推算 |
 | `D21-F` | 注意力隔離：`context-attention.ts` 必須根據當前 Workspace 情境過濾無關標籤 |
 | `D21-G` | 演化回饋環：`learning-engine.ts` 僅能依據 VS3/VS2 真實事實事件進行調整；禁止手動注入合成數據 |
@@ -441,6 +479,16 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D21-V` | 提案鎖定機制：Pending-Sync 標籤的路由權重凍結為 0.5 直到共識達成 |
 | `D21-W` | 跨組織透明性：所有標籤修改紀錄對全域公開 |
 | `D21-X` | 語義自動激發：用戶建立 A→B 關聯時，causality-tracer 自動建議節點 C |
+
+---
+
+### AI 系列：Vertex AI Migration Rules [AI-001]
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `AI-001.1` | MUST | 所有寫入 VS8 的 Tag 必須先以 `text-embedding-004` 產生向量，之後才能進入 Vertex Vector Index |
+| `AI-001.2` | MUST | `authority` 必須同步寫入 filterable metadata，並作為 multi-tenant restricted value / metadata filter 的唯一隔離條件 |
+| `AI-001.3` | FORBIDDEN | 禁止將未向量化的 Tag payload 直接寫入 Vertex Vector Index；禁止省略 `authority` metadata |
 
 ### D22–D23：Tag 語義守則
 
@@ -734,9 +782,9 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | `C8` | FORBIDDEN | 禁止任何切片手動修改 `granularity` |
 | `C9` | MUST | `PersonNode` 是 VS2 `user-account` 在語義圖中的唯讀投影映射；`PersonNode.skill_inventory` 的更新來源唯一，由 VS3 `SkillXpAdded` / `SkillXpDeducted` 事件透過 `ISemanticFeedbackPort` 驅動 |
 | `C9` | FORBIDDEN | 禁止任何路徑直接寫入 `PersonNode` |
-| `C10` | MUST | `vector-store` 的向量是推理的輸入工具；向量必須與 CTA 標籤定義保持同步刷新，刷新延遲受 `SK_STALENESS_CONTRACT` [S4] 約束 |
+| `C10` | MUST | Vertex Vector Index 的 embedding field 是推理的正式輸入工具；`vector-store` 僅作過渡期 cache，正式向量必須與 CTA 標籤定義保持同步刷新，刷新延遲受 `SK_STALENESS_CONTRACT` [S4] 約束 |
 | `C10` | FORBIDDEN | 過期向量不得用於任何推理輸入 |
-| `C11` | MUST | 向量搜尋的結果必須經過 graph traversal 確認才能成為有效分類；向量負責縮小候選 slug 範圍，Graph 負責確認分類的結構正確性，兩者缺一不可 |
+| `C11` | MUST | 向量搜尋的結果必須經過 Metadata Filter / authority 約束確認才能成為有效分類；向量負責縮小候選 slug 範圍，治理 metadata 負責確認租戶與語義邊界，必要時 legacy graph 僅作過渡期審查輔助 |
 | `C11` | FORBIDDEN | 禁止以純向量相似度作為最終分類依據 |
 
 ---
@@ -747,15 +795,15 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 
 | 規則 | 類型 | 說明 |
 |------|------|------|
-| `E1` | MUST | `semantic-edge-store` 是唯一合法的邊圖操作點；所有對 Graph 邊的讀取與寫入必須經過 `semantic-edge-store` |
+| `E1` | MUST | `semantic-edge-store` 僅保留為治理審查與遷移期相容的邊圖操作點；正式相似度查詢與候選檢索必須經過 Vertex Vector Search |
 | `E1` | FORBIDDEN | 禁止任何模組直接操作底層圖資料結構 |
 | `E2` | MUST | `weight-calculator` 是語義相似度的統一出口；`computeSimilarity(a, b)` 是系統中唯一合法的語義相似度計算介面 |
 | `E2` | FORBIDDEN | 禁止業務端、AI Flow 或任何其他模組自行實作語義加權邏輯 |
-| `E3` | MUST | `adjacency-list` 的拓撲閉包計算是業務端消費圖結構的唯一合法路徑 [T5]；對外暴露 `getTransitiveRequirements`、`isSupersetOf`、`findCriticalPath` 三個介面 |
+| `E3` | MUST | `adjacency-list` 的拓撲閉包計算只保留為治理審查 / 過渡期相容路徑 [T5]；正式業務檢索優先使用 Vertex Metadata Filter + projection，不再以圖遍歷作為主查詢入口 |
 | `E3` | FORBIDDEN | 禁止業務端直接遍歷圖節點或邊集合 |
 | `E4` | MUST | `cost-item-classifier` 是訂單項次語義分類的唯一入口，實作 `ISemanticClassificationPort`；系統中任何位置的訂單項次分類邏輯必須統一路由至此 |
 | `E4` | FORBIDDEN | 禁止在 VS5 或任何其他切片中存在基於字串比對的分類邏輯 |
-| `E5` | MUST | `cost-item-classifier` 的推理流程是固定三步驟，不可跳躍：① vector similarity 縮小候選 slug 範圍；② graph traversal 確認 `essence_type`；③ 套用 override 規則（override 規則本身是 Graph 邊） |
+| `E5` | MUST | `cost-item-classifier` 的推理流程是固定三步驟，不可跳躍：① vector similarity 縮小候選 slug 範圍；② metadata filter / authority 約束確認候選語義邊界；③ 套用 override 規則（治理規則或 legacy graph 邊僅作審查輔助） |
 | `E5` | MUST | 輸出必須包含 `confidence` 與 `inferenceTrace[]` |
 | `E6` | MUST | 每次推理必須輸出 `inferenceTrace[]`；`inferenceTrace` 記錄完整的推理路徑，包含每一步的候選 slug、邊類型、weight 值及 override 觸發記錄 |
 | `E6` | FORBIDDEN | 無 `inferenceTrace` 的推理結果視為不完整，不得進入任何下游流程 |
@@ -782,7 +830,7 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 |------|------|------|
 | `O1` | MUST | VS8 對外暴露三個 Port 介面作為唯一合法出口：`ISemanticClassificationPort`（供 VS5 呼叫分類）、`ISkillMatchPort`（供 L10 Genkit Flow 呼叫資格推理）、`ISemanticFeedbackPort`（供 `learning-engine` 接收事實事件） |
 | `O1` | FORBIDDEN | 禁止任何切片或 AI Flow 繞過 Port 直接呼叫 VS8 內部模組 |
-| `O2` | MUST | 業務端讀取語義資料的唯一合法路徑是 `projection.tag-snapshot` [T5]；`semantic-registry` 的資料來源也必須是 `projection.tag-snapshot`，遵守 CQRS 讀寫分離原則 |
+| `O2` | MUST | 業務端讀取語義資料的唯一合法路徑是 `projection.tag-snapshot` [T5]；該投影應鏡像 Vertex Vector Index 的 metadata 與治理欄位，遵守 CQRS 讀寫分離原則 |
 | `O2` | FORBIDDEN | 禁止業務端直接查詢 CTA aggregate 或 `semantic-edge-store` |
 | `O3` | MUST | `projection.task-semantic-view` 必須同時包含 `required_skills`（來自 Graph REQUIRES 邊）與 `eligible_persons`（來自 `skill-matcher` 推理結果）；兩者缺一則投影視為不完整，不得對外提供 |
 | `O4` | MUST | `projection.causal-audit-log` 的每條記錄必須包含 `inferenceTrace[]` 與 `traceId` [R8]；`traceId` 從 event-envelope 讀取 |
@@ -800,7 +848,7 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 
 | 規則 | 類型 | 說明 |
 |------|------|------|
-| `B1` | MUST | VS8 的職責邊界是「語義推理與語義輸出」；VS8 不執行任何業務副作用；任務物化歸 VS5，排班執行歸 VS6，通知執行歸 VS7 |
+| `B1` | MUST | VS8 的職責邊界是「語義推理、向量索引代理與語義輸出」；VS8 只允許透過 L4→L7-B 非同步同步到 Vertex Vector Index，不執行任何跨切片業務副作用；任務物化歸 VS5，排班執行歸 VS6，通知執行歸 VS7 |
 | `B1` | FORBIDDEN | 任何試圖在 VS8 內部直接觸發跨切片副作用的設計視為邊界違規 |
 | `B2` | MUST | VS8 內部各層的依賴方向是單向的：`Governance → Core → Engine → Output` |
 | `B2` | FORBIDDEN | 禁止任何逆向依賴；Output 層只能透過 Port 介面被外部消費，不能被 Engine 層直接呼叫 |

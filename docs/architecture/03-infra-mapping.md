@@ -4,8 +4,10 @@
 >
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md)
 
-本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、L7 Firebase Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
+本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、L7 Firebase / Vertex AI Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
 供落地實作與基礎設施對接時快速定位目標路徑。
+
+> **VS8 重設計說明**：本文件將 VS8 的 target-state 資料平面改寫為 **Vertex AI: `indexes/semantic-vector-search`**。舊的 Firestore 圖資料結構、手動邊關係與 in-process `vector-store` 視為過渡期相容描述，不再是正式資料路徑；**Phase 1** 為雙軌遷移期，**Phase 2** 起視為正式淘汰目標。
 
 ---
 
@@ -23,7 +25,7 @@
 | `VS5` | Workspace | 工作空間與任務 |
 | `VS6` | Workforce Scheduling | 排班與職能配對 |
 | `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
-| `VS8` | Semantic Graph Engine | 語義圖譜引擎 |
+| `VS8` | Semantic Graph / Vector Authority | 語義權威與向量索引代理 |
 | `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
 
 ### 目標路徑（Source Path）
@@ -41,6 +43,8 @@ VS5 = src/features/workspace.slice
 VS6 = src/features/workforce-scheduling.slice
 VS7 = src/features/notification-hub.slice
 VS8 = src/features/semantic-graph.slice
+   + src/features/vs8-semantic-graph/adapters/VertexAIAdapter.ts (migration prototype)
+   + VertexAI: indexes/semantic-vector-search
 VS9 = src/features/finance.slice
 ```
 
@@ -66,7 +70,7 @@ VS9 = src/features/finance.slice
 | `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
 | `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
 | `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/frontend-firebase/` |
-| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
+| `L7-B` | firebase-admin SDK + Vertex AI Adapter | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；Vertex Vector Search 的 upsert/search 同樣由後端 Adapter 代理；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` + `src/features/vs8-semantic-graph/adapters/` |
 | `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
 | `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
 | `L10` | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL [E8] | `src/shared-infra/ai-orchestration/` |
@@ -79,7 +83,7 @@ VS9 = src/features/finance.slice
 |------|--------------|--------------|
 | **寫鏈（Command）** | `L0A CMD_API_GW → L2 CBG_ENTRY → CBG_AUTH → CBG_ROUTE → L3 Slice → L4 IER → L5 Projection` | 所有寫入必須由 L2 收口；`CBG_ENTRY` 是唯一 `traceId` 注入點 |
 | **讀鏈（Query）** | `L0A QRY_API_GW → L6 QGWAY/read-model-registry → L5 Projection Read Model` | UI 與 App Router 只可讀取 L5 物化視圖；禁止直讀 L3 raw state |
-| **基礎設施鏈（Infra）** | **A / firebase-client**：`L3/L5/L6 → L1 SK_PORTS → L7-A frontend-firebase → L8 Firebase Runtime`<br>**B / firebase-admin**：`L0 external trigger 或 L2 privileged entry → L7-B backend-firebase/functions → L8 Firebase Runtime` | L7-A 與 L7-B 為並列分流；不得把 Command / Query / Infra 壓成單一線性排序 |
+| **基礎設施鏈（Infra）** | **A / firebase-client**：`L3/L5/L6 → L1 SK_PORTS → L7-A frontend-firebase → L8 Firebase Runtime`<br>**B / firebase-admin + vertex-ai**：`L0 external trigger 或 L2 privileged entry 或 L4 semantic sync → L7-B backend-firebase/functions + VertexAIAdapter → L8 Firebase Runtime / Vertex Vector Index` | L7-A 與 L7-B 為並列分流；不得把 Command / Query / Infra 壓成單一線性排序 |
 
 > **規則**：
 > - Feature Slice 嚴禁跳過上述鏈路直接操作 Firebase SDK
@@ -153,6 +157,17 @@ src/shared-infra/
   observability/             # L9 metrics/trace/errors
   ai-orchestration/          # L10 Genkit Flow Gateway
 ```
+
+---
+
+## VS8 Data Path Migration（Target-State）
+
+| 項目 | 舊描述（Legacy） | 新描述（Target-State） |
+|------|------------------|------------------------|
+| VS8 語義資料路徑 | Firestore graph / in-process `vector-store` / 手動邊關係維護 | `VertexAI: indexes/semantic-vector-search` |
+| 語義檢索 | graph traversal / adjacency-list 主導 | Vector Search + Metadata Filter 主導 |
+| 多租戶隔離 | 由 Firestore / slice-level 規則分散處理 | `authority` 作為 filterable metadata / restricted value 統一處理 |
+| Tag 寫入 | 先寫 CTA / graph，再補向量 | 先以 `text-embedding-004` 向量化，再由 L7-B Adapter upsert 至 Vertex Vector Index |
 
 ---
 
@@ -257,7 +272,7 @@ Firestore onSnapshot (CDC)
 | `account-view` | 帳戶資料（含 FCM Token）；`notification-feed-view` RTDB 即時通知串流（via L7-A RTDBAdapter） | [#6] |
 | `workspace-scope-guard-view` | Scope Guard 快路徑 | [A9] |
 | `wallet-balance` | display → Projection；precise → STRONG_READ | [S3 A1] |
-| `tag-snapshot` | 語義化索引檢索；禁止消費方直寫 | [D21-7 T5 O2] |
+| `tag-snapshot` | 語義化索引檢索；鏡像 Vertex Vector Index metadata；禁止消費方直寫 | [D21-7 T5 O2] |
 | `semantic-governance-view` | 語義治理頁讀模型（提案 / 共識 / 關係）；治理頁顯示必經 L6 Query Gateway 暴露 | [D21-7 T5] |
 | `workspace-graph-view` | 任務依賴 Nodes/Edges 拓撲；L6 暴露後由 VisDataAdapter [D28] 快取至 vis-network DataSet<> | [D28] |
 | `task-semantic-view` | 任務語義視圖（required_skills + eligible_persons）；VS5 消費以顯示任務語義資訊；投影不完整時禁止對外提供 | [O3] |
@@ -266,7 +281,7 @@ Firestore onSnapshot (CDC)
 | `finance-staging-pool` | 待請款池（已驗收未請款任務清單）；財務人員操作界面消費此路由 | [#A20] |
 | `task-finance-label-view` | 任務金融顯示標籤（financeStatus, requestId, requestLabel）；任務列表 UI 合成顯示金融狀態 | [#A22] |
 
-> **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index [#A12]
+> **Global Search** 亦透過 Query Gateway 消費 `tag-snapshot` → VS8 semantic index / Vertex metadata mirror [#A12]
 >
 > **VS8 提供**：scheduling combo matching→VS6, task semantic tags→VS5, classifyCostItem→document-parser
 
@@ -296,7 +311,7 @@ Firestore onSnapshot (CDC)
 | `AppCheckAdapter` | — | `.../app-check/` | Client attestation token 初始化/續期；未通過不得進入 L2/L3 [D24 D25 E7] |
 | `VisDataAdapter` | — | `.../vis-data/` | DataSet<Node\|Edge\|DataItem> 本地快取；訂閱 Firebase Snapshot 一次，推播給所有 vis-* 消費者 [D28] |
 
-### L7-B 後端 Admin SDK Adapters（firebase-admin SDK — 一律透過 Cloud Functions）[D25]
+### L7-B 後端 Admin SDK Adapters（firebase-admin SDK + Vertex AI Adapter）[D25]
 
 > **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/backend-firebase/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
 
@@ -309,6 +324,7 @@ Firestore onSnapshot (CDC)
 | `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
 | `AdminAppCheckAdapter` | — | `.../functions/src/` | sole `firebase-admin/app-check` 呼叫點（服務端 App Check token 驗簽）[D25 E7] |
 | `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
+| `VertexAIAdapter` | `SemanticVectorClient` | `src/features/vs8-semantic-graph/adapters/VertexAIAdapter.ts` | sole Vertex Vector Search upsert/search 原型；`text-embedding-004` 向量化、`authority` metadata filter、`traceId` 透傳 |
 
 ---
 
@@ -318,6 +334,9 @@ Firestore onSnapshot (CDC)
 |------|------|------|
 | `Genkit Flow Gateway` | 統一 AI flow 入口，驗證 role/scope/tenant | [E8] |
 | `Prompt Policy` | 提示詞治理與版本管理 | [E8] |
+| `EmbeddingGenerator` | 以 `text-embedding-004` 將 Tag / query 轉為向量 | [AI-001] |
+| `SimilarityMatcher` | 透過 Vertex Vector Search 執行 nearest-neighbor 檢索 | [AI-001] |
+| `GenkitVectorSearchTool` | Genkit 對 Vector Search 的唯一 Tool 入口；需保留 `traceId` 與 `authority` | [E8 AI-001] |
 | `Tool ACL` | tool calling 前須完成 role/scope/tenant 驗證 + 審計追蹤（traceId/toolCallId/modelId） | [E8 MUST] |
 | `AI Storage` | AI 模型/向量存儲，必須由 Genkit gateway 代理訪問 | [E8 MUST] |
 
