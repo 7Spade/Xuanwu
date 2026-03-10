@@ -13,17 +13,18 @@ import { type Notification } from "@/shared-kernel";
 interface NotificationCenterProps {
   notifications: Notification[];
   dispatch: React.Dispatch<AppAction>;
+  triggerClassName?: string;
 }
 
-export function NotificationCenter({ notifications, dispatch }: NotificationCenterProps) {
+export function NotificationCenter({ notifications, dispatch, triggerClassName }: NotificationCenterProps) {
   const { t } = useI18n();
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative rounded-full">
-          <Bell className="size-5 text-muted-foreground" />
+        <Button variant="ghost" size="icon" className={triggerClassName ?? "relative rounded-full"}>
+          <Bell className="size-4 text-muted-foreground" />
           {unreadCount > 0 && (
             <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-background bg-primary" />
           )}
