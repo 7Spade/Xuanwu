@@ -16,8 +16,9 @@ src/lib-ui/
 ├── dnd/                   # 拖放組件
 │   ├── sortable-list.tsx  # @dnd-kit/sortable — 可排序清單
 │   ├── drag-handle.tsx    # @dnd-kit — 拖曳把手按鈕
-│   ├── atlaskit-drop-zone.tsx   # @atlaskit/pragmatic-drag-and-drop — 放置區
-│   ├── atlaskit-draggable.tsx   # @atlaskit/pragmatic-drag-and-drop — 可拖曳元素
+│   ├── atlaskit-drop-zone.tsx      # @atlaskit/pragmatic-drag-and-drop — 放置區
+│   ├── atlaskit-draggable.tsx      # @atlaskit/pragmatic-drag-and-drop — 可拖曳元素
+│   ├── atlaskit-sortable-item.tsx  # @atlaskit/pragmatic-drag-and-drop + hitbox + drop-indicator — 可排序列表項
 │   └── index.ts
 ├── vis/                   # 視覺化圖表組件
 │   ├── vis-network-canvas.tsx   # vis-network — 節點連線圖

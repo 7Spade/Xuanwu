@@ -11,9 +11,12 @@ export {
   DragHandle,
   AtlaskitDropZone,
   AtlaskitDraggable,
+  AtlaskitSortableItem,
   type DragHandleProps,
   type AtlaskitDropData,
   type AtlaskitDragData,
+  type AtlaskitSortableData,
+  type Edge,
 } from "./dnd"
 
 // Visualisation
