@@ -3,121 +3,193 @@ name: playwright-mcp-web-test-and-optimize
 agent: 'agent'
 description: 'Autonomously start the dev server, open a browser, register a new account, log in, and run full Playwright MCP browser verification combined with next-devtools diagnostics for root-cause-safe fixes.'
 tools:
-  - 'playwright-browser/*'
+  - 'microsoft/playwright-mcp/*'
   - 'next-devtools/*'
-  - 'chrome-devtools/*'
-  - 'bash'
   - 'vscode'
 ---
 
 # Autonomous Test, Diagnose, Fix & Optimize
 
-Use #tool:playwright-browser_navigate and related Playwright tools for browser truth,
-#tool:bash for dev-server lifecycle, and #tool:next-devtools for Next.js runtime truth.
+**Tool authority:**
+- Browser automation → `microsoft/playwright-mcp` (`playwright-browser_*` tools)
+- Next.js server diagnostics → `next-devtools` (`next-devtools-nextjs_index`, `next-devtools-nextjs_call`)
+- Shell / process management → `vscode` terminal (use `#tool:vscode` to open a terminal and run commands)
 
-Run every phase below fully autonomously — do not ask for human confirmation between steps
-unless an unrecoverable blocker is encountered.
+> **Project constant:** the dev server always runs on port `9002`. All `next-devtools-nextjs_call`
+> invocations use `port=9002`. If the port is changed via `package.json` or `.env`, update all
+> `port=9002` references below accordingly.
+
+**Execution rule:** run every phase fully autonomously — do not pause for confirmation unless
+an unrecoverable blocker is encountered.
+
+**Snapshot rule (mandatory for every browser action):**
+Always call `#tool:playwright-browser_snapshot` immediately after each navigation or DOM change.
+Always use the `ref` values returned by the **most recent** snapshot to identify elements.
+Stale refs from earlier snapshots will silently target the wrong element.
 
 ## Recommended skills
-- `webapp-testing`: Browser flow validation, interaction checks, and evidence capture.
+- `webapp-testing`: Full browser flow validation, interaction checks, and evidence capture.
 - `next-best-practices`: App Router boundary and rendering-safe fix patterns.
 - `next-cache-components`: Cache Components diagnostics when route data/render behavior is unstable.
-- `chrome-devtools`: Deeper browser-side investigation for console/network/perf anomalies.
 
 ---
 
 ## Phase 0 — Autonomous dev-server bootstrap
 
 > **Goal:** ensure `localhost:9002` is serving before any browser step.
-> **Prerequisite:** `curl` must be available (standard on macOS/Linux; on Windows use Git Bash, WSL, or the PowerShell alternative shown below).
+> **Platform note:** `curl` is standard on macOS/Linux. On Windows use Git Bash, WSL, or the PowerShell snippet shown.
 
-1. Check reachability with #tool:bash (Unix/macOS):
-   ```bash
-   curl -s -o /dev/null -w "%{http_code}" http://localhost:9002 2>/dev/null || echo "UNREACHABLE"
-   ```
-   On Windows PowerShell:
-   ```powershell
-   try { (Invoke-WebRequest -Uri http://localhost:9002 -UseBasicParsing -TimeoutSec 3).StatusCode } catch { "UNREACHABLE" }
-   ```
-2. If the response is not `200`/`30x` (or is `UNREACHABLE`), start the dev server in the background with output captured to a log file:
-   ```bash
-   npm run dev > /tmp/dev-server.log 2>&1 &
-   echo "DEV_SERVER_PID=$!"
-   ```
-   Record the printed PID for cleanup after testing.
-3. Poll until ready (retry every 3 s, max 60 s):
-   ```bash
-   for i in $(seq 1 20); do
-     code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9002 2>/dev/null || echo "000")
-     [ "$code" != "000" ] && echo "READY $code" && break
-     echo "Waiting... attempt $i/20"
-     sleep 3
-   done
-   ```
-4. If the server does not become ready within 60 s, print the last 30 lines of `/tmp/dev-server.log` for diagnosis, report `ENVIRONMENT_BLOCKER: dev server failed to start`, and stop.
-5. If the server was already running (step 1 returned 200/30x), log `SERVER_ALREADY_RUNNING` and continue.
-6. After all testing phases complete, if the server was started by this run, clean it up:
-   ```bash
-   kill $DEV_SERVER_PID 2>/dev/null || true
-   ```
+### 0-A  Check reachability
+
+Use `#tool:vscode` to open a VS Code integrated terminal and run:
+
+Unix/macOS:
+```bash
+curl -s -o /dev/null -w "%{http_code}" http://localhost:9002 2>/dev/null || echo "UNREACHABLE"
+```
+Windows PowerShell:
+```powershell
+try { (Invoke-WebRequest -Uri http://localhost:9002 -UseBasicParsing -TimeoutSec 3).StatusCode } catch { "UNREACHABLE" }
+```
+
+### 0-B  Start server if not running
+
+If the response is not `200`/`30x`, start the dev server and capture its PID + log:
+```bash
+npm run dev > /tmp/dev-server.log 2>&1 &
+DEV_SERVER_PID=$!
+echo "DEV_SERVER_PID=$DEV_SERVER_PID"
+```
+
+### 0-C  Poll until ready (max 60 s)
+
+```bash
+for i in $(seq 1 20); do
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:9002 2>/dev/null || echo "000")
+  [ "$code" != "000" ] && echo "READY $code" && break
+  echo "Waiting... attempt $i/20"
+  sleep 3
+done
+```
+
+- If still `000` after 20 attempts: print last 30 lines of `/tmp/dev-server.log`, report
+  `ENVIRONMENT_BLOCKER: dev server failed to start`, and **stop**.
+- If response is `200`/`30x`: continue.
+- If server was already running at step 0-A: log `SERVER_ALREADY_RUNNING` and continue.
+
+### 0-D  Next.js runtime discovery via next-devtools
+
+1. Call `#tool:next-devtools-nextjs_index` (no arguments) to discover running Next.js dev servers.
+2. Confirm a server is listed on port `9002`.
+3. If none found but the server was just started in step 0-B, wait 5 s and retry once.
+4. Record the list of available diagnostic tool names from the response — these are valid values for
+   `toolName` in `#tool:next-devtools-nextjs_call` during Phase 5.
+5. If still not found: continue (next-devtools diagnostics will be skipped in Phase 5 and marked
+   `TOOL_UNAVAILABLE`).
+
+### 0-E  Cleanup after testing
+
+After all phases complete, if the server was started by this run:
+```bash
+kill $DEV_SERVER_PID 2>/dev/null || true
+```
 
 ---
 
 ## Phase 1 — Autonomous browser open & landing verification
 
-1. Use #tool:playwright-browser_navigate to open `http://localhost:9002`.
-2. Use #tool:playwright-browser_snapshot to capture the a11y tree — this snapshot is the source of truth for steps 3–5.
-3. Using the snapshot from step 2, verify the landing page renders top-right controls: language switcher + sign-in button (look for elements by their accessible role or visible text, e.g. `role=button name="Sign in"` or `role=button name="Switch language"`).
-4. Use #tool:playwright-browser_take_screenshot and label it `01-landing.png`.
-5. If the page does not render or controls are absent from the snapshot, collect #tool:playwright-browser_console_messages and #tool:playwright-browser_network_requests before escalating to `BLOCKED`.
+**Sequence:**
+
+1. `#tool:playwright-browser_navigate` → `http://localhost:9002`
+2. `#tool:playwright-browser_snapshot` → capture a11y tree (this snapshot's `ref` values are used for steps 3–5)
+3. From the snapshot, locate elements by accessible role/text:
+   - Language switcher: `role=button name="Switch language"` (or equivalent visible text)
+   - Sign-in button: `role=button name="Sign in"` (or equivalent)
+   - If either is absent → collect `#tool:playwright-browser_console_messages` +
+     `#tool:playwright-browser_network_requests` → escalate to `BLOCKED`
+4. `#tool:playwright-browser_take_screenshot` → save as `01-landing.png`
 
 ---
 
 ## Phase 2 — Autonomous registration (sign-up) flow
 
-> **Goal:** create a fresh test account for this session so tests are not dependent on a pre-existing account state.
+> **Goal:** create a fresh test account so subsequent phases are not dependent on a pre-existing account state.
 
-1. Read registration credentials from `.env.local`:
-   - `TEST_REGISTER_EMAIL` (optional; if absent, auto-generate as `test+<unix-timestamp>@xuanwu.test`)
-   - `TEST_REGISTER_PASSWORD` (optional; if absent, auto-generate as `TestPass!<unix-timestamp>`)
-   - `TEST_REGISTER_DISPLAY_NAME` (optional; fallback: `Test User`)
-2. On the landing page, locate the **Sign Up / Register** control using #tool:playwright-browser_snapshot and search for a button or link with accessible role `button` or `link` and text matching `Sign Up`, `Register`, or `Create account` (case-insensitive). Use the exact `ref` from the snapshot.
-3. Click the identified element with #tool:playwright-browser_click.
-4. If a modal/dialog opens, wait for it with #tool:playwright-browser_wait_for.
-5. Fill the registration form using #tool:playwright-browser_fill_form; use field `ref` values from #tool:playwright-browser_snapshot:
-   - Email → resolved `TEST_REGISTER_EMAIL` value
-   - Password → resolved `TEST_REGISTER_PASSWORD` value
-   - Display name → resolved `TEST_REGISTER_DISPLAY_NAME` value (only if the field exists in the snapshot)
-6. Submit the registration form (locate submit button by `role=button` and text `Register`/`Sign Up`/`Create account`).
-7. Observe post-submit behavior:
-   - If redirected to email-verification page: record URL + screenshot, mark step as `VERIFY_EMAIL_REQUIRED`, and proceed to Phase 3 using `.env.local` `TEST_AUTH_EMAIL`/`TEST_AUTH_PASSWORD` credentials (these must be a pre-verified account; if they are also invalid or unverified, report `CREDENTIALS_BLOCKER` and stop).
-   - If redirected to `/dashboard`: registration succeeded; use this account for all subsequent phases.
-   - If an error appears: capture #tool:playwright-browser_console_messages + screenshot, classify as `REGISTRATION_FAILED`, and fall back to `.env.local` `TEST_AUTH_EMAIL`/`TEST_AUTH_PASSWORD` credentials (if those are also unavailable, report `CREDENTIALS_BLOCKER` and stop).
-8. Capture #tool:playwright-browser_take_screenshot labeled `02-registration-result.png`.
+### Credentials resolution
+
+Read from `.env.local`:
+| Variable | Behaviour if absent |
+|---|---|
+| `TEST_REGISTER_EMAIL` | auto-generate `test+<unix-timestamp>@xuanwu.test` |
+| `TEST_REGISTER_PASSWORD` | auto-generate `TestPass!<unix-timestamp>` |
+| `TEST_REGISTER_DISPLAY_NAME` | default `Test User` |
+
+### Sign-up sequence
+
+1. `#tool:playwright-browser_snapshot` → identify the **Sign Up / Register** control.
+   Search snapshot for `role=button` or `role=link` with text matching `Sign Up`, `Register`,
+   or `Create account` (case-insensitive). Record exact `ref`.
+2. `#tool:playwright-browser_click` using that `ref`.
+3. `#tool:playwright-browser_snapshot` → refresh refs after DOM change.
+4. `#tool:playwright-browser_wait_for` → wait for sign-up form/dialog to appear.
+5. `#tool:playwright-browser_snapshot` → capture form field refs.
+6. `#tool:playwright-browser_fill_form` using current snapshot refs:
+   - Email field → resolved `TEST_REGISTER_EMAIL`
+   - Password field → resolved `TEST_REGISTER_PASSWORD`
+   - Display name field → resolved `TEST_REGISTER_DISPLAY_NAME` (skip if not in snapshot)
+7. Locate submit button via snapshot: `role=button` with text `Register`/`Sign Up`/`Create account`.
+8. `#tool:playwright-browser_click` on submit button ref.
+   - If no clickable button ref is found in the snapshot, use `#tool:playwright-browser_press_key` → `Enter` as a submit alternative.
+9. `#tool:playwright-browser_wait_for` → wait for redirect or error message.
+10. `#tool:playwright-browser_snapshot` → assess outcome:
+    - URL is `/dashboard` → `REGISTERED`; use this account for all remaining phases.
+    - URL contains `verify` or `confirm` → `VERIFY_EMAIL_REQUIRED`; fall back to
+      `TEST_AUTH_EMAIL`/`TEST_AUTH_PASSWORD` from `.env.local` (must be pre-verified;
+      if also invalid → `CREDENTIALS_BLOCKER` and stop).
+    - Error message visible in snapshot → `REGISTRATION_FAILED`;
+      collect `#tool:playwright-browser_console_messages` + screenshot;
+      fall back to `TEST_AUTH_EMAIL`/`TEST_AUTH_PASSWORD` (if unavailable → `CREDENTIALS_BLOCKER` and stop).
+11. `#tool:playwright-browser_take_screenshot` → save as `02-registration-result.png`.
 
 ---
 
 ## Phase 3 — Authentication baseline
 
-> Credentials priority: Phase 2 account (if registration succeeded) → `.env.local` `TEST_AUTH_EMAIL` / `TEST_AUTH_PASSWORD`.
+> **Credentials priority:** Phase 2 account (if `REGISTERED`) → `.env.local` `TEST_AUTH_EMAIL` / `TEST_AUTH_PASSWORD`.
 
-1. Open `/` and confirm top-right controls are visible: language switcher + sign-in button.
-2. If language menu is open, close/select an item first to avoid click interception.
-3. Click sign-in to open auth dialog.
-4. Fill email/password via #tool:playwright-browser_fill_form.
-5. Submit login and wait for navigation with #tool:playwright-browser_wait_for.
-6. Verify final URL is `/dashboard` and dashboard shell is truly rendered (sidebar + main content visible).
-7. Capture #tool:playwright-browser_snapshot labeled `03-post-login-snapshot` as evidence.
-8. If login fails, collect #tool:playwright-browser_console_messages + #tool:playwright-browser_network_requests + screenshot before attempting fixes.
+**Sequence:**
+
+1. `#tool:playwright-browser_navigate` → `/`
+2. `#tool:playwright-browser_snapshot` → verify language switcher + sign-in button visible.
+   - If language menu is already open: `#tool:playwright-browser_press_key` → `Escape` to close it,
+     then `#tool:playwright-browser_snapshot` to refresh refs.
+3. `#tool:playwright-browser_click` → sign-in button ref from snapshot.
+4. `#tool:playwright-browser_snapshot` → refresh refs inside auth dialog.
+5. `#tool:playwright-browser_fill_form` → fill email + password fields using current snapshot refs.
+6. `#tool:playwright-browser_click` → submit button ref (`role=button name="Sign in"` or equivalent).
+   - If no clickable button ref is found in the snapshot, use `#tool:playwright-browser_press_key` → `Enter` as a submit alternative.
+7. `#tool:playwright-browser_wait_for` → wait for URL to contain `/dashboard`.
+8. `#tool:playwright-browser_snapshot` → verify dashboard shell rendered (sidebar + main content present).
+   Save as `03-post-login-snapshot`.
+9. On login failure:
+   - `#tool:playwright-browser_console_messages` + `#tool:playwright-browser_network_requests` +
+     `#tool:playwright-browser_take_screenshot` → save as `03-login-fail.png` → classify `FAIL`.
 
 ---
 
 ## Phase 4 — Navigation coverage
 
-1. Execute dashboard/sidebar route tour (all sidebar tabs).
-2. Execute workspace tab route tour (all workspace tabs).
-3. For every tab page, execute nested tab tour (all visible sub-tabs) using #tool:playwright-browser_click.
-4. Use #tool:playwright-browser_snapshot after every route change as evidence.
+**Per-route sequence (repeat for every route):**
+1. `#tool:playwright-browser_navigate` → target URL (or `#tool:playwright-browser_click` on nav link ref)
+2. `#tool:playwright-browser_snapshot` → mandatory after every route change; record new refs
+3. `#tool:playwright-browser_take_screenshot` → save as `04-<route-name>.png`
+4. `#tool:playwright-browser_console_messages` → check for errors; classify route as `PASS`/`FAIL`/`BLOCKED`
+
+**Tab management for workspace traversal:**
+- Open a new tab when needed: `#tool:playwright-browser_tab_new`
+- Switch between open tabs: `#tool:playwright-browser_tab_select`
+- List open tabs: `#tool:playwright-browser_tab_list`
+- Close a tab when done: `#tool:playwright-browser_tab_close`
 
 ### Required sidebar routes
 - `/dashboard`
@@ -133,34 +205,69 @@ unless an unrecoverable blocker is encountered.
 ### Required workspace tabs (inside one workspace)
 `Capabilities` · `Members` · `Tasks` · `QA` · `Acceptance` · `Finance` · `Issues` · `Daily` · `Files` · `Schedule` · `Document Parser` · `Audit`
 
-For each workspace tab, open all nested sub-tabs before moving on.
+For each workspace tab → open all nested sub-tabs before moving on.
 
 ### Organization and workspace flow
-1. On `/dashboard`, verify header contains the top-right i18n button (`Switch language`).
-2. Open account switcher and change `Personal` ↔ `Organization`; verify account label updates.
-3. In `Organization` context, confirm `Quick Access` workspaces are visible.
-4. Enter workspace by clicking one workspace quick link (`/workspaces/{id}`).
-5. Verify workspace route loaded and header still contains top-right i18n button.
-6. Switch to another workspace from quick links.
-7. Verify URL changes to the second workspace id and workspace page remains interactive.
-8. Capture #tool:playwright-browser_take_screenshot for each milestone: switched organization, entered workspace, switched workspace.
+1. `#tool:playwright-browser_snapshot` → verify `Switch language` button exists in header.
+2. Open account switcher via `#tool:playwright-browser_click` on its ref → switch `Personal` ↔ `Organization`.
+3. `#tool:playwright-browser_snapshot` → confirm account label updated.
+4. `#tool:playwright-browser_click` → Quick Access workspace link in Organization context.
+5. `#tool:playwright-browser_snapshot` → confirm workspace route + i18n button.
+6. `#tool:playwright-browser_click` → second workspace quick link.
+7. `#tool:playwright-browser_snapshot` → confirm new workspace id in URL.
+8. `#tool:playwright-browser_take_screenshot` for each milestone (organization switch, workspace entry, workspace switch).
 
 ---
 
 ## Phase 5 — Evidence and diagnosis
 
-1. Collect #tool:playwright-browser_console_messages and #tool:playwright-browser_network_requests per failed route.
-2. Use #tool:next-devtools for server-side root cause (RSC boundaries, streaming, parallel slot issues).
-3. Use #tool:chrome-devtools for deeper browser-side investigation (performance, XHR, hydration anomalies).
-4. Classify every issue as `FAIL`, `BLOCKED`, or `EXPECTED_GATED`.
+### 5-A  Browser-side evidence (per failed route)
+1. `#tool:playwright-browser_console_messages` → collect all log entries.
+2. `#tool:playwright-browser_network_requests` → identify 4xx/5xx requests and missing assets.
+3. `#tool:playwright-browser_take_screenshot` → save as `05-fail-<route-name>.png`.
+
+### 5-B  Server-side diagnosis via next-devtools (requires discovery in Phase 0-D)
+
+For each route classified as `FAIL`:
+
+1. **Get compilation/runtime errors:**
+   `#tool:next-devtools-nextjs_call` with `port=9002`, `toolName="get_errors"`.
+   - Review error list; match errors to the failing route.
+
+2. **Verify route map:**
+   `#tool:next-devtools-nextjs_call` with `port=9002`, `toolName="get_routes"`.
+   - Confirm the route is registered; missing routes indicate a file naming or slot wiring issue.
+
+3. **Check build status:**
+   `#tool:next-devtools-nextjs_call` with `port=9002`, `toolName="get_build_status"`.
+   - Compilation errors block rendering; fix them before diagnosing runtime behavior.
+
+4. **RSC/Client boundary or streaming issues (if applicable):**
+   Use any additional diagnostic tools discovered in Phase 0-D. If a tool name is uncertain,
+   call `#tool:next-devtools-nextjs_index` again to refresh the available tool list.
+
+5. If next-devtools is unavailable (Phase 0-D returned nothing), mark server-side checks as
+   `TOOL_UNAVAILABLE` and rely solely on browser-side evidence.
+
+### 5-C  Issue classification
+| Status | Criteria |
+|---|---|
+| `FAIL` | Error confirmed, root cause identified |
+| `BLOCKED` | Reproducible env issue; cannot proceed |
+| `EXPECTED_GATED` | Governance-only page in Personal context |
 
 ---
 
 ## Phase 6 — Fix and verify
 
-1. Apply minimal boundary-safe fix.
-2. Re-run only affected flows with #tool:playwright-browser_navigate + #tool:playwright-browser_snapshot.
-3. Regression-check auth + shell + routing after any fix.
+1. Apply the minimal boundary-safe fix identified in Phase 5.
+2. Validate the fix without full page reload first; if Fast Refresh triggers, check console output.
+3. `#tool:playwright-browser_navigate` → re-navigate to the affected route.
+4. `#tool:playwright-browser_snapshot` → confirm fix applied.
+5. `#tool:playwright-browser_console_messages` → confirm error no longer appears.
+6. `#tool:next-devtools-nextjs_call` with `port=9002`, `toolName="get_errors"` → confirm 0 errors.
+7. Regression check: repeat Phase 3 (auth) + Phase 1 landing → confirm no regressions.
+8. `#tool:playwright-browser_take_screenshot` → save as `06-fix-verified-<route>.png`.
 
 ---
 
@@ -169,9 +276,9 @@ For each workspace tab, open all nested sub-tabs before moving on.
 2. On each opened tab page, open every visible nested tab/sub-tab at least once.
 3. Repeat coverage when context changes (`Personal` vs `Organization`, different workspaces).
 4. Save one artifact per tab level (snapshot or screenshot) with route evidence.
-5. Report a coverage matrix in output: `sidebar tab -> nested tabs -> PASS/FAIL/BLOCKED`.
+5. Report a coverage matrix: `sidebar tab → nested tabs → PASS/FAIL/BLOCKED`.
 6. Report two top-level matrices: `Personal context` and `Organization context`.
-7. For governance-only pages in personal context, use `EXPECTED_GATED` status and include gating evidence.
+7. For governance-only pages in personal context, use `EXPECTED_GATED` + gating evidence.
 
 ---
 
@@ -179,34 +286,40 @@ For each workspace tab, open all nested sub-tabs before moving on.
 - Read credentials from project-root `.env.local`.
 - Login: `TEST_AUTH_EMAIL`, `TEST_AUTH_PASSWORD`.
 - Registration: `TEST_REGISTER_EMAIL`, `TEST_REGISTER_PASSWORD`, `TEST_REGISTER_DISPLAY_NAME`.
-- Do not place credentials in `.github/copilot-instructions.md`.
+- Do not place credential values in `.github/copilot-instructions.md`.
 
 ---
 
 ## Completion gate
-- The run is complete only when all mandatory flows are either:
-  - `PASS` with evidence, or
-  - `BLOCKED` with reproducible environment proof.
-- Tab coverage is complete only when sidebar tabs and nested tabs are both fully covered.
-- Any hydration mismatch console error is a hard failure and must be fixed or marked `BLOCKED` with reproducible evidence before completion.
-- Phase 0 server bootstrap must be recorded in the output (was the server started or already running?).
-- Phase 2 registration result must be recorded: `REGISTERED`, `VERIFY_EMAIL_REQUIRED`, or `REGISTRATION_FAILED`.
+- All mandatory flows must be `PASS` (with evidence) or `BLOCKED` (with reproducible proof).
+- Tab coverage complete only when sidebar tabs + all nested sub-tabs fully covered.
+- Any hydration mismatch is a hard `FAIL` — must be fixed or explicitly `BLOCKED` with evidence.
+- Phase 0 bootstrap status must appear in output.
+- Phase 2 registration outcome must appear in output.
+- Phase 5-B next-devtools results (or `TOOL_UNAVAILABLE`) must appear in output.
 
 ---
 
 ## Hydration mismatch verification (mandatory)
-1. After each major route group (dashboard shell, workspace shell), collect #tool:playwright-browser_console_messages.
-2. If logs include `A tree hydrated but some attributes of the server rendered HTML didn't match the client properties`, classify route group as `FAIL`.
-3. Run root-cause checks for SSR/CSR branch divergence, random/time-based render values, and unstable generated IDs.
-4. Re-run affected routes and keep final artifact showing mismatch removed.
+1. After each major route group, call `#tool:playwright-browser_console_messages`.
+2. If logs contain `A tree hydrated but some attributes of the server rendered HTML didn't match the client properties`,
+   classify the route group as `FAIL`.
+3. Root-cause candidates (check in order):
+   - Non-deterministic IDs generated differently on server vs client
+   - SSR/CSR conditional branches (`typeof window`)
+   - `Date.now()` / `Math.random()` in render
+   - Locale-dependent number/date formatting during SSR
+4. Re-run affected routes; keep final artifact showing mismatch removed.
 
 ---
 
 ## Output
-- Phase 0: server bootstrap status (`STARTED` / `ALREADY_RUNNING` / `BLOCKED`)
-- Phase 2: registration status (`REGISTERED` / `VERIFY_EMAIL_REQUIRED` / `REGISTRATION_FAILED`) + credentials used
-- Repro steps
-- Evidence (errors/screenshots with phase labels)
-- Fix summary and verification results
-- Full coverage matrix for sidebar tabs, nested tabs, and global navigation links
-- Coverage summary with `covered/total` and explicit `missing` counts per route group
+| Section | Required content |
+|---|---|
+| Phase 0 | Bootstrap status: `STARTED` / `ALREADY_RUNNING` / `BLOCKED`; next-devtools discovery result |
+| Phase 2 | Registration outcome: `REGISTERED` / `VERIFY_EMAIL_REQUIRED` / `REGISTRATION_FAILED` / `CREDENTIALS_BLOCKER`; credentials used (no values) |
+| Evidence | Labeled screenshots + snapshot refs per phase |
+| Diagnosis | Per-route: browser console errors, network failures, next-devtools error/route/build output |
+| Fix summary | File changed, change description, re-test result |
+| Coverage matrix | `sidebar tab → nested tabs → status` for Personal + Organization contexts |
+| Coverage summary | `covered/total` + explicit `missing` list per route group |
