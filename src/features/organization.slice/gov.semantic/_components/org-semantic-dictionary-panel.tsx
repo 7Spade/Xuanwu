@@ -7,14 +7,31 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BookType, Plus, Save, Sparkles, Trash2, Wrench } from 'lucide-react';
-import { DataSet } from 'vis-data';
-import { Network } from 'vis-network/standalone';
-import type { Edge, IdType, Node } from 'vis-network';
-import 'vis-network/styles/vis-network.css';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 
 import { useApp } from '@/app-runtime/providers/app-provider';
+import { VisNetworkCanvas } from '@/lib-ui/vis';
+import type { Edge, IdType, Network, Node } from '@/lib-ui/vis';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shadcn-ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shadcn-ui/dialog';
+import { useToast } from '@/shadcn-ui/hooks/use-toast';
+import { Input } from '@/shadcn-ui/input';
+import { Label } from '@/shadcn-ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shadcn-ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
+import { Textarea } from '@/shadcn-ui/textarea';
+import { tagSlugRef, TIER_DEFINITIONS, type SkillRequirement } from '@/shared-kernel';
+
 import {
   addOrgSkillTypeAction,
   addOrgTaskTypeAction,
@@ -25,27 +42,11 @@ import {
   updateOrgSkillTypeAction,
   updateOrgTaskTypeAction,
 } from '../_actions';
-import { Badge } from '@/shadcn-ui/badge';
-import { Button } from '@/shadcn-ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shadcn-ui/card';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shadcn-ui/dialog';
-import { Input } from '@/shadcn-ui/input';
-import { Label } from '@/shadcn-ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shadcn-ui/select';
-import { useToast } from '@/shadcn-ui/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shadcn-ui/tabs';
-import { Textarea } from '@/shadcn-ui/textarea';
-import { tagSlugRef, TIER_DEFINITIONS, type SkillRequirement } from '@/shared-kernel';
-
 import { getOrgSkillTypes, getOrgTaskTypes } from '../_queries';
-
 import type { OrgSkillTypeEntry, OrgTaskTypeEntry } from '../_types';
+
+/** vis-network doubleClick event parameters (typed from network.on callback shape). */
+type DoubleClickParams = { nodes: IdType[] }
 
 type SkillRequirementDraft = {
   tagSlug: string;
@@ -75,8 +76,6 @@ type DictionaryViewMode = 'dictionary' | 'graph';
 
 type GraphDebugState = {
   networkReady: boolean;
-  containerSize: string;
-  canvasCount: number;
   nodeCount: number;
   edgeCount: number;
 };
@@ -208,21 +207,22 @@ export function OrgSemanticDictionaryPanel() {
   const [taskForm, setTaskForm] = useState<TaskTypeFormState>({ ...DEFAULT_TASK_FORM });
   const [skillForm, setSkillForm] = useState<SkillTypeFormState>({ ...DEFAULT_SKILL_FORM });
   const [viewMode, setViewMode] = useState<DictionaryViewMode>('dictionary');
-  const [graphContainerEl, setGraphContainerEl] = useState<HTMLDivElement | null>(null);
   const [graphDebug, setGraphDebug] = useState<GraphDebugState>({
     networkReady: false,
-    containerSize: '0x0',
-    canvasCount: 0,
     nodeCount: 0,
     edgeCount: 0,
   });
 
-  const graphContainerRef = useRef<HTMLDivElement>(null);
   const graphNetworkRef = useRef<Network | null>(null);
-  const graphBoundContainerRef = useRef<HTMLDivElement | null>(null);
-  const graphNodesRef = useRef(new DataSet<Node>([]));
-  const graphEdgesRef = useRef(new DataSet<Edge>([]));
-
+  // Stable mutable ref for the doubleClick handler — always holds the latest task/skill state
+  // without re-attaching the event listener on every data change.
+  // Initialised to a safe no-op so any doubleClick event before the first useEffect run is silent.
+  const doubleClickHandlerRef = useRef<(params: DoubleClickParams) => void>(() => {});
+  // Ref shadow of graphData initialised with safe defaults; synced in useEffect below.
+  // Allows onReady (called async) to read current graph data without a stale closure.
+  const graphDataRef = useRef<{ nodes: Node[]; edges: Edge[]; unresolvedCount: number }>({
+    nodes: [], edges: [], unresolvedCount: 0,
+  });
   const tierOptions = useMemo(() => TIER_DEFINITIONS.map((tier) => tier.tier), []);
   const skillTypeSlugSet = useMemo(() => new Set(skillTypes.map((skill) => skill.slug)), [skillTypes]);
   const skillTypeOptions = useMemo(
@@ -230,23 +230,41 @@ export function OrgSemanticDictionaryPanel() {
     [skillTypes]
   );
 
-  const captureGraphDebug = useCallback(() => {
-    const container = graphContainerRef.current;
-    const canvasCount = container ? container.querySelectorAll('canvas').length : 0;
-    const width = container?.clientWidth ?? 0;
-    const height = container?.clientHeight ?? 0;
-    setGraphDebug({
-      networkReady: graphNetworkRef.current !== null,
-      containerSize: `${width}x${height}`,
-      canvasCount,
-      nodeCount: graphNodesRef.current.length,
-      edgeCount: graphEdgesRef.current.length,
-    });
-  }, []);
+  // Keep doubleClick handler current — updates without re-attaching to the network
+  useEffect(() => {
+    doubleClickHandlerRef.current = (params: DoubleClickParams) => {
+      if (params.nodes.length !== 1) return;
+      const nodeId = String(params.nodes[0]);
+      if (nodeId.startsWith('task:')) {
+        const slug = nodeId.slice('task:'.length);
+        const entry = taskTypes.find((t) => t.slug === slug);
+        if (entry) openEditTaskDialog(entry);
+        return;
+      }
+      if (nodeId.startsWith('skill:')) {
+        const slug = nodeId.slice('skill:'.length);
+        const entry = skillTypes.find((s) => s.slug === slug);
+        if (entry) openEditSkillDialog(entry);
+      }
+    };
+  }, [taskTypes, skillTypes]);
 
-  const bindGraphContainerRef = useCallback((element: HTMLDivElement | null) => {
-    graphContainerRef.current = element;
-    setGraphContainerEl(element);
+  const handleNetworkReady = useCallback((network: Network) => {
+    graphNetworkRef.current = network;
+    // Attach via stable ref — no re-subscription needed when data changes
+    network.on('doubleClick', (params: DoubleClickParams) => doubleClickHandlerRef.current(params));
+    // Initial fit after the network has rendered its first frame
+    requestAnimationFrame(() => {
+      if (!graphNetworkRef.current) return;
+      if (graphDataRef.current.nodes.length > 0) {
+        graphNetworkRef.current.fit({ animation: { duration: 220, easingFunction: 'easeInOutQuad' } });
+      }
+      setGraphDebug({
+        networkReady: true,
+        nodeCount: graphDataRef.current.nodes.length,
+        edgeCount: graphDataRef.current.edges.length,
+      });
+    });
   }, []);
 
   const refresh = useCallback(async () => {
@@ -394,123 +412,34 @@ export function OrgSemanticDictionaryPanel() {
     };
   }, [taskTypes, skillTypes]);
 
+  // Keep graphDataRef current so onReady (called async) can read the latest graph data.
   useEffect(() => {
-    if (viewMode !== 'graph') return;
-    if (!graphContainerEl) return;
+    graphDataRef.current = graphData;
+  }, [graphData]);
 
-    let network = graphNetworkRef.current;
-    if (network && graphBoundContainerRef.current !== graphContainerEl) {
-      network.destroy();
-      graphNetworkRef.current = null;
-      network = null;
-    }
-
-    if (!network) {
-      network = new Network(
-        graphContainerEl,
-        { nodes: graphNodesRef.current, edges: graphEdgesRef.current },
-        GRAPH_OPTIONS
-      );
-      graphNetworkRef.current = network;
-      graphBoundContainerRef.current = graphContainerEl;
-    }
-
-    try {
-      graphNodesRef.current.clear();
-      graphEdgesRef.current.clear();
-      graphNodesRef.current.add(graphData.nodes);
-      graphEdgesRef.current.add(graphData.edges);
-
-      network.setData({
-        nodes: graphNodesRef.current,
-        edges: graphEdgesRef.current,
-      });
-    } catch (error: unknown) {
-      toast({
-        title: 'Graph render failed',
-        description: error instanceof Error ? error.message : 'Unknown vis-network data error',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+  // Fit + debug update when data changes while the graph view is active.
+  // VisNetworkCanvas handles the DataSet update; we only need to call fit() afterwards.
+  useEffect(() => {
+    if (viewMode !== 'graph' || !graphNetworkRef.current) return;
     requestAnimationFrame(() => {
-      network.redraw();
+      if (!graphNetworkRef.current) return;
       if (graphData.nodes.length > 0) {
-        network.fit({ animation: { duration: 220, easingFunction: 'easeInOutQuad' } });
+        graphNetworkRef.current.fit({ animation: { duration: 220, easingFunction: 'easeInOutQuad' } });
       }
-      captureGraphDebug();
+      setGraphDebug({
+        networkReady: true,
+        nodeCount: graphData.nodes.length,
+        edgeCount: graphData.edges.length,
+      });
     });
-  }, [viewMode, graphContainerEl, graphData, toast, captureGraphDebug]);
+  }, [graphData, viewMode]);
 
+  // Clear debug state when leaving graph view (VisNetworkCanvas unmounts and destroys network)
   useEffect(() => {
     if (viewMode === 'graph') return;
-    graphNetworkRef.current?.destroy();
     graphNetworkRef.current = null;
-    graphBoundContainerRef.current = null;
-    captureGraphDebug();
-  }, [viewMode, captureGraphDebug]);
-
-  useEffect(() => {
-    return () => {
-      graphNetworkRef.current?.destroy();
-      graphNetworkRef.current = null;
-      graphBoundContainerRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const network = graphNetworkRef.current;
-    if (!network) return;
-
-    const onDoubleClick = (params: { nodes: IdType[] }) => {
-      if (params.nodes.length !== 1) return;
-      const nodeId = String(params.nodes[0]);
-      if (nodeId.startsWith('task:')) {
-        const slug = nodeId.slice('task:'.length);
-        const entry = taskTypes.find((task) => task.slug === slug);
-        if (entry) {
-          openEditTaskDialog(entry);
-        }
-        return;
-      }
-      if (nodeId.startsWith('skill:')) {
-        const slug = nodeId.slice('skill:'.length);
-        const entry = skillTypes.find((skill) => skill.slug === slug);
-        if (entry) {
-          openEditSkillDialog(entry);
-        }
-      }
-    };
-
-    network.off('doubleClick', onDoubleClick);
-    network.on('doubleClick', onDoubleClick);
-    network.fit({ animation: { duration: 280, easingFunction: 'easeInOutQuad' } });
-
-    return () => {
-      network.off('doubleClick', onDoubleClick);
-    };
-  }, [graphData, taskTypes, skillTypes]);
-
-  useEffect(() => {
-    if (viewMode !== 'graph') return;
-    const container = graphContainerEl;
-    const network = graphNetworkRef.current;
-    if (!container || !network || typeof ResizeObserver === 'undefined') return;
-
-    const observer = new ResizeObserver(() => {
-      network.redraw();
-      if (graphData.nodes.length > 0) {
-        network.fit({ animation: false });
-      }
-      captureGraphDebug();
-    });
-    observer.observe(container);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [viewMode, graphContainerEl, graphData.nodes.length, captureGraphDebug]);
+    setGraphDebug({ networkReady: false, nodeCount: 0, edgeCount: 0 });
+  }, [viewMode]);
 
   async function saveTaskType() {
     if (!orgId || !actorId || taskForm.slug.trim() === '' || taskForm.name.trim() === '') {
@@ -903,16 +832,26 @@ export function OrgSemanticDictionaryPanel() {
                 </Badge>
               </div>
 
+              {/* Fixed-height container; VisNetworkCanvas mounts only when graph tab is active */}
               <div
-                ref={bindGraphContainerRef}
                 className="relative w-full overflow-hidden rounded-lg border bg-background"
                 style={{ height: 580 }}
                 aria-label="Organization semantic dictionary graph"
-              />
+              >
+                {viewMode === 'graph' && (
+                  <VisNetworkCanvas
+                    nodes={graphData.nodes}
+                    edges={graphData.edges}
+                    options={GRAPH_OPTIONS}
+                    onReady={handleNetworkReady}
+                    className="h-full w-full"
+                  />
+                )}
+              </div>
 
               {process.env.NODE_ENV !== 'production' && (
                 <p className="text-[11px] text-muted-foreground">
-                  debug: ready={graphDebug.networkReady ? 'yes' : 'no'} | size={graphDebug.containerSize} | canvas={graphDebug.canvasCount} | nodes={graphDebug.nodeCount} | edges={graphDebug.edgeCount}
+                  debug: ready={graphDebug.networkReady ? 'yes' : 'no'} | nodes={graphDebug.nodeCount} | edges={graphDebug.edgeCount}
                 </p>
               )}
 

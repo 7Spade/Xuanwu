@@ -13,12 +13,16 @@
 
 ```
 src/lib-ui/
-├── dnd/                   # 拖放組件
+├── dnd/                   # @dnd-kit 拖放組件
 │   ├── sortable-list.tsx  # @dnd-kit/sortable — 可排序清單
 │   ├── drag-handle.tsx    # @dnd-kit — 拖曳把手按鈕
-│   ├── atlaskit-drop-zone.tsx   # @atlaskit/pragmatic-drag-and-drop — 放置區
-│   ├── atlaskit-draggable.tsx   # @atlaskit/pragmatic-drag-and-drop — 可拖曳元素
 │   └── index.ts
+├── pdnd/                  # @atlaskit/pragmatic-drag-and-drop 拖放組件
+│   ├── draggable.tsx      # @atlaskit/pragmatic-drag-and-drop — 可拖曳元素
+│   ├── drop-zone.tsx      # @atlaskit/pragmatic-drag-and-drop — 放置區
+│   ├── sortable-item.tsx  # @atlaskit/pragmatic-drag-and-drop + hitbox + drop-indicator — 可排序列表項
+│   ├── index.ts
+│   └── README.md
 ├── vis/                   # 視覺化圖表組件
 │   ├── vis-network-canvas.tsx   # vis-network — 節點連線圖
 │   ├── vis-timeline-canvas.tsx  # vis-timeline — 時間軸
@@ -44,19 +48,21 @@ src/lib-ui/
 ```ts
 // 依賴子目錄直接匯入
 import { SortableList, DragHandle } from "@/lib-ui/dnd"
+import { PdndDraggable, PdndDropZone, PdndSortableItem } from "@/lib-ui/pdnd"
 import { VisNetworkCanvas } from "@/lib-ui/vis"
 import { DataTable, TanstackQueryProvider } from "@/lib-ui/tanstack"
 import { createMachineContext, createNamedStore } from "@/lib-ui/state"
 
 // 或使用頂層 barrel 匯入
-import { SortableList, DataTable, VisNetworkCanvas } from "@/lib-ui"
+import { SortableList, PdndSortableItem, DataTable, VisNetworkCanvas } from "@/lib-ui"
 ```
 
 ## 依賴對照表
 
 | 子目錄 | 對應依賴套件 |
 |--------|-------------|
-| `dnd/` | `@dnd-kit/core`, `@dnd-kit/sortable`, `@atlaskit/pragmatic-drag-and-drop`, `@atlaskit/pragmatic-drag-and-drop-react-drop-indicator`, `@atlaskit/pragmatic-drag-and-drop-hitbox` |
+| `dnd/` | `@dnd-kit/core`, `@dnd-kit/sortable` |
+| `pdnd/` | `@atlaskit/pragmatic-drag-and-drop`, `@atlaskit/pragmatic-drag-and-drop-hitbox`, `@atlaskit/pragmatic-drag-and-drop-react-drop-indicator` |
 | `vis/` | `vis-data`, `vis-network`, `vis-timeline`, `vis-graph3d` |
 | `tanstack/` | `@tanstack/react-query`, `@tanstack/react-table`, `@tanstack/react-virtual`, `@tanstack/react-form` |
 | `state/` | `xstate`, `@xstate/react`, `zustand` |

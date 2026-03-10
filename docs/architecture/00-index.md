@@ -48,6 +48,8 @@
 - `VS6`: `docs/architecture/03-Slices/VS6-Scheduling/`
 - `VS7`: `docs/architecture/03-Slices/VS7-Notification/`
 - `VS8`: `docs/architecture/03-Slices/VS8-SemanticBrain/`
+  - `architecture.md`：目標十層 `centralized-*` 架構、模組對應表、API 邊界。
+  - `architecture-build.md`：逐階段目錄遷移實施計畫。
 - `VS9`: `docs/architecture/03-Slices/VS9-Finance/`
 
 實作現況補充（程式碼存在但不編入 VS1~VS9）：
