@@ -22,7 +22,8 @@ const context = [
   '- Skills index: .github/skills/',
   '- Verify: npm run check  (lint + typecheck)',
   '- Dev server: npm run dev  (localhost:9002, Turbopack)',
-  '- Agents: .github/agents/ | Plugins: .github/agents/plugins/',
+  '- Local agents: .github/agents/',
+  '- Agent plugins: manage through VS Code plugin settings, not .github/agents/ subfolders',
 ].join('\n');
 
 process.stdout.write(
