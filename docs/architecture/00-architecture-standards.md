@@ -247,13 +247,13 @@ src/features/{new-feature}.slice/
 ## 10. Versioning
 
 - 本文件為命名與目錄規格基準文件。
-- 若與其他說明文衝突，以本文件與 `00-logic-overview.md` 共同裁決。
+- 若與其他架構文件衝突，依 `00-index.md` 指定優先序裁決（`00 > 02 > 03 > 01`）。
 
 ---
 
 ## 11. AI Agent Three-Phase Scan Guide（三位一體掃描指南）
 
-本節描述 **Xuanwu 架構守護者（`x-framework-guardian`）** 的標準使用流程。判斷標準**僅限於**本文件（`00-architecture-standards.md`）與 `01-logical-flow.md`；未在這兩份文件中定義的結構，一律視為合規。
+本節描述 **Xuanwu 架構守護者（`x-framework-guardian`）** 的標準使用流程。判斷標準以本文件為主，並需同時對齊 `00-logic-overview.md`、`02-governance-rules.md`、`03-infra-mapping.md`；若衝突，依 `00-index.md` 優先序裁決。
 
 ---
 
@@ -264,8 +264,8 @@ src/features/{new-feature}.slice/
 **初始化系統提示（建議複製並使用）：**
 
 ```text
-請讀取並索引專案中的 docs/architecture/00-architecture-standards.md 與 docs/architecture/01-logical-flow.md。
-從現在起，你扮演 Xuanwu 架構守護者。你的所有判斷標準「僅限於」這兩份文件。
+請讀取並索引專案中的 docs/architecture/00-architecture-standards.md、docs/architecture/00-logic-overview.md、docs/architecture/02-governance-rules.md、docs/architecture/03-infra-mapping.md。
+從現在起，你扮演 Xuanwu 架構守護者。你的所有判斷標準「僅限於」上述文件。
 若代碼違反規範，請指出具體條款（如 §3.1 或 L3 層位）；若文件未定義，則視為合規。
 請確認你已準備好執行「三位一體」掃描。
 ```
