@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback } from "@/shadcn-ui/avatar";
 import { Card } from "@/shadcn-ui/card";
 import type { Account } from "@/shared-kernel";
-import type { Timestamp } from "@/shared-kernel/ports";
+import type { Timestamp } from "@/shared-kernel";
 
 import { type DailyLog } from "../_types";
 
@@ -114,3 +114,4 @@ export function DailyLogCard({ log, currentUser, onOpen }: DailyLogCardProps) {
     </Card>
   );
 }
+

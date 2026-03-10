@@ -42,7 +42,7 @@ import {
 } from "@/shadcn-ui/card";
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shadcn-ui/tooltip";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 import { deleteWorkspace, updateWorkspaceSettings, uploadWorkspaceAvatar } from "../_actions";
 import type { Workspace, WorkspaceLifecycleState, Address, WorkspacePersonnel } from "../_types";
@@ -479,3 +479,4 @@ export function WorkspaceCard({ workspace }: WorkspaceCardProps) {
     </>
   );
 }
+

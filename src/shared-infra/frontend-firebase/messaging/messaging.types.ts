@@ -2,7 +2,7 @@
  * messaging.types.ts — FCM Internal Types
  *
  * [D24] These types must NOT be exported outside src/shared/infra/messaging/.
- *       Feature slices use IMessaging / PushNotificationPayload from '@/shared-kernel/ports'.
+ *       Feature slices use IMessaging / PushNotificationPayload from '@/shared-kernel'.
  * [R8]  traceId must appear in every FCM message metadata object.
  */
 
@@ -21,3 +21,4 @@ export interface FcmMessage {
   /** [R8] traceId forwarded from EventEnvelope. Never regenerated here. */
   readonly data: FcmData & { readonly traceId: string };
 }
+

@@ -11,4 +11,5 @@ export type {
   Address,
   WorkspaceLocation,
   Workspace,
-} from '@/shared-kernel/types/workspace';
+} from '@/shared-kernel';
+

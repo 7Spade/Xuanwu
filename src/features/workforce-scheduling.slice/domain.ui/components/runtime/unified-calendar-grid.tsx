@@ -25,7 +25,7 @@ import {
 import { cn } from "@/shadcn-ui/utils/utils";
 import { type MemberReference } from "@/shared-kernel";
 import type { ScheduleItem } from "@/shared-kernel";
-import { findSkill } from "@/shared-kernel/constants/skills";
+import { findSkill } from "@/shared-kernel";
 
 import {
   buildCardsByDate,
@@ -284,3 +284,4 @@ export function UnifiedCalendarGrid({
     </div>
   );
 }
+

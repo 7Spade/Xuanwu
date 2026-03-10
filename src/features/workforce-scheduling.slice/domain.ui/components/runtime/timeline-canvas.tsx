@@ -20,7 +20,7 @@ import "vis-timeline/styles/vis-timeline-graph2d.min.css";
 
 import { cn } from "@/shadcn-ui/utils/utils";
 import type { ScheduleItem } from "@/shared-kernel";
-import { SKILLS } from "@/shared-kernel/constants/skills";
+import { SKILLS } from "@/shared-kernel";
 
 import type { TimelineMember } from '../../types/timeline.types';
 import styles from "./timeline-canvas.module.css";
@@ -440,3 +440,4 @@ export function TimelineCanvas({
     </div>
   );
 }
+

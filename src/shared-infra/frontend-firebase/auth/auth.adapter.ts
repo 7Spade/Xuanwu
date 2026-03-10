@@ -16,7 +16,7 @@ import {
   type User as FirebaseUser,
 } from 'firebase/auth';
 
-import type { IAuthService, AuthUser } from '@/shared-kernel/ports';
+import type { IAuthService, AuthUser } from '@/shared-kernel';
 
 import { auth } from './auth.client';
 
@@ -93,3 +93,4 @@ export const authAdapter: IAuthService = new FirebaseAuthAdapter();
 
 /** @deprecated Use authAdapter directly. Kept for backwards compatibility. */
 export const authService: IAuthService = authAdapter;
+

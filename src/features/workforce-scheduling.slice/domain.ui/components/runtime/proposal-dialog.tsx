@@ -33,7 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
 import { cn } from "@/shadcn-ui/utils/utils";
 import { tagSlugRef } from "@/shared-kernel";
 import type { SkillRequirement } from "@/shared-kernel";
-import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared-kernel/constants/skills";
+import { SKILLS, SKILL_GROUPS, SKILL_SUB_CATEGORY_BY_KEY } from "@/shared-kernel";
 
 const MAX_SKILL_REQUIREMENT_QUANTITY = 99;
 
@@ -397,3 +397,4 @@ export function ProposalDialog({
     </Dialog>
   );
 }
+

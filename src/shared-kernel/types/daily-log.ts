@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export interface DailyLogComment {
   id: string;
@@ -37,3 +37,4 @@ export interface DailyLog {
   commentCount?: number;
   comments?: DailyLogComment[];
 }
+

@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export type WorkspaceRole = 'Manager' | 'Contributor' | 'Viewer';
 
@@ -19,3 +19,4 @@ export interface WorkspaceGrant {
   revokedAt?: Timestamp;
   expiresAt?: Timestamp;
 }
+

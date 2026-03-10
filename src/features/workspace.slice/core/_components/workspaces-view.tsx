@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { useWorkspaceFilters } from "@/features/workspace.slice/domain.files/_hooks/use-workspace-filters";
 import { Button } from "@/shadcn-ui/button";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 
 import { useApp } from "../_hooks/use-app";
@@ -80,3 +80,4 @@ export function WorkspacesView() {
     </div>
   );
 }
+

@@ -26,3 +26,4 @@ export interface SkillGrant {
   earnedInOrgId?: string;
   grantedAt?: Timestamp;
 }
+

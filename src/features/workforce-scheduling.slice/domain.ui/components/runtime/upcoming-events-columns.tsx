@@ -15,7 +15,7 @@ import {
 } from "@/shadcn-ui/tooltip"
 import { type MemberReference } from "@/shared-kernel"
 import type { ScheduleItem } from '@/shared-kernel'
-import { SKILLS } from "@/shared-kernel/constants/skills"
+import { SKILLS } from "@/shared-kernel"
 
 function isMemberReference(value: MemberReference | undefined): value is MemberReference {
   return value !== undefined;
@@ -136,3 +136,4 @@ export const upcomingEventsColumns: ColumnDef<UpcomingEventItem>[] = [
     }
   },
 ]
+

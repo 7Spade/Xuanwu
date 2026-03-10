@@ -14,7 +14,7 @@ import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { PageHeader } from "@/lib-ui/custom-ui";
 import { Input } from "@/shadcn-ui/input";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 interface WorkspaceListHeaderProps {
   activeAccountName: string;
@@ -95,3 +95,4 @@ export function WorkspaceListHeader({
     </>
   );
 }
+

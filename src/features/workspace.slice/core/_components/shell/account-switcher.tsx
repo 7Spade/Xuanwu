@@ -29,7 +29,7 @@ import {
 } from "@/shadcn-ui/sidebar"
 import { cn } from "@/shadcn-ui/utils/utils"
 import type { Account } from "@/shared-kernel"
-import { ROUTES } from "@/shared-kernel/constants/routes"
+import { ROUTES } from "@/shared-kernel"
 
 
 
@@ -171,3 +171,4 @@ export function AccountSwitcher({
     </>
   )
 }
+

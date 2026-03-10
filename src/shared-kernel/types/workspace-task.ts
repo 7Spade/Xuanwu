@@ -7,7 +7,7 @@
 
 import type { SkillRequirement } from '@/shared-kernel/data-contracts/skill-tier';
 import type { Location } from '@/shared-kernel/data-contracts/scheduling/schedule-contract';
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 // Location is owned by shared-kernel/schedule-contract [D19], re-exported here for backward compatibility.
 export type { Location };
@@ -49,3 +49,4 @@ export type TaskWithChildren = WorkspaceTask & {
   wbsNo: string;
   progress: number;
 };
+

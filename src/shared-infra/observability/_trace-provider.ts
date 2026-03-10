@@ -5,7 +5,7 @@
  * Constraints: deterministic module boundary, implementation may use runtime clocks/randomness.
  */
 
-import type { ITraceProvider, TraceContext } from '@/shared-kernel/observability';
+import type { ITraceProvider, TraceContext } from '@/shared-kernel';
 
 /**
  * Generates a unique correlation/trace identifier for a command or event chain.
@@ -31,3 +31,4 @@ export const traceProvider: ITraceProvider = {
   generateTraceId,
   createTraceContext,
 };
+

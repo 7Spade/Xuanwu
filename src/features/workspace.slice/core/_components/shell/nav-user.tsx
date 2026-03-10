@@ -22,7 +22,7 @@ import {
 } from "@/shadcn-ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from "@/shadcn-ui/sidebar"
 import type { Account } from "@/shared-kernel"
-import { ROUTES } from "@/shared-kernel/constants/routes"
+import { ROUTES } from "@/shared-kernel"
 
 
 
@@ -109,3 +109,4 @@ export function NavUser({ user, accounts, activeAccount, logout, t }: NavUserPro
     </SidebarMenu>
   );
 }
+

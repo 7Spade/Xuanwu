@@ -11,8 +11,8 @@ import { Avatar, AvatarFallback } from '@/shadcn-ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shadcn-ui/tooltip';
 import { tierSatisfies } from '@/shared-kernel';
 import type { ScheduleItem, SkillRequirement } from '@/shared-kernel';
-import { findSkill } from '@/shared-kernel/constants/skills';
-import type { Timestamp } from '@/shared-kernel/ports';
+import { findSkill } from '@/shared-kernel';
+import type { Timestamp } from '@/shared-kernel';
 
 import type { OrgEligibleMemberView } from '../../../domain.application/queries';
 
@@ -87,3 +87,4 @@ export function computeSkillMatch(
   }).length;
   return [matched, skillRequirements.length];
 }
+

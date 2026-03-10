@@ -7,7 +7,7 @@
  * [D25] Implements IFileStore Port so feature slices never import firebase/storage directly.
  */
 
-import type { IFileStore, UploadOptions } from '@/shared-kernel/ports/i-file-store';
+import type { IFileStore, UploadOptions } from '@/shared-kernel';
 import { getFileDownloadURL } from './storage.read.adapter';
 import { deleteFile, uploadFile } from './storage.write.adapter';
 
@@ -32,3 +32,4 @@ export class StorageAdapter implements IFileStore {
 
 export const storageAdapter: IFileStore = new StorageAdapter();
 export const fileStore: IFileStore = storageAdapter;
+

@@ -8,7 +8,7 @@
 import type {
   SearchDomain,
   TaxonomyDimension,
-} from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
+} from '@/shared-kernel';
 
 export const SEARCH_DOMAINS: readonly SearchDomain[] = [
   'workspace',
@@ -27,3 +27,4 @@ export const TAXONOMY_DIMENSIONS: readonly TaxonomyDimension[] = [
   'organizational',
   'compliance',
 ] as const;
+

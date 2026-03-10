@@ -5,5 +5,6 @@
  *       Firebase SDK types must NOT be re-exported from this boundary.
  */
 
-export type { IAuthService, AuthUser } from '@/shared-kernel/ports/i-auth.service';
+export type { IAuthService, AuthUser } from '@/shared-kernel';
 export { authService } from '@/shared-infra/frontend-firebase';
+

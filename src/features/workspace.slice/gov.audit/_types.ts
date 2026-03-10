@@ -3,4 +3,5 @@
  * 請優先從 `@/shared-kernel/types` 引用。
  * 定義位置：src/shared-kernel/types/audit-log.ts
  */
-export type { AuditLogType, AuditLog } from '@/shared-kernel/types/audit-log';
+export type { AuditLogType, AuditLog } from '@/shared-kernel';
+

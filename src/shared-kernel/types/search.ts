@@ -10,8 +10,8 @@ import type {
   SemanticSearchHit,
   SemanticSearchQuery,
   SemanticSearchResult,
-} from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
-import type { TagSlugRef } from '@/shared-kernel/data-contracts/tag-authority';
+} from '@/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
 
 export type { SearchDomain, SemanticSearchHit, SemanticSearchQuery, SemanticSearchResult };
 
@@ -97,3 +97,4 @@ export interface SearchResponse {
   readonly executedAt: string;
   readonly traceId?: string;
 }
+

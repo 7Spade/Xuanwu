@@ -7,6 +7,7 @@
  *       boundary for firebase/storage.
  */
 
-export type { IFileStore, UploadOptions } from '@/shared-kernel/ports/i-file-store';
+export type { IFileStore, UploadOptions } from '@/shared-kernel';
 export { StorageAdapter, storageAdapter } from './storage.adapter';
 export { fileStore } from '@/shared-infra/frontend-firebase';
+

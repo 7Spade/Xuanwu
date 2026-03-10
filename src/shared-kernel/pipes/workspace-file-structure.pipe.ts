@@ -8,7 +8,7 @@
 import type {
   WorkspaceFile,
   WorkspaceFileVersion,
-} from '@/shared-kernel/types/workspace-file';
+} from '@/shared-kernel';
 
 interface TimestampLike {
   toDate?: () => Date;
@@ -164,3 +164,4 @@ export const getProcessingLogEntries = (
 
   return [{ actor, at }];
 };
+

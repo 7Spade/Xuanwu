@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 import type { WorkspaceFile } from './workspace-file';
 import type { WorkspaceGrant } from './workspace-role';
@@ -76,3 +76,4 @@ export interface Workspace {
   personnel?: WorkspacePersonnel;
   createdAt: Timestamp;
 }
+

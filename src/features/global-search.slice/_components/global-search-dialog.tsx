@@ -28,7 +28,7 @@ import {
   CommandList,
 } from "@/shadcn-ui/command";
 import { type Account, type MemberReference } from "@/shared-kernel";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 export interface GlobalSearchDialogProps {
   isOpen: boolean;
@@ -104,3 +104,4 @@ export function GlobalSearchDialog({
  * Exposed for backward-compatible imports across the application shell.
  */
 export { GlobalSearchDialog as GlobalSearch };
+

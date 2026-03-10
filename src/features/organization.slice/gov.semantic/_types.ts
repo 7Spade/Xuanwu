@@ -15,4 +15,5 @@ export type {
   OrgSemanticEntry,
   ResolveOrgTaskTypeInput,
   ResolvedOrgTaskType,
-} from '@/shared-kernel/types/organization-semantic';
+} from '@/shared-kernel';
+

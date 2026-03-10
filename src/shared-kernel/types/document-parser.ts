@@ -6,7 +6,7 @@
  */
 
 import type { SkillRequirement } from '@/shared-kernel/data-contracts/skill-tier';
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 // ─── Brand Types ─────────────────────────────────────────────────────────────
 
@@ -117,3 +117,4 @@ export interface ParsingImport {
     message: string;
   };
 }
+

@@ -6,5 +6,6 @@
  * [R8]  Implementations must forward envelope.traceId into FCM metadata unchanged.
  */
 
-export type { IMessaging, PushNotificationPayload } from '@/shared-kernel/ports/i-messaging';
+export type { IMessaging, PushNotificationPayload } from '@/shared-kernel';
 export { messagingAdapter } from '@/shared-infra/frontend-firebase';
+

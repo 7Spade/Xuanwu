@@ -5,8 +5,8 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { NotificationChannel, NotificationPriority } from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
-import type { TagSlugRef } from '@/shared-kernel/data-contracts/tag-authority';
+import type { NotificationChannel, NotificationPriority } from '@/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
 
 export type { NotificationChannel, NotificationPriority };
 
@@ -122,3 +122,4 @@ export interface NotificationHubStats {
   readonly activeRoutingRules: number;
   readonly lastDispatchedAt: string;
 }
+

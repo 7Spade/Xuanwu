@@ -14,5 +14,6 @@ export type {
   ExecuteSearchInput,
   GroupedSearchResult,
   SearchResponse,
-} from '@/shared-kernel/types/search';
-export { INITIAL_SEARCH_STATE } from '@/shared-kernel/types/search';
+} from '@/shared-kernel';
+export { INITIAL_SEARCH_STATE } from '@/shared-kernel';
+

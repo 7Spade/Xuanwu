@@ -89,3 +89,4 @@ export interface Account {
   teams?: Team[];
   createdAt?: Timestamp;
 }
+

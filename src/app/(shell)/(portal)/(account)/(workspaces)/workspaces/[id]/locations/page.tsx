@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/features/workspace.slice';
 import { WorkspaceLocationsPanel } from '@/features/workspace.slice';
 import { Button } from '@/shadcn-ui/button';
-import { ROUTES } from '@/shared-kernel/constants/routes';
+import { ROUTES } from '@/shared-kernel';
 
 export default function WorkspaceLocationsPage() {
   const router = useRouter();

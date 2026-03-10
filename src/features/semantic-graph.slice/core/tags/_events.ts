@@ -5,7 +5,7 @@ import type {
   TagDeletedPayload,
   TagLifecycleEventPayloadMap,
   TagLifecycleEventKey,
-} from '@/shared-kernel/data-contracts/tag-authority';
+} from '@/shared-kernel';
 export type {
   TagCreatedPayload,
   TagUpdatedPayload,
@@ -14,3 +14,4 @@ export type {
   TagLifecycleEventPayloadMap,
   TagLifecycleEventKey,
 };
+

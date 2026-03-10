@@ -9,8 +9,8 @@ import type {
   TaxonomyDimension,
   TaxonomyNode,
   SemanticSearchHit,
-} from '@/shared-kernel/data-contracts/semantic/semantic-contracts';
-import type { TagSlugRef } from '@/shared-kernel/data-contracts/tag-authority';
+} from '@/shared-kernel';
+import type { TagSlugRef } from '@/shared-kernel';
 
 export type { TaxonomyDimension, TaxonomyNode, SemanticSearchHit };
 
@@ -124,3 +124,4 @@ export interface SemanticIndexStats {
   readonly entriesByDomain: Record<string, number>;
   readonly lastUpdatedAt: string;
 }
+

@@ -17,7 +17,7 @@ import type {
   ParserRoutingStatusValue,
 } from '@/features/semantic-graph.slice';
 import type { SkillRequirement } from '@/shared-kernel';
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 // ParsingIntentSourceType, ParsingIntentReviewStatus, and ParsingIntentStatus are owned by
 // business.parsing-intent/_contract.ts [D20] — the single source of truth for this sub-domain contract.
@@ -143,3 +143,4 @@ export interface ParsingImport {
     message: string;
   };
 }
+

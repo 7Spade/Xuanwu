@@ -6,15 +6,15 @@
  *
  * Covered union types:
  *   - ScheduleStatus          (→ @/shared-kernel/data-contracts/scheduling/schedule-contract)
- *   - WorkspaceLifecycleState (→ @/shared-kernel/types/workspace)
- *   - AuditLogType            (→ @/shared-kernel/types/audit-log)
+ *   - WorkspaceLifecycleState (→ @/shared-kernel)
+ *   - AuditLogType            (→ @/shared-kernel)
  *   - InviteState             (→ @/shared-kernel → PartnerInvite.inviteState)
  *   - Presence                (→ @/shared-kernel → MemberReference.presence)
  *   - NotificationType        (→ @/shared-kernel → Notification.type)
  */
 
-import type { AuditLogType } from '@/shared-kernel/types/audit-log';
-import type { WorkspaceLifecycleState } from '@/shared-kernel/types/workspace';
+import type { AuditLogType } from '@/shared-kernel';
+import type { WorkspaceLifecycleState } from '@/shared-kernel';
 import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
@@ -279,3 +279,4 @@ export const NOTIFICATION_TYPE_META: Record<NotificationType, NotificationTypeMe
     colorClass: 'bg-green-100 text-green-700',
   },
 } as const;
+

@@ -17,7 +17,7 @@ import {
   updateParsingIntentStatus as updateParsingIntentStatusFacade,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
 import type { SkillRequirement } from '@/shared-kernel'
-import type { Timestamp } from '@/shared-kernel/ports'
+import type { Timestamp } from '@/shared-kernel'
 
 import type {
   ParsedLineItem,
@@ -296,3 +296,4 @@ export async function markParsingIntentFailed(
 ): Promise<void> {
   return updateParsingIntentStatusFacade(workspaceId, intentId, 'failed')
 }
+

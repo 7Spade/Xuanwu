@@ -27,7 +27,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuButton,
 } from "@/shadcn-ui/sidebar";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 interface NavMainProps {
   pathname: string;
@@ -97,3 +97,4 @@ export function NavMain({ pathname, isOrganizationAccount, t }: NavMainProps) {
     </SidebarMenu>
   );
 }
+

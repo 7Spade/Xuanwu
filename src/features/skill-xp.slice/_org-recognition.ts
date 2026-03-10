@@ -32,7 +32,7 @@ import {
   setDocument,
   updateDocument,
 } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { findSkill } from '@/shared-kernel/constants/skills';
+import { findSkill } from '@/shared-kernel';
 
 import { enqueueSkillOutboxEvent } from './skill-outbox';
 
@@ -159,3 +159,4 @@ export async function revokeSkillRecognition(
     dlqTier: 'SAFE_AUTO',
   });
 }
+

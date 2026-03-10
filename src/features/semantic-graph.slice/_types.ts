@@ -17,4 +17,5 @@ export type {
   TaxonomyErrorCode,
   SemanticIndexEntry,
   SemanticIndexStats,
-} from '@/shared-kernel/types/semantic-graph';
+} from '@/shared-kernel';
+

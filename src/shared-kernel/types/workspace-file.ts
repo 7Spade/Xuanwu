@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export interface WorkspaceFileVersion {
   versionId: string;
@@ -28,3 +28,4 @@ export interface WorkspaceFile {
 }
 
 export type CreateWorkspaceFileInput = Omit<WorkspaceFile, 'id' | 'updatedAt'>;
+

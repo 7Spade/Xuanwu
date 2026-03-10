@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export interface IssueComment {
   id: string;
@@ -25,3 +25,4 @@ export interface WorkspaceIssue {
   createdAt: Timestamp;
   comments?: IssueComment[];
 }
+

@@ -5,7 +5,7 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export type AuditLogType = 'create' | 'update' | 'delete' | 'security';
 
@@ -26,3 +26,4 @@ export interface AuditLog {
     ip?: string;
   };
 }
+

@@ -5,7 +5,7 @@
  * Constraints: runtime stateful implementation belongs to infrastructure layer.
  */
 
-import type { EventCounters, IMetricsRecorder } from '@/shared-kernel/observability';
+import type { EventCounters, IMetricsRecorder } from '@/shared-kernel';
 
 const counters: Record<string, number> = {};
 
@@ -29,3 +29,4 @@ export const metricsRecorder: IMetricsRecorder = {
   getEventCounters,
   resetEventCounters,
 };
+

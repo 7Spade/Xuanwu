@@ -14,7 +14,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { Input } from "@/shadcn-ui/input";
 import { Label } from "@/shadcn-ui/label";
 import { Textarea } from "@/shadcn-ui/textarea";
-import { ROUTES } from "@/shared-kernel/constants/routes";
+import { ROUTES } from "@/shared-kernel";
 
 import { useOrganizationManagement } from "../_hooks/use-organization-management";
 
@@ -199,3 +199,4 @@ export function OrgSettings() {
     </div>
   );
 }
+

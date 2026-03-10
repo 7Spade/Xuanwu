@@ -15,7 +15,7 @@ import {
   setDoc,
 } from 'firebase/firestore';
 
-import type { FirestoreDoc, IFirestoreRepo, WriteOptions } from '@/shared-kernel/ports';
+import type { FirestoreDoc, IFirestoreRepo, WriteOptions } from '@/shared-kernel';
 
 import { db } from './firestore.client';
 
@@ -71,3 +71,4 @@ class FirebaseFirestoreRepo implements IFirestoreRepo {
 }
 
 export const firestoreRepo: IFirestoreRepo = new FirebaseFirestoreRepo();
+

@@ -3,4 +3,5 @@
  * 請優先從 `@/shared-kernel/types` 引用。
  * 定義位置：src/shared-kernel/types/workspace-role.ts
  */
-export type { WorkspaceRole, WorkspaceGrant } from '@/shared-kernel/types/workspace-role';
+export type { WorkspaceRole, WorkspaceGrant } from '@/shared-kernel';
+

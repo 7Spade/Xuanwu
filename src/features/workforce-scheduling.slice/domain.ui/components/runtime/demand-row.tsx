@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from "@/shadcn-ui/select";
 import type { ScheduleItem, SkillRequirement } from "@/shared-kernel";
-import { SKILLS } from "@/shared-kernel/constants/skills";
-import type { Timestamp } from "@/shared-kernel/ports";
+import { SKILLS } from "@/shared-kernel";
+import type { Timestamp } from "@/shared-kernel";
 
 import {
   approveScheduleItemWithMember,
@@ -194,3 +194,4 @@ export function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
     </div>
   );
 }
+

@@ -9,7 +9,7 @@
  */
 
 import type { AuthoritySnapshot } from '@/shared-kernel';
-import type { Timestamp } from '@/shared-kernel/ports';
+import type { Timestamp } from '@/shared-kernel';
 
 export interface WorkspaceScopeGuardView {
   readonly implementsAuthoritySnapshot: true;
@@ -68,3 +68,4 @@ function derivePermissions(roles: string[]): string[] {
   };
   return [...new Set(roles.flatMap((r) => permMap[r] ?? ['read']))];
 }
+

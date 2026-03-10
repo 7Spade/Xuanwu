@@ -14,4 +14,5 @@ export type {
   NotificationDispatchError,
   NotificationSubscription,
   NotificationHubStats,
-} from '@/shared-kernel/types/notification';
+} from '@/shared-kernel';
+

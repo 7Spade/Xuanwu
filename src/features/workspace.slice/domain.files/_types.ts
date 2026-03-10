@@ -7,4 +7,5 @@ export type {
   WorkspaceFileVersion,
   WorkspaceFile,
   CreateWorkspaceFileInput,
-} from '@/shared-kernel/types/workspace-file';
+} from '@/shared-kernel';
+

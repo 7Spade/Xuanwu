@@ -7,7 +7,7 @@
 
 import { getToken, onMessage } from 'firebase/messaging';
 
-import type { IMessaging, PushNotificationPayload } from '@/shared-kernel/ports';
+import type { IMessaging, PushNotificationPayload } from '@/shared-kernel';
 
 import { messaging } from './messaging.client';
 
@@ -53,3 +53,4 @@ class FrontendMessagingAdapter implements IMessaging {
 }
 
 export const messagingAdapter: IMessaging = new FrontendMessagingAdapter();
+

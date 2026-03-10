@@ -2,7 +2,7 @@
  * firestore.types.ts — Firestore Internal Types
  *
  * [D24] These types must NOT be exported outside src/shared/infra/firestore/.
- *       Feature slices use IFirestoreRepo / FirestoreDoc from '@/shared-kernel/ports'.
+ *       Feature slices use IFirestoreRepo / FirestoreDoc from '@/shared-kernel'.
  */
 
 import type {
@@ -37,3 +37,4 @@ export interface VersionedProjectionDoc extends FirestoreTimestampedDoc {
   /** [R8] TraceId carried through from the originating EventEnvelope. */
   readonly traceId?: string;
 }
+

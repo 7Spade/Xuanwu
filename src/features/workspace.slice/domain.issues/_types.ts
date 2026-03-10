@@ -3,4 +3,5 @@
  * 請優先從 `@/shared-kernel/types` 引用。
  * 定義位置：src/shared-kernel/types/workspace-issue.ts
  */
-export type { IssueComment, WorkspaceIssue } from '@/shared-kernel/types/workspace-issue';
+export type { IssueComment, WorkspaceIssue } from '@/shared-kernel';
+

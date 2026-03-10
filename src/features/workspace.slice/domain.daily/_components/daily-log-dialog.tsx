@@ -23,7 +23,7 @@ import { toast } from "@/shadcn-ui/hooks/use-toast";
 import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import { Textarea } from "@/shadcn-ui/textarea";
 import type { Account } from "@/shared-kernel";
-import type { Timestamp } from "@/shared-kernel/ports";
+import type { Timestamp } from "@/shared-kernel";
 
 
 import { addDailyLogComment } from "../_actions";
@@ -205,3 +205,4 @@ export function DailyLogDialog({ log, currentUser, isOpen, onOpenChange }: Daily
     </Dialog>
   );
 }
+

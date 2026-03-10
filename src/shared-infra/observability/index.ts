@@ -9,4 +9,5 @@ export { generateTraceId, createTraceContext, traceProvider } from './_trace-pro
 export { recordEventPublished, getEventCounters, resetEventCounters, metricsRecorder } from './_metrics-recorder';
 export { logDomainError, errorLogger } from './_error-logger';
 
-export type { TraceContext, DomainErrorEntry, EventCounters, ITraceProvider, IMetricsRecorder, IErrorLogger } from '@/shared-kernel/observability';
+export type { TraceContext, DomainErrorEntry, EventCounters, ITraceProvider, IMetricsRecorder, IErrorLogger } from '@/shared-kernel';
+

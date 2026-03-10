@@ -5,7 +5,7 @@
  * Constraints: this module is side-effectful and must remain outside shared-kernel.
  */
 
-import type { DomainErrorEntry, IErrorLogger } from '@/shared-kernel/observability';
+import type { DomainErrorEntry, IErrorLogger } from '@/shared-kernel';
 
 export function logDomainError(entry: DomainErrorEntry): void {
   console.error('[DOMAIN_ERROR_LOG]', JSON.stringify(entry));
@@ -15,3 +15,4 @@ export function logDomainError(entry: DomainErrorEntry): void {
 export const errorLogger: IErrorLogger = {
   logDomainError,
 };
+

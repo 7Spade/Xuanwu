@@ -9,11 +9,11 @@
 
 import { createContext, type Dispatch } from 'react'
 
-import type { DailyLog } from '@/shared-kernel/types/daily-log';
-import type { WorkspaceIssue } from '@/shared-kernel/types/workspace-issue';
-import type { WorkspaceTask } from '@/shared-kernel/types/workspace-task';
-import type { Workspace } from '@/shared-kernel/types/workspace';
-import type { AuditLog } from '@/shared-kernel/types/audit-log';
+import type { DailyLog } from '@/shared-kernel';
+import type { WorkspaceIssue } from '@/shared-kernel';
+import type { WorkspaceTask } from '@/shared-kernel';
+import type { Workspace } from '@/shared-kernel';
+import type { AuditLog } from '@/shared-kernel';
 import type { PartnerInvite } from '@/shared-kernel'
 import type { ScheduleItem } from '@/shared-kernel'
 
@@ -41,3 +41,4 @@ export interface AccountContextValue {
 }
 
 export const AccountContext = createContext<AccountContextValue | null>(null)
+

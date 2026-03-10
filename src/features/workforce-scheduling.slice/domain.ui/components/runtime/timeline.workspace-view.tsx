@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/shadcn-ui/hooks/use-toast";
 import type { ScheduleItem, SkillRequirement, SkillTier } from "@/shared-kernel";
 import { tagSlugRef } from "@/shared-kernel";
-import { SKILLS } from "@/shared-kernel/constants/skills";
+import { SKILLS } from "@/shared-kernel";
 
 import { useTimelineCommands, useWorkspaceTimeline } from "../../hooks/runtime";
 
@@ -350,3 +350,4 @@ export function WorkspaceTimeline() {
     </div>
   );
 }
+

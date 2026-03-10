@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn-ui/card";
 import { ScrollArea } from "@/shadcn-ui/scroll-area";
 import type { ScheduleItem } from '@/shared-kernel';
 import type { SkillRequirement } from '@/shared-kernel';
-import { SKILLS } from '@/shared-kernel/constants/skills';
+import { SKILLS } from '@/shared-kernel';
 
 interface GovernanceSidebarProps {
   proposals: ScheduleItem[];
@@ -74,3 +74,4 @@ export function GovernanceSidebar({ proposals, onApprove, onReject }: Governance
     </Card>
   );
 }
+
