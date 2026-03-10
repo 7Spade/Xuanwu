@@ -6,11 +6,11 @@
  */
 export function AuthBackground() {
   return (
-    <div className="pointer-events-none absolute inset-0 select-none opacity-[0.04] duration-1000 animate-in fade-in">
-      <span className="absolute left-[10%] top-[10%] text-[15rem]">🐢</span>
-      <span className="absolute bottom-[10%] right-[10%] text-[12rem]">🐢</span>
-      <span className="absolute left-1/4 top-[40%] -rotate-12 text-9xl">🐢</span>
-      <span className="absolute bottom-[20%] left-[45%] rotate-45 text-8xl">🐢</span>
+    <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,hsl(var(--primary)/0.14),transparent_44%),radial-gradient(circle_at_82%_6%,hsl(var(--accent)/0.2),transparent_36%),linear-gradient(180deg,hsl(var(--background)),hsl(var(--background)))]" />
+      <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -right-28 bottom-8 h-80 w-80 rounded-full bg-accent/25 blur-3xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.15)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.15)_1px,transparent_1px)] bg-[size:26px_26px] opacity-30" />
     </div>
   );
 }
