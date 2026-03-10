@@ -7,6 +7,8 @@ description: Next.js local preflight and diagnostic skill for Xuanwu. Starts loc
 
 This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto-fix, and verify.
 
+Normative execution contract: [xuanwu-test-expert.instructions.md](../../instructions/xuanwu-test-expert.instructions.md)
+
 ## When to use
 
 - User asks to run `npm run dev` and open the app in VS Code browser.
@@ -14,35 +16,17 @@ This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto
 - User requests realtime runtime status or metadata problem analysis.
 - User requests automated code generation/fix based on Next.js diagnostics.
 
-## Procedure
+## Procedure (contract-driven)
 
-1. Start server:
-   - Run `npm run dev` as a background process.
-2. Discover structure with next-devtools:
-   - Run `next-devtools-nextjs_index`.
-   - Record server URL, app routes, and diagnostic capabilities.
-3. Validate startup and route readiness:
-   - Confirm terminal reports successful startup.
-   - If unreachable, retry startup once before marking environment blocker.
-4. Open browser:
-   - Open `http://localhost:9002` in VS Code integrated browser.
-5. Analyze realtime status and metadata:
-   - Use `next-devtools-nextjs_call` for runtime/build/route diagnostics.
-   - Check metadata behavior including title/canonical/robots/locale tags.
-   - Keep tool separation: browser steps with `playwright-browser_*`, server diagnostics with `next-devtools-*`.
-6. Capture evidence:
-   - terminal running state
-   - page title
-   - current URL
-   - key diagnostics findings
-7. Auto-fix loop (when confident):
-   - Generate minimal patch for root cause.
-   - Apply only boundary-safe changes.
-   - Re-run targeted verification.
-8. Report outcome:
-   - `PASS` when server and page are ready
-   - `PASS_WITH_FIX` when fix applied and verified
-   - `BLOCKED` with concise blocker details when not ready
+1. Execute the shared contract from `.github/instructions/xuanwu-test-expert.instructions.md`.
+2. Preserve strict tool separation:
+   - browser actions and evidence via `playwright-browser_*`
+   - server/runtime diagnostics via `next-devtools-*`
+3. Capture evidence-driven output:
+   - startup status
+   - url/title
+   - diagnostics summary
+   - changed files and verification outcome (if fix applied)
 
 ## Playwright snapshot discipline
 
@@ -56,15 +40,6 @@ This skill standardizes a full Next.js diagnostic flow: preflight, analyze, auto
 - `FAIL`: reproducible functional or runtime defect found.
 - `BLOCKED`: environment/system blocker prevents completion.
 - `EXPECTED_GATED`: route is correctly restricted by account/context policy.
-
-## next-devtools practical features checklist
-
-- Project structure awareness: `next-devtools-nextjs_index`
-- Realtime runtime checks: `next-devtools-nextjs_call`
-- Metadata analysis: route-level metadata generation and output checks
-- Patch-and-verify loop: diagnose -> minimal fix -> browser re-check
-- Route-specific troubleshooting without broad refactor
-- Metadata-focused troubleshooting for title/canonical/robots/locale output
 
 ## Guardrails
 

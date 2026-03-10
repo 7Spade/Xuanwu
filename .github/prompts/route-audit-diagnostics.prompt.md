@@ -7,7 +7,8 @@ tools: ['search/codebase', 'next-devtools/*']
 
 # Next.js Route Audit & Diagnostics
 
-Diagnose and resolve route rendering issues with evidence-driven analysis.
+This command is a route-focused alias of [`next-diagnostics`](./next-diagnostics.prompt.md).
+Reuse that canonical diagnostic flow, then prioritize route-slot and rendering-path findings.
 
 ## Checks
 - Incorrect `'use client'` placement
