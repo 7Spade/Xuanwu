@@ -89,6 +89,8 @@ export function Header() {
       dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: organization })
   }
 
+  const plainHeaderIconClassName = "min-h-0 min-w-0 rounded-md size-9";
+
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-background/70 backdrop-blur-xl ring-1 ring-border/55 supports-[backdrop-filter]:bg-background/65 transition-[width,height] ease-linear sm:h-16 group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
       <div className="flex min-w-0 items-center gap-2 px-2 sm:px-4">
@@ -142,17 +144,27 @@ export function Header() {
           <Search className="size-4" />
         </Button>
         <div className="flex items-center gap-1 sm:gap-1.5">
-          <LanguageSwitcher />
+          <LanguageSwitcher triggerClassName={plainHeaderIconClassName} />
           <div className="hidden sm:block">
-            <ModeToggle />
+            <ModeToggle triggerClassName={plainHeaderIconClassName} />
           </div>
         </div>
-        <Button asChild variant="ghost" size="icon" className="hidden size-9 sm:flex" aria-label="Wiki">
+        <Button
+          asChild
+          variant="ghost"
+          size="icon"
+          className="hidden min-h-0 min-w-0 rounded-md size-9 sm:flex"
+          aria-label={t('wiki.title')}
+        >
           <Link href="/wiki">
             <BookOpen className="size-4" />
           </Link>
         </Button>
-        <NotificationCenter notifications={notifications} dispatch={dispatch} />
+        <NotificationCenter
+          notifications={notifications}
+          dispatch={dispatch}
+          triggerClassName="relative min-h-0 min-w-0 rounded-md size-9"
+        />
       </div>
       <GlobalSearch
         isOpen={isSearchOpen}
