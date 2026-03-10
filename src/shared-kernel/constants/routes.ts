@@ -20,4 +20,5 @@ export const ROUTES = {
   ACCOUNT_SCHEDULE: "/dashboard/account/workforce-scheduling",
   ACCOUNT_DAILY: "/dashboard/account/daily",
   ACCOUNT_AUDIT: "/dashboard/account/audit",
+  ACCOUNT_SEMANTIC_DICTIONARY: "/dashboard/account/semantic-dictionary",
 } as const;

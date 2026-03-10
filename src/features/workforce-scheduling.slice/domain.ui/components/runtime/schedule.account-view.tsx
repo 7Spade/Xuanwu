@@ -7,22 +7,15 @@
  * Tabs:
  *   - Calendar: unified calendar grid + upcoming/present/history tables
  *   - Workforce: skill-aware proposal assignment + lifecycle (OrgScheduleGovernance)
- *
- * Merge rationale:
- *   - Workflow consolidation: OrgScheduleGovernance covers the full lifecycle
- *     (PROPOSAL assign + approve, OFFICIAL complete) with skill-tier matching.
- *   - GovernanceSidebar removed from Calendar tab: having approve/reject in two places
- *     (sidebar + HR tab) fragmented the workflow. Calendar is now a clean read-only view.
  */
 "use client";
 
 import { addMonths, subMonths } from "date-fns";
-import { AlertCircle, Calendar, ListChecks, History, Users, Library } from "lucide-react";
+import { AlertCircle, Calendar, ListChecks, History, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
 
 import { useApp } from "@/app-runtime/providers/app-provider";
-import { OrgSemanticDictionaryPanel } from "@/features/organization.slice";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 import type { ScheduleItem } from '@/shared-kernel';
 
@@ -95,10 +88,6 @@ export function AccountScheduleSection() {
             <Users className="size-4" />
             Workforce
           </TabsTrigger>
-          <TabsTrigger value="semantic-dictionary" className="gap-2">
-            <Library className="size-4" />
-            Semantic Dictionary
-          </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Calendar full-width grid + upcoming/present/history tables */}
@@ -146,10 +135,6 @@ export function AccountScheduleSection() {
             (approve-only, no assignment) that previously lived in the Calendar tab. */}
         <TabsContent value="hr-management">
           <OrgScheduleGovernance />
-        </TabsContent>
-
-        <TabsContent value="semantic-dictionary" className="flex-1">
-          <OrgSemanticDictionaryPanel />
         </TabsContent>
       </Tabs>
     </div>
