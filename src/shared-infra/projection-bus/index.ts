@@ -10,18 +10,18 @@
  *   - READ_MODEL_REGISTRY: query handler registration for infra.gateway-query
  *
  * Sub-slices (projection views):
- *   account-audit            — ACCOUNT_PROJECTION_AUDIT
+ *   account-audit-view       — ACCOUNT_PROJECTION_AUDIT
  *   account-skill-view       — ACCOUNT_SKILL_VIEW [#12][#13] STD
  *   account-view             — ACCOUNT_PROJECTION_VIEW (FCM token, authority snapshot)
- *   demand-board             — DEMAND_BOARD_PROJECTION
+ *   demand-board-view        — DEMAND_BOARD_PROJECTION
  *   global-audit-view        — GLOBAL_AUDIT_VIEW [R8]
  *   org-eligible-member-view — ORG_ELIGIBLE_MEMBER_VIEW [#14–#16]
  *   organization-view        — ORGANIZATION_PROJECTION_VIEW
  *   schedule-calendar-view   — SCHEDULE_CALENDAR_VIEW 日期維度 [S4] STD
  *   schedule-timeline-view   — SCHEDULE_TIMELINE_VIEW 資源維度 [S4] STD
  *   semantic-governance-view — SEMANTIC_GOVERNANCE_VIEW 治理頁 [A6] STD
- *   tag-snapshot             — TAG_SNAPSHOT [T5]
- *   workspace-scope-guard    — WORKSPACE_SCOPE_READ_MODEL [#A9]
+ *   tag-snapshot-view        — TAG_SNAPSHOT [T5]
+ *   workspace-scope-guard-view — WORKSPACE_SCOPE_READ_MODEL [#A9]
  *   workspace-view           — WORKSPACE_PROJECTION_VIEW
  *
  * Per 00-logic-overview.md (VS8 Projection Bus):
@@ -61,10 +61,10 @@ export {
 export { registerAllQueryHandlers } from './_query-registration';
 
 // =================================================================
-// account-audit — ACCOUNT_PROJECTION_AUDIT
+// account-audit-view — ACCOUNT_PROJECTION_AUDIT
 // =================================================================
-export { getAccountAuditEntries, appendAuditEntry } from './account-audit';
-export type { AuditProjectionEntry } from './account-audit';
+export { getAccountAuditEntries, appendAuditEntry } from './account-audit-view';
+export type { AuditProjectionEntry } from './account-audit-view';
 
 // =================================================================
 // account-view — ACCOUNT_PROJECTION_VIEW [#6][#8]
@@ -110,33 +110,33 @@ export { projectOrganizationSnapshot, applyMemberJoined, applyMemberLeft } from 
 export type { OrganizationViewRecord } from './organization-view';
 
 // =================================================================
-// tag-snapshot — TAG_SNAPSHOT [T5][S4]
+// tag-snapshot-view — TAG_SNAPSHOT [T5][S4]
 // =================================================================
 export {
   applyTagCreated,
   applyTagUpdated,
   applyTagDeprecated,
   applyTagDeleted,
-} from './tag-snapshot';
-export { getTagSnapshot, getAllTagSnapshots, getActiveTagSnapshots } from './tag-snapshot';
-export type { TagSnapshotEntry } from './tag-snapshot';
+} from './tag-snapshot-view';
+export { getTagSnapshot, getAllTagSnapshots, getActiveTagSnapshots } from './tag-snapshot-view';
+export type { TagSnapshotEntry } from './tag-snapshot-view';
 
 // =================================================================
-// account-schedule — ACCOUNT_SCHEDULE_PROJECTION [S2] STD ≤10s
+// account-schedule-view — ACCOUNT_SCHEDULE_PROJECTION [S2] STD ≤10s
 // =================================================================
 export {
   initAccountScheduleProjection,
   applyScheduleAssigned,
   applyScheduleCompleted,
-} from './account-schedule';
+} from './account-schedule-view';
 export type {
   AccountScheduleProjection,
   AccountScheduleAssignment,
-} from './account-schedule';
-export { getAccountScheduleProjection, getAccountActiveAssignments } from './account-schedule';
+} from './account-schedule-view';
+export { getAccountScheduleProjection, getAccountActiveAssignments } from './account-schedule-view';
 
 // =================================================================
-// demand-board — DEMAND_BOARD_PROJECTION
+// demand-board-view — DEMAND_BOARD_PROJECTION
 // =================================================================
 export {
   applyDemandProposed,
@@ -145,12 +145,12 @@ export {
   applyDemandAssignmentCancelled,
   applyDemandProposalCancelled,
   applyDemandAssignRejected,
-} from './demand-board';
+} from './demand-board-view';
 export {
   getDemandBoardItem,
   getOpenDemandBoardItems,
   getDemandBoardItemsByStatus,
-} from './demand-board';
+} from './demand-board-view';
 
 // =================================================================
 // account-skill-view — ACCOUNT_SKILL_VIEW [#12][#13] STD ≤10s
@@ -195,12 +195,12 @@ export type {
 } from './semantic-governance-view';
 
 // =================================================================
-// workspace-scope-guard — WORKSPACE_SCOPE_READ_MODEL [#A9] CRITICAL ≤500ms
+// workspace-scope-guard-view — WORKSPACE_SCOPE_READ_MODEL [#A9] CRITICAL ≤500ms
 // =================================================================
-export { getScopeGuardView, queryWorkspaceAccess } from './workspace-scope-guard';
-export { initScopeGuardView, applyGrantEvent } from './workspace-scope-guard';
-export { buildAuthoritySnapshot } from './workspace-scope-guard';
-export type { WorkspaceScopeGuardView, WorkspaceScopeGrantEntry } from './workspace-scope-guard';
+export { getScopeGuardView, queryWorkspaceAccess } from './workspace-scope-guard-view';
+export { initScopeGuardView, applyGrantEvent } from './workspace-scope-guard-view';
+export { buildAuthoritySnapshot } from './workspace-scope-guard-view';
+export type { WorkspaceScopeGuardView, WorkspaceScopeGrantEntry } from './workspace-scope-guard-view';
 
 // =================================================================
 // workspace-view — WORKSPACE_PROJECTION_VIEW
@@ -210,11 +210,11 @@ export { projectWorkspaceSnapshot, applyCapabilityUpdate } from './workspace-vie
 export type { WorkspaceViewRecord } from './workspace-view';
 
 // =================================================================
-// acl-projection — ACL_PROJECTION [D31] CRITICAL ≤500ms
+// acl-projection-view — ACL_PROJECTION [D31] CRITICAL ≤500ms
 // =================================================================
-export { applyAclPermissionChanged, applyAclPermissionRevoked } from './acl-projection';
-export type { AclProjectionEntry, AclPermission } from './acl-projection';
-export { getAclProjectionEntry, hasAclPermission } from './acl-projection';
+export { applyAclPermissionChanged, applyAclPermissionRevoked } from './acl-projection-view';
+export type { AclProjectionEntry, AclPermission } from './acl-projection-view';
+export { getAclProjectionEntry, hasAclPermission } from './acl-projection-view';
 
 // =================================================================
 // tasks-view — TASKS_VIEW [D27-Order] STD ≤10s
@@ -231,11 +231,11 @@ export type { WorkspaceGraphView, GraphNode, GraphEdge } from './workspace-graph
 export { getWorkspaceGraphView, getWorkspaceGraphNodes, getWorkspaceGraphEdges } from './workspace-graph-view';
 
 // =================================================================
-// finance-staging-pool — FINANCE_STAGING_POOL [#A20] STD ≤10s
+// finance-staging-pool-view — FINANCE_STAGING_POOL [#A20] STD ≤10s
 // =================================================================
-export { applyTaskAcceptedToPool, applyFinanceStagingLocked, applyFinanceStagingRemoved } from './finance-staging-pool';
-export type { FinanceStagingEntry, FinanceStagingStatus } from './finance-staging-pool';
-export { getFinanceStagingPool, getFinanceStagingByStatus, getPendingFinanceStagingItems } from './finance-staging-pool';
+export { applyTaskAcceptedToPool, applyFinanceStagingLocked, applyFinanceStagingRemoved } from './finance-staging-pool-view';
+export type { FinanceStagingEntry, FinanceStagingStatus } from './finance-staging-pool-view';
+export { getFinanceStagingPool, getFinanceStagingByStatus, getPendingFinanceStagingItems } from './finance-staging-pool-view';
 
 // =================================================================
 // task-finance-label-view — TASK_FINANCE_LABEL_VIEW [#A22] STD ≤10s

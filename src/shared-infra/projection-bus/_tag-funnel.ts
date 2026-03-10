@@ -14,7 +14,7 @@ import {
 
 import { createVersionStamp } from './_funnel.shared';
 import { upsertProjectionVersion } from './_registry';
-import { applyTagCreated, applyTagDeleted, applyTagDeprecated, applyTagUpdated } from './tag-snapshot';
+import { applyTagCreated, applyTagDeleted, applyTagDeprecated, applyTagUpdated } from './tag-snapshot-view';
 
 export function registerTagFunnel(): () => void {
   const unsubscribers: Array<() => void> = [];

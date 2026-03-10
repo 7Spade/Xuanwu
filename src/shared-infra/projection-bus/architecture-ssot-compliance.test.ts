@@ -15,7 +15,7 @@ const FEATURES_ROOT = path.join(SRC_ROOT, 'features');
 const PROJECTION_BUS_ROOT = path.join(SRC_ROOT, 'shared-infra', 'projection-bus');
 
 const APPEND_ONLY_S2_ALLOWLIST = new Set([
-  'account-audit/_projector.ts',
+  'account-audit-view/_projector.ts',
   'global-audit-view/_projector.ts',
   '_funnel.shared.ts',
 ]);
