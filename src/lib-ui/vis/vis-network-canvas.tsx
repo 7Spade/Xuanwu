@@ -1,19 +1,17 @@
 /**
  * Module: vis-network-canvas
- * Purpose: Provide a React wrapper around vis-network for graph visualization.
+ * Purpose: React wrapper around vis-network for graph visualization.
  * Responsibilities: mount/unmount Network instance against a div ref, own vis-data
  *   DataSet lifecycle for incremental updates OR accept pre-created DataSets from
  *   VisDataAdapter for the Firebase real-time subscription path [D28].
- * Constraints: deterministic logic, respect module boundaries; browser-only via useEffect.
- *   Internal DataSet creation (managed mode) keeps feature slices from importing
- *   vis-data directly [D24/D28].
+ * Constraints: browser-only via useEffect; feature slices must not import vis-* directly [D24/D28].
  *
  * Two rendering modes:
- *   Managed mode — pass `nodes` + `edges` arrays; component creates and owns DataSets.
+ *   Managed mode  — pass `nodes` + `edges` arrays; component creates and owns DataSets.
  *     Use for Firestore one-shot queries (e.g. semantic-dictionary panel).
- *   Adapter mode — pass `nodesDataSet` + `edgesDataSet` from VisDataAdapter [D28].
- *     Firebase snapshot subscription calls adapter.applyGraphSnapshot() → writes to
- *     those DataSets → vis-network re-renders reactively. No internal DataSets created.
+ *   Adapter mode  — pass `nodesDataSet` + `edgesDataSet` from VisDataAdapter [D28].
+ *     Firebase snapshot → adapter.applyGraphSnapshot() → DataSet writes →
+ *     vis-network re-renders reactively (DataSet subscription).
  *     Use for real-time Firebase graph views (e.g. workspace-graph-view projection).
  */
 "use client"
@@ -22,20 +20,9 @@ import { useEffect, useRef } from "react"
 import type { Data, DataSet, Edge, Network, Node, Options } from "vis-network"
 import "vis-network/styles/vis-network.css"
 
-/**
- * Minimal DataSet interface structurally compatible with:
- *  - vis-data's DataSet<T>   (the actual runtime object)
- *  - VisDataAdapter's VisDataSet<T>  (the minimal interface in shared-infra)
- *
- * Used so VisNetworkCanvas can accept pre-created DataSets from VisDataAdapter
- * without importing vis-data or shared-infra types directly. [D24/D28]
- */
-export interface VisCompatibleDataSet {
-  add(data: unknown): unknown
-  update(data: unknown): unknown
-  remove(id: unknown): unknown
-  clear(): void
-}
+import type { VisCompatibleDataSet } from "./vis-types"
+
+export type { VisCompatibleDataSet } from "./vis-types"
 
 export interface VisNetworkCanvasProps {
   /**
@@ -50,8 +37,8 @@ export interface VisNetworkCanvasProps {
    * → vis-network reacts automatically (reactive DataSet subscription).
    * When provided, `nodes`/`edges` array props are ignored.
    */
-  nodesDataSet?: VisCompatibleDataSet
-  edgesDataSet?: VisCompatibleDataSet
+  nodesDataSet?: VisCompatibleDataSet<Node>
+  edgesDataSet?: VisCompatibleDataSet<Edge>
   options?: Options
   onReady?: (network: Network) => void
   className?: string
@@ -71,6 +58,7 @@ export function VisNetworkCanvas({
   // Used in managed mode only; null in adapter mode.
   const nodesInternalRef = useRef<DataSet<Node> | null>(null)
   const edgesInternalRef = useRef<DataSet<Edge> | null>(null)
+  const isAdapterModeRef = useRef(false)
   // Always-current mirrors for managed mode — prevent stale closure snapshots
   // in the async init() when props change before the import promise resolves.
   const nodesRef = useRef<Node[]>(nodes ?? [])
@@ -89,9 +77,9 @@ export function VisNetworkCanvas({
   useEffect(() => {
     if (!containerRef.current) return
 
-    // Mode is fixed at mount time.
-    const isAdapterMode =
-      nodesDataSet !== undefined && edgesDataSet !== undefined
+    // Mode is fixed at mount time; read from props directly (not stale ref needed here).
+    const adapterMode = nodesDataSet !== undefined && edgesDataSet !== undefined
+    isAdapterModeRef.current = adapterMode
 
     let network: Network | null = null
     let resizeObserver: ResizeObserver | null = null
@@ -99,17 +87,21 @@ export function VisNetworkCanvas({
     async function init() {
       let data: Data
 
-      if (isAdapterMode) {
+      if (adapterMode) {
         // Adapter mode [D28]: DataSets are owned and written by VisDataAdapter.
         // Firebase snapshot → adapter.applyGraphSnapshot() → DataSet.clear()+add()
         // → vis-network detects DataSet mutation and re-renders automatically.
-        // No vis-data import needed here; the DataSet objects are injected by the caller.
+        // VisCompatibleDataSet<T> is structurally compatible with vis-network's
+        // DataInterface<T> at runtime (the underlying objects are vis-data DataSets
+        // created via VisDataAdapterOptions factory injection). The double-cast bridges
+        // the structural difference between the minimal local interface and vis-network's
+        // full DataSet type — safe because the runtime object IS a vis-data DataSet.
         data = {
           nodes: nodesDataSet as unknown as Data["nodes"],
           edges: edgesDataSet as unknown as Data["edges"],
         }
       } else {
-        // Managed mode: dynamically import vis-data here so SSR never evaluates it.
+        // Managed mode: dynamically import vis-data so SSR never evaluates it.
         const { DataSet } = await import("vis-data")
         const nodesDs = new DataSet<Node>(nodesRef.current)
         const edgesDs = new DataSet<Edge>(edgesRef.current)
@@ -123,7 +115,6 @@ export function VisNetworkCanvas({
       networkRef.current = network
       onReady?.(network)
 
-      // ResizeObserver triggers redraw when the container is resized (e.g. sidebar collapse)
       if (containerRef.current && typeof ResizeObserver !== "undefined") {
         resizeObserver = new ResizeObserver(() => networkRef.current?.redraw())
         resizeObserver.observe(containerRef.current)
@@ -154,7 +145,7 @@ export function VisNetworkCanvas({
     }
     ds.update(nodes)
     const incomingIds = new Set<string | number>(
-      nodes.flatMap(n => (n.id !== undefined ? [n.id] : [])),
+      nodes.filter(n => n.id !== undefined).map(n => n.id!),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)
@@ -170,7 +161,7 @@ export function VisNetworkCanvas({
     }
     ds.update(edges)
     const incomingIds = new Set<string | number>(
-      edges.flatMap(e => (e.id !== undefined ? [e.id as string | number] : [])),
+      edges.filter(e => e.id !== undefined).map(e => e.id as string | number),
     )
     const stale = ds.getIds().filter(id => !incomingIds.has(id))
     if (stale.length > 0) ds.remove(stale)

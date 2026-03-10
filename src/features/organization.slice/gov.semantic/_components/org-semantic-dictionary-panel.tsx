@@ -45,6 +45,9 @@ import {
 import { getOrgSkillTypes, getOrgTaskTypes } from '../_queries';
 import type { OrgSkillTypeEntry, OrgTaskTypeEntry } from '../_types';
 
+/** vis-network doubleClick event parameters (typed from network.on callback shape). */
+type DoubleClickParams = { nodes: IdType[] }
+
 type SkillRequirementDraft = {
   tagSlug: string;
   minimumTier: SkillRequirement['minimumTier'];
@@ -214,7 +217,7 @@ export function OrgSemanticDictionaryPanel() {
   // Stable mutable ref for the doubleClick handler — always holds the latest task/skill state
   // without re-attaching the event listener on every data change.
   // Initialised to a safe no-op so any doubleClick event before the first useEffect run is silent.
-  const doubleClickHandlerRef = useRef<(params: { nodes: IdType[] }) => void>(() => {});
+  const doubleClickHandlerRef = useRef<(params: DoubleClickParams) => void>(() => {});
   // Ref shadow of graphData initialised with safe defaults; synced in useEffect below.
   // Allows onReady (called async) to read current graph data without a stale closure.
   const graphDataRef = useRef<{ nodes: Node[]; edges: Edge[]; unresolvedCount: number }>({
@@ -229,7 +232,7 @@ export function OrgSemanticDictionaryPanel() {
 
   // Keep doubleClick handler current — updates without re-attaching to the network
   useEffect(() => {
-    doubleClickHandlerRef.current = (params: { nodes: IdType[] }) => {
+    doubleClickHandlerRef.current = (params: DoubleClickParams) => {
       if (params.nodes.length !== 1) return;
       const nodeId = String(params.nodes[0]);
       if (nodeId.startsWith('task:')) {
@@ -249,7 +252,7 @@ export function OrgSemanticDictionaryPanel() {
   const handleNetworkReady = useCallback((network: Network) => {
     graphNetworkRef.current = network;
     // Attach via stable ref — no re-subscription needed when data changes
-    network.on('doubleClick', (params: { nodes: IdType[] }) => doubleClickHandlerRef.current(params));
+    network.on('doubleClick', (params: DoubleClickParams) => doubleClickHandlerRef.current(params));
     // Initial fit after the network has rendered its first frame
     requestAnimationFrame(() => {
       if (!graphNetworkRef.current) return;
