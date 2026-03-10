@@ -25,8 +25,8 @@ import { getOrgEligibleMembersWithTier } from './org-eligible-member-view';
 import { getAllScheduleCalendarDays, getScheduleCalendarDay } from './schedule-calendar-view';
 import { getAllScheduleTimelines, getScheduleTimelineForMember } from './schedule-timeline-view';
 import { getSemanticGovernanceView } from './semantic-governance-view';
-import { getDisplayWalletBalance } from './wallet-balance';
-import { queryWorkspaceAccess } from './workspace-scope-guard';
+import { getDisplayWalletBalance } from './wallet-balance-view';
+import { queryWorkspaceAccess } from './workspace-scope-guard-view';
 
 /**
  * Register all v9 QUERY_ROUTES with their projection handlers.

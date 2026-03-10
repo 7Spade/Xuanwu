@@ -10,14 +10,14 @@ import { applySkillXpAdded, applySkillXpDeducted } from '@/features/skill-xp.sli
 
 import { createVersionStamp } from './_funnel.shared';
 import { upsertProjectionVersion } from './_registry';
-import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule';
+import { applyScheduleAssigned, applyScheduleCompleted } from './account-schedule-view';
 import {
   applyDemandAssigned,
   applyDemandAssignmentCancelled,
   applyDemandAssignRejected,
   applyDemandCompleted,
   applyDemandProposalCancelled,
-} from './demand-board';
+} from './demand-board-view';
 import {
   applyOrgMemberSkillXp,
   initOrgMemberEntry,

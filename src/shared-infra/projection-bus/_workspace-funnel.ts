@@ -9,10 +9,10 @@ import type { WorkspaceEventBus } from '@/features/workspace.slice';
 
 import { createVersionStamp } from './_funnel.shared';
 import { upsertProjectionVersion } from './_registry';
-import { appendAuditEntry } from './account-audit';
+import { appendAuditEntry } from './account-audit-view';
 import {
   applyDemandProposed,
-} from './demand-board';
+} from './demand-board-view';
 
 export function registerWorkspaceFunnel(bus: WorkspaceEventBus): () => void {
   const unsubscribers: Array<() => void> = [];
