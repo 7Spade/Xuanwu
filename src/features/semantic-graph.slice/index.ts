@@ -1,27 +1,29 @@
 /**
- * semantic-graph.slice ??Public API
+ * semantic-graph.slice — Public API
  *
- * VS8 Semantic Graph: The Brain ??manages tag taxonomy, temporal conflict
+ * VS8 Semantic Graph: The Brain — manages tag taxonomy, temporal conflict
  * detection for scheduling, and semantic indexing for cross-domain queries.
  *
  * Per 00-logic-overview.md (VS8):
- *   ??Everything as a Tag: all domain concepts modelled as semantic tags,
+ *   • Everything as a Tag: all domain concepts modelled as semantic tags,
  *      governed by VS8 (Semantic Graph).
  *
  * Sub-modules:
- *   _types      ??Domain types (temporal conflict, taxonomy, semantic index)
- *   _aggregate  ??Temporal conflict detection + taxonomy validation
- *   _services   ??Semantic index management (to be implemented)
- *   _queries    ??[D4] QGWAY_SEARCH read-out port
+ *   _types      — Domain types (temporal conflict, taxonomy, semantic index)
+ *   _bus        — In-process tag event bus (onTagEvent / publishTagEvent)
+ *   _aggregate  — Temporal conflict detection + taxonomy validation
+ *   _services   — Semantic index management
+ *   _queries    — [D4] QGWAY_SEARCH read-out port
+ *   _actions    — All tag mutations (server actions) [D3]
+ *   _cost-classifier — Semantic cost / parser line-item classification
  *
  * Architecture rules:
  *   [D3]  All entity changes via _actions.ts only.
  *   [D7]  Unique public API: only selectors and Commands are exposed.
- *         Internal modules (nodes, edges, workflows, utils) are HIDDEN.
- *   [D8]  Tag logic resides HERE, not in shared-kernel (shared-kernel holds contracts only).
+ *   [D8]  Tag logic resides HERE, not in shared-kernel.
  *   [D19] Core contracts defined in shared-kernel/semantic-primitives.
  *   [D21] New tag categories only defined via VS8.
- *   [D26] semantic-graph.slice owns _actions.ts / _services.ts; does not parasitize shared-kernel.
+ *   [D26] semantic-graph.slice owns _actions.ts / _services.ts.
  *
  * External consumers import from '@/features/semantic-graph.slice'.
  */
@@ -40,37 +42,14 @@ export type {
   TaxonomyErrorCode,
   SemanticIndexEntry,
   SemanticIndexStats,
-} from './_types';
-
-// Re-export shared primitives for consumers who import from this slice
-export type {
+  // Re-export shared primitives for consumers who import from this slice
   TaxonomyDimension,
   TaxonomyNode,
   SemanticSearchHit,
 } from './_types';
 
-// Centralized types exposed for consumers (read-only query types only) [D7]
-export type {
-  EligibleTagsQuery,
-  EligibleTagResult,
-  SemanticEdge,
-  SemanticRelationType,
-  TagLifecycleState,
-  TagLifecycleEvent,
-  TagLifecycleEventType,
-  TagLifecycleRecord,
-  StaleTagWarning,
-  TagEntity,
-  // Neural Network types [D21-3 D21-4 D21-6]
-  SemanticDistanceEntry,
-  AffectedNode,
-  CausalityReason,
-  DownstreamEvent,
-  CausalityChain,
-} from './core/types';
-
 // =================================================================
-// Aggregate ??Temporal Conflict Detection + Taxonomy Validation
+// Aggregate — Temporal Conflict Detection + Taxonomy Validation
 // =================================================================
 export {
   detectTemporalConflicts,
@@ -86,17 +65,10 @@ export {
   upsertTagWithConflictCheck,
   assignSemanticTag,
   removeTag,
-  // Semantic edge commands [D3]
-  addSemanticEdge,
-  removeSemanticEdge,
-  // Tag lifecycle commands [T1]
-  registerTagLifecycle,
-  activateTagLifecycle,
-  transitionTagLifecycle,
 } from './_actions';
 
 // =================================================================
-// Services ??Semantic Index (query interface for global-search)
+// Services — Semantic Index (query interface for global-search)
 // =================================================================
 export {
   indexEntity,
@@ -108,49 +80,23 @@ export {
 export { SEARCH_DOMAINS, TAXONOMY_DIMENSIONS } from './_semantic-authority';
 
 // =================================================================
-// Read Queries ??[D4] QGWAY_SEARCH outbound port (VS8 Global Search)
-// All reads go through _queries.ts; internal stores are HIDDEN [D7].
+// Tag Event Bus — in-process pub/sub for tag lifecycle events [T1]
+// [T1] New slices MUST subscribe via onTagEvent(); do NOT maintain own tag data.
 // =================================================================
-export {
-  getEligibleTags,
-  satisfiesSemanticRequirement,
-  buildEligibilityMatrix,
-  getIsAEdges,
-  getRequiresEdges,
-  queryStaleTagWarnings,
-  // Neural Network queries [D21-3 D21-4]
-  computeSemanticDistance,
-  computeSemanticDistanceMatrix,
-  findIsolatedNodes,
-  // Causality Tracer queries [D21-6]
-  traceAffectedNodes,
-  rankAffectedNodes,
-  buildDownstreamEvents,
-  buildCausalityChain,
-} from './_queries';
+export { onTagEvent, publishTagEvent } from './_bus';
+export type {
+  TagLifecycleEventPayloadMap,
+  TagLifecycleEventKey,
+  TagCreatedPayload,
+  TagUpdatedPayload,
+  TagDeprecatedPayload,
+  TagDeletedPayload,
+  CentralizedTagEntry,
+  CentralizedTagDeleteRule,
+} from '@/shared-kernel';
 
 // =================================================================
-// Tag Entity Node Factory ??centralized-nodes [D21]
-// Builds TE1~TE6 nodes; exposed so composition-root can seed nodes.
-// =================================================================
-export { buildTagEntity } from './centralized-nodes/tag-entity.factory';
-export type { TagEntityFactoryInput } from './centralized-nodes/tag-entity.factory';
-
-// =================================================================
-// Embedding Port ??centralized-embeddings [D24][D26]
-// IEmbeddingPort is exposed so the composition root can inject an adapter.
-// buildTagEmbedding and batch variant are exposed for projection integration.
-// =================================================================
-export type { IEmbeddingPort } from './centralized-embeddings/embedding-port';
-export {
-  injectEmbeddingPort,
-  NOOP_EMBEDDING_PORT,
-  buildTagEmbedding,
-  buildTagEmbeddingsBatch,
-} from './centralized-embeddings/embedding-port';
-
-// =================================================================
-// Cost Item Classification ??Layer-2 Semantic Classification [D8][D21]
+// Cost Item Classification — Layer-2 Semantic Classification [D8][D21]
 // Pure keyword-based classifier; no SDK imports (classifies during parse phase).
 // =================================================================
 export {
@@ -182,54 +128,3 @@ export type {
   TagSnapshotColorToken,
   TagSnapshotIconToken,
 } from './projections/tag-snapshot.slice';
-
-// =================================================================
-// CTA Operations ??Centralized Tag Aggregate [D3][D8]
-// Firestore-backed CRUD for tagDictionary; D8-compliant (not in shared-kernel).
-// =================================================================
-export {
-  createTag,
-  updateTag,
-  deprecateTag,
-  deleteTag,
-  getTag,
-} from './centralized-tag/_actions';
-export { onTagEvent, publishTagEvent } from './centralized-tag';
-export type {
-  CentralizedTagEntry,
-  CentralizedTagDeleteRule,
-  TagDeleteRule,
-  TagLifecycleEventPayloadMap,
-  TagLifecycleEventKey,
-  TagCreatedPayload,
-  TagUpdatedPayload,
-  TagDeprecatedPayload,
-  TagDeletedPayload,
-} from './centralized-tag';
-
-// =================================================================
-// L5 Blood-Brain Barrier ??InvariantGuard [D21-H D21-K]
-// Supreme arbiter of semantic-graph validity.  Call validateEdgeProposal()
-// BEFORE addEdge() to enforce all graph invariants at the BBB layer.
-// External slices must never bypass this guard to write edges directly.
-// =================================================================
-export { validateEdgeProposal } from './centralized-guards/invariant-guard';
-export type {
-  EdgeProposal,
-  SemanticGuardDecision,
-  SemanticGuardRejectionCode,
-  SemanticGuardResult,
-} from './centralized-guards/invariant-guard';
-
-// =================================================================
-// L8 Global Consensus Engine ??ConsensusEngine [D21-I D21-K]
-// Validates tag governance proposals for logical consistency before
-// forwarding to the L5 BBB InvariantGuard.  Call validateConsensus()
-// BEFORE validateEdgeProposal() in the proposal-stream pipeline.
-// =================================================================
-export { validateConsensus } from './centralized-guards/consensus-engine';
-export type {
-  ConsensusDecision,
-  ConsensusRejectionCode,
-  ConsensusResult,
-} from './centralized-guards/consensus-engine';
