@@ -2,9 +2,9 @@
 // GLOBAL_AUDIT_VIEW ??cross-slice governance audit projection
 // Feed path: AUDIT_COLLECTOR ??IER BACKGROUND_LANE ??FUNNEL ??STANDARD_PROJ_LANE ??here
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDoc, serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDoc, serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { EventEnvelope } from '@/shared-kernel';
 
 export interface GlobalAuditRecord {

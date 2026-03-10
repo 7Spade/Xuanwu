@@ -1,4 +1,4 @@
-import { addWorkspaceFileVersion as addVersionFacade } from '@/shared-infra/frontend-firebase/firestore/firestore.facade'
+import { addWorkspaceFileVersion as addVersionFacade } from '@/shared-infra/firebase-client/firestore/firestore.facade'
 import { commandFailureFrom, commandSuccess, type CommandResult } from '@/shared-kernel'
 
 import type { WorkspaceFileVersion } from '../_types'

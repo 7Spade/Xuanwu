@@ -9,7 +9,7 @@ import {
   createIssue as createIssueFacade,
   addCommentToIssue as addCommentToIssueFacade,
   resolveIssue as resolveIssueFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 import {
   type CommandResult,
   commandSuccess,

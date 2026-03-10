@@ -21,7 +21,7 @@
  *   by _actions.ts (application coordinator), NOT the aggregate (Invariant #3, E1).
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import { appendXpLedgerEntry } from './_ledger';
 

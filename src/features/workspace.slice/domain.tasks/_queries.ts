@@ -11,7 +11,7 @@ import {
   getWorkspaceTask as getWorkspaceTaskFacade,
   getTaskBySourceIntentId as getTaskBySourceIntentIdFacade,
   getTasksBySourceIntentId as getTasksBySourceIntentIdFacade,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+} from "@/shared-infra/firebase-client/firestore/firestore.facade";
 
 import type { WorkspaceTask } from "./_types";
 

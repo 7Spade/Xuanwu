@@ -68,7 +68,7 @@ flowchart LR
   L3 --> L1[L1 SK_PORTS]
   L5 --> L1
   L6 --> L1
-  L1 --> L7A[L7-A frontend-firebase]
+  L1 --> L7A[L7-A firebase-client]
   L2 --> L7B[L7-B functions/admin]
   L7A --> L8[L8 Firebase Runtime]
   L7B --> L8

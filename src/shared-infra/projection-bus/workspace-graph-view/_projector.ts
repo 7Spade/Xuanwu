@@ -24,11 +24,11 @@
  * [D28] Output format consumed by VisDataAdapter via vis-data DataSet<>.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   serverTimestamp,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------

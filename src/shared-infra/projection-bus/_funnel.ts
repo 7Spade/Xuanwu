@@ -78,7 +78,7 @@ export async function replayWorkspaceProjections(
   workspaceId: string
 ): Promise<{ replayed: number }> {
   const { getDomainEvents } = await import(
-    '@/shared-infra/frontend-firebase/firestore/repositories/workspace-core.event-store.repository'
+    '@/shared-infra/firebase-client/firestore/repositories/workspace-core.event-store.repository'
   );
   const events = await getDomainEvents(workspaceId);
   if (events.length > 0) {

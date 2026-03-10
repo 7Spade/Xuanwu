@@ -6,15 +6,15 @@
  * `shared/app-providers/account-provider.queries.ts`.
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   onSnapshot,
   orderBy,
   type Unsubscribe,
   query,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { snapshotToRecord } from '@/shared-infra/firebase-client/firestore/firestore.utils';
 
 import type { WorkspaceIssue } from '../domain.issues/_types';
 import type { WorkspaceTask } from '../domain.tasks/_types';

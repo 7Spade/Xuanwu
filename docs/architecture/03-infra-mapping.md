@@ -38,8 +38,8 @@ Auxiliary slices（非 VS 編號）：
 | `L4` | IER + relay + DLQ | `src/shared-infra/{event-router,outbox-relay,dlq-manager}/` |
 | `L5` | projection bus | `src/shared-infra/projection-bus/` |
 | `L6` | query gateway | `src/shared-infra/gateway-query/` |
-| `L7-A` | firebase-client adapters | `src/shared-infra/frontend-firebase/` |
-| `L7-B` | functions/admin adapters | `src/shared-infra/backend-firebase/functions/` |
+| `L7-A` | firebase-client adapters | `src/shared-infra/firebase-client/` |
+| `L7-B` | functions/admin adapters | `src/shared-infra/firebase-admin/functions/` |
 | `L8` | firebase runtime | external platform |
 | `L9` | observability | `src/shared-infra/observability/` |
 | `L10` | AI runtime | `src/shared-infra/ai-orchestration/` |
@@ -52,8 +52,8 @@ Auxiliary slices（非 VS 編號）：
 - `src/shared-infra/event-router/`
 - `src/shared-infra/projection-bus/`
 - `src/shared-infra/gateway-query/`
-- `src/shared-infra/frontend-firebase/`
-- `src/shared-infra/backend-firebase/{functions,dataconnect}/`
+- `src/shared-infra/firebase-client/`
+- `src/shared-infra/firebase-admin/{functions,dataconnect}/`
 - `src/shared-infra/{observability,ai-orchestration}/`
 
 ## L4/L5/L6 重點清單

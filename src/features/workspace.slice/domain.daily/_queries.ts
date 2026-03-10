@@ -6,15 +6,15 @@
  * Per 00-logic-overview.md [R4]: read queries must NOT live in _actions.ts.
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { getDailyLogs as getDailyLogsFacade } from "@/shared-infra/frontend-firebase/firestore/firestore.facade";
+import { db } from '@/shared-infra/firebase-client';
+import { getDailyLogs as getDailyLogsFacade } from "@/shared-infra/firebase-client/firestore/firestore.facade";
 import {
   collection,
   onSnapshot,
   orderBy,
   query,
   type Unsubscribe,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.read.adapter";
+} from "@/shared-infra/firebase-client/firestore/firestore.read.adapter";
 
 import type { DailyLog, DailyLogComment } from "./_types";
 

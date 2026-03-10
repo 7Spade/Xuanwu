@@ -22,7 +22,7 @@
 
 
 import { getDlqLevel, type DlqEntry } from '@/shared-infra/dlq-manager';
-import { db } from '@/shared-infra/frontend-firebase';
+import { db } from '@/shared-infra/firebase-client';
 import {
   collection,
   query,
@@ -33,8 +33,8 @@ import {
   type QuerySnapshot,
   type DocumentData,
   type DocumentChange,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { updateDoc, setDoc, type serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { updateDoc, setDoc, type serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
 import type { OutboxStatus as SharedOutboxStatus } from '@/shared-kernel';
 

@@ -9,7 +9,7 @@ import {
   setAccountNotificationRead,
   subscribeAccountNotifications,
   trackAnalyticsEvent,
-} from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client';
 import type { Notification } from '@/shared-kernel';
 
 type Unsubscribe = () => void;

@@ -8,7 +8,7 @@
 import type { DailyLog } from '@/shared-kernel'
 import type { Workspace } from '@/shared-kernel'
 import type { AuditLog } from '@/shared-kernel'
-import { db } from '@/shared-infra/frontend-firebase'
+import { db } from '@/shared-infra/firebase-client'
 import {
   collection,
   limit,
@@ -17,8 +17,8 @@ import {
   query,
   type Unsubscribe,
   where,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
-import { snapshotToRecord } from '@/shared-infra/frontend-firebase/firestore/firestore.utils'
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
+import { snapshotToRecord } from '@/shared-infra/firebase-client/firestore/firestore.utils'
 import type { ScheduleItem } from '@/shared-kernel'
 import type { PartnerInvite } from '@/shared-kernel'
 

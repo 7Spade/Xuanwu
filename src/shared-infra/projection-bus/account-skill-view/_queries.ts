@@ -10,7 +10,7 @@
  * [#12] getTier is derived from xp; tier is never stored.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { AccountSkillEntry, AccountSkillView } from './_projector';
 

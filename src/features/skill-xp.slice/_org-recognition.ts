@@ -27,11 +27,11 @@
  * Stored at: orgSkillRecognition/{orgId}/members/{accountId}/skills/{skillId}
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   setDocument,
   updateDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { findSkill } from '@/shared-kernel';
 
 import { enqueueSkillOutboxEvent } from './skill-outbox';

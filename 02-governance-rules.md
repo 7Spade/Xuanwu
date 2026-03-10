@@ -171,7 +171,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 - `SECURITY_BLOCK` DLQ → 禁止自動 Replay，必須人工審查
 - B-track 禁止回呼 A-track → 只能透過 Domain Event 溝通
 - Feature slice 禁止直接 `import firebase/*` [D24]
-- **Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin`**；`firebase-admin` 一律透過 `src/shared-infra/backend-firebase/functions`（Cloud Functions）[D25]
+- **Next.js Server Components / Server Actions / Edge Functions 禁止直接 `import firebase-admin`**；`firebase-admin` 一律透過 `src/shared-infra/firebase-admin/functions`（Cloud Functions）[D25]
 - Feature slice 禁止直接 `import @/shared-infra/*`；僅可依賴 `SK_PORTS` / Query Gateway / slice public API
 - Notification Hub 禁止直接依賴 L7 具體 Adapter；必須經 Port 或 Gateway 公開介面
 - Feature slice 禁止自建搜尋邏輯，必須透過 Global Search [D26 #A12]
@@ -333,7 +333,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D2` | 跨切片引用：`import from '@/features/{slice}/index'` only；`_*.ts` 為私有 |
 | `D3` | 所有 mutation：`src/features/{slice}/_actions.ts` only |
 | `D4` | 所有 read：`src/features/{slice}/_queries.ts` only |
-| `D5` | `src/app/` 與 UI 元件禁止 import `src/shared-infra/frontend-firebase/{firestore\|realtime-database\|analytics}` |
+| `D5` | `src/app/` 與 UI 元件禁止 import `src/shared-infra/firebase-client/{firestore\|realtime-database\|analytics}` |
 | `D6` | `"use client"` 只在 `_components/` 或 `_hooks/` 葉節點；layout/page server components 禁用 |
 | `D7` | 跨切片：`import from '@/features/{other-slice}/index'`；禁止 `_private` 引用 |
 | `D8` | `shared-kernel/*` 禁止 async functions、Firestore calls、side effects |
@@ -467,10 +467,10 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 | `D24-D` | FORBIDDEN | Client 端禁止傳遞 Account/Workspace 等 rich entity 到 Server Function |
 | `D25` | MUST | 新增 Firebase 前端能力必須在 FIREBASE_ACL 新增 Adapter |
 | `D25` | MUST | 入口涉及受保護資料必須先完成 App Check 驗證 [E7] |
-| `D25` | MUST | Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽必須走 `src/shared-infra/backend-firebase/functions` |
-| `D25` | MUST | 需要受治理的 GraphQL 資料契約必須走 `src/shared-infra/backend-firebase/dataconnect` |
-| `D25` | MUST | `firebase-admin` SDK 只在 `src/shared-infra/backend-firebase/functions`（Cloud Functions）內初始化與呼叫；firebase-admin 一律透過 functions |
-| `D25` | MUST | `firebase-admin/app-check`（服務端 App Check token 驗簽）只在 `AdminAppCheckAdapter`（`src/shared-infra/backend-firebase/functions/`）中呼叫 [E7 → 見 §E7 章節] |
+| `D25` | MUST | Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽必須走 `src/shared-infra/firebase-admin/functions` |
+| `D25` | MUST | 需要受治理的 GraphQL 資料契約必須走 `src/shared-infra/firebase-admin/dataconnect` |
+| `D25` | MUST | `firebase-admin` SDK 只在 `src/shared-infra/firebase-admin/functions`（Cloud Functions）內初始化與呼叫；firebase-admin 一律透過 functions |
+| `D25` | MUST | `firebase-admin/app-check`（服務端 App Check token 驗簽）只在 `AdminAppCheckAdapter`（`src/shared-infra/firebase-admin/functions/`）中呼叫 [E7 → 見 §E7 章節] |
 | `D25` | FORBIDDEN | 在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin` |
 
 ### D26：Cross-cutting Authority 守則
@@ -509,7 +509,7 @@ Mermaid 架構源碼與機器可解析格式（Canonical Mermaid Source）請見
 
 | 規則 | 類型 | 說明 |
 |------|------|------|
-| `D28` | MUST | vis-network / vis-timeline / vis-graph3d 必須從 `VisDataAdapter`（L7-A · `src/shared-infra/frontend-firebase/vis-data/`）提供的 `DataSet<>` 消費資料，不得直接訂閱 Firebase |
+| `D28` | MUST | vis-network / vis-timeline / vis-graph3d 必須從 `VisDataAdapter`（L7-A · `src/shared-infra/firebase-client/vis-data/`）提供的 `DataSet<>` 消費資料，不得直接訂閱 Firebase |
 | `D28` | MUST | `VisDataAdapter` 為唯一 Firebase 訂閱點：訂閱 `tasks-view`、`workspace-graph-view`、`schedule-timeline-view`、`semantic-governance-view` 各一次，DataSet<> 更新後推播所有消費者 |
 | `D28` | MUST | 新增視覺化元件需消費 Projection 資料時，必須在 `VisDataAdapter` 新增對應 DataSet<>，不得在元件中建立獨立 Firebase 訂閱 |
 | `D28` | FORBIDDEN | vis-network / vis-timeline / vis-graph3d 禁止繞過 `VisDataAdapter` 直連 Firebase（避免 N 組件 × 1 訂閱造成費用倍增）|
@@ -595,8 +595,8 @@ L5 Projection Bus → Firebase L8（Snapshot 訂閱）
 | 規則 | 類型 | 說明 |
 |------|------|------|
 | `E7` | MUST | HTTP endpoint / Webhook / Callable Function 等外部入口涉及受保護資料或可變更狀態，必須先完成 App Check 驗證（含 token 續期與失效處理）；未通過不得進入 L2/L3 |
-| `E7` | MUST | Client 端 `AppCheckAdapter`（L7-A · `src/shared-infra/frontend-firebase/app-check/`）是唯一合法的 `firebase/app-check` 呼叫點 |
-| `E7` | MUST | 服務端驗證 App Check token 必須經 `AdminAppCheckAdapter`（L7-B · `src/shared-infra/backend-firebase/functions/`）；不得在 Next.js Server Components / Server Actions / Edge Functions 直接呼叫 `firebase-admin/app-check` |
+| `E7` | MUST | Client 端 `AppCheckAdapter`（L7-A · `src/shared-infra/firebase-client/app-check/`）是唯一合法的 `firebase/app-check` 呼叫點 |
+| `E7` | MUST | 服務端驗證 App Check token 必須經 `AdminAppCheckAdapter`（L7-B · `src/shared-infra/firebase-admin/functions/`）；不得在 Next.js Server Components / Server Actions / Edge Functions 直接呼叫 `firebase-admin/app-check` |
 | `E7` | FORBIDDEN | Domain Slice / Feature Slice 禁止繞過 App Check 驗證直接存取受保護資源 |
 | `E7` | FORBIDDEN | 禁止在 `AppCheckAdapter` / `AdminAppCheckAdapter` 以外的位置實作 `firebase/app-check` 或 `firebase-admin/app-check` 邏輯 |
 

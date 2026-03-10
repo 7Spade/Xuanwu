@@ -37,8 +37,8 @@
  *   After migration, this handler becomes the sole claims dispatcher as the invariant states.
  */
 
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { logDomainError } from '@/shared-infra/observability';
 import { assertSafeFirestoreDocId, type EventEnvelope } from '@/shared-kernel';
 

@@ -5,9 +5,9 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { collection, getDocs, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { OrgSkillTypeEntry, OrgTaskTypeEntry } from './_types';
 

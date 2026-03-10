@@ -8,9 +8,9 @@
  * Path: workspaces/{workspaceId}/parsingIntents/{intentId}
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { SUBCOLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { SUBCOLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { collection, query, orderBy, onSnapshot, type Unsubscribe } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { ParsingIntent } from './_types';
 

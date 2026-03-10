@@ -1,11 +1,11 @@
-import { db } from '@/shared-infra/frontend-firebase'
+import { db } from '@/shared-infra/firebase-client'
 import {
   collection,
   onSnapshot,
   orderBy,
   query,
   type Unsubscribe,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter'
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter'
 
 import type { WorkspaceFile } from '../_types'
 

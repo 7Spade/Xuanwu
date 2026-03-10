@@ -1,4 +1,4 @@
-import { uploadTaskAttachment as uploadTaskAttachmentFacade } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadTaskAttachment as uploadTaskAttachmentFacade } from '@/shared-infra/firebase-client/storage/storage.facade'
 
 export async function uploadTaskAttachment(
   workspaceId: string,

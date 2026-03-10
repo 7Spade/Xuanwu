@@ -1,4 +1,4 @@
-import { uploadDailyPhoto as uploadDailyPhotoFacade } from '@/shared-infra/frontend-firebase/storage/storage.facade'
+import { uploadDailyPhoto as uploadDailyPhotoFacade } from '@/shared-infra/firebase-client/storage/storage.facade'
 
 export async function uploadDailyPhoto(
   accountId: string,

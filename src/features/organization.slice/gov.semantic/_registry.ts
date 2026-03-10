@@ -5,12 +5,12 @@
  * Constraints: deterministic logic, respect module boundaries
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import {
   deleteDocument,
   setDocument,
   updateDocument,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+} from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import type { SkillRequirement } from '@/shared-kernel';
 
 import type {

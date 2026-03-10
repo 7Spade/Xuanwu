@@ -16,9 +16,9 @@
  *   policy record for auditability. Must NOT be regenerated here.
  */
 
-import { COLLECTIONS } from '@/shared-infra/frontend-firebase/firestore/collection-paths';
-import { getDocument, Timestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { COLLECTIONS } from '@/shared-infra/firebase-client/firestore/collection-paths';
+import { getDocument, Timestamp } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { addDocument, updateDocument, deleteDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   assertSafeFirestoreDocId,
   type CommandResult,

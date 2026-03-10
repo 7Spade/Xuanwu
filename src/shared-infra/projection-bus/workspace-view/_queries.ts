@@ -4,7 +4,7 @@
  * Read-side queries for the workspace projection view.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { WorkspaceViewRecord } from './_projector';
 

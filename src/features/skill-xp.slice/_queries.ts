@@ -16,9 +16,9 @@
  *   They do NOT read Account aggregate data directly; use projection views for that.
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { getDocs, collection, type QueryDocumentSnapshot } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 
 import type { OrgSkillRecognitionRecord } from './_org-recognition';
 import type { AccountSkillEntry } from './_projector';

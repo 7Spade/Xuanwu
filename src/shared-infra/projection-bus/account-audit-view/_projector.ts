@@ -23,10 +23,10 @@
  *   writes on replay.
  */
 
-import { db } from '@/shared-infra/frontend-firebase';
-import { doc, collection } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { serverTimestamp, setDoc } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { addDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { db } from '@/shared-infra/firebase-client';
+import { doc, collection } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { serverTimestamp, setDoc } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { addDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 
 export interface AuditProjectionEntry {
   id: string;

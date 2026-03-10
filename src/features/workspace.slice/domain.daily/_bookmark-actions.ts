@@ -8,7 +8,7 @@
 import {
   addBookmark,
   removeBookmark,
-} from "@/shared-infra/frontend-firebase/firestore/firestore.facade"
+} from "@/shared-infra/firebase-client/firestore/firestore.facade"
 
 /**
  * Toggles a bookmark for a given log entry.

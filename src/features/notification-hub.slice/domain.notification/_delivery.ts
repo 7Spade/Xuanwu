@@ -23,12 +23,12 @@
 import {
   createAccountNotification,
   trackAnalyticsEvent,
-} from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client';
 import {
   doc,
   getDoc,
-} from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { db } from '@/shared-infra/frontend-firebase';
+} from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { db } from '@/shared-infra/firebase-client';
 
 
 export interface NotificationDeliveryInput {

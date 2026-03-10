@@ -37,7 +37,7 @@ export const StalenessMs = {
 
 **定義二（Firebase Functions 側，獨立常量）**:
 ```typescript
-// src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
+// src/shared-infra/firebase-admin/functions/src/staleness-contract.ts
 export const TAG_MAX_STALENESS_MS = 30_000;
 export const PROJ_STALE_CRITICAL_MS = 500;
 export const PROJ_STALE_STANDARD_MS = 10_000;
@@ -58,7 +58,7 @@ export const PROJ_STALE_STANDARD_MS = 10_000;
 
 **選項 A（推薦）**: Firebase Functions 側改為從 shared-kernel 重新導出
 ```typescript
-// src/shared-infra/backend-firebase/functions/src/staleness-contract.ts
+// src/shared-infra/firebase-admin/functions/src/staleness-contract.ts
 // 從 shared-kernel 重新導出，消除重複
 export {
   StalenessMs,
@@ -71,7 +71,7 @@ export {
 
 ### 驗證步驟
 
-確保 `src/shared-infra/backend-firebase/functions/src/staleness-contract.ts`
+確保 `src/shared-infra/firebase-admin/functions/src/staleness-contract.ts`
 中不再有任何獨立的鮮度數值常量定義。
 
 ---

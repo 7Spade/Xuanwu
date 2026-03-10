@@ -66,7 +66,7 @@
 
 ## 9. Folder Placement Gate（新增檔案必答）
 - [ ] 此檔案是否「純函式/純型別/純常數」且無 I/O？若是，放在 `src/shared-kernel/*`（L1）。
-- [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/frontend-firebase/*`（L7 Adapter）。
+- [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/firebase-client/*`（L7 Adapter）。
 - [ ] 此檔案是否屬切片核心業務規則（aggregate/policy/invariant）？若是，放在 `src/features/{slice}.slice/*`（L3）。
 - [ ] 此檔案是否屬協調與管線層（L2/L4/L5/L6/L9）而非 L3 業務規則？
 - [ ] 此檔案是否為跨切片權威出口？若是，只能在 `global-search.slice` 或 `notification-hub.slice`。

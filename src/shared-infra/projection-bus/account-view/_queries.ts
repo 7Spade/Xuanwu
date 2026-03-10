@@ -4,7 +4,7 @@
  * Read-side queries for the account projection view.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
 import type { AuthoritySnapshot } from '@/shared-kernel';
 
 import type { AccountViewRecord } from './_projector';

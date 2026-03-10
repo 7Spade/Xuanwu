@@ -10,8 +10,8 @@ export default tseslint.config(
     ignores: [
       ".next/**",
       "node_modules/**",
-      "src/shared-infra/backend-firebase/**",
-      "src/shared-infra/frontend-firebase/**",
+      "src/shared-infra/firebase-admin/**",
+      "src/shared-infra/firebase-client/**",
       "src/shared/shadcn-ui/**",
       "dist/**"
     ],

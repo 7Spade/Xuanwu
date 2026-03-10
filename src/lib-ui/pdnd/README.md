@@ -2,6 +2,16 @@
 
 封裝 `@atlaskit/pragmatic-drag-and-drop*` 系列依賴，提供與專案風格一致的可重用拖放基礎元件。
 
+## Canonical Mapping
+
+- `src/lib-ui/pdnd` = `@atlaskit/pragmatic-drag-and-drop*`
+- `src/lib-ui/dnd` = `@dnd-kit/core` + `@dnd-kit/sortable`
+
+禁止混用規則：
+
+- `pdnd/` 不放 `@dnd-kit/*` 實作。
+- `dnd/` 不放 `Pdnd*` 實作。
+
 ## 設計原則
 
 - 每個組件對應一個核心拖放職責（可拖曳、放置區、可排序列表項）。
@@ -82,3 +92,4 @@ import { PdndDraggable, PdndSortableItem } from "@/lib-ui"
 2. 在 `index.ts` 新增 named export。
 3. 在頂層 `src/lib-ui/index.ts` 重新匯出（若為廣泛使用的公開 API）。
 4. 更新本 README 的目錄結構與依賴對照表。
+

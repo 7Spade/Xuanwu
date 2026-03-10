@@ -9,7 +9,7 @@
 
 import { createContext } from 'react'
 
-import { app, auth, db, storage } from '@/shared-infra/frontend-firebase'
+import { app, auth, db, storage } from '@/shared-infra/firebase-client'
 
 export interface FirebaseContextType {
   app: typeof app

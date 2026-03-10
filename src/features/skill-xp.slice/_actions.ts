@@ -19,7 +19,7 @@
 
 'use server';
 
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import {
   type CommandResult,
   commandSuccess,

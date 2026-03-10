@@ -30,8 +30,8 @@ import type {
   ScheduleProposalCancelledPayload,
   ScheduleAssignRejectedPayload,
 } from '@/features/organization.slice';
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { arrayUnion, updateDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { arrayUnion, updateDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 import type { WorkspaceScheduleProposedPayload } from '@/shared-kernel';
 import type { ScheduleItem, ScheduleStatus } from '@/shared-kernel';

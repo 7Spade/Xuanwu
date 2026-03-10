@@ -17,9 +17,9 @@
  * Feed path: IER STANDARD_LANE → FUNNEL → STD_PROJ_LANE → here.
  */
 
-import { getDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.read.adapter';
-import { setDocument } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
-import { serverTimestamp } from '@/shared-infra/frontend-firebase/firestore/firestore.write.adapter';
+import { getDocument } from '@/shared-infra/firebase-client/firestore/firestore.read.adapter';
+import { setDocument } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
+import { serverTimestamp } from '@/shared-infra/firebase-client/firestore/firestore.write.adapter';
 import { versionGuardAllows } from '@/shared-kernel';
 
 // ---------------------------------------------------------------------------
