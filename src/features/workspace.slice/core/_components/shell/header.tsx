@@ -16,6 +16,7 @@ import { useI18n } from '@/app-runtime/providers/i18n-provider';
 import { GlobalSearch } from "@/features/global-search.slice";
 import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
 import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,7 +26,6 @@ import {
   BreadcrumbSeparator,
 } from "@/shadcn-ui/breadcrumb";
 import { Button } from "@/shadcn-ui/button";
-import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
 import { Separator } from "@/shadcn-ui/separator";
 import { SidebarTrigger } from "@/shadcn-ui/sidebar";
 import type { Account } from '@/shared-kernel'
@@ -92,7 +92,7 @@ export function Header() {
   const plainHeaderIconClassName = "min-h-0 min-w-0 rounded-md size-9";
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-background/70 backdrop-blur-xl ring-1 ring-border/55 supports-[backdrop-filter]:bg-background/65 transition-[width,height] ease-linear sm:h-16 group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-background/70 ring-1 ring-border/55 backdrop-blur-xl transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 supports-[backdrop-filter]:bg-background/65 sm:h-16">
       <div className="flex min-w-0 items-center gap-2 px-2 sm:px-4">
         <SidebarTrigger className="tap-target -ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
@@ -153,7 +153,7 @@ export function Header() {
           asChild
           variant="ghost"
           size="icon"
-          className="hidden min-h-0 min-w-0 rounded-md size-9 sm:flex"
+          className="hidden size-9 min-h-0 min-w-0 rounded-md sm:flex"
           aria-label={t('wiki.title')}
         >
           <Link href="/wiki">

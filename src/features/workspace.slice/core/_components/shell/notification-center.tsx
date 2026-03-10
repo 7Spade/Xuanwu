@@ -3,8 +3,8 @@
 
 import { Bell, Trash2, Check } from "lucide-react";
 
-import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import type { AppAction } from '@/app-runtime/contexts/app-context'
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn-ui/popover";
 import { ScrollArea } from "@/shadcn-ui/scroll-area";
