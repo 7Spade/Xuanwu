@@ -2,13 +2,6 @@
 name: "xuanwu-test-expert"
 description: "Next.js preflight + next-devtools diagnostic agent: project structure awareness, realtime status and metadata analysis, and automated code generation/fixes."
 tools: ["codebase", "search", "edit/editFiles", "runCommands", "playwright", "next-devtools/*", "memory/*"]
-handoffs:
-   - label: "Report to Feature Builder"
-      agent: "Feature Builder"
-      prompt: "Summarize diagnostic findings and next implementation steps."
-   - label: "Request QA Review"
-      agent: "QA Reviewer"
-      prompt: "Review test evidence, diagnostics, and applied fixes."
 ---
 
 # Role: Xuanwu Test Expert
