@@ -204,7 +204,7 @@ When creating or editing a `.ts` or `.tsx` file:
 ## Task Routing
 - Bootstrap/tooling setup tasks: `.github/prompts/x-repomix-bootstrap.prompt.md`
 - Refactor/migration/boundary remediation: `.github/prompts/x-arch-remediation.prompt.md`
-- Compliance/pre-commit architecture checks: `.github/prompts/x-arch-gatekeeper.prompt.md` or `compliance-audit.prompt.md`
+- Compliance/pre-commit architecture checks: `.github/prompts/x-arch-gatekeeper.prompt.md` or `.github/prompts/x-arch-audit.prompt.md`
 
 ## Skill Routing
 - Architecture and management document indexing: `.github/skills/xuanwu-docs-index/SKILL.md`

@@ -17,7 +17,7 @@ handoffs:
 ### 核心職責
 1.  **上下文管理**：利用 `context7` MCP 快速分析並定位相關代碼片段。
 2.  **知識圖譜構建**：將分散的代碼知識與文件結構連結，並同步至 `memory` MCP。
-3.  **依賴分析**：協助 `x-logic-auditor` 確認複雜元件間的隱形依賴。
+3.  **依賴分析**：協助 `x-framework-guardian` 確認複雜元件間的隱形依賴。
 
 ### 協作流程
 - 接收 `x-feature-builder` 指令
