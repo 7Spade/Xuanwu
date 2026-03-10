@@ -93,6 +93,3 @@ import { PdndDraggable, PdndSortableItem } from "@/lib-ui"
 3. 在頂層 `src/lib-ui/index.ts` 重新匯出（若為廣泛使用的公開 API）。
 4. 更新本 README 的目錄結構與依賴對照表。
 
-## Migration Note
-
-若看到 `src/lib-ui/dnd/atlaskit-*.tsx`，那是歷史相容橋接檔，不是新的實作位置。新功能請直接在 `src/lib-ui/pdnd` 開發。
