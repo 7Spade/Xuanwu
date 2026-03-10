@@ -19,7 +19,7 @@ Shared always-on guidance for multi-agent workflows in this repository.
 - Follow architecture SSOT:
   - `docs/architecture/00-logic-overview.md`
   - `.memory/knowledge-graph.json`
-  - `skills/SKILL.md`
+  - `.github/skills/xuanwu-skill/SKILL.md`
 - Enforce i18n for all UI text.
 - Update both locale files when text changes:
   - `public/localized-files/en.json`

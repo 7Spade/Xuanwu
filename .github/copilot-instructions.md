@@ -12,7 +12,7 @@ Project-wide always-on instructions for GitHub Copilot Chat in this repository.
 
 - Business logic: `docs/architecture/00-logic-overview.md`
 - Entity semantics and relationships: `.memory/knowledge-graph.json`
-- Codebase reference baseline: `skills/SKILL.md`
+- Codebase reference baseline: `.github/skills/xuanwu-skill/SKILL.md`
 
 If a task touches business rules or domain terminology, read the SSOT documents before changing code or documentation.
 
@@ -53,7 +53,7 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 
 1. Read `docs/architecture/00-logic-overview.md` when business logic is involved.
 2. Confirm relevant entities in `.memory/knowledge-graph.json`.
-3. Reuse established repository patterns from `skills/SKILL.md` and existing code.
+3. Reuse established repository patterns from `.github/skills/xuanwu-skill/SKILL.md` and existing code.
 4. For Copilot customization changes, follow `.github/README.md` first, then the matching spec under `docs/copilot/customization/`, before editing `.github/agents`, `.github/hooks`, `.github/instructions`, `.github/prompts`, or `.github/skills`.
 
 ## Companion Files

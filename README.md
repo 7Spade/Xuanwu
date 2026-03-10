@@ -25,7 +25,7 @@ This repository uses VS Code Copilot customizations with a repository guide:
 - Global workspace instructions: `.github/copilot-instructions.md`
 - Multi-agent shared conventions: `AGENTS.md`
 - Live repository customizations: `.github/instructions/*.instructions.md`, `.github/agents/*.agent.md`, `.github/hooks/*.json`, `.github/prompts/*.prompt.md`, `.github/skills/*/SKILL.md`
-- Reference-only codebase baseline for prompts/agents: `skills/SKILL.md`
+- Reference-only codebase baseline for prompts/agents: `.github/skills/xuanwu-skill/SKILL.md`
 - Loader settings for VS Code discovery: `.vscode/settings.json`
 - Nested agent instructions: `src/**/AGENTS.md`
 
@@ -63,4 +63,4 @@ When UI text changes, update both locale files with identical keys:
 
 - `docs/architecture/00-logic-overview.md`
 - `.memory/knowledge-graph.json`
-- `skills/SKILL.md`
+- `.github/skills/xuanwu-skill/SKILL.md`
