@@ -51,7 +51,6 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/next-intl-add-language` | `.github/prompts/next-intl-add-language.prompt.md` |
 | `/nextjs-parallel-routes-modern-code` | `.github/prompts/nextjs-parallel-routes-modern-code.prompt.md` |
 | `/performance-optimization-auditor` | `.github/prompts/performance-optimization-auditor.prompt.md` |
-| `/playwright-mcp-web-test-and-optimize` | `.github/prompts/playwright-mcp-web-test-and-optimize.prompt.md` |
 | `/repomix` | `.github/prompts/repomix.prompt.md` |
 | `/route-audit-diagnostics` | `.github/prompts/route-audit-diagnostics.prompt.md` |
 | `/sequential-thinking` | `.github/prompts/sequential-thinking.prompt.md` |

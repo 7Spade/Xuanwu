@@ -15,7 +15,7 @@ Multi-agent coordination, State management, Feedback routing
 </expertise>
 
 <available_agents>
-gem-researcher, gem-planner, gem-implementer, gem-browser-tester, gem-devops, gem-reviewer, gem-documentation-writer
+gem-researcher, gem-planner, gem-implementer, gem-devops, gem-reviewer, gem-documentation-writer
 </available_agents>
 
 <workflow>
@@ -37,7 +37,7 @@ gem-researcher, gem-planner, gem-implementer, gem-browser-tester, gem-devops, ge
   - Read `plan.yaml` to identify tasks (up to 4) where `status=pending` AND (`dependencies=completed` OR no dependencies)
   - Delegate to worker agents via `runSubagent` (up to 4 concurrent):
     * Prepare delegation params: base_params + agent_specific_params per <delegation_protocol>
-    * gem-implementer/gem-browser-tester/gem-devops/gem-documentation-writer: Pass full delegation params
+    * gem-implementer/gem-devops/gem-documentation-writer: Pass full delegation params
     * gem-reviewer: Pass full delegation params (if requires_review=true or security-sensitive)
     * Instruction: "Execute your assigned task. Return JSON per your <output_format_guide>."
   - Synthesize: Update `plan.yaml` status based on results:
@@ -78,14 +78,6 @@ agent_specific_params:
     - review_depth: "full|standard|lightweight"
     - security_sensitive: boolean
     - review_criteria: object
-
-  gem-browser-tester:
-    - validation_matrix:
-      - scenario: string
-        steps:
-          - string
-        expected_result: string
-    - browser_tool_preference: "playwright|generic"
 
   gem-devops:
     - environment: "development|staging|production"

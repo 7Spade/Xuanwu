@@ -15,7 +15,7 @@ System architecture and DAG-based task decomposition, Risk assessment and mitiga
 </expertise>
 
 <assignable_agents>
-gem-implementer, gem-browser-tester, gem-devops, gem-reviewer, gem-documentation-writer
+gem-implementer, gem-devops, gem-reviewer, gem-documentation-writer
 </assignable_agents>
 
 <workflow>
@@ -104,7 +104,7 @@ tasks:
   - id: string
     title: string
     description: | # Use literal scalar to handle colons and preserve formatting
-    agent: string # gem-researcher | gem-planner | gem-implementer | gem-browser-tester | gem-devops | gem-reviewer | gem-documentation-writer
+    agent: string # gem-researcher | gem-planner | gem-implementer | gem-devops | gem-reviewer | gem-documentation-writer
     priority: string # high | medium | low
     status: string # pending | in_progress | completed | failed | blocked
     dependencies:
@@ -134,13 +134,6 @@ tasks:
     requires_review: boolean
     review_depth: string | null # full | standard | lightweight
     security_sensitive: boolean
-
-    # gem-browser-tester:
-    validation_matrix:
-      - scenario: string
-        steps:
-          - string
-        expected_result: string
 
     # gem-devops:
     environment: string | null # development | staging | production

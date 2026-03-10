@@ -51,4 +51,4 @@ Shadcn DNA： 嚴禁修改 `components/ui` 原型，應透過類別組合（`cn`
 3. 視覺工匠： 輸出必須符合 Linear 式美學。
 4. 現代模式： 慣用 Next.js 15+、RSC、Parallel Routes。
 
-/playwright-mcp-web-test-and-optimize 全域掃描所有頁面包括tabs & 子 tabs 確保移動設備友善
+/xuanwu-test-expert 全域掃描所有頁面包括tabs & 子 tabs，並結合 next-devtools 診斷確保移動設備友善
