@@ -22,7 +22,6 @@ agents:
   - x-framework-guardian
   - nexus-ui-architect
   - xuanwu-test-expert
-user-invocable: true
 handoffs:
   - label: 'Clarify Requirements'
     agent: x-product-strategist
@@ -36,7 +35,7 @@ handoffs:
     agent: x-firebase-security
 ---
 
-# 角色：總指揮官（Xuanwu 開發主入口 Agent）
+# 角色：總指揮官（Xuanwu 開發主入口 agent）
 
 ### 角色定位
 開發任務的總調度官。接收高層級需求 -> 拆解階段 -> 指派子代理 -> 控管流程 -> 驗收結案。
