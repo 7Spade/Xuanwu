@@ -52,14 +52,14 @@
 				"."
 			]
 		},
-		"chrome-devtools-mcp": {
-			"type": "stdio",
-			"command": "npx",
-			"args": [
-				"-y",
-				"chrome-devtools-mcp"
-			]
-		},
+//		"chrome-devtools-mcp": {
+//			"type": "stdio",
+//			"command": "npx",
+//			"args": [
+//				"-y",
+//				"chrome-devtools-mcp"
+//			]
+//		},
 		"software-planning": {
 			"type": "stdio",
 			"command": "npx",
@@ -113,9 +113,7 @@
 				"--context",
 				"ide",
 				"--project",
-				"${workspaceFolder}",
-				"--open-web-dashboard",
-				"false"
+				"${workspaceFolder}"
 			]
 		},
 		"microsoft/playwright-mcp": {
