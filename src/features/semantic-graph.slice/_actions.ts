@@ -34,14 +34,14 @@ import type {
 import {
   addEdge,
   removeEdge,
-} from './domain.graph/edges/semantic-edge-store';
+} from './centralized-edges/semantic-edge-store';
 import type { SemanticRelationType, TagLifecycleState } from './core/types';
 import {
   registerTagDraft,
   activateTag,
   transitionTagState,
-} from './domain.routing/tag-lifecycle.workflow';
-import type { OutboxLifecycleEvent } from './domain.routing/tag-lifecycle.workflow';
+} from './centralized-workflows/tag-lifecycle.workflow';
+import type { OutboxLifecycleEvent } from './centralized-workflows/tag-lifecycle.workflow';
 
 // =================================================================
 // Tag Upsert with Conflict Check
@@ -85,7 +85,7 @@ export async function upsertTagWithConflictCheck(
 
       if (conflictResult.hasConflict) {
         const conflictSummary = conflictResult.conflicts
-          .map((c) => `${c.overlapStartDate}??{c.overlapEndDate}`)
+          .map((c) => `${c.overlapStartDate}–${c.overlapEndDate}`)
           .join(', ');
         return commandFailureFrom(
           'TEMPORAL_CONFLICT',
@@ -219,7 +219,7 @@ export async function removeSemanticEdge(
 ): Promise<CommandResult> {
   try {
     const removed = removeEdge(fromTagSlug, toTagSlug, relationType);
-    return commandSuccess(`${relationType}:${fromTagSlug}??{toTagSlug}`, removed ? 1 : 0);
+    return commandSuccess(`${relationType}:${fromTagSlug}→${toTagSlug}`, removed ? 1 : 0);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return commandFailureFrom('EDGE_REMOVE_FAILED', message);
