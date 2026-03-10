@@ -8,32 +8,13 @@ agent: "xuanwu-test-expert"
 
 Execute a local Next.js diagnostic preflight for this workspace.
 
-## Required steps
+Normative execution contract: [xuanwu-test-expert.instructions.md](../instructions/xuanwu-test-expert.instructions.md)
 
-1. Start the dev server with `npm run dev` in background mode.
-2. Use `next-devtools-nextjs_index` to detect running server, route graph, and available diagnostics.
-3. Open `http://localhost:9002` in the VS Code integrated browser.
-4. Run realtime diagnostics with `next-devtools-nextjs_call` for:
-   - runtime/build health
-   - route-level errors
-   - metadata correctness (title, canonical, robots, locale-related metadata)
-   - tool separation rule: browser interactions via `playwright-browser_*`; server diagnostics via `next-devtools-*`
-5. Apply Playwright execution discipline on every interacted route:
-   - `playwright-browser_navigate`
-   - `playwright-browser_snapshot` (refresh refs)
-   - interaction (`click`/`fill_form`/`type`)
-   - `playwright-browser_snapshot`
-   - `playwright-browser_console_messages`
-   - `playwright-browser_take_screenshot`
-   - never use stale refs from older snapshots
-6. If issue is confirmed and localized, generate and apply minimal code fix.
-7. Re-validate with browser + next-devtools and return:
-   - terminal status (started/failed)
-   - page URL
-   - page title
-   - fixed/not fixed state
-8. Include coverage status matrix with route state labels: `PASS`, `FAIL`, `BLOCKED`, `EXPECTED_GATED`.
-9. If blocked, return exact blocker and a safe retry suggestion.
+## Required execution
+
+1. Follow the instruction contract exactly, including startup, next-devtools diagnostics, Playwright snapshot discipline, metadata checks, and revalidation.
+2. Keep fixes minimal and localized; skip speculative refactors.
+3. If blocked, return exact blocker and one safe retry suggestion.
 
 ## Output format
 

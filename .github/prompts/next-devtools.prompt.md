@@ -7,7 +7,8 @@ agent: 'agent'
 
 # Next.js Route Diagnostics
 
-Use next-devtools MCP to inspect runtime behavior.
+This command is the focused runtime alias of [`next-diagnostics`](./next-diagnostics.prompt.md).
+Use the canonical checklist there, then keep this command's scope on next-devtools runtime signals.
 
 ## Focus
 1. Route map and build/runtime errors

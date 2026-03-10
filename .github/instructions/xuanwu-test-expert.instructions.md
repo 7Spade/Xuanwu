@@ -9,6 +9,7 @@ applyTo: "**/*xuanwu-test-expert*.{md,yml,yaml,json}"
 ## Scope
 
 - Applies to `xuanwu-test-expert` agent, prompt, and skill assets.
+- This file is the canonical execution contract for those assets.
 
 ## Execution contract
 
