@@ -65,7 +65,6 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/ui-ux-consistency-sync` | `.github/prompts/ui-ux-consistency-sync.prompt.md` |
 | `/x-arch-adr` | `.github/prompts/x-arch-adr.prompt.md` |
 | `/x-arch-audit` | `.github/prompts/x-arch-audit.prompt.md` |
-| `/x-arch-auditor` | `.github/prompts/x-arch-auditor.prompt.md` |
 | `/x-arch-docs` | `.github/prompts/x-arch-docs.prompt.md` |
 | `/x-arch-gatekeeper` | `.github/prompts/x-arch-gatekeeper.prompt.md` |
 | `/x-arch-graph-pruner` | `.github/prompts/x-arch-graph-pruner.prompt.md` |

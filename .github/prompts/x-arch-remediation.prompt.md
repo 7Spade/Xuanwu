@@ -69,7 +69,7 @@ Repeat until fully compliant:
 
 ## Completion Criteria
 
-Re-run `/x-arch-auditor` after all P0–P1 items are resolved and confirm the audit report is clean.
+Re-run `/x-arch-audit` after all P0–P1 items are resolved and confirm the audit report is clean.
 
 ## Output
 

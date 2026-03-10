@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: 'Surgical code refactoring and quality review to improve maintainability without changing behavior. Use when extracting functions, renaming variables, breaking down god functions, improving type safety, eliminating code smells, reviewing code quality before merge, or applying design patterns. Triggers: "refactor", "clean up code", "extract method", "code smell", "improve maintainability", "review and refactor", "code quality", "fix smells", "improve readability".'
+description: 'Surgical code refactoring and quality review to improve maintainability without changing behavior. Use when extracting functions, reducing method cognitive complexity, renaming variables, breaking down god functions, improving type safety, eliminating code smells, reviewing code quality before merge, or applying design patterns. Triggers: "refactor", "clean up code", "extract method", "reduce complexity", "simplify method", "extract helpers", "cognitive complexity", "code smell", "improve maintainability", "review and refactor", "code quality", "fix smells", "improve readability".'
 ---
 
 # Refactor
@@ -18,6 +18,11 @@ description: 'Surgical code refactoring and quality review to improve maintainab
 - A file or module has grown complex and needs cleanup before a PR merge
 - Code review identified structural problems that need fixing
 - Asked to "clean up" or "improve" a set of files
+
+**Method Complexity Reduce mode** — targeted cognitive complexity reduction:
+- A linter or review flags a method as exceeding complexity threshold
+- A function has deep nesting or mixed concerns that hurt readability/testability
+- Asked to "simplify this method" while preserving behavior
 
 ## Prerequisites
 - Identify the target file(s) and the specific code to refactor
@@ -47,11 +52,20 @@ description: 'Surgical code refactoring and quality review to improve maintainab
 5. Run `npm run check` (or equivalent) after changes to verify no regressions.
 6. Summarize every change made and the reason for each.
 
+### Method Complexity Reduce Pass
+1. Identify the method name, current complexity score, and target threshold.
+2. Read the full method and split it into logical sub-tasks.
+3. Extract candidates incrementally (guard clauses, branch blocks, repeated logic) into named helpers.
+4. Re-score complexity after each extraction and stop when the threshold is met.
+5. Run targeted tests and type-check to verify behavior remains unchanged.
+6. Report before/after complexity scores and any follow-up extraction needed.
+
 ## Output Contract
 - Each change must be labeled with its refactoring type (Extract / Rename / Inline / Simplify / Remove).
 - Behavioral equivalence must be verifiable by existing tests.
 - Output a summary table: file → change type → rationale.
 - Include a diff summary grouped by change type for review passes.
+- For complexity-reduction tasks, include before/after cognitive complexity scores.
 
 ## Guardrails
 - Do not change behavior — pure structural changes only.
