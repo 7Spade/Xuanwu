@@ -18,17 +18,6 @@
 - `sortable-list.tsx`: dnd-kit sortable list behavior
 - `drag-handle.tsx`: dnd-kit drag handle UI
 - `index.ts`: public exports for dnd-kit layer
-- `atlaskit-drop-zone.tsx`: legacy compatibility shim only
-- `atlaskit-draggable.tsx`: legacy compatibility shim only
-
-## Compatibility Shims
-
-`atlaskit-drop-zone.tsx` 與 `atlaskit-draggable.tsx` 是相容橋接檔，存在目的是避免歷史路徑或工具快取（例如 Tailwind changed files tracking）因為舊檔名不存在而中斷編譯。
-
-規則：
-
-- 可保留，但不作為新功能實作入口。
-- 新程式碼請直接使用 `src/lib-ui/pdnd` 的 `Pdnd*` 元件。
 
 ## Import Guidance
 
