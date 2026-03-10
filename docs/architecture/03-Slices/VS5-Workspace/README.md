@@ -36,3 +36,7 @@
 6. Finance migration note
 - VS5 的 finance capability 已遷移到 `@/features/finance.slice`（VS9）。
 - `workspace.slice` 目前僅保留 backward-compatible re-export。
+
+## Detailed Container Map
+
+- `03-logical-containers.md`: `workspace.slice` 邏輯容器、責任與主要匯出能力總表。

@@ -59,6 +59,10 @@
 - [ ] `npm run typecheck`
 - [ ] 若變更跨切片規則或 ACL，附上本檔勾選結果與例外說明。
 
+## 8a. Docs 回寫驗證（skills）
+- [ ] 若更新 `03-Slices` capability 文檔，已以 `skills/SKILL.md` 與 `skills/references/*` 完成程式碼定位與交叉驗證。
+- [ ] `Implemented Capabilities (from code)` 與對應 `src/features/{slice}/index.ts` 匯出一致。
+
 ## 9. Folder Placement Gate（新增檔案必答）
 - [ ] 此檔案是否「純函式/純型別/純常數」且無 I/O？若是，放在 `src/shared-kernel/*`（L1）。
 - [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/frontend-firebase/*`（L7 Adapter）。

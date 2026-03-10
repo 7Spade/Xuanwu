@@ -49,3 +49,12 @@
 
 - PR 審查以 `docs/architecture/99-checklist.md` 為執行清單。
 - 任何規則調整必須先改 `02-governance-rules.md`，再回填 `00/01/03` 引用。
+
+## 程式碼參考入口（Repomix Skill）
+
+- `skills/SKILL.md`：Xuanwu codebase reference skill 入口。
+- `skills/references/summary.md`：摘要與統計（先讀）。
+- `skills/references/project-structure.md`：目錄與檔案定位。
+- `skills/references/files.md`：程式內容檢索（`## File: <path>`）。
+
+用途：當 `docs/architecture/*` 需要「從程式碼回寫 capability」時，先用上述入口定位與驗證，再更新對應 slice 文件。

@@ -59,6 +59,13 @@
 - SHOULD: 若能力已遷移到其他 slice，需在原 slice 文件標註 migration note。
 - FORBIDDEN: 僅保留抽象敘述而無可驗證能力名稱。
 
+### 8.1 Repomix 參考流程（建議）
+
+1. 先讀 `skills/SKILL.md` 與 `skills/references/summary.md`。
+2. 在 `skills/references/project-structure.md` 定位切片與候選檔案。
+3. 在 `skills/references/files.md` 以 `## File: <path>` 檢索實際匯出/函式名。
+4. 回寫 `Implemented Capabilities (from code)`，並與 `src/features/{slice}/index.ts` 再次交叉檢查。
+
 ## 9. Next.js 邊界回寫規則
 
 - MUST: 明確標註 server actions 邊界（通常來自 `_actions.ts`）。
