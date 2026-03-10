@@ -33,6 +33,18 @@
 - `docs/architecture/04-Invariants/`
 - `docs/architecture/06-DecisionLogic/`
 
+### Slice 索引（VS1~VS9）
+
+- `VS1`: `docs/architecture/03-Slices/VS1-Identity/`
+- `VS2`: `docs/architecture/03-Slices/VS2-Account/`
+- `VS3`: `docs/architecture/03-Slices/VS3-Skill/`
+- `VS4`: `docs/architecture/03-Slices/VS4-Organization/`
+- `VS5`: `docs/architecture/03-Slices/VS5-Workspace/`
+- `VS6`: `docs/architecture/03-Slices/VS6-Scheduling/`
+- `VS7`: `docs/architecture/03-Slices/VS7-Notification/`
+- `VS8`: `docs/architecture/03-Slices/VS8-SemanticBrain/`
+- `VS9`: `docs/architecture/03-Slices/VS9-Finance/`
+
 ## 審查入口
 
 - PR 審查以 `docs/architecture/99-checklist.md` 為執行清單。

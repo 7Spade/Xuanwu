@@ -1,6 +1,6 @@
 ﻿# [索引 ID: @VS-STD] 00 - Slice Standard
 
-本檔定義 VS1~VS8 文檔與實作的共同結構。
+本檔定義 VS1~VS9 文檔與實作的共同結構。
 
 ## 1. Slice 文檔必要結構（依層級責任與邊界界定）
 
@@ -43,3 +43,10 @@
 - MUST: 語義讀取走 `projection.tag-snapshot` (`D21-7`, `T5`)。
 - MUST: 搜尋走 `global-search.slice` (`#A12`)。
 - MUST: 副作用走 `notification-hub.slice` (`#A13`)。
+
+## 7. VS9 Finance 最小約束（新增）
+
+- MUST: Finance staging 寫入只可由 L5 投影鏈路產生（`A20`）。
+- MUST: Finance_Request 採獨立生命週期（`A21`）。
+- MUST: 任務金融顯示狀態僅可經 `task-finance-label-view` 對外暴露（`A22`）。
+- FORBIDDEN: VS9 直接寫回 VS5 任務 Aggregate 狀態。

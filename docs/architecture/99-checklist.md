@@ -43,6 +43,12 @@
 - [ ] 通知副作用只經 `notification-hub.slice`。
 - [ ] 其他業務 slice 僅產生事實事件，不直接做搜尋聚合或通知發送策略。
 
+## 6a. Finance Gate（VS9 / #A20 / #A21 / #A22）
+- [ ] `Finance_Staging_Pool` 寫入來源只來自 L5 投影鏈路（`TaskAcceptedConfirmed`），無直接人工或跨 slice 寫入（`#A20`）。
+- [ ] `Finance_Request` 狀態機維持獨立生命週期，無由 VS5 直接改寫（`#A21`）。
+- [ ] 任務金融顯示透過 `task-finance-label-view`，前端不直讀 VS9 內部資料結構（`#A22`）。
+- [ ] VS9 與 VS5 間未出現雙向直接 mutate（僅允許事件/投影協作）。
+
 ## 7. Team Gate（L / R / A）
 - [ ] Layer 合規：依賴方向與層級通訊符合規範。
 - [ ] Rule 合規：D/S/R/A/# 索引規則有被引用，無重複定義。

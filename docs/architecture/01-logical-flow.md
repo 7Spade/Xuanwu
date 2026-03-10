@@ -23,6 +23,12 @@
 - B 路（`L7-B`）：Admin 權限、跨租戶、排程/Webhook、高扇出協調。
 - `firebase-admin` 僅允許在 `functions` 容器內使用（`D25`）。
 
+## VS9 Finance 流向索引
+
+- 入口：`TaskAcceptedConfirmed` 經 L4 `CRITICAL_LANE` 進入 L5 `finance-staging-pool`（`A20`）。
+- 主體：`Finance_Request` 維持獨立生命週期（`A21`）。
+- 回饋：金融狀態經 L5 `task-finance-label-view` 回傳讀側（`A22`）。
+
 ## 系統架構圖（精簡）
 
 ```mermaid

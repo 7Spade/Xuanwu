@@ -159,6 +159,18 @@ src/app/(shell)/(portal)/(account)/(workspaces)/workspaces/[id]/
 
 ## 6. Mapping Standards to Layers
 
+### 6.1 Vertical Slice Index（VS1~VS9）
+
+- VS1: Identity
+- VS2: Account
+- VS3: Skill
+- VS4: Organization
+- VS5: Workspace
+- VS6: Scheduling
+- VS7: Notification
+- VS8: Semantic Brain
+- VS9: Finance
+
 - `src/app/*`：L0 入口層（路由與布局）
 - `src/features/*.slice/*`：L3 領域切片
 - `src/shared-kernel/*`：L1 契約與純函式

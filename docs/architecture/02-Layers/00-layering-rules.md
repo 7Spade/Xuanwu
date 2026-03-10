@@ -7,7 +7,7 @@
 - L0: External Triggers
 - L1: Shared Kernel
 - L2: Command Gateway
-- L3: Domain Slices (VS1~VS8)
+- L3: Domain Slices (VS1~VS9)
 - L4: Integration Event Router (IER)
 - L5: Projection Bus
 - L6: Query Gateway
