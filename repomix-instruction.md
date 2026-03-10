@@ -119,4 +119,5 @@ Known baseline after `npm install`:
 2. `eslint.config.mts` — enforced rules
 3. `src/features/shared-kernel/` — shared contracts & ports
 4. Relevant `{slice}/index.ts` — slice public API
-5. `docs/development/` — feature-specific guides (e.g. `workspace.slice-guide.md`)
+5. `DEVELOPMENT.md` — root development guide (workspace.slice, Firestore, Genkit patterns, AI learning loop)
+6. `docs/development/workspace.slice-guide.md` — workspace sub-slice implementation guide
