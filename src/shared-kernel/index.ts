@@ -152,10 +152,30 @@ export {
 	getNextStageFromAction,
 } from './directives/finance-lifecycle.directive';
 export {
+	createParsingIntentContract,
+	markParsingIntentImported,
+	supersedeParsingIntent,
+} from './directives/parsing-intent.directive';
+export {
 	clampRemainingQuantity,
 	hasValidClaimSelection,
 	buildClaimLineItems,
 } from './pipes/finance-claim.pipe';
+export {
+	formatBytes,
+	getCurrentVersion,
+	isStructuredSidecarFile,
+	getStructuredRelationKey,
+	getRelatedStructuredFile,
+	parseDateFromUnknown,
+	formatVersionDate,
+	getStructuredDataSnapshot,
+	getProcessingLogEntries,
+} from './pipes/workspace-file-structure.pipe';
+export type {
+	StructuredDataSnapshot,
+	FileProcessingLogEntry,
+} from './pipes/workspace-file-structure.pipe';
 export {
 	isSafeFirestoreDocId,
 	assertSafeFirestoreDocId,
@@ -247,6 +267,10 @@ export type {
 	WorkspaceFileVersion,
 	CreateWorkspaceFileInput,
 } from './types/workspace-file';
+export type {
+	ParsingIntentContract,
+	CreateParsingIntentInput,
+} from './types/parsing-intent-contract';
 export type { WorkspaceIssue, IssueComment } from './types/workspace-issue';
 export type { WorkspaceRole, WorkspaceGrant } from './types/workspace-role';
 export type { WorkspaceTask, TaskWithChildren } from './types/workspace-task';

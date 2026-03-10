@@ -118,3 +118,9 @@ export type { WorkspaceTask, TaskWithChildren, Location } from './workspace-task
 
 // ─── Outbox Routing ──────────────────────────────────────────────────────────
 export type { OutboxLane, OutboxRouting, OutboxAck } from './outbox-routing';
+
+// ─── Parsing Intent Contract ─────────────────────────────────────────────────
+export type {
+  ParsingIntentContract,
+  CreateParsingIntentInput,
+} from './parsing-intent-contract';
