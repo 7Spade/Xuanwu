@@ -76,7 +76,7 @@ When you start or adjust a chat session, three choices shape how the AI responds
 
 Agent sessions can run in different environments to match your workflow. Select the session type from the session type dropdown in the Chat view.
 
-![Screenshot showing session type dropdown in the Chat view.](../images/agents-overview/agent-type-dropdown-jan.png)
+![Screenshot showing session type dropdown in the Chat view.](../images/agents-overview/agent-type-dropdown.png)
 
 | Session type | Description |
 |---|---|
