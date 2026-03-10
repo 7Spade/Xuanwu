@@ -4,10 +4,10 @@ description: "Next.js preflight + next-devtools diagnostic agent: project struct
 tools: ["codebase", "search", "edit/editFiles", "runCommands", "playwright", "next-devtools/*", "memory/*"]
 handoffs:
    - label: "Report to Feature Builder"
-      agent: Feature Builder
+      agent: "Feature Builder"
       prompt: "Summarize diagnostic findings and next implementation steps."
    - label: "Request QA Review"
-      agent: QA Reviewer
+      agent: "QA Reviewer"
       prompt: "Review test evidence, diagnostics, and applied fixes."
 ---
 
