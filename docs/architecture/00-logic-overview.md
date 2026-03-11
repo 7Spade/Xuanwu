@@ -21,14 +21,69 @@
 
 ## 四階段系統生命週期（System Lifecycle Phases）
 
-> 完整序列圖：[`06-DecisionLogic/03-unified-governance-blueprint.md`](06-DecisionLogic/03-unified-governance-blueprint.md)
+> 來源藍圖：[`06-DecisionLogic/03-unified-governance-blueprint.md`](06-DecisionLogic/03-unified-governance-blueprint.md) · VS8 細節：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
-| 階段 | 名稱 | 驅動者 | 核心規則 |
-|------|------|--------|---------|
-| **Phase 0** | 語義基石（Ontology Foundation） | Admin / VS0 | VS0 注入 SharedKernel 契約 [FI-003]；Admin 定義全域 Tag 本體 |
-| **Phase 1** | 數據攝取與語義化（Ingestion） | UI / L0A → L2 → L3 | D3 同步寫入業務實體；IER 非同步觸發 Embedding 提取 [E8-I] |
-| **Phase 2** | 智慧匹配執行（Matching） | L3 → L10 → Genkit Tools | search_skills → match_candidates → verify_compliance [GT-2] |
-| **Phase 3** | 投影物化與反饋（Read + Feedback） | IER → L5 → L8 | 結果物化至投影視圖；業務指紋自動回饋更新 Employee 標籤 [BF-1] |
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant Admin as VS8: 語義管理 (Admin/Ontology)
+    participant UI as L0: 外部入口 (PM/User)
+    participant GW as L0A: API 閘道 (CQRS Ingress)
+    participant VS0 as VS0: 內核契約 (Kernel/SK)
+    participant D3 as L3: 領域切片 (VS2/VS3/VS5/VS9)
+    participant AI as L10: Genkit 編排器
+    participant Tool as L10-Tools: AI 工具集 (S/M/V)
+    participant IER as L4: 事件路由器 (IER/LANE)
+    participant P5 as L5: 投影總線 (Projection Bus)
+    participant L8 as L8: 數據持久層 (Firebase/Vector)
+
+    Note over Admin,L8: 架構正確性優先 | Everything as a Tag | 語義權威治理
+
+    rect rgb(250, 250, 250)
+        Note over Admin,L8: Phase 0 語義基石
+        Admin->>L8: 0.1 定義全域 Tag 本體 (Ontology Slugs)
+        VS0->>D3: 0.2 注入 SharedKernel 契約與 Tag 型別 [FI-003]
+    end
+
+    rect rgb(245, 245, 245)
+        Note over UI,L8: Phase 1 數據攝取與語義化
+        UI->>GW: 1.1 更新履歷/發布任務
+        GW->>D3: 1.2 執行領域寫入
+        D3->>L8: 1.3 存儲業務實體 + 自動標籤化
+        D3->>IER: 1.4 發布數據變更事件
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
+        AI->>L8: 1.6 存儲向量特徵
+    end
+
+    rect rgb(230, 245, 255)
+        Note over UI,AI: Phase 2 智慧匹配執行
+        UI->>GW: 2.1 請求匹配建議
+        GW->>D3: 2.2 觸發匹配指令
+        D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tool ACL]
+        AI->>Tool: 2.4 search_skills 術語正規化
+        AI->>Tool: 2.5 match_candidates 向量召回
+        AI->>Tool: 2.6 verify_compliance 合規驗證 [GT-2 Fail-closed]
+        AI-->>D3: 2.7 回傳推理軌跡與排名結果
+        D3->>IER: 2.8 發布 MatchingConfirmed 事件
+    end
+
+    rect rgb(255, 250, 240)
+        Note over IER,UI: Phase 3 投影物化與業務指紋反饋
+        IER->>P5: 3.1 物化 Recommendation View
+        GW->>P5: 3.2 讀取物化視圖 (QRY)
+        P5-->>UI: 3.3 渲染智慧推薦列表
+        D3->>IER: 3.4 [BF-1] 業務指紋回饋 (TaskCompleted)
+        IER-->>AI: 3.5 VS8 調整 employees.skillEmbedding 權重
+    end
+```
+
+| 階段 | 核心規則 |
+|------|---------|
+| Phase 0 語義基石 | `FI-003` |
+| Phase 1 數據攝取 | `E8-I` |
+| Phase 2 智慧匹配 | `GT-2` / `E8` |
+| Phase 3 投影反饋 | `BF-1` / `S2` |
 
 ## 架構原則（工程實作）
 

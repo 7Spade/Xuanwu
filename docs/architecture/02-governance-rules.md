@@ -76,12 +76,45 @@
 >
 > **Firestore 集合**：`employees`（候選人 + skillEmbedding）、`tasks`（分派請求）、`skills`（本體論 + embedding）
 >
-> **三工具分派引擎**：`search_skills`（術語標準化）、`match_candidates`（向量匹配）、`verify_compliance`（合規優先驗證）
->
 > 詳細架構定義請見：
 > - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、Firestore Schema、Genkit 工具規格
 > - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — Genkit 工具整合圖、HR 分派序列圖、Firestore 集合關聯圖
 > - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md`](03-Slices/VS8-SemanticBrain/architecture-build.md) — Phase 1-4 實施計畫
+
+### VS8 三工具分派引擎（Genkit Matching Flow）
+
+```mermaid
+flowchart LR
+    Request([匹配請求\nMatching Request]) --> Phase0
+
+    subgraph Phase0[Phase 0: 語義基石]
+        SK[VS0 SharedKernel\n契約注入 FI-003] --> Ontology[skills 集合\nTag 本體論 OT-1]
+    end
+
+    Phase0 --> Phase1
+
+    subgraph Phase1[Phase 1: 數據攝取 E8-I]
+        D3W[L3 Domain Write\n業務實體寫入] --> IER[L4 IER\nBACKGROUND lane]
+        IER -->|非同步| EmbedAI[L10 AI\nEmbedding 提取]
+        EmbedAI --> VecDB[(employees\nskillEmbedding\n768-dim)]
+    end
+
+    Phase1 --> Phase2
+
+    subgraph Phase2[Phase 2: 智慧匹配 GT-1/2/3]
+        SS[search_skills\n術語正規化 OT-2] -->|Canonical Slug| MC[match_candidates\n向量召回 VD-2]
+        MC -->|Top-K| VC[verify_compliance\n合規驗證 GT-2]
+        VC -->|Fail-closed| Out([匹配候選集\n語義提示 B1])
+    end
+
+    Phase2 --> Phase3
+
+    subgraph Phase3[Phase 3: 反饋閉環 BF-1]
+        PB[L5 Projection Bus\nrecommendation-view] --> UI([UI 渲染\n智慧推薦])
+        TaskDone([TaskCompleted\nTaskRated 事件]) --> IER2[L4 IER\nBF-1 回饋]
+        IER2 -->|Everything as a Tag| VecDB
+    end
+```
 
 ### FI（Foundation Injection — 基礎契約注入）
 

@@ -125,7 +125,42 @@ VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI
 
 > VS8 三階段語義數據生命週期：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
-### 四階段基礎設施路徑
+### VS8 四階段基礎設施路徑圖
+
+```mermaid
+flowchart TD
+    subgraph P0[Phase 0: 語義基石 FI-003 / OT-1]
+        Admin([Admin]) -->|定義 Tag 本體| SkillsCol[(skills\nFirestore Collection)]
+        SK[VS0 SharedKernel] -->|注入 SK 契約型別| DomainSlices[L3 Domain Slices]
+    end
+
+    subgraph P1[Phase 1: 數據攝取 E8-I / VD-3]
+        L0A[L0A API Gateway] --> L2[L2 Command GW]
+        L2 --> L3W[L3 Domain Write]
+        L3W -->|Integration Event| L4[L4 IER\nBACKGROUND lane]
+        L4 -->|非同步 Embedding| L10[L10 AI\nVertex AI text-embedding-004]
+        L10 -->|768-dim| EmpDB[(employees\nskillEmbedding)]
+        L10 -->|768-dim| TaskDB[(tasks\nrequirementsEmbedding)]
+    end
+
+    subgraph P2[Phase 2: 智慧匹配 GT-1/2/3 / E8]
+        L3M[L3 Domain\nMatching Command] --> GenkitFlow[L10 Genkit Matching Flow]
+        GenkitFlow --> ToolS[search_skills\n本體論查詢 OT-2]
+        ToolS -->|Canonical Slug| ToolM[match_candidates\nVector Search VD-2]
+        ToolM -->|Top-K| ToolV[verify_compliance\nFail-closed GT-2]
+        ToolV --> Output([匹配候選集\nSemantic Hint B1])
+    end
+
+    subgraph P3[Phase 3: 投影反饋 BF-1 / S2]
+        L4P[L4 IER] --> L5[L5 Projection Bus\nrecommendation-view]
+        L5 --> L6[L6 Query GW]
+        L6 --> ReadUI([UI 讀模型])
+        TaskEvent([VS5/VS9\nTaskCompleted]) --> L4BF[L4 IER\nBF-1 lane]
+        L4BF -->|更新 skillEmbedding 權重| EmpDB
+    end
+
+    P0 --> P1 --> P2 --> P3
+```
 
 | 階段 | 路徑 | 關鍵規則 |
 |------|------|---------|
