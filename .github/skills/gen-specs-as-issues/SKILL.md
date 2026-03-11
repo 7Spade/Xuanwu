@@ -1,41 +1,29 @@
 ---
 name: gen-specs-as-issues
-description: 'Identify missing features or gaps in a codebase, prioritize them, and generate detailed GitHub issue specifications. Use when building a backlog from requirements, discovering feature gaps, or converting a requirements doc into trackable issues. Triggers: "gen specs", "create issues", "feature gaps", "spec to issues", "backlog generation".'
+description: 'Wrapper skill. Backlog decomposition and issue-spec generation are consolidated into breakdown-plan. Use this alias when converting requirements into prioritized issue specs. Triggers: "gen specs", "create issues", "feature gaps", "spec to issues", "backlog generation".'
 ---
 
-# Gen Specs As Issues
+# Gen Specs As Issues (Wrapper)
 
-## When to Use
-- Converting a requirements document or PRD into GitHub issues
-- Auditing a codebase for missing functionality against a specification
-- Building an initial backlog for a new project or feature area
+This skill is retained as a compatibility alias.
 
-## Prerequisites
-- Have a requirements source: PRD, specification doc, or user story map
-- Access to the target GitHub repository or issue tracker
-- Identify the priority framework to use: MoSCoW, RICE, or simple High/Med/Low
+Canonical backlog planning workflow is now in:
+- `../breakdown-plan/SKILL.md`
 
-## Workflow
-1. Parse the requirements source: extract every stated feature and capability.
-2. Compare against existing code and issues to identify what is missing or incomplete.
-3. Prioritize gaps by business impact and implementation effort.
-4. For each prioritized gap, write a detailed issue spec:
-   - Title: clear, action-oriented
-   - Description: what it does and why it matters
-   - Acceptance criteria: testable conditions
-   - Labels: feature area, priority, effort estimate
-5. Group related issues under a parent epic or milestone.
-6. Review the issue list with the user before creating issues in GitHub.
+## Delegation
+When invoked, delegate to `breakdown-plan` in backlog/issue mode:
+1. Parse requirements and find gaps.
+2. Prioritize and map dependencies.
+3. Emit issue-ready specs with acceptance criteria.
 
 ## Output Contract
-- Produce a list of issue specs in Markdown or directly create GitHub issues.
-- Each issue must have: Title, Description, Acceptance Criteria, Labels, Parent Epic.
-- Include a coverage summary: total gaps found, prioritized, deferred.
+- Preserve original trigger compatibility.
+- Output follows `breakdown-plan` hierarchy and issue-spec shape.
 
 ## Guardrails
-- Do not create duplicate issues — check existing issues before generating.
-- Do not set priority without business context — ask if unclear.
-- Flag issues that require architecture decisions before they can be estimated.
+- Do not fork planning/decomposition rules in this alias.
+- Keep this file as a thin delegation layer.
 
 ## Source of Truth
+- Canonical: `../breakdown-plan/SKILL.md`
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

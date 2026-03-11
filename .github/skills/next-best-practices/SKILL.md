@@ -6,6 +6,11 @@ user-invocable: false
 
 # Next Best Practices
 
+## Consolidation Status
+- Canonical Next.js skill family entrypoint.
+- Backward-compatible alias: `../next-cache-components/SKILL.md`.
+- Backward-compatible alias: `../next-upgrade/SKILL.md`.
+
 ## Reference Files
 
 This skill provides authoritative guidance for the following areas. Load the relevant reference when working on that topic:

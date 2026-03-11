@@ -158,6 +158,9 @@ The repository now follows these consolidation rules:
 9. `breakdown-plan` is the canonical planning skill; `create-implementation-plan` remains as a compatibility alias.
 10. `refactor` is the canonical refactor skill (including planning mode); `refactor-plan` remains as a compatibility alias.
 11. `prompt-builder` is the canonical Copilot customization authoring skill; `copilot-instructions-blueprint-generator` remains as a compatibility alias.
+12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); `create-specification` remains as a compatibility alias.
+13. `breakdown-plan` is also the canonical backlog decomposition skill; `gen-specs-as-issues` remains as a compatibility alias.
+14. `next-best-practices` is the canonical Next.js skill family entrypoint; `next-cache-components` and `next-upgrade` remain as compatibility aliases.
 
 ## Required Reference Documents for Customizations
 

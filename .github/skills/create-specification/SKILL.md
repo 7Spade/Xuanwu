@@ -1,40 +1,29 @@
 ---
 name: create-specification
-description: 'Create a structured specification document optimized for AI consumption and developer reference. Use when documenting a new feature, system boundary, API contract, or data model before implementation begins. Triggers: "create spec", "write specification", "document feature", "technical spec", "api contract", "feature spec".'
+description: 'Wrapper skill. Specification authoring is consolidated into breakdown-epic-pm (tech-spec mode). Use this alias when documenting feature/system/API/data model specs before implementation. Triggers: "create spec", "write specification", "document feature", "technical spec", "api contract", "feature spec".'
 ---
 
-# Create Specification
+# Create Specification (Wrapper)
 
-## When to Use
-- Defining requirements for a new feature before writing any code
-- Documenting a public API, service boundary, or data schema
-- Creating a reference doc that AI agents will use during implementation
+This skill is kept for backward compatibility.
 
-## Prerequisites
-- Identify the feature or system being specified
-- Review related architecture docs in `docs/architecture/`
-- Gather any existing designs, wireframes, or business requirements
+Canonical requirements workflow is now in:
+- `../breakdown-epic-pm/SKILL.md` (`Tech-spec mode`)
 
-## Workflow
-1. Define the scope: what the specification covers and what it explicitly excludes.
-2. State the purpose and business goal in one paragraph.
-3. Document the API or interface contract: inputs, outputs, error conditions.
-4. Specify data models: field names, types, constraints, and default values.
-5. List behavioral rules as imperative statements (MUST / SHOULD / MAY).
-6. Add acceptance criteria: testable conditions that confirm the spec is met.
-7. List non-functional requirements: performance, security, availability.
-8. Save the file to `docs/` or the appropriate domain directory.
+## Delegation
+When invoked, delegate to `breakdown-epic-pm` in `Tech-spec mode`:
+1. Define scope and purpose.
+2. Produce contract/data-model/rule-centric specification.
+3. Attach testable acceptance criteria and NFRs.
 
 ## Output Contract
-- Produce a single Markdown file with: Scope, Purpose, Contract, Data Model, Rules, Acceptance Criteria, NFRs.
-- All rules must be imperative and testable — no ambiguous "should consider" statements.
-- Include a version or date stamp.
+- Preserve original trigger compatibility.
+- Output format follows `breakdown-epic-pm` tech-spec contract.
 
 ## Guardrails
-- Do not specify implementation details (how to code it) — only behavior (what it does).
-- Do not include credentials, tokens, or example values that resemble real secrets.
-- Align terminology with `docs/architecture/00-logic-overview.md`.
+- Do not duplicate requirements logic here.
+- Keep this file as a thin alias.
 
 ## Source of Truth
+- Canonical: `../breakdown-epic-pm/SKILL.md`
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
-- Architecture SSOT: `docs/architecture/00-logic-overview.md`
