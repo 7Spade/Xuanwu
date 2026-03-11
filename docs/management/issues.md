@@ -7,8 +7,6 @@
 
 > **執行進度 / Execution Progress**
 > - ISSUE-008: `IN_PROGRESS`（Files 動作來源矩陣已實作；缺 UI 標記與整合測試）
-> - ISSUE-009: `RESOLVED`（已歸檔至 `issues-archive.md`）
-> - ISSUE-010: `RESOLVED`（已歸檔至 `issues-archive.md`）
 > - ISSUE-011: `OPEN`（待導入非同步 landing + request 去重與重入保護）
 > - ISSUE-012: `OPEN`（後端 Command Gateway 路由未接通，所有命令返回 501）
 > - ISSUE-013: `OPEN`（IER 事件扇出為空操作，整條事件鏈斷路）
