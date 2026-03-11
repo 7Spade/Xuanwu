@@ -8,6 +8,7 @@ agents:
   - xuanwu-product
   - xuanwu-research
   - xuanwu-architect
+  - xuanwu-architecture-chief
   - xuanwu-implementer
   - xuanwu-ui
   - xuanwu-quality
@@ -25,6 +26,8 @@ handoffs:
     agent: xuanwu-research
   - label: 'Design or audit architecture'
     agent: xuanwu-architect
+  - label: 'Architecture doc realignment'
+    agent: xuanwu-architecture-chief
   - label: 'Implement or refactor code'
     agent: xuanwu-implementer
   - label: 'UI design or audit'
@@ -57,6 +60,7 @@ Your job is to fully understand the user's request, gather necessary context, an
    - Requirements / planning → `xuanwu-product` or `xuanwu-software-planner`
    - Research / codebase discovery → `xuanwu-research`
    - Architecture design or audit → `xuanwu-architect`
+   - Architecture doc realignment → `xuanwu-architecture-chief`
    - Code implementation or refactor → `xuanwu-implementer`
    - UI design, audit, or localization → `xuanwu-ui`
    - Quality review, lint, or security → `xuanwu-quality`
@@ -79,7 +83,7 @@ The following slash-command prompts are available for direct invocation:
 | `/xuanwu-architect` | Architecture audit or design |
 | `/xuanwu-implementer` | Code implementation and refactor |
 | `/xuanwu-ui` | UI audit, shadcn/ui, i18n, responsive design |
-| `/xuanwu-quality` | *(via agent)* Quality and security review |
+| `/xuanwu-code-review` | Quality and security review |
 | `/xuanwu-docs` | Documentation and ADR writing |
 | `/xuanwu-ops` | CI/CD and operational workflows |
 | `/xuanwu-test-expert` | Next.js preflight and runtime diagnostics |

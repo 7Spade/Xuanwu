@@ -1,7 +1,7 @@
 ---
 name: Xuanwu Documentation Standards
 description: Documentation and comment guidelines
-applyTo: "**"
+applyTo: "**/*.md"
 ---
 
 # Documentation Standards

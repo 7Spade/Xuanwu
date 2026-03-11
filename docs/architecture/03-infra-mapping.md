@@ -11,104 +11,136 @@
 
 ## VS0–VS9 路徑對照表（Path Map）
 
-### 垂直域索引（VS0–VS9）
+| Layer | 職責 | 路徑 |
+|---|---|---|
+| `L0` | External triggers | `src/shared-infra/external-triggers/` |
+| `L0A` | API ingress | `src/shared-infra/api-gateway/` |
+| `L1` | contracts/constants/pure | `src/shared-kernel/` |
+| `L2` | command gateway | `src/shared-infra/gateway-command/` |
+| `L3` | domain slices | `src/features/*` |
+| `L4` | IER + relay + DLQ | `src/shared-infra/{event-router,outbox-relay,dlq-manager}/` |
+| `L5` | projection bus | `src/shared-infra/projection-bus/` |
+| `L6` | query gateway | `src/shared-infra/gateway-query/` |
+| `L7-A` | firebase-client adapters | `src/shared-infra/firebase-client/` |
+| `L7-B` | functions/admin adapters | `src/shared-infra/firebase-admin/functions/` |
+| `L8` | firebase runtime | external platform |
+| `L9` | observability | `src/shared-infra/observability/` |
+| `L10` | AI runtime | `src/shared-infra/ai-orchestration/` |
 
-| 編號 | 名稱 | 說明 |
-|------|------|------|
-| `VS0` | Foundation | SharedKernel + SharedInfra（基礎層） |
-| `VS1` | Identity | 身份認證與授權 |
-| `VS2` | Account | 帳戶與個人資料 |
-| `VS3` | Skill XP | 技能 XP 與分級 |
-| `VS4` | Organization | 組織管理 |
-| `VS5` | Workspace | 工作空間與任務 |
-| `VS6` | Workforce Scheduling | 排班與職能配對 |
-| `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
-| `VS8` | Semantic Memory & Feedback Brain | 語義治理 + 記憶檢索 + 回饋閉環（保留四層邊界） |
-| `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
+## 標準結構（最小）
 
-### 目標路徑（Source Path）
+- `src/shared-kernel/`
+- `src/shared-infra/api-gateway/`
+- `src/shared-infra/gateway-command/`
+- `src/shared-infra/event-router/`
+- `src/shared-infra/projection-bus/`
+- `src/shared-infra/gateway-query/`
+- `src/shared-infra/firebase-client/`
+- `src/shared-infra/firebase-admin/{functions,dataconnect}/`
+- `src/shared-infra/{observability,ai-orchestration}/`
 
-```
-VS0 = src/shared-kernel/* + src/shared-kernel/observability
-    + src/shared-infra/firebase-client/*
-    + src/shared-infra/firebase-admin/*
-    + src/shared-infra/observability
-VS1 = src/features/identity.slice
-VS2 = src/features/account.slice
-VS3 = src/features/skill-xp.slice
-VS4 = src/features/organization.slice
-VS5 = src/features/workspace.slice
-VS6 = src/features/workforce-scheduling.slice
-VS7 = src/features/notification-hub.slice
-VS8 = src/features/semantic-graph.slice
-VS9 = src/features/finance.slice
-```
+## L4/L5/L6 重點清單
 
-### VS0 細分規則
+### L4（IER）
 
-| 標記 | 說明 |
-|------|------|
-| `VS0-Kernel` | `src/shared-kernel/*`：契約 / 常數 / 純函式（No I/O） → Layer L1 |
-| `VS0-Infra` | `src/shared-infra/*`：執行層 → L0 / L2 / L4 / L5 / L6 / L7 / L9 / L10（L3 = VS1–VS8 Feature Slices，非 VS0-Infra 管轄；L8 = Firebase 外部平台，不在 codebase 管控範圍） |
+- Lane：`CRITICAL` / `STANDARD` / `BACKGROUND`
+- DLQ：`SAFE_AUTO` / `REVIEW_REQUIRED` / `SECURITY_BLOCK`
+- `D30`：hop-limit 防循環，SECURITY_BLOCK 禁止自動 replay
+- **AI 嵌入管線 [E8-I]**：`L3(Domain Slice) → L4(IER, BACKGROUND lane) → L10(AI) → L8` — 非同步觸發 Embedding 提取，禁止 L3 同步呼叫 AI
+- **業務指紋回饋 [BF-1]**：`L3(VS5/VS9) → L4(IER, BACKGROUND lane) → VS8(L3) → L8(employees.skillEmbedding)` — 任務結果自動調整員工語義權重
 
-> **規則**：VS0-Kernel 與 VS0-Infra 必須明確區分，不得混稱；檢核時必須標明 `VS0-Kernel` 或 `VS0-Infra`。
+### L5（Projection）
 
-### 水平層位索引（L0–L10）
+- Critical：`workspace-scope-guard-view`、`org-eligible-member-view`、`acl-projection`
+- Standard：`workspace-view`、`tasks-view`、`tag-snapshot`、`task-semantic-view`
+- Memory/Feedback：`memory-snippet-view`、`feedback-pattern-view`、`memory-quality-view`
+- Finance：`finance-staging-pool`、`task-finance-label-view`
 
-| Layer | 名稱 | 職責 | 路徑前綴 |
-|-------|------|------|----------|
-| `L0` | External Triggers | 外部觸發入口（HTTP/WebSocket/Schedule/Webhook/AI） | `src/shared-infra/gateway-*` / `src/app/api/` |
-| `L0A` | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）→ L2 Write Path ／ `QRY_API_GW`（read-only ingress）→ L6 Read Path；`UNIFIED_GW` 讀寫分離統一閘道的入口 | `src/shared-infra/api-gateway/` |
-| `L1` | Shared Kernel | 契約/常數/純函式（No I/O, No Side Effects） | `src/shared-kernel/` |
-| `L2` | Command Gateway（Write Path） | CBG_ENTRY（TraceID 注入唯一點）/ CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` Write Pipeline | `src/shared-infra/gateway-command/` |
-| `L3` | Domain Slices | VS1–VS9 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
-| `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
-| `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
-| `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
-| `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/firebase-client/` |
-| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/firebase-admin/functions/` |
-| `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
-| `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
-| `L10` | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL [E8] | `src/shared-infra/ai-orchestration/` |
+### L6（Query）
 
----
+- 只暴露 read models，不直接查 Aggregate。
+- `D31`：所有讀權限過濾依賴 `acl-projection`。
 
-## 標準目錄結構（Standard Directory Structure）
+## L7 Firebase Adapter 索引（精簡）
 
-### Feature Slice 標準結構
+### L7-A（client）
 
-```
-src/features/{slice}/
-  index.ts                   # 公開 API（跨切片只能 import 此檔）
-  _actions.ts                # 所有 mutation [D3]
-  _queries.ts                # 所有 read [D4]
-  core/                      # Aggregate + Domain Events + ValueObjects
-    _aggregate.ts
-    _domain-events.ts
-  application/               # Use Cases / Application Services
-    _use-cases.ts
-  _components/               # UI 元件（"use client" 允許）
-  _hooks/                    # React Hooks（"use client" 允許）
-  _projector.ts              # Projection 投影器（引用 SK_VERSION_GUARD [S2]）
-  _outbox.ts                 # OUTBOX 宣告（必須聲明 DLQ 分級 [S1]）
-```
+- `AuthAdapter`
+- `FirestoreAdapter`
+- `FCMAdapter`
+- `StorageAdapter`
+- `RTDBAdapter`
+- `AnalyticsAdapter`
+- `AppCheckAdapter`
+- `VisDataAdapter`
 
-### Shared Kernel 結構
+### L7-B（functions/admin）
 
-```
-src/shared-kernel/
-  skill-tier/                # getTier() 純函式 [D12]
-  outbox-contract/           # SK_OUTBOX_CONTRACT [S1]
-  version-guard/             # SK_VERSION_GUARD [S2]
-  read-consistency/          # SK_READ_CONSISTENCY [S3]
-  staleness-contract/        # SK_STALENESS_CONTRACT [S4]
-  resilience-contract/       # SK_RESILIENCE_CONTRACT [S5]
-  token-refresh-contract/    # SK_TOKEN_REFRESH_CONTRACT [S6]
-  observability/             # trace-identifier types（注入點在 L2）
-  ports/                     # SK_PORTS（IAuthService / IFirestoreRepo / IMessaging / IFileStore）
-```
+- `FunctionsGateway`
+- `AdminAuthAdapter`
+- `AdminFirestoreAdapter`
+- `AdminMessagingAdapter`
+- `AdminStorageAdapter`
+- `AdminAppCheckAdapter`
+- `DataConnectGatewayAdapter`
 
-### Shared Infra 結構
+約束：`firebase-admin` 只允許於 functions 容器（`D25`）。
+
+## AI 控制面（L10）
+
+- Flow Gateway
+- Prompt Policy
+- Tool ACL
+- AI Storage
+
+約束：`E8` 生效時，AI flow 不可直連 `firebase/*`、不可跨租戶。
+
+## 遷移策略（四階段）
+
+1. 收斂 canonical path（停止新增 legacy 落點）。
+2. 導入 adapter/port 合規檢查（D24/D25/D31）。
+3. 收斂 projection 與 query 命名（L5/L6 一致）。
+4. 以 `99-checklist.md` 做 PR gate。
+
+## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
+
+VS8 是 L3 的語義權威切片，以四子系統覆蓋完整語義生命週期：`semantic-governance-portal`（Phase 0，wiki-editor / proposal-stream）、`semantic-core-domain`（_types / _aggregate / _actions / _cost-classifier）、`Semantic Compute Engine`（genkit-tools/ + _services.ts，三工具分派）、`Semantic Output Layer`（projections / outbox / subscribers）。L10 消費 VS8，但不取代 VS8。詳細設計見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)（`VS8-SemanticBrain` 為歷史文件目錄，對應現行切片 `semantic-graph.slice`；`VS9 = Finance`）。
+
+> VS8 四階段語義認知生命週期：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
+
+### VS8 四階段基礎設施路徑圖
+
+```mermaid
+flowchart TD
+    subgraph P0["Phase 0 語義基石 ｜ semantic-governance-portal (Phase 0)"]
+        Admin[Admin / Ontology] --> WikiEd[semantic-governance-portal\nwiki-editor / proposal-stream]
+        WikiEd --> Authority[_semantic-authority.ts]
+        SK[VS0 SharedKernel] --> Aggregate[semantic-core-domain\n_aggregate.ts]
+    end
+
+    subgraph P1["Phase 1 數據攝取 ｜ semantic-core-domain + L4 IER [E8-I]"]
+        Gateway[L0A / L2] --> DomainWrite[L3 Domain Write]
+        DomainWrite --> Actions[semantic-core-domain\n_actions.ts / _aggregate.ts]
+        Actions --> IER[L4 IER BACKGROUND]
+        IER -->|E8-I| AI[L10 AI]
+    end
+
+    subgraph P2["Phase 2 智慧匹配 ｜ Semantic Compute Engine [GT-2 Fail-closed]"]
+        Flow[L10 Genkit Flow] --> SCE[Semantic Compute Engine\ngenkit-tools/]
+        SCE --> ToolS[search_skills]
+        SCE --> ToolM[match_candidates]
+        SCE --> ToolV[verify_compliance\nGT-2 Fail-closed]
+        ToolS & ToolM --> QrySvc[_queries.ts / _services.ts]
+        ToolV --> Output[匹配結果 B1]
+    end
+
+    subgraph P3["Phase 3 結果輸出 ｜ Semantic Output Layer [BF-1]"]
+        Outcome[TaskCompleted 事件] --> IER2[L4 IER]
+        IER2 --> SOL[Semantic Output Layer\nsubscribers / outbox]
+        IER2 --> PB[L5 Projection Bus]
+        PB --> Proj[projections/]
+        Proj --> QG[L6 Query Gateway → UI]
+    end
 
 ```
 src/shared-infra/
@@ -149,7 +181,46 @@ src/shared-infra/
 
 ---
 
-## L4 IER 三條 Lane 與 DLQ 分級
+| 階段 | VS8 子系統 | 路徑 | 關鍵規則 |
+|------|----------|------|---------|
+| **Phase 0** 語義基石 | `semantic-governance-portal` | `Admin → wiki-editor / proposal-stream`；`VS0(SK) → semantic-core-domain(_aggregate) → L3` | `FI-003` / `OT-1` |
+| **Phase 1** 數據攝取 | `semantic-core-domain` | `L0/L2 → L3 → semantic-core-domain(_actions/_aggregate) → L4 IER → L10 AI → L8` | `E8-I` / `KG-1` |
+| **Phase 2** 智慧匹配 | `Semantic Compute Engine` | `L10 Genkit → Semantic Compute Engine(search_skills → match_candidates → verify_compliance)` | `GT-1/2/3` / `E8` |
+| **Phase 3** 結果輸出 | `Semantic Output Layer` | `AI result → Semantic Output Layer(projections / outbox / subscribers) → L5 PB → L6 → UI` | `BF-1` / `S2` |
+
+### 三大支柱基礎設施對應
+
+| 支柱 | 角色隱喻 | Genkit 工具 | 資料集合（Firestore） | 模組路徑 |
+|------|---------|------------|----------------------|---------|
+| **支柱一：知識圖譜** | 🧠 邏輯大腦 | `verify_compliance` | `employees`（certifications 欄位比對） | `_types.ts`、`_actions.ts`、`genkit-tools/verify-compliance.tool.ts` |
+| **支柱二：向量數據庫** | 💾 記憶模塊 | `match_candidates` | `employees`（skillEmbedding 向量索引）、`tasks`（requirementsEmbedding） | `_services.ts`、`_queries.ts`、`genkit-tools/match-candidates.tool.ts` |
+| **支柱三：技能本體論** | 📖 語言定義 | `search_skills` | `skills`（embedding 向量索引 + taxonomyPath） | `_semantic-authority.ts`、`_aggregate.ts`、`genkit-tools/search-skills.tool.ts` |
+
+### Firestore 集合與向量索引
+
+| 集合 | 向量欄位 | 向量索引 | 用途 |
+|------|---------|---------|------|
+| `skills` | `embedding`（768 維） | ✅ 需建立 | `search_skills` 語義搜尋 |
+| `employees` | `skillEmbedding`（768 維） | ✅ 需建立 | `match_candidates` 候選人匹配；[BF-1] 業務指紋權重 |
+| `tasks` | `requirementsEmbedding`（768 維） | ✅ 需建立 | 任務需求語義化 |
+
+### VS8 模組 → Layer 映射（按子系統分組）
+
+| 子系統 | 模組 | Layer | 角色 |
+|-------|------|-------|------|
+| `semantic-governance-portal` | `wiki-editor/` | L0A → L3 | Admin 分類法治理 [OT-1] |
+| `semantic-governance-portal` | `proposal-stream/` | L0A → L3 | Skill / Tag 修訂提案 |
+| `semantic-core-domain` | `_types.ts` | L3 (pure) | 領域型別定義 |
+| `semantic-core-domain` | `_semantic-authority.ts` | L1 (constants) | 分類法常數；被 L3/L6 消費 [OT-1] |
+| `semantic-core-domain` | `_aggregate.ts` | L3 (pure domain) | 時序衝突 + 分類法驗證 [OT-2] |
+| `semantic-core-domain` | `_actions.ts` | L3 → L4 (outbox) | Tag / 圖譜邊寫入命令 [KG-1] |
+| `semantic-core-domain` | `_cost-classifier.ts` | L3 (pure) | 成本語義分類（被 VS5 消費）[D27] |
+| `Semantic Compute Engine` | `genkit-tools/` | L10 (AI Tools) | 三工具分派引擎（`defineTool` 宣告）[GT-1] |
+| `Semantic Compute Engine` | `_services.ts` | L3 (internal) | 向量索引管理 [VD-1]；嵌入向量由 L10 AI 非同步觸發 [E8-I] |
+| `Semantic Compute Engine` | `_queries.ts` | L3 → L6 (via global-search) | QGWAY_SEARCH 讀出埠 [VD-2] |
+| `Semantic Output Layer` | `projections/` | L5 → L6 | 語義投影讀取（Tag 快照） |
+| `Semantic Output Layer` | `outbox/` | L3 → L4 | 拓撲異動外送廣播 |
+| `Semantic Output Layer` | `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent + [BF-1] 業務指紋事件訂閱 |
 
 ### Lane 路由規則
 

@@ -1,41 +1,42 @@
 ---
 name: xuanwu-architecture-realign
-description: 'Realign and condense Xuanwu architecture documentation against the baseline blueprint, unify terminology, and refine Mermaid diagrams.'
+description: 'Realign and condense Xuanwu architecture documentation against the canonical SSOT, unify terminology, and refine Mermaid diagrams.'
 agent: 'xuanwu-architecture-chief'
-argument-hint: 'Target doc or realignment scope, e.g.: realign 00-logic-overview.md against baseline | slim governance doc'
----
-Xuanwu Architecture Realignment Prompt
-
-Role
-
-You are Xuanwu Chief Architecture Engineer, responsible for realigning and slimming the repository architecture documentation.
-
-Your goal is to make the repository fully consistent with the baseline design, remove redundant content, and produce production-grade architecture documents and diagrams.
-
+argument-hint: 'Target doc or realignment scope, e.g.: realign 01-logical-flow.md against SSOT | slim governance doc'
 ---
 
-Baseline Reference
+## Xuanwu Architecture Realignment Prompt
 
-The architecture baseline is defined in:
+### Role
 
-- 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
+You are the Xuanwu Chief Architecture Engineer, responsible for realigning and slimming the repository architecture documentation.
+
+Your goal is to make the repository fully consistent with the canonical SSOT, remove redundant content, and produce production-grade architecture documents and diagrams.
+
+---
+
+### Baseline Reference
+
+The authoritative architecture SSOT is defined in:
+
+- docs/architecture/00-logic-overview.md
+- docs/architecture/00-architecture-standards.md
 
 All alignment and refinement must strictly follow this file.
 
 ---
 
-Target Documents
+### Target Documents
 
 The documents to be refined and aligned:
 
-- docs/architecture/00-logic-overview.md
 - docs/architecture/01-logical-flow.md
 - docs/architecture/02-governance-rules.md
 - docs/architecture/03-infra-mapping.md
 
 ---
 
-Task Objectives
+### Task Objectives
 
 For each target document:
 
@@ -50,7 +51,7 @@ For each target document:
 
 ---
 
-VS8 Architecture Layer System
+### VS8 Architecture Layer System
 
 Ensure all diagrams and references are aligned with these layers:
 
@@ -65,20 +66,20 @@ Ensure all diagrams and references are aligned with these layers:
 
 ---
 
-Constraints
+### Constraints
 
 - Do NOT introduce new architecture concepts, layers, or subsystems.
-- Do NOT expand scope beyond 05/06.
+- Do NOT expand scope beyond the baseline SSOT.
 - Do NOT preserve any content that conflicts with baseline.
 - The goal is realignment and slimming, not expansion.
 
 ---
 
-Output Requirements
+### Output Requirements
 
 After refinement:
 
-- Target documents 00~03 are fully aligned with 05/06
+- Target documents 01~03 are fully aligned with the SSOT in 00-logic-overview.md and 00-architecture-standards.md
 - Redundant or bloated sections are shrunk
 - Terminology is consistent across all documents
 - Mermaid diagrams are clean, readable, and VS8-aligned
@@ -86,8 +87,8 @@ After refinement:
 
 ---
 
-Execution Guidelines for Agent
+### Execution Guidelines for Agent
 
-«Prefer modifying and shrinking existing sections and diagrams rather than creating new ones.
+Prefer modifying and shrinking existing sections and diagrams rather than creating new ones.
 Always ensure that diagrams and text match the baseline.
-Maintain clarity, readability, and layer alignment at all times.»
+Maintain clarity, readability, and layer alignment at all times.

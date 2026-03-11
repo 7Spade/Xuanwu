@@ -1,7 +1,7 @@
 ---
 name: Xuanwu Repository Structure
 description: Standard repository structure and module organization
-applyTo: "**"
+applyTo: "src/**/*.{ts,tsx,js,jsx}"
 ---
 
 # Repository Structure Rules

@@ -6,6 +6,7 @@ agents:
   - xuanwu-product
   - xuanwu-research
   - xuanwu-architect
+  - xuanwu-architecture-chief
   - xuanwu-implementer
   - xuanwu-ui
   - xuanwu-quality
@@ -19,6 +20,8 @@ handoffs:
     agent: xuanwu-research
   - label: 'Design architecture'
     agent: xuanwu-architect
+  - label: 'Realign architecture docs'
+    agent: xuanwu-architecture-chief
   - label: 'Implement changes'
     agent: xuanwu-implementer
   - label: 'Audit UI/UX'

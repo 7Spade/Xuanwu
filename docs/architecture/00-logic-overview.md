@@ -1548,216 +1548,207 @@ class GLOBAL_SEARCH crossCutAuth
 class NOTIF_EXIT crossCutAuth
 class VS9,FIN_STAGING_ACL,FIN_STAGE_POOL,FIN_REQ_CMD,FIN_REQ_AGG,FIN_OB crossCutAuth
 
-%%  ╔══════════════════════════════════════════════════════════════════════════╗
-%%  ║  CONSISTENCY INVARIANTS 完整索引                                         ║
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  #1   每個 BC 只能修改自己的 Aggregate
-%%  #2   跨 BC 僅能透過 Event / Projection / ACL 溝通
-%%  #3   Application Layer 只協調，不承載領域規則
-%%  #4a  Domain Event 僅由 Aggregate 產生（唯一生成者）
-%%  #4b  TX Runner 只投遞 Outbox，不產生 Domain Event（分工界定）
-%%  #5   Custom Claims 只做快照，非真實權限來源
-%%  #6   Notification 只讀 Projection
-%%  #7   Scope Guard 僅讀本 Context Read Model
-%%  #8   Shared Kernel 必須顯式標示；未標示跨 BC 共用視為侵入
-%%  #9   Projection 必須可由事件完整重建
-%%  #10  任一模組需外部 Context 內部狀態 = 邊界設計錯誤
-%%  #11  XP 屬 Account BC；Organization 只設門檻
-%%  #12  Tier 永遠是推導值，不存 DB
-%%  #13  XP 異動必須寫 Ledger
-%%  #14  Schedule 只讀 ORG_ELIGIBLE_MEMBER_VIEW
-%%  #15  eligible 生命週期：joined→true · assigned→false · completed/cancelled→true
-%%  #16  Talent Repository = member + partner + team
-%%  #17  centralized-tag.aggregate 為 tagSlug 唯一真相
-%%  #18  workspace-governance role 繼承 policy 硬約束
-%%  #19  所有 Projection 更新必須以 aggregateVersion 單調遞增為前提 [S2 泛化]
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  ATOMICITY AUDIT 完整索引
-%%  #A1  wallet 強一致；profile/notification 弱一致
-%%  #A2  org-account.binding 只 ACL/projection 防腐對接
-%%  #A3  blockWorkflow → blockedBy Set；allIssuesResolved → unblockWorkflow
-%%  #A4  ParsingIntent 只允許提議事件
-%%  #A5  schedule 跨 BC saga/compensating event
-%%  #A6  全域語義權威 = VS8 CENTRALIZED_TAG_AGGREGATE；組織任務類型/技能類型擴展權威 = VS4 org-semantic-registry [D21-1]
-%%  #A7  Event Funnel 只做 compose
-%%  #A8  TX Runner 1cmd/1agg 原子提交
-%%  #A9  Scope Guard 快路徑；高風險回源 aggregate
-%%  #A10 Notification Router 無狀態路由
-%%  #A11 eligible = 「無衝突排班」快照，非靜態狀態
-%%  #A12 Global Search = 跨切片權威（語義門戶），唯一跨域搜尋出口，禁止各 Slice 自建搜尋邏輯
-%%  #A13 Notification Hub = 跨切片權威（反應中樞），唯一副作用出口，業務 Slice 只產生事件不決定通知策略
-%%  #A14 Cost Semantic 雙鍵分類（Layer-2）= VS8 _cost-classifier.ts 純函式輸出 (costItemType, semanticTagSlug)；
-%%       VS5 Layer-3 Semantic Router = use-workspace-event-handler，
-%%       僅 EXECUTABLE 項目物化為 tasks；其餘六類靜默跳過並 toast [D27]
-%%  #A15 Finance 進入閘門：任務必須達到 ACCEPTED（通過 task-accepted-validator [#A19]）才可進入 Finance Staging Pool；
-%%       Finance 獨立生命週期由 VS9 管理（Finance_Request：DRAFT→AUDITING→DISBURSING→PAID [#A21]）
-%%  #A16 （已由 #A21 升級取代）Finance_Request 生命週期合約；
-%%       Workflow Completed 條件為所有關聯 Finance_Request.status = PAID；
-%%       禁止在新工作中引用 #A16；舊的 Multi-Claim 循環邏輯已遷移至 VS9 Finance_Request 狀態機
-%%  #A17 Skill XP Award contract：XP 僅能由 VS3 寫入；來源必須為 VS5 的 TaskCompleted(baseXp, semanticTagSlug)
-%%       與 QualityAssessed(qualityScore) 事實事件；計算公式 awardedXp = baseXp × qualityMultiplier × policyMultiplier（含 clamp）
-%%       VS8 僅提供語義標籤與政策查詢，禁止直接寫入 XP ledger
-%%  #A18 Org Semantic Dictionary Extension contract：組織可新建 task-type/skill-type 語義；必須走 VS4 org-semantic-registry（org-task-type-registry + org-skill-type-registry），並以 org namespace 寫入 tag-snapshot
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  TAG SEMANTICS 擴展規則（VS8 · 四層語義引擎擴展規則 [D21-1~D21-10 + D21-A~D21-X]）
-%%  T1  新切片訂閱 TagLifecycleEvent（BACKGROUND_LANE）即可擴展 [D21-6]
-%%  T2  ORG_SKILL_TYPE_DICTIONARY / ORG_TASK_TYPE_DICTIONARY = 組織作用域可寫 Overlay（來源：VS8 全域 + VS4 組織語義字典）
-%%  T3  ORG_ELIGIBLE_MEMBER_VIEW.skills{tagSlug→xp} 交叉快照
-%%  T4  排班職能需求 = SK_SKILL_REQ × Tag Authority tagSlug [D21-5]
-%%  T5  TAG_SNAPSHOT 消費方禁止寫入 [D21-7]；DocumentParser UI 視覺屬性必須由 semantic-graph.slice 投影讀取
-%%      語義治理頁（wiki/proposal/relationship）顯示資料同樣必須走 L5 projection.semantic-governance-view → L6 Query Gateway
-%%  T6  突觸層（VS8_SL）寫入只能透過 semantic-edge-store.addEdge()；禁止直接操作 _edges 內部狀態 [D21-9]
-%%  T7  findIsolatedNodes 在每次 addEdge/removeEdge 後由 VS8_NG 非同步觸發，孤立節點寫入 Observability [D21-10]
-%%  T8  組織新建語義僅限 task-type/skill-type 類別，且必須使用 org namespace tagSlug（org:{orgId}:task-type:* / org:{orgId}:skill-type:*），避免污染全域語義空間
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  SEMANTIC TAG ENTITIES 索引（AI-ready Semantic Graph）
-%%  TE1 TAG_USER_LEVEL  tag::user-level    → tagSlug: user-level:{slug}
-%%  TE2 TAG_SKILL       tag::skill         → tagSlug: skill:{slug}
-%%  TE3 TAG_SKILL_TIER  tag::skill-tier    → tagSlug: skill-tier:{tier}
-%%  TE4 TAG_TEAM        tag::team          → tagSlug: team:{slug}
-%%  TE5 TAG_ROLE        tag::role          → tagSlug: role:{slug}
-%%  TE6 TAG_PARTNER     tag::partner       → tagSlug: partner:{slug}
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  INFRASTRUCTURE CONTRACTS [S1~S6] 索引
-%%  S1  SK_OUTBOX_CONTRACT     三要素：at-least-once / idempotency-key / DLQ分級
-%%  S2  SK_VERSION_GUARD       aggregateVersion 單調遞增保護（全 Projection）
-%%  S3  SK_READ_CONSISTENCY    STRONG_READ vs EVENTUAL_READ 路由決策
-%%  S4  SK_STALENESS_CONTRACT  SLA 常數單一真相（TAG/PROJ_CRITICAL/PROJ_STANDARD）
-%%  S5  SK_RESILIENCE_CONTRACT 外部入口最低防護規格（rate-limit/circuit-break/bulkhead）
-%%  S6  SK_TOKEN_REFRESH_CONTRACT Claims 刷新三方握手（VS1 ↔ IER ↔ 前端）
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  FIREBASE 隔離規則 與 Cross-cutting Authority 治理 [D24~D26]
-%%  （詳見 UNIFIED DEVELOPMENT RULES 完整定義）
-%%  ╠══════════════════════════════════════════════════════════════════════════╣
-%%  UNIFIED DEVELOPMENT RULES [D1~D27 + E7/E8 Governance]
-%%  ── 規則分層：Hard Invariants (D1~D20 核心不變量) / Semantic Governance D21(D21-1~D21-10+D21-A~D21-X)/D22~D23 / Infrastructure (D24~D25) / Authority Governance (D26) / Cost Semantic Routing Extension (D27) / AI & Entry Security Closure (E7/E8) ──
-%%  ── 基礎路徑約束（D1~D12）──
-%%  D1  事件傳遞只透過 shared-infra/outbox-relay；domain slice 禁止直接 import shared-infra/event-router
-%%  D2  跨切片引用：import from '@/features/{slice}/index' only；_*.ts 為私有
-%%  D3  所有 mutation：src/features/{slice}/_actions.ts only
-%%  D4  所有 read：src/features/{slice}/_queries.ts only
-%%  D5  src/app/ 與 UI 元件禁止 import src/shared-infra/firebase-client/{firestore|realtime-database|analytics}
-%%  D6  "use client" 只在 _components/ 或 _hooks/ 葉節點；layout/page server components 禁用
-%%  D7  跨切片：import from '@/features/{other-slice}/index'；禁止 _private 引用
-%%  D8  shared-kernel/* 禁止 async functions、Firestore calls、side effects
-%%  D9  workspace-application/ TX Runner 協調 mutation；slices 不得互相 mutate
-%%  D10 EventEnvelope.traceId 僅在 CBG_ENTRY 設定；其他地方唯讀
-%%  D11 workspace-core.event-store 支援 projection rebuild；必須持續同步
-%%  D12 getTier() 必須從 shared-kernel/skill-tier import；Firestore 寫入禁帶 tier 欄位
-%%  ── 契約治理守則（D13~D20）──
-%%  D13 新增 OUTBOX：必須在 SK_OUTBOX_CONTRACT 宣告 DLQ 分級
-%%  D14 新增 Projection：必須引用 SK_VERSION_GUARD，不得跳過 aggregateVersion 比對
-%%  D15 讀取場景決策：先查 SK_READ_CONSISTENCY（金融/授權 → STRONG；其餘 → EVENTUAL）
-%%  D16 SLA 數值禁止硬寫，一律引用 SK_STALENESS_CONTRACT
-%%  D17 新增外部觸發入口：必須在 SK_RESILIENCE_CONTRACT 驗收後上線
-%%  D18 Claims 刷新邏輯變更：以 SK_TOKEN_REFRESH_CONTRACT 為唯一規範
-%%  D19 型別歸屬規則：跨 BC 契約優先放 shared-kernel/*；shared/types 僅為 legacy fallback
-%%  D20 匯入優先序：shared-kernel/* > feature slice index.ts > shared/types
-%%  ── 語義 Tag 守則（D21~D23）── VS8 四層語義引擎正式規範 ──
-%%  ── 層級結構：Governance → Core Domain → Compute Engine → Output ──
-%%  ── 一、核心語義域（Core Domain · VS8_CL）──
-%%  D21-1 語義唯一性（雙層）：全域語義類別與標籤實體由 VS8 CTA 定義；組織自訂 task-type/skill-type 語義由 VS4 org-semantic-registry 定義
-%%  D21-2 標籤強型別化：系統中禁止使用隱性字串傳遞語義，所有引用必須指向 TE1~TE6 有效 tagSlug
-%%  ── 二、圖譜與推理引擎（Compute Engine · VS8_SL / VS8_NG）──
-%%  D21-3 節點互聯律：語義節點必須具備層級或因果關係；孤立標籤（Isolated Tag）視為無效語義，須通過 parentTagSlug 歸入分類學
-%%  D21-4 聚合體約束：CTA 守護標籤生命週期（Draft→Active→Stale→Deprecated）；reasoning-engine 計算關聯權重與語義距離
-%%  ── 三、語義路由與執行 (Compute Engine · VS8_ROUT) ──
-%%  D21-5 語義感知路由：跨切片決策（排班路由/通知分發）必須基於標籤語義權重，禁止硬編碼業務對象 ID
-%%  D21-6 因果自動觸發：TagLifecycleEvent 發生時，VS8 透過 Causality Tracer 自動推導受影響節點並發布更新事件；
-%%        traceAffectedNodes(event, candidateSlugs[]) 支援候選節點過濾（candidateSlugs=[] 表全圖追蹤）；
-%%        rankAffectedNodes / buildDownstreamEvents 可作為獨立工具使用；TAG_DELETED 不產生下游事件
-%%  ── 四、輸出與一致性 (Output Layer · Projection & Consistency) ──
-%%  D21-7 讀寫分離原則：寫入操作必須經過 CMD_GWAY 進入 VS8 CTA（全域）或 VS4 org-semantic-registry（組織）；讀取嚴禁直連資料庫，必須經由 projection.tag-snapshot
-%%  D21-8 新鮮度防禦：所有基於語義的查詢必須引用 SK_STALENESS_CONTRACT，TAG_STALE_GUARD ≤ 30 秒
-%%  ── 五、圖關係物理約束 (VS8_SL · Graph Physics) ──
-%%  D21-9 突觸權重不變量：SemanticEdge.weight ∈ [0.0, 1.0]；
-%%        語義代價 cost = 1.0 / max(weight, MIN_EDGE_WEIGHT)（強連結 = 近鄰 = 短距離）；
-%%        _clampWeight 在 addEdge 時強制執行；所有直接關係預設 weight=1.0；
-%%        禁止任何消費方持有 weight > 1.0 或 weight < 0.0 的邊
-%%  D21-10 拓撲可觀測性：findIsolatedNodes(slugs[]) 為 VS8_NG 唯一拓撲健康探針；
-%%         每次 addEdge/removeEdge 後必須以非同步方式觸發孤立節點檢查；
-%%         結果寫入 L9 Observability；D21-3 違規率 > 0 需觸發警告事件
-%%  ── 六、擴展不變量 (D21-A~D21-X · 四層架構治理律) ──
-%%  D21-A 雙層註冊律：跨領域全域概念在 core/tag-definitions.ts 註冊；組織任務類型/技能類型概念在 VS4 org-semantic-registry（org-task-type-registry + org-skill-type-registry）註冊
-%%  D21-B Schema 鎖定：標籤元數據必須符合 core/schemas 定義，禁止附加任何未經校驗的非結構化屬性
-%%  D21-C 無孤立節點：每個新標籤建立時必須透過 hierarchy-manager.ts 掛載至少一個有效父級節點（→ D21-3 強化版）
-%%  D21-D 向量一致性：embeddings/vector-store.ts 中的向量必須隨 core/tag-definitions.ts 定義同步刷新，延遲 ≤ 60s
-%%  D21-E 權重透明化：語義相似度計算與路徑權重生成必須由 weight-calculator.ts 統一輸出，禁止消費方自行推算
-%%  D21-F 注意力隔離：context-attention.ts 必須根據當前 Workspace 情境過濾無關標籤，防止語義噪聲污染路由結果
-%%  D21-G 演化回饋環：learning-engine.ts 僅能依據 VS3（排班）/ VS2（任務）的真實事實事件進行神經元強度調整，
-%%                    禁止手動隨機修改或注入合成數據；每次調整須附帶來源事件溯源
-%%  D21-H 血腦屏障（BBB）：執行管線：L3(VS8 Governance) consensus-engine 先行校驗治理邏輯一致性，通過後提案轉送 BBB 做最終物理不變量裁決；
-%%                          invariant-guard.ts 擁有最高否決權，可直接拒絕已通過治理共識但違反圖物理結構的提案，
-%%                          其最終裁決權優先凌駕於 consensus-engine 與 learning-engine 之上
-%%  D21-I 全域共識律：標籤治理決策開放全部組織用戶提案，所有提案必須通過 consensus-engine 的邏輯一致性校驗
-%%  D21-J 知識溯源：每條標籤關係的建立必須標註貢獻者 ID 與參考依據（事件 ID / 文件 ID），具備完整版本回溯能力
-%%  D21-K 語義衝突裁決：invariant-guard 偵測到違反物理邏輯（如循環繼承、矛盾語義）的聯結時直接拒絕提案並產生拒絕事件
-%%  D21-S 同義詞重定向：標籤合併完成後舊標籤自動成為 Alias，所有歷史數據引用自動重定向至主標籤，禁止直接刪除舊標籤
-%%  D21-T 命名共識律：標籤顯示名稱由社群貢獻度決定（可演化），tagSlug 作為永久技術識別碼不得修改
-%%  D21-U 禁止重複定義：新增標籤時 embeddings 必須即時計算相似度並提示語義接近的現有標籤，阻止靜默重複
-%%  D21-V 提案鎖定機制：處於「併購爭議中（Pending-Sync）」的標籤其路由權重凍結為 0.5 中性值，直到共識達成
-%%  D21-W 跨組織透明性：所有標籤修改紀錄對全域公開，任何組織用戶均可查看完整演化歷程與責任歸屬
-%%  D21-X 語義自動激發：用戶建立 A→B 關聯時，causality-tracer 自動建議語義相近的節點 C 作為潛在連結候選
-%%  D22 跨切片 tag 語義引用：全域標籤必須指向 TE1~TE6；組織自訂標籤必須指向 OrgTagRef(orgId, tagSlug)；禁止隱式字串引用
-%%  D23 tag 語義標注格式：節點內 → tag::{category}；邊 → -.->|"{dim} tag 語義"|
-%%  ── Firebase 隔離守則（D24~D25）──
-%%  D24 MUST: IF 位於 feature slice / shared/types / app THEN 必須禁止直接 import firebase/*
-%%  D24 MUST: IF 屬前端使用者態 Firebase 呼叫 THEN 必須透過 FIREBASE_ACL Adapter（src/shared-infra/firebase-client/{auth|firestore|realtime-database|messaging|storage|analytics}）
-%%  D24 FORBIDDEN: IF 位於 Feature Slice THEN MUST NOT 直接 import @/shared-infra/* 實作細節（含 firestore.*.adapter / db client）
-%%  D24 MUST: IF 位於 Feature Slice THEN 僅可依賴 SK_PORTS（L1）或 Query Gateway（L6）公開介面
-%%  D24-A MUST: IF 呼叫 Server Function / Server Action（Client -> Server 邊界）
-%%         THEN 輸入/輸出必須是 Plain Object（JSON-serializable）；
-%%         MUST NOT 傳遞 class instance、Firestore Timestamp/FieldValue、Date、含 toJSON 的 runtime object
-%%  D24-B MUST: IF 位於 feature slice 定義 mutation action
-%%         THEN 必須同時定義 Command DTO（最小必要欄位）；
-%%         禁止直接使用 Aggregate/Projection 型別作為 action 參數
-%%  D24-C MUST: IF Firestore snapshot 進入 client state
-%%         THEN 必須先經 normalizer 轉為 Client Model（plain values）再存入 context/store
-%%  D24-D FORBIDDEN: IF 為 Client 端呼叫 action
-%%         THEN MUST NOT 直接傳遞 Account/Workspace 等 rich entity 到 Server Function
-%%  D25 MUST: IF 新增 Firebase 前端能力 THEN 必須在 FIREBASE_ACL 新增 Adapter；Realtime Database 用於即時通訊，Analytics 用於遙測寫入，不得承載領域寫入
-%%  D25 MUST: IF 入口涉及受保護資料或可變更狀態 THEN 必須先完成 App Check 驗證（含 token 續期與失效處理）[E7]
-%%  D25 MUST: IF 操作涉及 Admin 權限/跨租戶/排程/觸發器/Webhook 驗簽 THEN 必須走 src/shared-infra/firebase-admin/functions
-%%  D25 MUST: IF 需要受治理的 GraphQL 資料契約 THEN 必須走 src/shared-infra/firebase-admin/dataconnect
-%%  D25 SHOULD: IF 可由 Rules 安全完成且為高頻小請求 THEN 優先 firebase-client 以降低 Functions 成本
-%%  D25 SHOULD: IF 為高扇出或可批次流程 THEN 優先 firebase-admin/functions 集中批處理以降低總寫入成本
-%%  D25 SHOULD: IF 為即時訂閱能力 THEN 必須定義 subscribe/unsubscribe/reconnect/backoff 與權限失效策略 [P7]
-%%  D25 SHOULD: IF 為 AI tool data access THEN 必須由 Genkit tool gateway 統一檢查租戶邊界與可見性 [E8]
-%%  ── Cross-cutting Authority 守則（D26）──
-%%  D26 MUST: IF 執行跨域搜尋 THEN 必須經 global-search.slice；業務 Slice 不得自建搜尋邏輯
-%%  D26 MUST: IF 執行通知副作用 THEN 必須經 notification-hub.slice（VS7）；業務 Slice 不得直接調用 sendEmail/push/SMS
-%%  D26 MUST: IF 屬 global-search.slice 或 notification-hub.slice THEN 必須具備自己的 _actions.ts / _services.ts [D3]
-%%  D26 FORBIDDEN: IF 屬 cross-cutting authority THEN MUST NOT 寄生於 shared-kernel [D8]
-%%  ── L2 Command Gateway 下沉邊界（單向鏈防呆）──
-%%      MUST: IF 元件為 GatewayCommand / DispatchOptions / Handler 介面型別 THEN 可下沉至 L1（Shared Kernel）
-%%      MUST: IF 元件為 CommandResult/錯誤碼契約且為純資料或純函式 THEN 可下沉至 L1（Shared Kernel）
-%%      MUST: IF 元件屬 CBG_ENTRY / CBG_AUTH / CBG_ROUTE 執行管線 THEN 必須保留在 L2（Infrastructure Orchestration）
-%%      MUST: IF 元件屬 handler registry 或 resilience 接線（rate-limit/circuit-breaker/bulkhead）THEN 必須保留在 L2
-%%      FORBIDDEN: IF 元件包含 async / side effects / routing registry THEN MUST NOT 下沉至 shared-kernel/* [D8]
-%%      FORBIDDEN: IF 位於 L1 THEN MUST NOT 產生 traceId；traceId 僅允許 CBG_ENTRY 注入 [D10]
-%%  ── 成本語義路由守則（D27 · Extension Gate）──
-%%  D27 MUST: IF 處理成本語義路由 THEN 必須採用三層架構（Layer-1 原始解析 → Layer-2 語義分類 → Layer-3 語義路由）
-%%  D27 MUST: IF 位於 Layer-2 THEN 必須呼叫 VS8 classifyCostItem(name) 輸出 (costItemType, semanticTagSlug)
-%%  D27 MUST: IF 實作 classifyCostItem THEN 必須為純函式（禁止 async / Firestore / 副作用）[D8]
-%%  D27 MUST: IF 產生 ParsedLineItem THEN 必須寫入 (costItemType, semanticTagSlug) 並隨 payload 傳遞
-%%  D27 MUST: IF 位於 Layer-3 物化流程 THEN 必須以 shouldMaterializeAsTask() 作為唯一物化閘門 [D27-Gate]
-%%  D27 FORBIDDEN: IF 位於 workspace.slice THEN MUST NOT 直接硬寫 `=== CostItemType.EXECUTABLE` 判斷
-%%  D27 MUST: IF shouldMaterializeAsTask() 返回 true THEN 才可物化為 WorkspaceTask；否則必須靜默跳過並 toast [#A14]
-%%  D27 MUST: IF 物化為任務 THEN 必須寫入 sourceIntentIndex 以維持排序不變量 [D27-Order]
-%%  D27 MUST: IF tasks-view 呈現任務清單 THEN 必須先按 createdAt（批次間）再按 sourceIntentIndex（批次內）排序
-%%  D27 MUST: IF 設計任務鏈路 THEN 必須遵守單向鏈 WorkspaceItem → WorkspaceTask → Schedule（禁止跳級）[D27-Order]
-%%  D27 MUST: IF UI 顯示 DocumentParser icon/color/label THEN 必須讀取 tag-snapshot（不得分類器硬編碼）[T5]
-%%  D27 MUST: IF 為排班視圖讀取 THEN 僅可經 L6 Query Gateway；UI 禁止直讀 VS6/Firebase [L6-Gateway]
-%%  D27 MUST: IF 涉及 overlap/resource-grouping THEN 必須在 L5 Projection 層完成，前端僅渲染 [Timeline]
-%%  P6 SHOULD: IF 使用 Next.js Parallel Routes THEN 每個 @slot 必須對應單一資料通道（QGWAY channel）與獨立 Suspense fallback
-%%  P6 SHOULD: IF 使用 Streaming UI THEN 必須定義可中斷/可重試策略，避免跨 slot 共享阻塞
-%%  E8 MUST: IF Genkit flow 觸發 tool calling THEN 必須經 Tool ACL（role/scope/tenant）與審計追蹤（traceId/toolCallId/modelId）
-%%  E8 FORBIDDEN: IF 位於 AI flow THEN MUST NOT 直接呼叫 firebase/* 或跨租戶讀寫
-%%  D27 FORBIDDEN: IF 位於 VS5 document-parser THEN MUST NOT 自行實作成本語義邏輯；必須透過 VS8 classifyCostItem() [D27]
-%%      禁止 Layer-3 Semantic Router 繞過 costItemType 直接物化非 EXECUTABLE 項目
-%%  ── Visualization DataSet 快取守則（D28）──
-%%  D28 MUST: IF 渲染 vis-network / vis-timeline / vis-graph3d THEN 必須透過 VisDataAdapter DataSet<>；禁止直連 Firebase
-%%  D28 MUST: IF 新增視覺化元件 THEN 必須在 VisDataAdapter 新增對應 DataSet<>，不得在元件中建立獨立 Firebase 訂閱
-%%  D28 FORBIDDEN: IF 位於 vis-* 元件 THEN MUST NOT 直接訂閱 Firebase（避免 N 組件 × 1 訂閱造成費用倍增）
-%%  D28 FORBIDDEN: IF 位於 VisDataAdapter 以外 THEN MUST NOT 寫入 vis-data DataSet<>
-%%  ╚══════════════════════════════════════════════════════════════════════════╝
+```mermaid
+sequenceDiagram
+    autonumber
+
+    participant Admin as VS8: 語義管理 (Admin/Ontology)
+    participant UI as L0: 外部入口 (PM/User)
+    participant GW as L0A: API 閘道 (CQRS Ingress)
+    participant VS0 as VS0: 內核契約 (Kernel/SK)
+    participant D3 as L3: 領域切片 (VS2/VS3/VS5/VS9)
+    participant AI as L10: Genkit 編排器
+    participant Tool as L10-Tools: AI 工具集 (S/M/V)
+    participant IER as L4: 事件路由器 (IER/LANE)
+    participant P5 as L5: 投影總線 (Projection Bus)
+    participant L8 as L8: 數據持久層 (Firebase/Vector)
+
+    Note over Admin,L8: 架構正確性優先 | Everything as a Tag | 語義權威治理
+
+    rect rgb(250, 250, 250)
+        Note over Admin,L8: Phase 0 語義基石
+        Admin->>L8: 0.1 定義全域 Tag 本體 (Ontology Slugs)
+        VS0->>D3: 0.2 注入 SharedKernel 契約與 Tag 型別 [FI-003]
+    end
+
+    rect rgb(245, 245, 245)
+        Note over UI,L8: Phase 1 數據攝取與語義化
+        UI->>GW: 1.1 更新履歷/發布任務
+        GW->>D3: 1.2 執行領域寫入
+        D3->>L8: 1.3 存儲業務實體 + 自動標籤化
+        D3->>IER: 1.4 發布數據變更事件
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
+        AI->>L8: 1.6 存儲向量特徵
+    end
+
+    rect rgb(230, 245, 255)
+        Note over UI,AI: Phase 2 智慧匹配執行
+        UI->>GW: 2.1 請求匹配建議
+        GW->>D3: 2.2 觸發匹配指令
+        D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tool ACL]
+        AI->>Tool: 2.4 search_skills 術語正規化
+        AI->>Tool: 2.5 match_candidates 向量召回
+        AI->>Tool: 2.6 verify_compliance 合規驗證 [GT-2 Fail-closed]
+        AI-->>D3: 2.7 回傳推理軌跡與排名結果
+        D3->>IER: 2.8 發布 MatchingConfirmed 事件
+    end
+
+    rect rgb(255, 250, 240)
+        Note over IER,UI: Phase 3 投影物化與業務指紋反饋
+        IER->>P5: 3.1 物化 Recommendation View
+        GW->>P5: 3.2 讀取物化視圖 (QRY)
+        P5-->>UI: 3.3 渲染智慧推薦列表
+        D3->>IER: 3.4 [BF-1] 業務指紋回饋 (TaskCompleted)
+        IER-->>AI: 3.5 VS8 調整 employees.skillEmbedding 權重
+    end
+```
+
+| 階段 | 核心規則 |
+|------|---------|
+| Phase 0 語義基石 | `FI-003` |
+| Phase 1 數據攝取 | `E8-I` |
+| Phase 2 智慧匹配 | `GT-2` / `E8` |
+| Phase 3 投影反饋 | `BF-1` / `S2` |
+
+## 三條主鏈（Canonical Chains）
+
+| 鏈路 | 流向 |
+|---|---|
+| 寫鏈 | `L0 -> L0A(CMD_API_GW) -> L2 -> L3 -> L4 -> L5` |
+| 讀鏈 | `L0/UI -> L0A(QRY_API_GW) -> L6 -> L5` |
+| Infra 鏈 A | `L3/L5/L6 -> L1(SK_PORTS) -> L7-A(firebase-client) -> L8` |
+| Infra 鏈 B | `L0/L2 -> L7-B(functions + firebase-admin) -> L8` |
+
+## VS 與 Layer 快速對照
+
+### Vertical（VS0~VS9）
+
+- `VS0`: Foundation（`VS0-Kernel` + `VS0-Infra`）
+- `VS1~VS9`: 業務切片（Identity / Account / Skill XP / Organization / Workspace / Scheduling / Notification / Semantic Cognition / Finance）
+
+### Auxiliary Feature Slices（現況補充）
+
+- `global-search.slice`：跨切片搜尋權威出口（D26）。
+- `portal.slice`：門戶殼層狀態橋接，承載 portal state 公開 hook。
+
+### Horizontal（L0~L10）
+
+- `L0`: External Triggers
+- `L0A`: API Gateway Ingress（Command/Query 分流）
+- `L1`: Shared Kernel（contracts/constants/pure）
+- `L2`: Command Gateway
+- `L3`: Domain Slices
+- `L4`: IER
+- `L5`: Projection Bus
+- `L6`: Query Gateway
+- `L7`: Firebase ACL Boundary（A=client, B=functions/admin）
+- `L8`: Firebase Runtime（external）
+- `L9`: Observability
+- `L10`: AI Runtime & Orchestration
+
+## 最小架構圖（VS0~VS9 × 八層架構）
+
+```mermaid
+flowchart LR
+  subgraph IDL["① Identity Layer"]
+    EXT[L0 External]
+    VS1[VS1 Identity]
+  end
+
+  subgraph GOV["② Governance Layer"]
+    VS0[VS0 SK]
+    CMDGW[L0A CMD_GW]
+    QRYGW[L0A QRY_GW]
+    L2[L2]
+    L6[L6]
+  end
+
+  subgraph SEM["③ Semantic Layer"]
+    VS8[VS8 Semantic Cognition]
+  end
+
+  subgraph TSL["④ Task / Skill Layer"]
+    DOM[VS2/3/4/5\nVS6/7/9 Domain]
+  end
+
+  subgraph DL["⑤ Data Lifecycle Layer"]
+    IER[L4 IER]
+    PB[L5 PB]
+  end
+
+  subgraph MAI["⑥ Matching/AI Layer"]
+    L10[L10 AI]
+  end
+
+  subgraph INF["⑦ Infrastructure Layer"]
+    L1[L1 SK_PORTS]
+    L7A[L7-A client]
+    L7B[L7-B admin]
+    L8[L8 Firebase]
+  end
+
+  subgraph OBS["⑧ Observability Layer"]
+    L9[L9]
+  end
+
+  EXT & VS1 --> CMDGW & QRYGW
+  VS0 -->|FI-003| DOM
+  CMDGW --> L2
+  L2 --> DOM --> IER --> PB
+  L2 --> VS8
+  QRYGW --> L6 --> PB
+  DOM & PB & L6 & VS8 --> L1
+  L1 --> L7A & L7B
+  L7A & L7B --> L8
+  IER -->|E8-I| L10 --> VS8
+  L2 -. trace .-> L9
+  IER -. lag .-> L9
+```
+
+## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
+
+> 定位：VS8 是全系統的語義權威與語義認知引擎（L3 Semantic Layer），以四階段語義生命週期驅動系統：Phase 0（語義基石）→ Phase 1（數據攝取）→ Phase 2（智慧匹配）→ Phase 3（結果輸出）。
+> 四大子系統：`semantic-governance-portal`（wiki-editor / proposal-stream，Phase 0 本體論治理）｜`semantic-core-domain`（_types / _aggregate / _actions / _cost-classifier，純領域邏輯）｜`Semantic Compute Engine`（genkit-tools/ + _services.ts，三工具分派 search_skills → match_candidates → verify_compliance）｜`Semantic Output Layer`（projections / outbox / subscribers，Phase 3 輸出與反饋）。
+> 公開邊界：`index.ts` 為唯一公開出口；`_actions.ts`（寫入命令 [KG-1]）、`_aggregate.ts`（純驗證 / 聚合）、`_queries.ts`（讀出口 [VD-2]）、`_services.ts`（向量索引 [VD-1]）、`_semantic-authority.ts`（語義權威常數 [OT-1]）。`VS8-SemanticBrain` 為歷史文件目錄，對應現行切片 `semantic-graph.slice`；`VS9 = Finance`。
+
+## 關鍵不變量（索引）
+
+- `FI-003`: VS0 SK 在 Domain Slice (L3) 執行前完成契約型別注入；D3 不得重複定義 SK 已定義型別。
+- `R8`: traceId 只注入一次、全鏈唯讀。
+- `S2`: Projection 必須過 version guard。
+- `S4`: SLA 只能引用契約常數，不可硬寫。
+- `D24/D25`: Firebase 邊界隔離（feature 不直連 SDK；admin 僅 functions）。
+- `D26`: cross-cutting authority 出口唯一化（Search / Notification）。
+- `D27`: 成本語義決策由 VS8 `_cost-classifier.ts` 提供；VS5 不可自判。
+- `D29`: Aggregate + outbox 同交易。
+- `D31`: 讀路徑權限投影一致性。
+- `E7/E8`: Security/AppCheck/AI Tool ACL 閉環。
+- `E8-I`: Embedding 提取管線必須透過 IER (L4) 非同步隔離，禁止 Domain Slice 同步呼叫 AI。
+- `A19~A22`: 任務-金融生命週期封閉與逆向投影規則。
+- `KG-1`: 知識圖譜邊只能透過 VS8 `_actions.ts` 寫入；嚴禁外部切片建立 SemanticEdge。
+- `VD-1`: 語義向量索引由 VS8 `_services.ts` 獨家管理；外部切片透過 `_queries.ts` 出口查詢。
+- `OT-1`: 新分類法維度只能在 VS8 `_semantic-authority.ts` 定義；嚴禁其他切片自行添加維度。
+- `B1`: VS8 只輸出語義提示/匹配結果；嚴禁直接觸發跨切片副作用。
+- `GT-1`: VS8 Genkit 工具（`search_skills` / `match_candidates` / `verify_compliance`）必須透過 `defineTool` 在 Genkit 中註冊；AI 呼叫合規驗證必須優先於候選人輸出。
+- `BF-1`: 業務指紋回饋（Behavioral Fingerprint Update）—任務結果確認後，Domain Slice 必須透過 IER 事件觸發 VS8 更新 `employees.skillEmbedding` 權重；嚴禁其他切片直接寫入 `employees.skillEmbedding`。
+- `G7`: 跨切片語義訊號必帶 `semanticTagSlugs`；嚴禁傳遞裸字串語義標籤。
+
+完整正文請見 `02-governance-rules.md`。
+
+## FORBIDDEN（最小集）
+
+- 禁止跨切片直接寫他域 Aggregate。
+- 禁止繞過 L2/L4/L5/L6 主鏈路。
+- 禁止 feature slice 直連 `firebase/*` 或 `firebase-admin`。
+- 禁止讀路徑回呼寫路徑形成反向環。
+- 禁止 Domain Slice 同步呼叫 AI 進行 Embedding 提取（必須透過 IER 非同步 [E8-I]）。
+- 禁止 VS8 直接執行跨切片副作用（僅輸出語義提示 [B1]）。
+
+完整 Forbidden 清單請見 `02-governance-rules.md`。
+
+## 變更協議（Doc Change Protocol）
+
+1. 先改 `02-governance-rules.md` 的 canonical rule body。
+2. 再更新 `00` 的索引與裁決語句。
+3. 同步 `01`（流程視圖）與 `03`（路徑映射）。
+4. 最後用 `99-checklist.md` 做審查。

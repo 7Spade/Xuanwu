@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-product'
 description: 'Project-specific Xuanwu product planning agent for requirement refinement, acceptance criteria, issue shaping, and execution plans.'
-tools: ['codebase', 'search', 'githubRepo', 'list_issues', 'get_issue', 'search_issues', 'update_issue', 'add_issue_comment', 'create_issue', 'create_issue_comment', 'memory/*', 'sequentialthinking/*']
+tools: ['codebase', 'search', 'githubRepo', 'list_issues', 'get_issue', 'search_issues', 'update_issue', 'add_issue_comment', 'create_issue', 'create_issue_comment', 'memory/*', 'sequential-thinking/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
