@@ -22,7 +22,7 @@ The authoritative architecture SSOT is defined in:
 - docs/architecture/00-logic-overview.md
 - docs/architecture/00-architecture-standards.md
 
-All alignment and refinement must strictly follow these two files.
+All alignment and refinement must strictly follow this file.
 
 ---
 
