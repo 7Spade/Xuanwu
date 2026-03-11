@@ -96,7 +96,7 @@ sequenceDiagram
 
 ## VS 與 Layer 快速對照
 
-### Vertical（VS）
+### Vertical（VS0~VS9）
 
 - `VS0`: Foundation（`VS0-Kernel` + `VS0-Infra`）
 - `VS1~VS9`: 業務切片（Identity/Account/Skill/Organization/Workspace/Scheduling/Notification/Semantic/Finance）

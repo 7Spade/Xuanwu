@@ -66,7 +66,7 @@
 補充實作對照（2026-03-11）：
 
 - `global-search.slice`：跨域搜尋權威出口（D26）。
-- `portal.slice`：門戶 state 橋接切片（不編入 VS1~VS9）。
+- `portal.slice`：門戶 state 橋接切片（不編入 VS0~VS9）。
 
 ## VS8：語義智慧匹配架構（SIMA）規則集
 
