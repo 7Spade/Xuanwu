@@ -161,6 +161,8 @@ The repository now follows these consolidation rules:
 12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); `create-specification` remains as a compatibility alias.
 13. `breakdown-plan` is also the canonical backlog decomposition skill; `gen-specs-as-issues` remains as a compatibility alias.
 14. `next-best-practices` is the canonical Next.js skill family entrypoint; `next-cache-components` and `next-upgrade` remain as compatibility aliases.
+15. `prompt-builder` is also the canonical exemplar prompt-authoring skill; `code-exemplars-blueprint-generator` remains as a compatibility alias.
+16. `agent-governance` is the canonical agent safety and governance skill; `agentic-eval` and `ai-prompt-engineering-safety-review` remain as compatibility aliases.
 
 ## Required Reference Documents for Customizations
 
