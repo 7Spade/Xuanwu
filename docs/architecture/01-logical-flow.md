@@ -187,16 +187,18 @@ sequenceDiagram
 
 ---
 
-## 系統架構圖（VS8 層次對齊）
+## 系統架構圖（VS0~VS9 × 八層架構）
 
 ```mermaid
 flowchart TD
     subgraph IDL["① Identity Layer"]
         EXT[L0 External]
         UI[L0 UI]
+        VS1[VS1 Identity]
     end
 
     subgraph GOV["② Governance Layer"]
+        VS0[VS0 SK]
         CMD[L0A CMD_GW]
         QRY[L0A QRY_GW]
         CBG[L2]
@@ -208,7 +210,7 @@ flowchart TD
     end
 
     subgraph TSL["④ Task / Skill Layer"]
-        DOM[L3 Domain Slices]
+        DOM[VS2/3/4/5\nVS6/7/9 Domain]
     end
 
     subgraph DL["⑤ Data Lifecycle Layer"]
@@ -231,8 +233,9 @@ flowchart TD
         L9[L9]
     end
 
-    EXT --> CMD --> CBG --> DOM --> IER --> PB
+    EXT & VS1 --> CMD --> CBG --> DOM --> IER --> PB
     UI --> QRY --> QG --> PB
+    VS0 -->|FI-003| DOM
     CBG --> VS8
     DOM & PB & QG & VS8 --> PORTS
     PORTS --> FA & FB

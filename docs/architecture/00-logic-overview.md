@@ -121,15 +121,17 @@ sequenceDiagram
 - `L9`: Observability
 - `L10`: AI Runtime & Orchestration
 
-## 最小架構圖（VS8 層次對齊）
+## 最小架構圖（VS0~VS9 × 八層架構）
 
 ```mermaid
 flowchart LR
   subgraph IDL["① Identity Layer"]
     EXT[L0 External]
+    VS1[VS1 Identity]
   end
 
   subgraph GOV["② Governance Layer"]
+    VS0[VS0 SK]
     CMDGW[L0A CMD_GW]
     QRYGW[L0A QRY_GW]
     L2[L2]
@@ -141,7 +143,7 @@ flowchart LR
   end
 
   subgraph TSL["④ Task / Skill Layer"]
-    DOM[L3 Domain Slices]
+    DOM[VS2/3/4/5\nVS6/7/9 Domain]
   end
 
   subgraph DL["⑤ Data Lifecycle Layer"]
@@ -164,7 +166,8 @@ flowchart LR
     L9[L9]
   end
 
-  EXT --> CMDGW & QRYGW
+  EXT & VS1 --> CMDGW & QRYGW
+  VS0 -->|FI-003| DOM
   CMDGW --> L2
   L2 --> DOM --> IER --> PB
   L2 --> VS8

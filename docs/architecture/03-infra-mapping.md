@@ -162,7 +162,7 @@ flowchart TD
     P0 --> P1 --> P2 --> P3
 ```
 
-| 階段 | VS8 層次 | 路徑 | 關鍵規則 |
+| 階段 | 架構層次 | 路徑 | 關鍵規則 |
 |------|---------|------|---------|
 | **Phase 0** 語義基石 | Semantic + Governance Layer | `Admin → L8(skills)`；`VS0(SK) → L3(domain)` | `FI-003` / `OT-1` |
 | **Phase 1** 數據攝取 | Data Lifecycle + Infrastructure Layer | `L0A → L2 → L3 → L4(BACKGROUND) → L10 → L8` | `E8-I` / `VD-3` |
