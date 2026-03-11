@@ -70,16 +70,8 @@
 
 ## VS8：語義智慧匹配架構（SIMA）規則集
 
-> VS8 定位：**基於語義的智慧匹配架構（Semantic Intelligent Matching Architecture）**，透過整合知識圖譜（Knowledge Graph / 邏輯大腦）、向量數據庫（Vector Database / 記憶模塊）、技能本體論/分類法（Skills Ontology / 語言定義），解決人力資源中的複雜分派問題。
->
-> 完整序列流程：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)（三階段語義數據生命週期）
->
-> **Firestore 集合**：`employees`（候選人 + skillEmbedding）、`tasks`（分派請求）、`skills`（本體論 + embedding）
->
-> 詳細架構定義請見：
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、Firestore Schema、Genkit 工具規格
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — Genkit 工具整合圖、HR 分派序列圖、Firestore 集合關聯圖
-> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md`](03-Slices/VS8-SemanticBrain/architecture-build.md) — Phase 1-4 實施計畫
+> 定位：語義智慧匹配架構（SIMA）；三大支柱：Knowledge Graph / Vector DB / Skills Ontology。
+> 詳細設計：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
 ### VS8 三工具分派引擎（Genkit Matching Flow）
 

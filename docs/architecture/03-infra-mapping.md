@@ -205,16 +205,3 @@ flowchart TD
 | `outbox/` | L3 → L4 | 拓撲異動外送廣播 |
 | `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent + [BF-1] 業務指紋事件訂閱 |
 
-### VS8 外部依賴與接口
-
-| 消費方向 | 接口 | 規則 |
-|---------|------|------|
-| VS8 → `shared-kernel` | `TAXONOMY_DIMENSIONS`、`CentralizedTagEntry`（型別合約） | [FI-003] SK 注入；[D19] 合約在 SK，邏輯在 VS8 |
-| VS8 → `shared-infra/projection-bus` | `publishTagEvent` → `_tag-funnel.ts` | [T1] 事件匯流排出口 |
-| VS8 → Firebase Firestore (L7-A) | 透過 SK_PORTS 讀寫 Tag 文件；Vector Search | [D24] 禁止直連 SDK |
-| VS8 → Vertex AI (`text-embedding-004`) | 嵌入向量生成（透過 Genkit plugin，L4 IER 非同步觸發） | [E8-I] 非同步隔離；768 維 |
-| `global-search.slice` → VS8 | `querySemanticIndex` / `SEARCH_DOMAINS` | [VD-2] 唯一讀出埠 |
-| `workspace.slice` → VS8 | `classifyCostItem` / `classifyParserLineItem` | [D27] 成本語義 |
-| `finance.slice` → VS8 | 成本分類器型別 | [D27] |
-| VS5/VS9 → IER → VS8 | `TaskCompleted` / `TaskRated` 行為事件 | [BF-1] 業務指紋回饋 |
-| Genkit AI Agent → VS8 | `searchSkillsTool`、`matchCandidatesTool`、`verifyComplianceTool` | [GT-1] via `defineTool` |
