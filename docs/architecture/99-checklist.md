@@ -38,6 +38,13 @@
 - [ ] 文件解析與成本分類使用 VS8 `_cost-classifier.ts`，未在 VS5 自建分類器（D27）。
 - [ ] `shouldMaterializeAsTask()` 只允許 `EXECUTABLE` 物化任務（D27-Gate）。
 
+## 5a. AI 匹配安全門（E8 / GT-2 / L4A / L0B）
+- [ ] `match_candidates`（Tool-M）metadata filter 已強制 tenantId 綁定，未帶入即 **fail-closed**（E8 Fail-closed）。
+- [ ] `verify_compliance`（Tool-V）證照/資格硬過濾已启用，未通過候選人一律排除 **fail-closed**（GT-2 Fail-closed）。
+- [ ] L4A 稽核切片記錄包含五大欄位：**Who / Why / Evidence / Version / Tenant**（缺失任一不得進入 L5）。
+- [ ] L0B Server Action 串流橋接：AI 匹配結果經 L0B streaming 回傳 UI，攜帶 traceId（禁止繞過）。
+- [ ] AI Tool 呼叫順序不得倒置：`search_skills → match_candidates → verify_compliance → output`（GT-2）。
+
 ## 6. Authority Exits（D26 / #A12 / #A13）
 - [ ] 跨域搜尋只經 `global-search.slice`。
 - [ ] 通知副作用只經 `notification-hub.slice`。

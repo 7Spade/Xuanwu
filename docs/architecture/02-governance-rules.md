@@ -48,7 +48,7 @@
 | `OT-2` | Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 |
 | `OT-3` | `TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程 |
 | `GT-1` | VS8 Genkit 工具必須透過 `defineTool` 宣告；禁止 AI Flow 直調內部模組 |
-| `GT-2` | AI 匹配流程遵循 `search_skills → match_candidates → verify_compliance → output`；`verify_compliance` 必須在候選人輸出前完成 |
+| `GT-2` | AI 匹配流程遵循 `search_skills → match_candidates → verify_compliance → output`；`verify_compliance` 必須在候選人輸出前完成；**Fail-closed：證照/資格硬過濾，未通過即排除** |
 | `GT-3` | `search_skills` 返回之 `skillId` 作為後續查詢的標準術語依據 |
 | `BF-1` | 業務指紋回饋：任務結果確認後，Domain Slice 透過 IER 事件觸發 VS8 更新 `employees.skillEmbedding` 權重；嚴禁其他切片直接寫入 `employees.skillEmbedding` |
 | `G7` | 跨切片語義訊號必帶 `semanticTagSlugs`；嚴禁傳遞裸字串語義標籤 |
@@ -57,7 +57,7 @@
 | `D30` | hop-limit 循環防禦；SECURITY_BLOCK 禁止自動 replay |
 | `D31` | 讀路徑權限一致性依賴 `acl-projection` |
 | `E7` | App Check/security gate 不可繞過 |
-| `E8` | AI flow 禁止直接呼叫 `firebase/*` 或跨租戶讀寫 |
+| `E8` | AI flow 禁止直接呼叫 `firebase/*` 或跨租戶讀寫；**Tool-M (`match_candidates`) metadata filter 必須 tenantId 強綁定，未帶入即 fail-closed** |
 | `A19` | VS5 任務狀態封閉生命週期 |
 | `A20` | Finance staging pool 唯一寫入路徑 |
 | `A21` | Finance_Request 獨立生命週期 |
@@ -199,9 +199,24 @@ flowchart LR
 | 規則 | 類型 | 說明 |
 |------|------|------|
 | `E8` | MUST | Genkit flow 觸發 tool calling 必須經 Tool ACL（role/scope/tenant）與審計追蹤（traceId/toolCallId/modelId） |
+| `E8` | MUST | `match_candidates`（Tool-M）metadata filter **必須 tenantId 強綁定**；未帶入 tenantId 即 **fail-closed**（跨租戶向量查詢一律拒絕） |
 | `E8` | FORBIDDEN | AI flow 禁止直接呼叫 `firebase/*` 或跨租戶讀寫 |
 
 ---
+
+### L4A：語義決策稽核切片（Semantic Decision Audit Slice）
+
+> L4A 為 AI 匹配決策稽核門（Semantic Decision Audit Gate）；凡 AI 匹配流程（Phase 2）完成後必審
+
+| 規則 | 類型 | 說明 |
+|------|------|------|
+| `L4A` | MUST | AI 匹配流程（Phase 2）完成後，L4 IER 路由至 L4A 稽核切片，寫入決策稽核記錄 |
+| `L4A` | MUST | 稽核記錄必須包含五大欄位：**Who**（操作者/呼叫人）、**Why**（匹配觸發原因）、**Evidence**（推理軌跡 inferenceTrace[]）、**Version**（AI 模型版本/modelId）、**Tenant**（租戶 ID） |
+| `L4A` | MUST | 缺失任一欄位視為稽核記錄不完整，禁止進入 L5 Projection |
+| `L4A` | MUST | 稽核記錄經 L4 STANDARD_LANE 路由；屬於 STANDARD Projection |
+| `L4A` | FORBIDDEN | 禁止 L4A 直接寫入 L3 Aggregate；僅可透過 L5 Projection Bus 物化稽核視圖 |
+
+**設計原則**（架構正確性優先）：稽核切片是 AI 匹配決策的可追溯基礎。五大欄位的完整性確保每次 AI 輸出均可被審計、回溯與持續提升。
 
 ### #A19：VS5 任務生命週期收斂（task-lifecycle-convergence）
 

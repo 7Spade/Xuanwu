@@ -23,3 +23,13 @@
 - Saga: `startSchedulingSaga` 與 saga state 查詢。
 - UI surfaces: governance、calendar、timeline、workspace/account 視圖與相關 hooks。
 - Ports: command/query/event port contracts（邊界遷移用）。
+
+## SSOT Phase 對齊（Phase Alignment）
+
+| Phase | 步驟 | VS6 Scheduling 角色 |
+|-------|------|-------------------|
+| Phase 1 (1.3-1.8) | 領域命令 + 事件發布 | 排班命令走 D29 TransactionalCommand + FI-002 單交易；ScheduleProposed 走 STANDARD_LANE |
+| Phase 2 (2.4-2.14) | 智慧匹配執行 | VS6 消費 Phase 2 匹配結果；Tool-M（match_candidates，E8 fail-closed）+ Tool-V（verify_compliance，GT-2 fail-closed）驗證排班候選人 |
+| Phase 3 (3.1-3.6) | 讀取鏈 | 排班視圖（ScheduleView [D27]）透過 L6 Query Gateway 讀取物化視圖 |
+
+**BF-1**：排班確認後觸發 VS8 業務指紋更新（員工技能權重調整）。

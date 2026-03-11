@@ -59,9 +59,17 @@ sequenceDiagram
   participant REQ as 分派請求方\n(workforce-scheduling / workspace)
   participant GS as global-search.slice
   participant VS8 as VS8 / index.ts
-  participant OT as 支柱三：分類法\n(_semantic-authority.ts / _aggregate.ts)
-  participant VD as 支柱二：向量索引\n(_services.ts)
-  participant KG as 支柱一：知識圖譜\n(projections/graph-selectors)
+  participant OT as Tool-S: search_skills\n支柱三 分類法
+  participant VD as Tool-M: match_candidates\n支柱二 向量索引 [E8]
+  participant KG as Tool-V: verify_compliance\n支柱一 知識圖譜 [GT-2]
+  participant AI as Genkit AI Agent
+  participant SA as L0B Streaming Adapter
+  participant UI as Front-end UI
+  participant D3 as D3 Write Aggregate
+  participant IER as L4 IER
+  participant Audit as L4A Audit Log
+  participant P5 as L5 Projection Bus
+  participant L8 as L8 Read Model
 
   REQ->>GS: search(roleRequirements, skillTags)
   GS->>VS8: querySemanticIndex(query, { domain })
@@ -73,6 +81,14 @@ sequenceDiagram
   KG-->>VS8: expanded candidates (IS_A / REQUIRES 展開)
   VS8-->>GS: SemanticSearchHit[] + inferenceTrace
   GS-->>REQ: 匹配候選集（語義提示，非最終決策）
+
+  AI-->>SA: 2.8 串流推理軌跡 (L0B Trace Stream)
+  SA-->>UI: 2.9 即時回推前端 (Realtime)
+  AI-->>D3: 2.10 返回最終排名
+  D3->>IER: 2.11 發布決策事件
+  IER->>Audit: 2.12 稽核日誌 [L4A]
+  IER->>P5: 2.13 投影事件 [LANE]
+  D3->>L8: 2.14 BF-1 業務指紋更新
 
   Note over VS8: VS8 只輸出語義提示 [B1]
   Note over VS8: 分派決策由呼叫方負責
@@ -195,7 +211,7 @@ flowchart LR
 ## 七、架構邊界約束摘要
 
 | 邊界 | 規則 | 關鍵 ID |
-|------|------|---------|
+|------|------|---------| 
 | **寫入邊界** | 所有 Tag / 圖譜邊寫入必須經由 `_actions.ts` | [D3] / [KG-1] |
 | **讀取邊界** | 所有查詢透過 `_queries.ts` 出口 | [D4] / [VD-2] |
 | **分類法邊界** | 新維度只能在 `_semantic-authority.ts` 定義 | [OT-1] |
@@ -219,16 +235,16 @@ flowchart TD
     direction TB
     FLOW["dispatchFlow\n_dispatch-flow.ts"]
 
-    subgraph "工具一：search_skills\n（支柱三 語言定義）"
-      T1["search_skills\ngenkit-tools/"]
+    subgraph "Tool-S：search_skills\n（支柱三 語言定義）"
+      T1["Tool-S: search_skills\ngenkit-tools/"]
     end
 
-    subgraph "工具二：match_candidates\n（支柱二 記憶模塊）"
-      T2["match_candidates\ngenkit-tools/"]
+    subgraph "Tool-M：match_candidates\n（支柱二 記憶模塊）[E8]"
+      T2["Tool-M: match_candidates\ngenkit-tools/ [E8]"]
     end
 
-    subgraph "工具三：verify_compliance\n（支柱一 邏輯大腦）"
-      T3["verify_compliance\ngenkit-tools/"]
+    subgraph "Tool-V：verify_compliance\n（支柱一 邏輯大腦）[GT-2]"
+      T3["Tool-V: verify_compliance\ngenkit-tools/ [GT-2]"]
     end
   end
 
@@ -244,8 +260,8 @@ flowchart TD
 
   TASK --> FLOW
   FLOW -- "1. 術語標準化" --> T1
-  FLOW -- "2. 向量匹配" --> T2
-  FLOW -- "3. 合規驗證（優先）" --> T3
+  FLOW -- "2. 向量匹配 [E8]" --> T2
+  FLOW -- "3. 合規驗證（優先）[GT-2]" --> T3
 
   T1 -- "querySemanticIndex\n(domain: skill)" --> FS_SKILLS
   T2 -- "Vector Search\n(employees.skillEmbedding)" --> FS_EMP
@@ -340,4 +356,41 @@ sequenceDiagram
 
   Note over AI: 輸出合規候選集（B1：不執行分派）
   AI-->>AI: 輸出 SemanticSearchHit[] + inferenceTrace
+```
+
+---
+
+### Diagram 10: Phase 0-3 Architecture Timeline (SSOT Alignment)
+
+```mermaid
+flowchart LR
+    subgraph P0["Phase 0: 語義基石 (Kernel Bootstrap)"]
+        VS0["VS0 Kernel Types\n→ D3 (L3)"]
+        OntologyAdmin["Admin→L8\n(Skill Ontology Slugs)"]
+        TagBoot["D3→L8\n(Tag Ontology 0.2)"]
+        ProfileBoot["VS2 Account\nProfile Init (0.3)"]
+        TaskBoot["VS5 Workspace\nTask Init (0.4)"]
+    end
+
+    subgraph P1["Phase 1: 寫入鏈 (Write Chain) [FI-002 D29 LANE]"]
+        WriteUI["UI → L0A → L2"]
+        WriteD3["L2 → L3 (D29)"]
+        WriteL8["L3 → L8 [FI-002]"]
+        EmbedL10["L10 async\nEmbedding Store"]
+        WriteLANE["L3→L4→L5\n[LANE routing]"]
+    end
+
+    subgraph P2["Phase 2: 智慧匹配 (Intelligent Matching) [E8 GT-2 L4A]"]
+        MatchUI["UI → L0A → L2 → L3 → L10"]
+        ToolPath["Tool-S → Tool-M[E8] → Tool-V[GT-2]"]
+        Streaming["AI → L0B → UI\n(2.8-2.9 Trace Stream)"]
+        Audit["D3 → L4 → L4A\n(2.11-2.12 Audit)"]
+        BF1["D3 → L8\n(2.14 BF-1)"]
+    end
+
+    subgraph P3["Phase 3: 讀取鏈 (Read Chain)"]
+        ReadFlow["UI → L0A → L6 → L5 → UI"]
+    end
+
+    P0 --> P1 --> P2 --> P3
 ```

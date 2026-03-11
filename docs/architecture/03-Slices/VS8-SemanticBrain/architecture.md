@@ -232,6 +232,34 @@ export const verifyComplianceTool = defineTool(
 
 ---
 
+## SSOT Phase 2 完整執行鏈（Steps 2.5-2.14）
+
+> 參考：`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` Phase 2 Intelligent Matching Execution
+
+VS8 L10 Genkit Orchestrator 在 Phase 2 執行以下完整步驟：
+
+| Step | 路徑 | 說明 | 規則 |
+|------|------|------|------|
+| 2.5 | AI → Tool-S (search_skills) | 術語正規化；返回 canonical skill slugs | GT-3, OT-2 |
+| 2.6 | Tool-M → L8 (vector search) | 語義近鄰搜尋；**tenantId 強綁定** | E8 fail-closed |
+| 2.7 | Tool-V → L8 (verify certs) | 證照/資格硬過濾；**未通過即排除** | GT-2 fail-closed |
+| 2.8 | AI → L0B (SA stream) | 串流中間推理軌跡至 Server Action 橋接 | R8 traceId |
+| 2.9 | L0B → UI | 即時回推前端進度/理由片段 | R8 traceId |
+| 2.10 | AI → D3 | 返回最終推理軌跡與排名 | GT-2 完成後方可執行 |
+| 2.11 | D3 → IER (L4) | 發布匹配決策事件（含 reasons/traceRef） | D29 事件攜帶 |
+| 2.12 | IER → L4A (Audit) | 寫入稽核日誌 | L4A 五大欄位：Who/Why/Evidence/Version/Tenant |
+| 2.13 | IER → P5 (L5) | 按 Lane 分流投影事件 | LANE (Critical/Standard) |
+| 2.14 | D3 → L8 | 自動回饋業務指紋（Employee 標籤權重調整） | BF-1 |
+
+**執行約束：**
+- Tool-S → Tool-M → Tool-V 順序不可調換（GT-2 合規要求）
+- Step 2.6 (Tool-M) 必須帶 tenantId：`metadata.tenantId == request.tenantId`（E8 fail-closed）
+- Step 2.7 (Tool-V) 是候選人輸出的最後防線：硬過濾後方可進入 Step 2.10
+- Step 2.12 (L4A) 五大欄位缺失任一，禁止進入 Step 2.13 (L5 Projection)
+- Step 2.14 (BF-1) 僅由 D3 (L3 Domain) 觸發；L10/L4A/L5 不可直接寫入 `skillEmbedding`
+
+---
+
 ## 現行目錄結構
 
 ```text

@@ -23,3 +23,14 @@
 - Org skill recognition: grant/revoke recognition。
 - Read queries: account skill view、org skill tags、member recognitions。
 - UI: `PersonalSkillPanel`。
+
+## SSOT Phase 對齊（Phase Alignment）
+
+| Phase | 步驟 | VS3 Skill 角色 |
+|-------|------|--------------|
+| Phase 0 (0.2) | 建立標籤本體論 (D3→L8) | VS3 的 XP 等級標籤（Skill Tier slugs）屬於 VS8 tag ontology 的一部分；初始化時由 VS8 Admin 定義（Step 0.1/0.2） |
+| Phase 1 (1.3-1.4) | D29 TransactionalCommand + FI-002 | XP Ledger append 操作必須攜帶 TransactionalCommand 標記並使用 Firestore 單一事務 |
+| Phase 1 (1.7-1.8) | LANE 分流 | SkillTierChanged → CRITICAL_LANE；XPAdded → STANDARD_LANE |
+| Phase 2 (2.14) | BF-1 業務指紋回饋 | 任務結果確認後（AcceptanceConfirmed），XP 變化觸發 VS8 更新 `employees.skillEmbedding` |
+
+**E8 邊界**：VS3 的 XP 查詢必須帶 tenantId；跨租戶 XP 讀取一律拒絕。

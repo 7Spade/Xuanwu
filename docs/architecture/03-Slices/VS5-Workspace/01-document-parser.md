@@ -42,3 +42,15 @@
 
 - VS5 私建分類器。
 - parser 階段直接做 async/DB side effects。
+
+## Phase 對齊（SSOT Phase Alignment）
+
+| Phase | 步驟 | VS5 Document Parser 角色 |
+|-------|------|-------------------------|
+| Phase 0 (Step 0.4) | 建立任務需求 (D3→L8) | Document Parser 解析出的 ParsingIntent → #A4 契約 → VS8 Cost Classifier → EXECUTABLE 判定後方可觸發 Phase 0.4 寫入 |
+| Phase 1 (Step 1.3-1.4) | 執行領域命令 [D29] + Firestore 寫入 [FI-002] | 解析結果轉為 Task Command，透過 D29 TransactionalCommand + FI-002 單交易持久化 |
+| Phase 1 (Step 1.5) | 請求語義提取 | Document Parser 輸出的任務需求觸發 L10 Genkit 提取 `requirementsEmbedding` |
+
+**Tool-S 銜接（Phase 2 前置）**：  
+Document Parser 完成後，任務的 `semanticTagSlugs` 必須透過 Tool-S（`search_skills`）正規化為 canonical slugs，
+作為 Phase 2 向量匹配的語義基礎（對齊 GT-3 / OT-2）。
