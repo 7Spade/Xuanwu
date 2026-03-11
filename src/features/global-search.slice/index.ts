@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority: the system's sole search portal. [D26]
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  *   global-search.slice = 語義門戶 (Semantic Portal)
  *   唯一跨域搜尋權威 · 對接 VS8 語義索引
  *

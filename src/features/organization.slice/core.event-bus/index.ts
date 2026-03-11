@@ -3,7 +3,7 @@
  *
  * Organization event bus — mirrors workspace-core.event-bus pattern.
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  *   ORGANIZATION_ENTITY → ORGANIZATION_EVENT_BUS
  *   ORGANIZATION_EVENT_BUS → [ORGANIZATION_SCHEDULE, WORKSPACE_ORG_POLICY_CACHE, ACCOUNT_NOTIFICATION_ROUTER]
  *   ORGANIZATION_EVENT_BUS -.→ shared-kernel.event-envelope

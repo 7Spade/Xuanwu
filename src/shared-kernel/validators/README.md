@@ -83,4 +83,4 @@ export function assertValidTraceId(input: unknown): asserts input is string {
 ---
 
 > **架構對齊**：`src/shared-kernel/validators/` = VS0-Kernel 驗證規則層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（邊界校驗前置、L1 無副作用）。
+> 規則依據：`docs/architecture/README.md`（邊界校驗前置、L1 無副作用）。

@@ -3,7 +3,7 @@
  *
  * Organization Skill Recognition Aggregate.
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  *   ORG_SKILL_RECOGNITION["organization-skill-recognition.aggregate
  *     (organizationId / accountId / skillId / minXpRequired / status)"]
  *   ORG_SKILL_RECOGNITION -> SkillRecognitionGranted / SkillRecognitionRevoked -> ORGANIZATION_EVENT_BUS

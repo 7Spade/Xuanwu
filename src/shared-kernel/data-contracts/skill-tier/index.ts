@@ -3,11 +3,11 @@
  *
  * VS0 Shared Kernel: Skill-tier computation contract and cross-BC staffing contract.
  *
- * Per 00-logic-overview.md Invariant #12:
+ * Per docs/architecture/README.md Invariant #12:
  *   "Tier 永遠是推導值（純函式 getTier(xp)），不得存入任何 DB 欄位"
  *   Tier is ALWAYS derived on-demand — NEVER persisted to any DB field.
  *
- * Per 00-logic-overview.md SK_SKILL_REQ:
+ * Per docs/architecture/README.md SK_SKILL_REQ:
  *   skill-requirement = tagSlug × minXp — cross-BC staffing contract
  *   Flows: Workspace BC → Organization BC via WorkspaceScheduleProposed event [A5]
  *

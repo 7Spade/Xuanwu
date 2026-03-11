@@ -5,7 +5,7 @@
  * Routes organization events to the correct target account notification slice
  * based on TargetAccountID.
  *
- * Per 00-logic-overview.md [E3]:
+ * Per docs/architecture/README.md [E3]:
  *   IER →|ScheduleAssigned| ACCOUNT_NOTIFICATION_ROUTER
  *   ACCOUNT_NOTIFICATION_ROUTER →|路由至目標帳號| ACCOUNT_USER_NOTIFICATION
  *

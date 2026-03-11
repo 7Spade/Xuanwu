@@ -7,7 +7,7 @@
  *
  * Stored at: walletBalanceView/{accountId}
  *
- * Per 00-logic-overview.md (PROJ_BUS CRIT_PROJ):
+ * Per docs/architecture/README.md (PROJ_BUS CRIT_PROJ):
  *   WALLET_V["projection.wallet-balance\n[S3: EVENTUAL_READ]\n憿舐內?具蝎曄Ⅱ鈭斗??? AGG"]
  *   QGWAY_WALLET ??projection.wallet-balance (STRONG_READ [Q8][D5])
  *

@@ -3,7 +3,7 @@
  *
  * Registers all v9 GW_QUERY routes with infra.gateway-query at startup.
  *
- * Per 00-logic-overview.md GW_QUERY subgraph:
+ * Per docs/architecture/README.md GW_QUERY subgraph:
  *   QGWAY_SCHED     → projection.org-eligible-member-view  [#14][#15][#16][P4][R7]
  *   QGWAY_NOTIF     → projection.account-view              [#6 FCM Token]
  *   QGWAY_SCOPE     → projection.workspace-scope-guard     [#A9]

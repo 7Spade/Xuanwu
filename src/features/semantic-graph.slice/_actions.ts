@@ -3,7 +3,7 @@
  *
  * VS8 Semantic Graph: server actions for tag management. [D3]
  *
- * Per 00-logic-overview.md [D3] SIDE_EFFECT_FUNNELLING:
+ * Per docs/architecture/README.md [D3] SIDE_EFFECT_FUNNELLING:
  *   All entity mutations (Firestore set/update) MUST go through _actions.ts.
  *   UI and external callers MUST NOT call Firestore directly.
  *

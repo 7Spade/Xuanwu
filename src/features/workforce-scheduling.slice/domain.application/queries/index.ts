@@ -122,7 +122,7 @@ export type { OrgEligibleMemberView, OrgMemberSkillWithTier };
  * Returns the full eligible-member view (with computed skill tiers) for a single
  * org member.  Routing: VS6 ??QGWAY_SCHED ??projection.org-eligible-member-view.
  *
- * Per 00-logic-overview.md Invariant #14: scheduling reads ORG_ELIGIBLE_MEMBER_VIEW.
+ * Per docs/architecture/README.md Invariant #14: scheduling reads ORG_ELIGIBLE_MEMBER_VIEW.
  */
 export async function getEligibleMemberForSchedule(
   orgId: string,

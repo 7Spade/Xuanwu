@@ -243,7 +243,7 @@ export function WorkspaceProvider({ workspaceId, children }: { workspaceId: stri
       authoritySnapshot,
     );
     // Cross-layer Outbox event: WORKSPACE_OUTBOX →|workspace:schedule:proposed| ORGANIZATION_SCHEDULE
-    // Per 00-logic-overview.md: W_B_SCHEDULE publishes this event so scheduling.slice
+    // Per docs/architecture/README.md: W_B_SCHEDULE publishes this event so scheduling.slice
     // can persist a schedule_item and start the HR governance approval flow.
     if (result.success) {
       if (workspace?.dimensionId) {

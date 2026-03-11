@@ -16,7 +16,7 @@ export type { NotificationChannel, NotificationPriority };
  * Tag-based routing rule: maps a set of tag slugs to a delivery channel
  * and priority. Evaluated by the notification hub's event subscriber.
  *
- * Per 00-logic-overview.md (VS7):
+ * Per docs/architecture/README.md (VS7):
  *   Notification Hub routes events via VS8 tag semantics —
  *   tag slugs determine which channels fire and at what priority.
  */

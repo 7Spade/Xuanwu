@@ -3,7 +3,7 @@
  *
  * Maintains the per-account skill XP read model.
  *
- * Per 00-logic-overview.md (VS3 → STD_PROJ_LANE):
+ * Per docs/architecture/README.md (VS3 → STD_PROJ_LANE):
  *   SKILL_V["projection.account-skill-view\n[S2: SK_VERSION_GUARD]"]
  *
  * Stored at: accountSkillView/{accountId}

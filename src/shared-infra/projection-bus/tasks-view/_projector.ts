@@ -10,7 +10,7 @@
  *
  * Tasks list read model [D27-Order]. Standard projection (SLA ≤ 10s).
  *
- * Per 01-logical-flow.md (PROJ_BUS STD_PROJ):
+ * Per docs/architecture/README.md (PROJ_BUS STD_PROJ):
  *   TASK_V["projection.tasks-view
  *     任務清單（createdAt 批次間
  *     → sourceIntentIndex 批次內）[D27-Order]

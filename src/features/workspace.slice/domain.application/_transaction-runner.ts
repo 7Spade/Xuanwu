@@ -5,7 +5,7 @@
  * Provides an Outbox for collecting domain events during execution.
  * After handler completion, appends all events to the workspace event store.
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  * - WORKSPACE_POLICY_ENGINE → WORKSPACE_TRANSACTION_RUNNER
  * - WORKSPACE_TRANSACTION_RUNNER → WORKSPACE_AGGREGATE
  * - WORKSPACE_AGGREGATE → WORKSPACE_EVENT_STORE

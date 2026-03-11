@@ -1,6 +1,6 @@
 # Shared Kernel（L1 · VS0）
 
-此層為全域契約中心，對齊 `docs\architecture\00-logic-overview.md` 的 L1（Shared Kernel）定義。
+此層為全域契約中心，對齊 `docs/architecture/README.md` 的 L1（Shared Kernel）定義。
 
 ## 目錄結構
 
@@ -79,7 +79,7 @@ src/
 ## 使用原則
 
 - Shared Kernel 僅承載「跨切片、跨層可重用」的契約與介面，不放業務流程邏輯。
-- 若新規則未在 `docs\architecture\00-logic-overview.md` / `.memory/knowledge-graph.json` 定義，先補齊規格再實作。
+- 若新規則未在 `docs/architecture/README.md` / `.memory/knowledge-graph.json` 定義，先補齊規格再實作。
 - 新增契約時，請同步由 `index.ts` 顯式匯出，維持可觀測且可治理的公共 API 邊界。
 
 ## 共享核心層規範（必遵）
@@ -144,7 +144,7 @@ IF 發現同一常數/型別在多切片重複宣告
 THEN 收斂至 Shared Kernel 並由 index.ts 單一匯出
 
 IF 新增 Shared Kernel 公開 API
-THEN 必須同步更新 docs/architecture/00-logic-overview.md 與本檔
+THEN 必須同步更新 docs/architecture/README.md 與本檔
 ```
 
 ## 相容遷移（Legacy → Canonical）

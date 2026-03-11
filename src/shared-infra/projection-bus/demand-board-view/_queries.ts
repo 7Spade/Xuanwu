@@ -3,7 +3,7 @@
  *
  * Read-side queries for the demand board schedule-item view.
  * Per docs/prd-schedule-workforce-skills.md FR-W0 / FR-W6 and
- * 00-logic-overview.md (VS6 Demand Board read model):
+ * docs/architecture/README.md (VS6 Demand Board read model):
  *
  *   PROPOSAL  — proposal submitted, awaiting assignment (visible)
  *   OFFICIAL  — member confirmed (visible with assignee details)

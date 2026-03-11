@@ -3,7 +3,7 @@
  *
  * Per-account skill XP read model. Feed: IER STANDARD_LANE → STD_PROJ_LANE.
  *
- * Per 00-logic-overview.md (VS3 → STD_PROJ_LANE):
+ * Per docs/architecture/README.md (VS3 → STD_PROJ_LANE):
  *   SKILL_V["projection.account-skill-view\n[S2: SK_VERSION_GUARD]"]
  *
  * [S2] All writes enforce versionGuardAllows.

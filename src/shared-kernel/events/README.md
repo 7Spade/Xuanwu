@@ -91,4 +91,4 @@ export interface WorkspaceArchivedPayload {
 ---
 
 > **架構對齊**：`src/shared-kernel/events/` = VS0-Kernel 事件契約層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（R8 traceId、L4 IER 路由分離）。
+> 規則依據：`docs/architecture/README.md`（R8 traceId、L4 IER 路由分離）。

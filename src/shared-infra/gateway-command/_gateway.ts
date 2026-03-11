@@ -3,7 +3,7 @@
  *
  * [GW] Command Bus Gateway ??unified write entry point. [E4][R4][R8][Q4][Q7]
  *
- * Per 00-logic-overview.md GW_CMD:
+ * Per docs/architecture/README.md GW_CMD:
  *   CBG_ENTRY  ??unified-command-gateway: injects TraceID [E4][R8]
  *   CBG_AUTH   ??universal-authority-interceptor: AuthoritySnapshot [Q4]
  *               ACTIVE_CTX takes precedence over Claims when they conflict.

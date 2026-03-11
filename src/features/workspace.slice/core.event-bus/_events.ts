@@ -111,7 +111,7 @@ export interface DocumentParserItemsExtractedPayload {
 /**
  * IntentDeltaProposed ??emitted by a ParsingIntent Digital Twin [#A4].
  *
- * Per 00-logic-overview.md: PARSE_INT -.->|"IntentDeltaProposed [#A4]"| A_TASKS
+ * Per docs/architecture/README.md: PARSE_INT -.->|"IntentDeltaProposed [#A4]"| A_TASKS
  * Invariant #A4: ParsingIntent only allows proposing events (CQS ??no direct mutation).
  *
  * This event is persisted to the ws-outbox Firestore collection [S1][E5] for

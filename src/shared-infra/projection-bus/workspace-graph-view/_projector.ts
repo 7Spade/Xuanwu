@@ -11,7 +11,7 @@
  * Task dependency graph read model. Standard projection (SLA ≤ 10s).
  * Consumed by VS5 vis-network visualization [D28].
  *
- * Per 01-logical-flow.md (PROJ_BUS STD_PROJ):
+ * Per docs/architecture/README.md (PROJ_BUS STD_PROJ):
  *   WS_GRAPH_V["projection.workspace-graph-view
  *     任務依賴 Nodes/Edges 拓撲
  *     [VS5 vis-network 消費格式]

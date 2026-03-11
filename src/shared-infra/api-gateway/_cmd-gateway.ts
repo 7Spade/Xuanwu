@@ -12,7 +12,7 @@
  *
  * Architecture: L0A CMD_API_GW → L2 gateway-command (CBG_ENTRY → CBG_AUTH → CBG_ROUTE)
  *
- * Per 01-logical-flow.md:
+ * Per docs/architecture/README.md:
  *   CMD_API_GW["COMMAND_API_GATEWAY\nwrite-only ingress · L0A\nsrc/shared-infra/api-gateway"]
  *   BULKHEAD → CMD_API_GW → CBG_ENTRY
  *

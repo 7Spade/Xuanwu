@@ -1,4 +1,4 @@
-// projection.global-audit-view · public API · 00-logic-overview.md VS8 GLOBAL_AUDIT_VIEW [S2][R8]
+// projection.global-audit-view · public API · docs/architecture/README.md VS8 GLOBAL_AUDIT_VIEW [S2][R8]
 export { applyAuditEvent } from './_projector';
 export { getGlobalAuditEvents, getGlobalAuditEventsByWorkspace } from './_queries';
 export type { GlobalAuditRecord, GlobalAuditQuery } from './_projector';

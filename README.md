@@ -67,6 +67,6 @@ When UI text changes, update both locale files with identical keys:
 
 ## Architecture Sources
 
-- `docs/architecture/00-logic-overview.md`
+- `docs/architecture/README.md`
 - `.memory/knowledge-graph.json`
 - `.github/skills/xuanwu-skill/SKILL.md`

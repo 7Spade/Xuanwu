@@ -3,7 +3,7 @@
  * @description Server-side read functions for fetching workspace tasks.
  * Callable from RSC pages, hooks, and context without React dependencies.
  *
- * Per 00-logic-overview.md [R4]: read queries must NOT live in _actions.ts.
+ * Per docs/architecture/README.md [R4]: read queries must NOT live in _actions.ts.
  */
 
 import {

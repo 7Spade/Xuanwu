@@ -4,7 +4,7 @@
  * Consolidated skill-XP domain: Account skill XP, Org Skill Recognition,
  * Skill Tag Pool, and Account Skill View projection.
  *
- * Per 00-logic-overview.md [E1]:
+ * Per docs/architecture/README.md [E1]:
  *   SERVER_ACTION_SKILL → ACCOUNT_SKILL_AGGREGATE → ACCOUNT_SKILL_XP_LEDGER
  *   _actions.ts (application coordinator) → ORGANIZATION_EVENT_BUS (via IER routing)
  *   Aggregate does NOT publish to cross-BC buses directly (Invariant #3).

@@ -12,7 +12,7 @@
  *
  * Architecture: L0A QRY_API_GW → L6 gateway-query (QGWAY + routes)
  *
- * Per 01-logical-flow.md:
+ * Per docs/architecture/README.md:
  *   QRY_API_GW["QUERY_API_GATEWAY\nread-only ingress · L0A\nsrc/shared-infra/api-gateway"]
  *   BULKHEAD → QRY_API_GW → QGWAY
  *

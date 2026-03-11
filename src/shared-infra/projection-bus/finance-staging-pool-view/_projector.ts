@@ -12,7 +12,7 @@
  * Standard projection (SLA ≤ 10s).
  * Consumed by QGWAY_FIN_STAGE.
  *
- * Per 01-logical-flow.md (PROJ_BUS STD_PROJ):
+ * Per docs/architecture/README.md (PROJ_BUS STD_PROJ):
  *   FINANCE_STAGE_V["projection.finance-staging-pool [#A20]
  *     待請款池：已驗收未請款任務清單
  *     消費 TaskAcceptedConfirmed（CRITICAL_LANE）

@@ -3,7 +3,7 @@
  *
  * Cross-cutting Authority ??Server actions for the sole search portal. [D3]
  *
- * Per 00-logic-overview.md [D26]:
+ * Per docs/architecture/README.md [D26]:
  *   global-search.slice is the system's sole search authority.
  *   All cross-domain search requests route through these actions.
  *

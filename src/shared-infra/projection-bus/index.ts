@@ -24,7 +24,7 @@
  *   workspace-scope-guard-view — WORKSPACE_SCOPE_READ_MODEL [#A9]
  *   workspace-view           — WORKSPACE_PROJECTION_VIEW
  *
- * Per 00-logic-overview.md (VS8 Projection Bus):
+ * Per docs/architecture/README.md (VS8 Projection Bus):
  *   WORKSPACE_EVENT_BUS + ORGANIZATION_EVENT_BUS + TAG_LIFECYCLE_BUS
  *     → EVENT_FUNNEL_INPUT → all projection slices
  *

@@ -6,7 +6,7 @@
  *   2. Skill Tag Pool (orgSkillTagPool)
  *   3. Org Skill Recognition (orgSkillRecognition)
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  *   W_B_SCHEDULE -.-> ACCOUNT_SKILL_VIEW (read-only via ORG_ELIGIBLE_MEMBER_VIEW)
  *   SKILL_TAG_POOL_AGGREGATE -> SKILL_TAG_POOL (read model)
  *   ORG_SKILL_RECOGNITION["...organizationId / accountId / skillId / minXpRequired / status"]

@@ -10,7 +10,7 @@
  *
  * [L0A] CQRS Gateway — unified read/write split ingress.
  *
- * Per 01-logical-flow.md UNIFIED_GW:
+ * Per docs/architecture/README.md UNIFIED_GW:
  *   CMD_API_GW — write-only ingress → L2 gateway-command
  *   QRY_API_GW — read-only ingress  → L6 gateway-query
  *

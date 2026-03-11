@@ -2,7 +2,7 @@
  * projection.semantic-governance-view — _queries.ts
  *
  * Read-side queries for the semantic governance tag view.
- * Per 00-logic-overview.md (VS8 → STD_PROJ_LANE):
+ * Per docs/architecture/README.md (VS8 → STD_PROJ_LANE):
  *   QGWAY_SEM_GOV["→ .semantic-governance-view\n語義治理頁讀模型（提案/共識/關係）\n治理頁顯示必經 L5 投影"]
  *
  * [A6] CENTRALIZED_TAG_AGGREGATE is the sole semantic authority; this module

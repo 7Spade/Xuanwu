@@ -3,7 +3,7 @@
  *
  * Skill Tag Pool: organization-scoped view of the global Tag Authority Center.
  *
- * Per 00-logic-overview.md (VS4):
+ * Per docs/architecture/README.md (VS4):
  *   SKILL_TAG_POOL is the org-scoped projection in skill-xp.slice
  *   that passively syncs from TagLifecycleEvent updates.
  *

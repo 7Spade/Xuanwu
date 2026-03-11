@@ -11,7 +11,7 @@
  * ACL read-path permission mirror [D31].
  * CRITICAL projection (SLA ≤ 500ms).
  *
- * Per 01-logical-flow.md [D31]:
+ * Per docs/architecture/README.md [D31]:
  *   ACL_PROJ_V["projection.acl-projection [D31]
  *     讀取路徑權限鏡像
  *     CBG_AUTH 權限變更事件 → L5 同步更新

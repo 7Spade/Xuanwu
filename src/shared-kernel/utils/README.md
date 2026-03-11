@@ -92,4 +92,4 @@ export function dedupeBy<T, K>(
 ---
 
 > **架構對齊**：`src/shared-kernel/utils/` = VS0-Kernel 通用工具層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（L1 純函式區域，禁止副作用）。
+> 規則依據：`docs/architecture/README.md`（L1 純函式區域，禁止副作用）。

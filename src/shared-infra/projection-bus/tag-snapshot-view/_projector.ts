@@ -4,7 +4,7 @@
  * Tag Authority global read model.
  * Final-consistent snapshot of the global tag dictionary.
  *
- * Per 00-logic-overview.md (VS8 Tag Lifecycle Views):
+ * Per docs/architecture/README.md (VS8 Tag Lifecycle Views):
  *   TAG_SNAPSHOT["projection.tag-snapshot\ntagSlug / label / category\n蝯?雿?翰?吭n靘?: TagLifecycleEvent\n瘨祥?孵霈敹怠?"]
  *
  * Invariants:

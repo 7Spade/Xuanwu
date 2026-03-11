@@ -10,7 +10,7 @@
  *
  * [D28] VisDataAdapter — L7-A vis-data DataSet<> local cache.
  *
- * Per 01-logical-flow.md [D28]:
+ * Per docs/architecture/README.md [D28]:
  *   VIS_DATA_ADP["vis-data.adapter.ts\nVisDataAdapter\n
  *     DataSet<Node|Edge|DataItem> 本地快取\n
  *     [D28] 唯一 vis-* DataSet 寫入點\n

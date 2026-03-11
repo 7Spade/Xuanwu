@@ -5,7 +5,7 @@
  *   In-memory semantic index for cross-domain entity search.
  *   Consumed by global-search.slice (VS9) via the public API.
  *
- * Per 00-logic-overview.md (VS8):
+ * Per docs/architecture/README.md (VS8):
  *   SemanticGraph maintains the searchable semantic index.
  *   global-search.slice queries this index for cross-domain results.
  *

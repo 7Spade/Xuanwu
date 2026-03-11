@@ -11,7 +11,7 @@
  * Task finance display labels [#A22]. Standard projection (SLA ≤ 10s).
  * Consumed by QGWAY_FIN_LABEL and task display UI.
  *
- * Per 01-logical-flow.md (PROJ_BUS STD_PROJ):
+ * Per docs/architecture/README.md (PROJ_BUS STD_PROJ):
  *   TASK_FIN_LABEL_V["projection.task-finance-label-view [#A22]
  *     任務金融顯示標籤投影
  *     消費 FinanceRequestStatusChanged（STANDARD_LANE）

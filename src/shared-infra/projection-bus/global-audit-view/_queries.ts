@@ -1,4 +1,4 @@
-// projection.global-audit-view · queries · 00-logic-overview.md [R8]
+// projection.global-audit-view · queries · docs/architecture/README.md [R8]
 // Read-only access to GLOBAL_AUDIT_VIEW. T5-equivalent: consumers MUST NOT write here.
 
 import { db } from '@/shared-infra/firebase-client';

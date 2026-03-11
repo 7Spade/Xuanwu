@@ -7,7 +7,7 @@
  * Tier is NEVER read from Firestore; it is computed at query time via resolveSkillTier(xp)
  * from shared/lib (Invariant #12).
  *
- * Per 00-logic-overview.md:
+ * Per docs/architecture/README.md:
  *   W_B_SCHEDULE -.??ORG_ELIGIBLE_MEMBER_VIEW (?亥岷?舐撣唾? 繚 eligible=true 繚 ?芾?)
  *   ORGANIZATION_SCHEDULE reads this view (Invariant #14)
  *   ORG_ELIGIBLE_MEMBER_VIEW -.??getTier 閮?嚗?摮?DB嚗?

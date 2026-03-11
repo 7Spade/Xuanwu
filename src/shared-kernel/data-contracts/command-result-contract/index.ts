@@ -3,7 +3,7 @@
  *
  * VS0 Shared Kernel: Canonical command result shape.
  *
- * Per 00-logic-overview.md [R4] COMMAND_RESULT_CONTRACT:
+ * Per docs/architecture/README.md [R4] COMMAND_RESULT_CONTRACT:
  *   Every Server Action (_actions.ts) MUST return CommandResult.
  *   CommandSuccess → { aggregateId, version }     (frontend optimistic-update basis)
  *   CommandFailure → DomainError { code, message } (structured error; never raw Error)
