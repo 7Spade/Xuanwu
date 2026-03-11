@@ -13,7 +13,7 @@ import { Ghost, Loader2, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/app-runtime/providers/i18n-provider";
 import { Button } from "@/shadcn-ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shadcn-ui/card";
-import { LanguageSwitcher } from "@/lib-ui/custom-ui";
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn-ui/tabs";
 
 import { LoginForm } from "./login-form";
@@ -48,11 +48,13 @@ export function AuthTabsRoot({
   openResetDialog,
 }: AuthTabsRootProps) {
   const { t } = useI18n();
+  const plainToggleClassName = "relative min-h-0 min-w-0 rounded-md size-9";
 
   return (
     <>
-      <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
-        <LanguageSwitcher />
+      <div className="absolute right-4 top-4 z-20 flex items-center gap-2 sm:right-6 sm:top-6">
+        <ModeToggle triggerClassName={plainToggleClassName} />
+        <LanguageSwitcher triggerClassName={plainToggleClassName} />
       </div>
       <Card className="z-10 w-full max-w-md overflow-hidden rounded-[2rem] border border-border/55 bg-card/82 shadow-[0_32px_70px_-30px_hsl(var(--foreground)/0.45)] backdrop-blur-2xl ring-1 ring-border/45">
         <CardHeader className="relative flex flex-col items-center pb-4 pt-8 sm:pt-9">
