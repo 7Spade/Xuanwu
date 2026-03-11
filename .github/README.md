@@ -155,6 +155,9 @@ The repository now follows these consolidation rules:
 6. The canonical project-specific agent suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`.
 7. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`.
 8. The canonical prompt suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, and `xuanwu-test-expert`.
+9. `breakdown-plan` is the canonical planning skill; `create-implementation-plan` remains as a compatibility alias.
+10. `refactor` is the canonical refactor skill (including planning mode); `refactor-plan` remains as a compatibility alias.
+11. `prompt-builder` is the canonical Copilot customization authoring skill; `copilot-instructions-blueprint-generator` remains as a compatibility alias.
 
 ## Required Reference Documents for Customizations
 

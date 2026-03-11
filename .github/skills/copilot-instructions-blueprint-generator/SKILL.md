@@ -1,39 +1,31 @@
 ---
 name: copilot-instructions-blueprint-generator
-description: 'Create a comprehensive copilot-instructions.md file tailored to a project by analyzing existing codebase patterns, architecture, and technology stack. Use when setting up Copilot for a new project or improving AI guidance consistency in an existing repo. Triggers: "copilot instructions", "generate instructions", "setup copilot", "ai customization", "copilot-instructions.md".'
+description: 'Wrapper skill. Copilot customization authoring is consolidated into prompt-builder. Use this alias when generating or refining copilot-instructions.md. Triggers: "copilot instructions", "generate instructions", "setup copilot", "ai customization", "copilot-instructions.md".'
 ---
 
-# Copilot Instructions Blueprint Generator
+# Copilot Instructions Blueprint Generator (Wrapper)
 
-## When to Use
-- Setting up GitHub Copilot for a new project from scratch
-- Improving the existing `copilot-instructions.md` to reduce inconsistent AI outputs
-- Onboarding Copilot to a new architectural pattern or technology stack
+This skill is retained as a backward-compatible alias.
 
-## Prerequisites
-- Access to the full project source code
-- Identify key technology versions (framework, language, test tools, linting config)
-- Review existing architecture docs if present
+Canonical customization authoring workflow is now in:
+- `../prompt-builder/SKILL.md`
 
-## Workflow
-1. Scan the codebase to identify: primary language, framework, test framework, linting/formatting tools.
-2. Extract naming conventions from existing files (functions, variables, files, directories).
-3. Identify architecture patterns: layering, module structure, data flow conventions.
-4. Collect technology version pins from `package.json`, `pyproject.toml`, or equivalent.
-5. Document "do not do" anti-patterns observed in the codebase.
-6. Generate the `copilot-instructions.md` with sections: Tech Stack, Naming Conventions, Architecture, Anti-Patterns, Key Commands.
-7. Validate the generated file against at least three existing representative files.
+## Delegation
+When invoked, delegate to `prompt-builder` in `copilot-instructions` specialization:
+1. Extract project conventions from real files.
+2. Draft or refine `.github/copilot-instructions.md`.
+3. Validate for determinism, scope, and safety.
 
 ## Output Contract
-- Produce a `.github/copilot-instructions.md` file.
-- Sections must be based on observed patterns, not assumptions.
-- Each convention must cite at least one real file as evidence.
+- Preserve original trigger compatibility.
+- Output must follow `prompt-builder` quality gates and repository authoring rules.
+- Keep evidence-based conventions only.
 
 ## Guardrails
-- Do not invent conventions not present in the codebase.
-- Do not include secrets, tokens, or credentials.
-- If conflicting patterns exist, document both and flag for human resolution.
+- Do not duplicate long authoring workflow logic here.
+- Do not diverge from `prompt-builder` conventions.
 
 ## Source of Truth
+- Canonical: `../prompt-builder/SKILL.md`
 - VS Code custom instructions: https://code.visualstudio.com/docs/copilot/customization/custom-instructions
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

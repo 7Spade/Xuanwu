@@ -5,6 +5,10 @@ description: 'Guide the creation and finalization of high-quality GitHub Copilot
 
 # Prompt Builder & Finalizer
 
+## Consolidation Status
+- Canonical Copilot customization authoring skill.
+- Backward-compatible alias for `copilot-instructions` generation: `../copilot-instructions-blueprint-generator/SKILL.md`.
+
 ## When to Use
 
 **Build mode** — create a new prompt or agent file:
