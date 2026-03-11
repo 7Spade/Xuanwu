@@ -187,42 +187,58 @@ sequenceDiagram
 
 ---
 
-## 系統架構圖（精簡）
+## 系統架構圖（VS8 層次對齊）
 
 ```mermaid
 flowchart TD
-    subgraph WritePath[Write Path]
-        EXT[L0 External Triggers] --> CMD[L0A CMD_API_GW]
-        CMD --> CBG[L2 Command Gateway]
-        CBG --> DOM[L3 Domain Slices]
-        DOM --> IER[L4 IER]
-        IER --> PB[L5 Projection Bus]
+    subgraph IDL["① Identity Layer"]
+        EXT[L0 External]
+        UI[L0 UI]
     end
 
-    subgraph ReadPath[Read Path]
-        UI[L0 UI] --> QRY[L0A QRY_API_GW]
-        QRY --> QG[L6 Query Gateway]
-        QG --> PB
+    subgraph GOV["② Governance Layer"]
+        CMD[L0A CMD_GW]
+        QRY[L0A QRY_GW]
+        CBG[L2]
+        QG[L6]
     end
 
-    subgraph InfraPath[Infra Path]
-        DOM --> PORTS[L1 SK_PORTS]
-        PB --> PORTS
-        QG --> PORTS
-        PORTS --> FA[L7-A firebase-client]
-        CBG --> FB[L7-B functions/admin]
-        FA --> L8[L8 Firebase Runtime]
-        FB --> L8
+    subgraph SEM["③ Semantic Layer"]
+        VS8[VS8 SIMA]
     end
 
-    subgraph AIPath[AI Embedding Path E8-I]
-        IER --> AI[L10 AI Runtime]
-        AI --> L8
+    subgraph TSL["④ Task / Skill Layer"]
+        DOM[L3 Domain Slices]
     end
 
-    L10x[L10 Genkit Flow] --> CBG
-    L10x --> QG
-    IER -. metrics .-> L9[L9 Observability]
+    subgraph DL["⑤ Data Lifecycle Layer"]
+        IER[L4 IER]
+        PB[L5 PB]
+    end
+
+    subgraph MAI["⑥ Matching/AI Layer"]
+        AI[L10 AI Runtime]
+    end
+
+    subgraph INF["⑦ Infrastructure Layer"]
+        PORTS[L1 SK_PORTS]
+        FA[L7-A client]
+        FB[L7-B admin]
+        L8[L8 Firebase]
+    end
+
+    subgraph OBS["⑧ Observability Layer"]
+        L9[L9]
+    end
+
+    EXT --> CMD --> CBG --> DOM --> IER --> PB
+    UI --> QRY --> QG --> PB
+    CBG --> VS8
+    DOM & PB & QG & VS8 --> PORTS
+    PORTS --> FA & FB
+    FA & FB --> L8
+    IER -->|E8-I| AI --> VS8
+    IER -. metrics .-> L9
     CBG -. trace .-> L9
 ```
 

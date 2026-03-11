@@ -129,45 +129,45 @@ VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI
 
 ```mermaid
 flowchart TD
-    subgraph P0[Phase 0: 語義基石 FI-003 / OT-1]
-        Admin([Admin]) -->|定義 Tag 本體| SkillsCol[(skills\nFirestore Collection)]
-        SK[VS0 SharedKernel] -->|注入 SK 契約型別| DomainSlices[L3 Domain Slices]
+    subgraph P0["Phase 0 語義基石 ｜ Semantic + Governance Layer · FI-003/OT-1"]
+        Admin([Admin]) -->|Tag 本體| SkillsCol[(skills)]
+        SK[VS0 SharedKernel] -->|SK 契約注入| DomainSlices[L3 Domain]
     end
 
-    subgraph P1[Phase 1: 數據攝取 E8-I / VD-3]
-        L0A[L0A API Gateway] --> L2[L2 Command GW]
-        L2 --> L3W[L3 Domain Write]
-        L3W -->|Integration Event| L4[L4 IER\nBACKGROUND lane]
-        L4 -->|非同步 Embedding| L10[L10 AI\nVertex AI text-embedding-004]
-        L10 -->|768-dim| EmpDB[(employees\nskillEmbedding)]
-        L10 -->|768-dim| TaskDB[(tasks\nrequirementsEmbedding)]
+    subgraph P1["Phase 1 數據攝取 ｜ Data Lifecycle + Infrastructure Layer · E8-I/VD-3"]
+        L0A[L0A Gateway] --> L2[L2 CMD_GW]
+        L2 --> L3W[L3 Write]
+        L3W -->|Integration Event| L4[L4 IER BACKGROUND]
+        L4 -->|非同步 Embedding| L10[L10 AI]
+        L10 --> EmpDB[(employees\nskillEmbedding)]
+        L10 --> TaskDB[(tasks\nrequirementsEmbedding)]
     end
 
-    subgraph P2[Phase 2: 智慧匹配 GT-1/2/3 / E8]
-        L3M[L3 Domain\nMatching Command] --> GenkitFlow[L10 Genkit Matching Flow]
-        GenkitFlow --> ToolS[search_skills\n本體論查詢 OT-2]
-        ToolS -->|Canonical Slug| ToolM[match_candidates\nVector Search VD-2]
-        ToolM -->|Top-K| ToolV[verify_compliance\nFail-closed GT-2]
-        ToolV --> Output([匹配候選集\nSemantic Hint B1])
+    subgraph P2["Phase 2 智慧匹配 ｜ Matching/AI + Semantic Layer · GT-1/2/3"]
+        L3M[L3 Matching] --> GenkitFlow[L10 Genkit Flow]
+        GenkitFlow --> ToolS[search_skills OT-2]
+        ToolS -->|Canonical Slug| ToolM[match_candidates VD-2]
+        ToolM -->|Top-K| ToolV[verify_compliance GT-2]
+        ToolV --> Output([匹配結果 B1])
     end
 
-    subgraph P3[Phase 3: 投影反饋 BF-1 / S2]
-        L4P[L4 IER] --> L5[L5 Projection Bus\nrecommendation-view]
-        L5 --> L6[L6 Query GW]
+    subgraph P3["Phase 3 投影反饋 ｜ Data Lifecycle + Observability Layer · BF-1/S2"]
+        L4P[L4 IER] --> L5[L5 PB]
+        L5 --> L6[L6 QRY_GW]
         L6 --> ReadUI([UI 讀模型])
-        TaskEvent([VS5/VS9\nTaskCompleted]) --> L4BF[L4 IER\nBF-1 lane]
-        L4BF -->|更新 skillEmbedding 權重| EmpDB
+        TaskEvent([VS5/VS9 TaskCompleted]) --> L4BF[L4 IER BF-1]
+        L4BF -->|skillEmbedding 更新| EmpDB
     end
 
     P0 --> P1 --> P2 --> P3
 ```
 
-| 階段 | 路徑 | 關鍵規則 |
-|------|------|---------|
-| **Phase 0** 語義基石 | `Admin → L8(skills collection)`；`VS0(SK) → L3(domain slices)` | `FI-003` / `OT-1` |
-| **Phase 1** 數據攝取 | `L0A → L2 → L3 → L4(IER, BACKGROUND) → L10(AI) → L8` | `E8-I` / `VD-3` |
-| **Phase 2** 智慧匹配 | `L3 → L10(Genkit Flow) → [search_skills → match_candidates → verify_compliance] → L8` | `GT-1/2/3` / `E8` |
-| **Phase 3** 反饋閉環 | `L4(IER) → L5(recommendation-view)`；`L3(VS5/VS9) → L4 → VS8 → L8(employees.skillEmbedding)` | `BF-1` / `S2` |
+| 階段 | VS8 層次 | 路徑 | 關鍵規則 |
+|------|---------|------|---------|
+| **Phase 0** 語義基石 | Semantic + Governance Layer | `Admin → L8(skills)`；`VS0(SK) → L3(domain)` | `FI-003` / `OT-1` |
+| **Phase 1** 數據攝取 | Data Lifecycle + Infrastructure Layer | `L0A → L2 → L3 → L4(BACKGROUND) → L10 → L8` | `E8-I` / `VD-3` |
+| **Phase 2** 智慧匹配 | Matching/AI + Semantic Layer | `L3 → L10(Genkit) → [search_skills → match_candidates → verify_compliance] → L8` | `GT-1/2/3` / `E8` |
+| **Phase 3** 反饋閉環 | Data Lifecycle + Observability Layer | `L4 → L5(recommendation-view)`；`L3(VS5/VS9) → L4 → VS8 → L8` | `BF-1` / `S2` |
 
 ### 三大支柱基礎設施對應
 

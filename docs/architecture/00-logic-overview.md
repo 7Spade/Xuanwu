@@ -121,33 +121,60 @@ sequenceDiagram
 - `L9`: Observability
 - `L10`: AI Runtime & Orchestration
 
-## 最小架構圖（簡化）
+## 最小架構圖（VS8 層次對齊）
 
 ```mermaid
 flowchart LR
-  EXT[L0 External Triggers] --> CMDGW[L0A CMD_API_GW]
-  EXT --> QRYGW[L0A QRY_API_GW]
+  subgraph IDL["① Identity Layer"]
+    EXT[L0 External]
+  end
 
-  CMDGW --> L2[L2 Command Gateway]
-  L2 --> L3[L3 Domain Slices]
-  L3 --> L4[L4 IER]
-  L4 --> L5[L5 Projection Bus]
+  subgraph GOV["② Governance Layer"]
+    CMDGW[L0A CMD_GW]
+    QRYGW[L0A QRY_GW]
+    L2[L2]
+    L6[L6]
+  end
 
-  QRYGW --> L6[L6 Query Gateway]
-  L6 --> L5
+  subgraph SEM["③ Semantic Layer"]
+    VS8[VS8 SIMA]
+  end
 
-  L3 --> L1[L1 SK_PORTS]
-  L5 --> L1
-  L6 --> L1
-  L1 --> L7A[L7-A firebase-client]
-  L2 --> L7B[L7-B functions/admin]
-  L7A --> L8[L8 Firebase Runtime]
-  L7B --> L8
+  subgraph TSL["④ Task / Skill Layer"]
+    DOM[L3 Domain Slices]
+  end
 
-  L2 -. trace/metrics .-> L9[L9 Observability]
-  L4 -. relay lag .-> L9
-  L10[L10 AI Runtime] --> L2
-  L10 --> L6
+  subgraph DL["⑤ Data Lifecycle Layer"]
+    IER[L4 IER]
+    PB[L5 PB]
+  end
+
+  subgraph MAI["⑥ Matching/AI Layer"]
+    L10[L10 AI]
+  end
+
+  subgraph INF["⑦ Infrastructure Layer"]
+    L1[L1 SK_PORTS]
+    L7A[L7-A client]
+    L7B[L7-B admin]
+    L8[L8 Firebase]
+  end
+
+  subgraph OBS["⑧ Observability Layer"]
+    L9[L9]
+  end
+
+  EXT --> CMDGW & QRYGW
+  CMDGW --> L2
+  L2 --> DOM --> IER --> PB
+  L2 --> VS8
+  QRYGW --> L6 --> PB
+  DOM & PB & L6 & VS8 --> L1
+  L1 --> L7A & L7B
+  L7A & L7B --> L8
+  IER -->|E8-I| L10 --> VS8
+  L2 -. trace .-> L9
+  IER -. lag .-> L9
 ```
 
 ## VS8：語義智慧匹配架構（Semantic Intelligent Matching Architecture）

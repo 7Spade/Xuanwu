@@ -79,31 +79,31 @@
 flowchart LR
     Request([匹配請求\nMatching Request]) --> Phase0
 
-    subgraph Phase0[Phase 0: 語義基石]
+    subgraph Phase0["Phase 0 語義基石 ｜ Semantic + Governance Layer"]
         SK[VS0 SharedKernel\n契約注入 FI-003] --> Ontology[skills 集合\nTag 本體論 OT-1]
     end
 
     Phase0 --> Phase1
 
-    subgraph Phase1[Phase 1: 數據攝取 E8-I]
+    subgraph Phase1["Phase 1 數據攝取 ｜ Data Lifecycle + Infrastructure Layer"]
         D3W[L3 Domain Write\n業務實體寫入] --> IER[L4 IER\nBACKGROUND lane]
-        IER -->|非同步| EmbedAI[L10 AI\nEmbedding 提取]
-        EmbedAI --> VecDB[(employees\nskillEmbedding\n768-dim)]
+        IER -->|非同步 E8-I| EmbedAI[L10 AI\nEmbedding 提取]
+        EmbedAI --> VecDB[(employees\nskillEmbedding)]
     end
 
     Phase1 --> Phase2
 
-    subgraph Phase2[Phase 2: 智慧匹配 GT-1/2/3]
-        SS[search_skills\n術語正規化 OT-2] -->|Canonical Slug| MC[match_candidates\n向量召回 VD-2]
-        MC -->|Top-K| VC[verify_compliance\n合規驗證 GT-2]
-        VC -->|Fail-closed| Out([匹配候選集\n語義提示 B1])
+    subgraph Phase2["Phase 2 智慧匹配 ｜ Matching/AI + Semantic Layer"]
+        SS[search_skills\nOT-2] -->|Canonical Slug| MC[match_candidates\nVD-2]
+        MC -->|Top-K| VC[verify_compliance\nGT-2 Fail-closed]
+        VC -->|B1| Out([匹配候選集])
     end
 
     Phase2 --> Phase3
 
-    subgraph Phase3[Phase 3: 反饋閉環 BF-1]
-        PB[L5 Projection Bus\nrecommendation-view] --> UI([UI 渲染\n智慧推薦])
-        TaskDone([TaskCompleted\nTaskRated 事件]) --> IER2[L4 IER\nBF-1 回饋]
+    subgraph Phase3["Phase 3 反饋閉環 ｜ Data Lifecycle + Observability Layer"]
+        PB[L5 PB\nrecommendation-view] --> UI([UI 渲染])
+        TaskDone([TaskCompleted 事件]) --> IER2[L4 IER\nBF-1]
         IER2 -->|Everything as a Tag| VecDB
     end
 ```
