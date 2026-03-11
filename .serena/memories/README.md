@@ -16,10 +16,10 @@
 ├── README.md                              ← 本檔，記憶體庫導覽與命名規範
 │
 ├── architecture/                          ← 架構層級、邊界、SSOT 位置
-│   ├── layer-hierarchy                    ← L1→L9 層級流與每層職責速查
+│   ├── layer-hierarchy                    ← L1→L9 層級流與每層職責速查（正典：docs/architecture/README.md）
 │   ├── feature-slices                     ← 所有 feature slice 名稱與簡介
 │   ├── domain-model                       ← 核心領域實體與聚合根邊界
-│   ├── ssot-locations                     ← 各 SSOT 文件的正確路徑
+│   ├── ssot-locations                     ← 各 SSOT 文件正確路徑；架構正典 = docs/architecture/README.md
 │   └── adr-decisions                      ← 重要 ADR 決定摘要（ADR-0001~0005）
 │
 ├── copilot/                               ← GitHub Copilot 客製化資產目錄
@@ -92,6 +92,7 @@
 
 ## 參考資源
 
+- **架構正典（SSOT）**：`docs/architecture/README.md`（L1→L9 層級流、資料夾樹導覽）
 - Serena 記憶體工具：`serena-write_memory` / `serena-read_memory` / `serena-list_memories` / `serena-edit_memory` / `serena-delete_memory` / `serena-rename_memory`
 - 知識圖譜（長期存儲）：`.memory/knowledge-graph.json`（使用 `memory-*` MCP 工具）
 - Copilot 記憶體（跨對話）：`store_memory` 工具（使用 `global/` 前綴跨專案共用）
