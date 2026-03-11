@@ -8,8 +8,7 @@ user-invocable: false
 
 ## Consolidation Status
 - Canonical Next.js skill family entrypoint.
-- Backward-compatible alias: `../next-cache-components/SKILL.md`.
-- Backward-compatible alias: `../next-upgrade/SKILL.md`.
+- Consolidated and removed wrappers: `next-cache-components`, `next-upgrade`.
 
 ## Reference Files
 

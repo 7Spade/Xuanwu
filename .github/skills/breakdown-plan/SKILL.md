@@ -7,8 +7,7 @@ description: 'Generate a comprehensive project plan with Epic > Feature > Story/
 
 ## Consolidation Status
 - Canonical planning skill for phased implementation planning.
-- Backward-compatible alias: `../create-implementation-plan/SKILL.md`.
-- Backward-compatible alias: `../gen-specs-as-issues/SKILL.md`.
+- Consolidated and removed wrappers: `create-implementation-plan`, `gen-specs-as-issues`.
 
 ## When to Use
 - Decomposing a large initiative or epic into trackable tasks

@@ -7,7 +7,7 @@ description: 'Canonical requirements authoring skill for epic PRDs and pre-imple
 
 ## Consolidation Status
 - Canonical requirements authoring skill for PRD and technical-spec mode.
-- Backward-compatible alias: `../create-specification/SKILL.md`.
+- Consolidated and removed wrapper: `create-specification`.
 
 ## When to Use
 - Defining a new epic that will be handed off to architecture design

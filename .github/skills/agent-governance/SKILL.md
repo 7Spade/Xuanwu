@@ -13,6 +13,10 @@ description: |
 
 # Agent Governance
 
+## Consolidation Status
+- Canonical agent safety and trust-governance skill.
+- Consolidated and removed wrappers: `agentic-eval`, `ai-prompt-engineering-safety-review`.
+
 ## When to Use
 - Adding safety controls to an agent that calls external APIs, databases, or file systems
 - Designing a policy-based access control layer for multi-agent tool usage

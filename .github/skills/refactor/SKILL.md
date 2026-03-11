@@ -7,7 +7,7 @@ description: 'Surgical code refactoring and quality review to improve maintainab
 
 ## Consolidation Status
 - Canonical skill for both refactor execution and refactor planning mode.
-- Backward-compatible alias: `../refactor-plan/SKILL.md`.
+- Consolidated and removed wrapper: `refactor-plan`.
 
 ## When to Use
 
