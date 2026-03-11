@@ -5,6 +5,10 @@ description: 'Surgical code refactoring and quality review to improve maintainab
 
 # Refactor
 
+## Consolidation Status
+- Canonical skill for both refactor execution and refactor planning mode.
+- Consolidated and removed wrapper: `refactor-plan`.
+
 ## When to Use
 
 **Refactor mode** — structural cleanup of specific code patterns:

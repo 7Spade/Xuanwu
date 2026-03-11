@@ -5,6 +5,15 @@
 - [ ] **Next.js 15**: 是否使用了 Server Actions 代替 API Routes (除非必要)？
 - [ ] **Client Boundaries**: 是否正確標註 `"use client"` 且僅用於葉子節點？
 
+## 🧭 Mermaid 前置邊界驗證（Boundary-First）
+- [ ] **L1-L3 邊界完成**: 平台/工作區/資源邊界已確認並可追溯
+- [ ] **L4 子資源完成**: owner/scope/parent_id 規則已明確
+- [ ] **L5 子行為完成**: 狀態機、守衛、事件輸出已定義
+- [ ] **L6-L9 已落檔**: 領域模型、契約、應用服務、基礎設施文件已同步
+- [ ] **Mermaid 為結果**: 圖是邊界驗證結果，不是需求探索草圖
+
+> 規則：Serena 能做高品質 Mermaid 的前提，是先做架構邊界驗證，不是直接畫圖。
+
 ## 📸 畫面截圖 / 錄影 (如有 UI 變更)
 ## 🧪 測試與驗證
 - [ ] `npm run lint` 已通過

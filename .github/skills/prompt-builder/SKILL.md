@@ -5,6 +5,10 @@ description: 'Guide the creation and finalization of high-quality GitHub Copilot
 
 # Prompt Builder & Finalizer
 
+## Consolidation Status
+- Canonical Copilot customization authoring skill.
+- Consolidated and removed wrappers: `copilot-instructions-blueprint-generator`, `code-exemplars-blueprint-generator`.
+
 ## When to Use
 
 **Build mode** — create a new prompt or agent file:
@@ -19,7 +23,7 @@ description: 'Guide the creation and finalization of high-quality GitHub Copilot
 
 ## Prerequisites
 - Identify the prompt's purpose, target audience, and expected output
-- Review `.github/instructions/agent-authoring-rules.instructions.md` for agents
+- Review `.github/instructions/xuanwu-customization-authoring.instructions.md` for agents
 - Check existing prompts in `.github/prompts/` for reference patterns
 - In finalize mode: read the full draft file before making any changes
 
@@ -58,4 +62,4 @@ description: 'Guide the creation and finalization of high-quality GitHub Copilot
 ## Source of Truth
 - VS Code prompt files: https://code.visualstudio.com/docs/copilot/customization/prompt-files
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
-- Agent authoring rules: `.github/instructions/agent-authoring-rules.instructions.md`
+- Agent authoring rules: `.github/instructions/xuanwu-customization-authoring.instructions.md`

@@ -20,7 +20,7 @@ Copilot customizations in this repository must stay aligned with:
 
 - Business logic: `docs/architecture/00-logic-overview.md`
 - Entity semantics: `.memory/knowledge-graph.json`
-- Codebase reference baseline: `skills/SKILL.md`
+- Codebase reference baseline: `.github/skills/xuanwu-skill/SKILL.md`
 
 ## Customization Selection Matrix
 
@@ -85,7 +85,8 @@ Design or refactor Copilot customization assets in this order:
 - `README.md` is the user-facing quick entry point; keep only the high-level navigation and prompt command catalog there.
 - `docs/copilot/customization/*.md` remains the local reference mirror of the official VS Code customization docs and should be cited rather than paraphrased repeatedly.
 - `.vscode/settings.json` is the effective loader configuration; documentation must describe the configuration that is actually enabled there.
-- `skills/SKILL.md` remains a repository reference baseline, while `.github/skills/` is the active VS Code project skill location.
+- `.github/skills/xuanwu-skill/SKILL.md` is the active VS Code project skill and repository codebase reference baseline; `skills/SKILL.md` is a redirect pointer to this location.
+- Keep the customization folders intentionally small and consistent: prefer project-specific `xuanwu-<function>.*.md` files that absorb overlapping personas, rules, and workflows into functional suites.
 
 ## Canonical Repository Layout
 
@@ -140,7 +141,7 @@ Design or refactor Copilot customization assets in this order:
 - Follow `docs/copilot/customization/agent-skills.md`.
 - Each skill must live in its own folder with a `SKILL.md`.
 - Skill descriptions must clearly say what the skill does and when to use it.
-- Repository skill discovery should point to `.github/skills/`; `skills/SKILL.md` remains a reference document, not an active project skill entry point.
+- Repository skill discovery points to `.github/skills/`; `xuanwu-skill` is the active project skill entry point at `.github/skills/xuanwu-skill/SKILL.md`.
 
 ## Current Consolidation Decisions
 
@@ -151,6 +152,15 @@ The repository now follows these consolidation rules:
 3. `.github/skills/` is the canonical project skill location for VS Code settings.
 4. Stable repository references used by prompts must exist under `docs/` or other committed paths.
 5. `README.md` remains the user-facing entry point and must keep its prompt command table synchronized with `.github/prompts/`.
+6. The canonical project-specific agent suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`. Supplementary agents extending the suite: `xuanwu-commander` (intent clarification and single dispatch), `xuanwu-software-planner` (implementation planning), `xuanwu-sequential-thinking` (step-by-step reasoning), `xuanwu-architecture-chief` (architecture doc refinement), `xuanwu-architecture-refactor` (doc structure refactoring), `xuanwu-diagram-designer` (Mermaid diagram refinement), and `xuanwu-repo-browser` (read-only architecture analysis). The architecture sub-cluster (`xuanwu-architecture-chief`, `xuanwu-architecture-refactor`, `xuanwu-diagram-designer`, `xuanwu-repo-browser`) is reachable via the `/xuanwu-architecture-realign` prompt or directly from `xuanwu-commander` and `xuanwu-orchestrator`.
+7. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`. Additional scoped instructions: `xuanwu-coding-style` (`**/*.{ts,tsx,js,jsx}`), `xuanwu-documentation` (`**/*.md`), `xuanwu-repo-structure` (`src/**/*.{ts,tsx,js,jsx}`), and `xuanwu-security` (`**/*.{ts,tsx,js,jsx,json,yaml,yml}`).
+8. The canonical prompt suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, and `xuanwu-test-expert`. Additional prompts: `xuanwu-planning` (quick implementation plan via `xuanwu-software-planner`), `xuanwu-refactor` (refactor guidance via `xuanwu-implementer`), `xuanwu-code-review` (code review via `xuanwu-quality`), `xuanwu-debug` (debugging via `xuanwu-sequential-thinking`), and `xuanwu-architecture-realign` (architecture doc realignment via `xuanwu-architecture-chief`).
+9. `breakdown-plan` is the canonical planning and backlog decomposition skill; merged wrappers `create-implementation-plan` and `gen-specs-as-issues` were removed.
+10. `refactor` is the canonical refactor skill (including planning mode); merged wrapper `refactor-plan` was removed.
+11. `prompt-builder` is the canonical Copilot customization and exemplar prompt-authoring skill; merged wrappers `copilot-instructions-blueprint-generator` and `code-exemplars-blueprint-generator` were removed.
+12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); merged wrapper `create-specification` was removed.
+13. `next-best-practices` is the canonical Next.js skill family entrypoint; merged wrappers `next-cache-components` and `next-upgrade` were removed.
+14. `agent-governance` is the canonical agent safety and governance skill; merged wrappers `agentic-eval` and `ai-prompt-engineering-safety-review` were removed.
 
 ## Required Reference Documents for Customizations
 
@@ -161,7 +171,7 @@ These documents are stable link targets for prompts and agents that need reposit
 - `docs/persistence-model-overview.md`
 - `docs/architecture/00-logic-overview.md`
 - `.memory/knowledge-graph.json`
-- `skills/SKILL.md`
+- `.github/skills/xuanwu-skill/SKILL.md`
 
 ## Change Workflow
 

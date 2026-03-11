@@ -5,6 +5,10 @@ description: 'Generate a comprehensive project plan with Epic > Feature > Story/
 
 # Breakdown Plan
 
+## Consolidation Status
+- Canonical planning skill for phased implementation planning.
+- Consolidated and removed wrappers: `create-implementation-plan`, `gen-specs-as-issues`.
+
 ## When to Use
 - Decomposing a large initiative or epic into trackable tasks
 - Creating a structured backlog for sprint planning

@@ -1,0 +1,110 @@
+# Tech Stack
+
+## Languages
+
+- Node.js
+
+## Frameworks
+
+- React
+- TypeScript
+
+## Dependencies
+
+- @atlaskit/pragmatic-drag-and-drop (^1.7.9)
+- @atlaskit/pragmatic-drag-and-drop-hitbox (^1.1.0)
+- @atlaskit/pragmatic-drag-and-drop-react-drop-indicator (^3.2.12)
+- @capacitor/cli (^8.2.0)
+- @capacitor/core (^8.2.0)
+- @faker-js/faker (^10.3.0)
+- @hookform/resolvers (^5.2.2)
+- @modelcontextprotocol/sdk (^1.27.1)
+- @radix-ui/react-slot (^1.2.4)
+- @tailwindcss/vite (^4.1.18)
+- @tanstack/ai (latest)
+- @tanstack/ai-anthropic (latest)
+- @tanstack/ai-client (latest)
+- @tanstack/ai-gemini (latest)
+- @tanstack/ai-ollama (latest)
+- @tanstack/ai-openai (latest)
+- @tanstack/ai-react (latest)
+- @tanstack/eslint-plugin-query (^5.91.4)
+- @tanstack/eslint-plugin-router (^1.161.4)
+- @tanstack/history (^1.161.4)
+- @tanstack/intent (^0.0.14)
+- @tanstack/match-sorter-utils (latest)
+- @tanstack/query-core (^5.90.20)
+- @tanstack/react-devtools (latest)
+- @tanstack/react-form (latest)
+- @tanstack/react-query (latest)
+- @tanstack/react-query-devtools (latest)
+- @tanstack/react-router (latest)
+- @tanstack/react-router-devtools (latest)
+- @tanstack/react-router-ssr-query (latest)
+- @tanstack/react-start (latest)
+- @tanstack/react-store (latest)
+- @tanstack/react-table (latest)
+- @tanstack/react-virtual (^3.13.21)
+- @tanstack/router-plugin (^1.132.0)
+- @tanstack/start-server-functions-handler (^1.120.19)
+- @tanstack/store (latest)
+- @trpc/client (^11.11.0)
+- @trpc/server (^11.11.0)
+- @trpc/tanstack-react-query (^11.11.0)
+- @xstate/react (^6.1.0)
+- class-variance-authority (^0.7.1)
+- clsx (^2.1.1)
+- cmdk (^1.1.1)
+- date-fns (^4.1.0)
+- embla-carousel-react (^8.6.0)
+- firebase (^12.10.0)
+- highlight.js (^11.11.1)
+- input-otp (^1.4.2)
+- lucide-react (^0.577.0)
+- next-themes (^0.4.6)
+- nitro (npm:nitro-nightly@latest)
+- radix-ui (^1.4.3)
+- react (^19.2.0)
+- react-day-picker (^9.14.0)
+- react-dom (^19.2.0)
+- react-hook-form (^7.71.2)
+- recharts (^2.15.4)
+- repomix (^1.12.0)
+- sonner (^2.0.7)
+- streamdown (^2.3.0)
+- superjson (^2.2.2)
+- tailwind-merge (^3.0.2)
+- tailwindcss (^4.1.18)
+- tw-animate-css (^1.3.6)
+- vaul (^1.1.2)
+- vis-data (^8.0.3)
+- vis-graph3d (^7.0.2)
+- vis-network (^10.0.2)
+- vis-timeline (^8.5.0)
+- xstate (^5.28.0)
+- zod (^4.3.6)
+
+## Dev Dependencies
+
+- @biomejs/biome (2.4.5)
+- @inlang/paraglide-js (^2.13.1)
+- @tailwindcss/typography (^0.5.16)
+- @tanstack/devtools-event-client (latest)
+- @tanstack/devtools-vite (latest)
+- @testing-library/dom (^10.4.1)
+- @testing-library/react (^16.3.0)
+- @types/node (^22.10.2)
+- @types/react (^19.2.0)
+- @types/react-dom (^19.2.0)
+- @vitejs/plugin-react (^5.1.4)
+- jsdom (^28.1.0)
+- typescript (^5.7.2)
+- vite (^7.3.1)
+- vite-tsconfig-paths (^5.1.4)
+- vitest (^3.0.5)
+
+## Configuration Files
+
+- tsconfig.json
+- vite.config.ts
+- package.json
