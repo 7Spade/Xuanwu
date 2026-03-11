@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-ui'
 description: 'Project-specific Xuanwu UI agent for mobile-first responsive design, shadcn/ui enforcement, Tailwind CSS, i18n-safe UI changes, SEO metadata, assets, and analytics-facing UI instrumentation.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'playwright/*', 'chrome-devtools/*', 'filesystem/*', 'eslint/*', 'memory/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'playwright/*', 'chrome-devtools/*', 'filesystem/*', 'eslint/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
@@ -66,7 +66,7 @@ This agent is the Xuanwu UI specialist enforcing mobile-first design, mandatory 
 
 ## Execution Workflow
 
-1. **Discover** — Run `next-devtools-nextjs_index` to understand the current route and component structure.
+1. **Discover** — Run `next-devtools-nextjs_index` to understand the current route and component structure. Use `serena-get_symbols_overview` on the target file(s) to map existing symbols before editing.
 2. **Search components** — Run `shadcn-get_project_registries` to identify available registries, then use `shadcn-search_items_in_registries` before building any new UI element.
 3. **Install** — Use `shadcn-get_add_command_for_items` and execute the command.
 4. **Implement** — Apply changes using Tailwind utilities, mobile-first breakpoints, and shadcn composition.

@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-docs'
 description: 'Project-specific Xuanwu documentation agent for README updates, architecture docs, schema docs, diagrams, and code-doc parity.'
-tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'markitdown/*', 'filesystem/*', 'memory/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'markitdown/*', 'filesystem/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator

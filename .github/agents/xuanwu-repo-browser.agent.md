@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-repo-browser'
 description: 'Reads repository documentation and extracts architecture structure. Read-only analysis agent.'
-tools: ['codebase', 'search', 'filesystem/*']
+tools: ['codebase', 'search', 'filesystem/*', 'repomix/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Hand off to architecture chief'
     agent: xuanwu-architecture-chief
