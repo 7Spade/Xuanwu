@@ -63,7 +63,7 @@ sequenceDiagram
         GW->>D3: 1.2 執行領域寫入 (VS2 Account / VS5 Workspace)
         D3->>L8: 1.3 存儲業務實體 + 自動標籤化 [VS8 Authority]
         D3->>IER: 1.4 發布數據變更事件 (Integration Events)
-        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I Isolation]
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
         AI->>L8: 1.6 存儲向量特徵 (Store Embeddings)
     end
 
@@ -125,6 +125,7 @@ sequenceDiagram
     participant Admin as 管理員/本體論 (Admin/Ontology)
     participant UI as L0: 外部 UI (External UI/PM/User)
     participant CBG as L2: 命令閘道 (Command Gateway)
+    participant IER as L4: 事件路由器 (IER/LANE)
     participant AI as L10: Genkit 編排器 (AI Orchestrator)
     participant ToolS as Tool: 技能檢索 (search_skills)
     participant ToolM as Tool: 候選匹配 (match_candidates)
@@ -141,8 +142,9 @@ sequenceDiagram
 
         UI->>CBG: 1.2 發布任務/更新履歷 (Post Task / Update Profile)
         CBG->>D3: 1.3 執行領域聚合寫入 (Execute Aggregate Write)
-        D3->>AI: 1.4 請求語義提取 (Request Semantic Extraction)
-        AI->>L8: 1.5 存儲向量嵌入 (Store Task/Profile Embeddings)
+        D3->>IER: 1.4 發布數據變更事件 (Integration Events)
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
+        AI->>L8: 1.6 存儲向量嵌入 (Store Task/Profile Embeddings)
     end
 
     Note over UI,L8: 第二階段：智慧匹配執行 (Phase 2: Execution Flow)
@@ -175,8 +177,9 @@ sequenceDiagram
     AI->>D3: 3.1 回傳排名名單與推理軌跡 (Ranked List & Trace)
     D3->>L5: 3.2 發布投影事件 (Emit Projection Event)
     L5-->>UI: 3.3 更新前端讀模型 (Update Read Model / UI)
-    D3->>L8: 3.4 業務指紋自動回饋 (Behavioral Fingerprint Update) [BF-1]
-    Note right of L8: 根據任務結果調整 Employee 標籤權重 (Everything as a Tag 閉環)
+    D3->>IER: 3.4 [BF-1] 業務指紋回饋事件 (TaskCompleted/TaskRated)
+    IER-->>AI: 3.5 VS8 調整 employees.skillEmbedding 權重
+    Note right of AI: Everything as a Tag 閉環：根據任務結果調整 Employee 標籤權重 [BF-1]
 ```
 
 **讀路徑（語義查詢）**：`global-search.slice → VS8._queries.ts [D4] → _services.ts → SemanticSearchHit[]`
