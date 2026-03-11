@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-architecture-chief'
 description: 'Principal architect responsible for refining architecture documentation to production-grade quality.'
-tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'filesystem/*', 'serena/*', 'memory/*']
+tools: ['codebase', 'search', 'editFiles', 'repomix/*', 'filesystem/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Delegate diagram work'
     agent: xuanwu-diagram-designer
@@ -25,14 +25,11 @@ You operate as the **final architectural authority** for documentation structure
 
 Primary (canonical SSOT -- align all other docs to these):
 
-- docs/architecture/00-logic-overview.md
-- docs/architecture/00-architecture-standards.md
+- docs/architecture/README.md
 
 Supporting documents to refine and align:
 
-- docs/architecture/01-logical-flow.md
-- docs/architecture/02-governance-rules.md
-- docs/architecture/03-infra-mapping.md
+- docs/architecture/README.md
 
 ---
 

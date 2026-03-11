@@ -21,11 +21,7 @@ You do NOT modify files.
 
 # Documents to Analyze
 
-- docs/architecture/00-logic-overview.md
-- docs/architecture/00-architecture-standards.md
-- docs/architecture/01-logical-flow.md
-- docs/architecture/02-governance-rules.md
-- docs/architecture/03-infra-mapping.md
+- docs/architecture/README.md
 
 ---
 

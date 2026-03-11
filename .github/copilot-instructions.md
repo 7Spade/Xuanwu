@@ -10,7 +10,7 @@ Project-wide always-on instructions for GitHub Copilot Chat in this repository.
 
 ## Single Sources of Truth
 
-- Business logic: `docs/architecture/00-logic-overview.md`
+- Business logic: `docs/architecture/README.md`
 - Entity semantics and relationships: `.memory/knowledge-graph.json`
 - Codebase reference baseline: `.github/skills/xuanwu-skill/SKILL.md`
 
@@ -51,7 +51,7 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 
 ## Decision Workflow
 
-1. Read `docs/architecture/00-logic-overview.md` when business logic is involved.
+1. Read `docs/architecture/README.md` when business logic is involved.
 2. Confirm relevant entities in `.memory/knowledge-graph.json`.
 3. Reuse established repository patterns from `.github/skills/xuanwu-skill/SKILL.md` and existing code.
 4. **Validate before implement** — verify architecture correctness, slice boundaries, and existing tests before writing any new code. Prefer the smallest correct diff.

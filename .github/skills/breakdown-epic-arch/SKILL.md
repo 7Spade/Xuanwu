@@ -12,7 +12,7 @@ description: 'Generate high-level technical architecture for an Epic from a PRD 
 
 ## Prerequisites
 - Read the Epic PRD created by the `breakdown-epic-pm` skill
-- Review `docs/architecture/00-logic-overview.md` for existing architectural constraints
+- Review `docs/architecture/README.md` for existing architectural constraints
 - Identify which existing slices or modules will be affected
 
 ## Workflow
@@ -36,5 +36,5 @@ description: 'Generate high-level technical architecture for an Epic from a PRD 
 - Align all entity names with `.memory/knowledge-graph.json`.
 
 ## Source of Truth
-- Architecture SSOT: `docs/architecture/00-logic-overview.md`
+- Architecture SSOT: `docs/architecture/README.md`
 - VS Code Copilot Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills

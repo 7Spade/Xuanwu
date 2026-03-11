@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-ops'
 description: 'Project-specific Xuanwu operations agent for CI/CD, deployment workflows, runtime infrastructure, and environment-safe operational changes.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'filesystem/*', 'vercel/*', 'memory/*']
+tools: ['codebase', 'search', 'editFiles', 'runCommands', 'filesystem/*', 'vercel/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator

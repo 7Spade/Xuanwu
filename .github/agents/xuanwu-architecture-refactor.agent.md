@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-architecture-refactor'
 description: 'Refines architecture documentation structure and diagrams under the guidance of xuanwu-architecture-chief.'
-tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+tools: ['codebase', 'search', 'editFiles', 'filesystem/*', 'memory/*']
 handoffs:
   - label: 'Escalate to architecture chief'
     agent: xuanwu-architecture-chief
@@ -21,9 +21,7 @@ You operate under the guidance of **xuanwu-architecture-chief**.
 
 # Target Files
 
-- docs/architecture/01-logical-flow.md
-- docs/architecture/02-governance-rules.md
-- docs/architecture/03-infra-mapping.md
+- docs/architecture/README.md
 
 ---
 
