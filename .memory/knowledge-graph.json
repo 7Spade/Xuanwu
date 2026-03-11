@@ -4,10 +4,8 @@
       "name": "VS_Category",
       "entityType": "Domain_Category",
       "observations": [
-        "VS mapping: VS0=SharedKernel foundation (not a business vertical slice); VS1=Identity; VS2=Account; VS3=SkillXP; VS4=Organization; VS5=Workspace; VS6=Scheduling; VS7=Notification; VS8=SemanticGraph (The Brain).",
-        "VS8 replaces the former TAG_AUTH (Tag Authority Center) and elevates it to a first-class business vertical slice with taxonomy, causality tracking, and scheduling conflict semantic detection.",
-        "Cross-slice rule: each slice mutates only its own aggregate; collaboration via contracts/events/projections.",
-        "Tag write rule [#A6 D21]: global semantic tags are registered via L2 Command Gateway into VS8; organization custom task/skill tags are registered via L2 into VS4 org-tag-registry and projected to tag-snapshot."
+        "VS mapping: VS0=SharedKernel foundation (not a business vertical slice); VS1=Identity; VS2=Account; VS3=SkillXP; VS4=Organization; VS5=Workspace; VS6=Scheduling; VS7=Notification.",
+        "Cross-slice rule: each slice mutates only its own aggregate; collaboration via contracts/events/projections."
       ]
     },
     {
@@ -77,7 +75,6 @@
       "name": "T_Category",
       "entityType": "Tag_Semantics",
       "observations": [
-        "Tag semantics source is dual-layer: VS8 Semantic Graph is the global semantic authority, and VS4 org-tag-registry is the organization-scoped authority for custom task/skill tags under D21 governance.",
         "Critical retained references: T4 scheduling demand uses SK_SKILL_REQ × tagSlug; T5 TAG_SNAPSHOT is read-only to consumers but may include projected org-scoped overlay tags.",
         "Tooling MCP governance is modeled via dedicated Tooling_MCP entities and relations.",
         "Relation note: T_Category → A_Category (validates) denotes tooling-assisted conformance checks against architecture invariants and applies to all Tooling_MCP entities unless a narrower relation overrides it."
@@ -140,23 +137,12 @@
       ]
     },
     {
-      "name": "VS8 Semantic Graph",
-      "entityType": "Domain_Slice",
-      "observations": [
-        "VS8 Semantic Graph (The Brain): the system's semantic hub, elevated from the former TAG_AUTH (Tag Authority Center) to a first-class vertical slice.",
-        "Responsibilities: Tag Taxonomy (tagSlug / label / category lifecycle), Causality Tracking (cross-slice tag event provenance), Scheduling Conflict Semantic Detection (semantic matching for VS6 scheduling combinations).",
-        "VS8 owns global semantic taxonomy and provides semantic data outward to consumers via L6 Query Gateway.",
-        "Invariant #17 still applies at global scope: VS8 is the sole authority for global tagSlug uniqueness and deletion rules; VS4 org-tag-registry governs org-scoped task/skill tag namespace and lifecycle."
-      ]
-    },
-    {
       "name": "VS4 Organization Tag Registry",
       "entityType": "Domain_Slice",
       "observations": [
         "VS4 org-tag-registry is the organization-scoped semantic extension authority for custom task/skill tags.",
         "Organizations may create and manage custom tags only in org namespace: org:{orgId}:task:* and org:{orgId}:skill:*.",
-        "Org custom tags are projected into tag-snapshot as overlay data for VS5/VS6 read paths; direct cross-slice mutation remains forbidden.",
-        "Global semantic categories remain defined by VS8 CTA; VS4 extension does not override global taxonomy ownership."
+        "Org custom tags are projected into tag-snapshot as overlay data for VS5/VS6 read paths; direct cross-slice mutation remains forbidden."
       ]
     },
     {
@@ -164,7 +150,6 @@
       "entityType": "Cross_Cutting_Authority",
       "observations": [
         "Global Search (global-search.slice) is the system's sole cross-domain semantic portal (語義門戶) and a Cross-cutting Authority (跨切片權威).",
-        "Queries VS8 Semantic Graph for semantic-index lookups, enabling unified search across all tagged domain entities — no direct Firestore collection reads.",
         "Eliminates duplicate search logic (DRY): all slices delegate search to global-search.slice instead of implementing their own search/filter logic.",
         "Supports multi-dimensional intersection queries: cross-slice compound queries (e.g., Organization × Skill × Availability × Partner).",
         "Sole provider for global shortcut (Cmd+K) UI authority.",
@@ -177,7 +162,6 @@
       "observations": [
         "Notification Hub (notification-hub.slice / VS7 enhanced) is the system's sole side-effect outlet (反應中樞) and a Cross-cutting Authority (跨切片權威).",
         "Per D3, business slices (e.g., Scheduling) only produce Events; Notification Hub decides 'how to notify' — decoupling business logic from delivery infrastructure.",
-        "Tag-Aware routing: Hub consults VS8 Semantic Graph tags to determine notification strategy (e.g., #channel:slack → Slack, #urgency:high → phone call).",
         "Causality consistency: notification delivery is traceable (traceId from EventEnvelope [R8]) and replayable (idempotency-key).",
         "Replaces scattered sendEmail()/push() calls across _actions.ts files; all notification side-effects route through this hub.",
         "Must own its own _actions.ts and _services.ts per D26 (which enforces D3/D8 compliance); must not parasitize shared-kernel."
@@ -322,23 +306,6 @@
       "relationType": "bounded_by"
     },
     {
-      "from": "VS8 Semantic Graph",
-      "to": "VS6 Scheduling",
-      "relationType": "provides_scheduling_match_to",
-      "description": "VS8 provides scheduling combination matching to VS6 (Scheduling). Target is VS_Category because VS6 is modeled as a member of VS_Category, not a standalone entity."
-    },
-    {
-      "from": "VS8 Semantic Graph",
-      "to": "VS5 Workspace",
-      "relationType": "provides_semantic_tags_to",
-      "description": "VS8 provides semantic tags to VS5 (Workspace) for task tagging. Target is VS_Category because VS5 is modeled as a member of VS_Category, not a standalone entity."
-    },
-    {
-      "from": "Global Search",
-      "to": "VS8 Semantic Graph",
-      "relationType": "queries_semantic_index"
-    },
-    {
       "from": "Global Search",
       "to": "L_Category",
       "relationType": "consumes_query_gateway"
@@ -358,12 +325,6 @@
       "to": "VS_Category",
       "relationType": "provides_cross_slice_search",
       "description": "Global Search is the sole cross-slice search authority. All slices delegate search to global-search.slice instead of implementing local search logic."
-    },
-    {
-      "from": "Notification Hub",
-      "to": "VS8 Semantic Graph",
-      "relationType": "queries_tag_routing_strategy",
-      "description": "Notification Hub consults VS8 semantic tags to determine notification strategy (channel, urgency, recipient scope)."
     },
     {
       "from": "Notification Hub",
@@ -391,23 +352,7 @@
       "from": "Notification Hub",
       "to": "VS_Category",
       "relationType": "decouples_notification_from_business",
-      "description": "Business slices (VS1-VS6, VS8) must not directly call sendEmail/push/SMS. All notification side-effects route through Notification Hub."
-    },
-    {
-      "from": "VS8 Semantic Graph",
-      "to": "D_Category",
-      "relationType": "governed_by"
-    },
-    {
-      "from": "VS8 Semantic Graph",
-      "to": "A_Category",
-      "relationType": "constrained_by"
-    },
-    {
-      "from": "VS4 Organization Tag Registry",
-      "to": "VS8 Semantic Graph",
-      "relationType": "extends_semantics_from",
-      "description": "VS4 org-tag-registry extends global semantics with organization-scoped task/skill tags without changing VS8 global ownership."
+      "description": "Business slices (VS1-VS9) must not directly call sendEmail/push/SMS. All notification side-effects route through Notification Hub."
     },
     {
       "from": "VS4 Organization Tag Registry",
