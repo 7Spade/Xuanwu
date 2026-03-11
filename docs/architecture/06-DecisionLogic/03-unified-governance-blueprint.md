@@ -30,7 +30,7 @@ sequenceDiagram
         Note over Admin, L8: 【階段 0】語義本體論定義 (Standardizing the World)
         Admin->>L8: 0.1 定義全域標籤本體 (Define Tag Ontology Slugs)
         L8-->>L8: 建立語義關聯圖譜 (Build Semantic Graph)
-        VS0->>D3: 注入 SharedKernel 契約與 Tag 型別 [FI-003]
+        VS0->>D3: 0.2 注入 SharedKernel 契約與 Tag 型別 [FI-003]
     end
 
     %% --- 階段 1：數據來源生命週期 (The Ingestion Phase) ---
@@ -40,7 +40,7 @@ sequenceDiagram
         GW->>D3: 1.2 執行領域寫入 (VS2 Account / VS5 Workspace)
         D3->>L8: 1.3 存儲業務實體 + 自動標籤化 [VS8 Authority]
         D3->>IER: 1.4 發布數據變更事件 (Integration Events)
-        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8 Isolation]
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
         AI->>L8: 1.6 存儲向量特徵 (Store Embeddings)
     end
 
@@ -58,7 +58,7 @@ sequenceDiagram
             AI->>Tool: 2.5 向量召回 (match_candidates)
             Tool->>L8: 語義相似度搜尋 (Vector Search)
             AI->>Tool: 2.6 合規驗證 (verify_compliance)
-            Note right of Tool: Fail-closed: 證照/資格硬過濾
+            Note right of Tool: Fail-closed：證照/資格硬過濾 [GT-2]
         end
 
         AI-->>D3: 2.7 回傳推理軌跡與排名結果
@@ -67,10 +67,12 @@ sequenceDiagram
 
     %% --- 階段 3：投影與查詢 (The Read Chain) ---
     rect rgb(255, 250, 240)
-        Note over IER, UI: 【階段 3】結果物化與展示 (Query Chain)
+        Note over IER, UI: 【階段 3】結果物化與展示 (Query Chain + Feedback)
         IER->>P5: 3.1 寫入投影模型 (Materialize Recommendation View)
         UI->>GW: 3.2 發起查詢請求 (QRY)
         GW->>P5: 3.3 讀取物化視圖 (Read Materialized Model)
         P5-->>UI: 3.4 渲染智慧推薦列表 (UI Rendering)
+        D3->>IER: 3.5 [BF-1] 業務指紋回饋事件 (TaskCompleted/TaskRated)
+        IER-->>AI: 3.6 VS8 調整 employees.skillEmbedding 權重
     end
 ```
