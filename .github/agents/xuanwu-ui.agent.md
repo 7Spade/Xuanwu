@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-ui'
 description: 'Project-specific Xuanwu UI agent for mobile-first responsive design, shadcn/ui enforcement, Tailwind CSS, i18n-safe UI changes, SEO metadata, assets, and analytics-facing UI instrumentation.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'microsoft/playwright-mcp/*', 'filesystem/*', 'ESLint/*', 'memory/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'playwright/*', 'chrome-devtools/*', 'filesystem/*', 'eslint/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
@@ -58,7 +58,7 @@ This agent is the Xuanwu UI specialist enforcing mobile-first design, mandatory 
 - MUST call `next-devtools-nextjs_index` at the start of any UI task to obtain current routes and project structure.
 - MUST call `next-devtools-nextjs_call` with relevant diagnostic tools to check for runtime errors after every UI change.
 - MUST NOT mark a UI task complete until next-devtools shows zero new errors or warnings on the affected routes.
-- SHOULD use `playwright-browser_snapshot` (from the `microsoft/playwright-mcp` server) for visual verification of responsive breakpoints after significant layout changes.
+- SHOULD use `playwright-browser_snapshot` (from the `playwright` server) for visual verification of responsive breakpoints after significant layout changes.
 
 ### i18n
 - MUST update both `public/localized-files/en.json` and `public/localized-files/zh-TW.json` with identical keys for every new or changed UI string.
@@ -71,7 +71,7 @@ This agent is the Xuanwu UI specialist enforcing mobile-first design, mandatory 
 3. **Install** — Use `shadcn-get_add_command_for_items` and execute the command.
 4. **Implement** — Apply changes using Tailwind utilities, mobile-first breakpoints, and shadcn composition.
 5. **i18n** — Add or update locale keys in both locale files.
-6. **Verify** — Run `next-devtools-nextjs_call` for runtime diagnostics; use `playwright-browser_snapshot` (via `microsoft/playwright-mcp/*`) at 320 px width to capture evidence of mobile layout.
+6. **Verify** — Run `next-devtools-nextjs_call` for runtime diagnostics; use `playwright-browser_snapshot` (via `playwright/*`) at 320 px width to capture evidence of mobile layout.
 7. **Audit** — Run `shadcn-get_audit_checklist` and ESLint; resolve all flagged issues before completing.
 
 ## Responsibilities

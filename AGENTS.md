@@ -27,6 +27,12 @@ Shared always-on guidance for multi-agent workflows in this repository.
 - Keep locale keys identical across languages.
 - Use UTF-8 (no BOM).
 
+## Knowledge Persistence
+- **Read first**: At the start of any session, use `memory-search_nodes` to load relevant prior context from `.memory/knowledge-graph.json` before reasoning or producing output.
+- **Write after discoveries**: After completing research or uncovering important codebase facts, persist them using `memory-create_entities`, `memory-add_observations`, or `memory-create_relations`.
+- **Use store_memory**: When VS Code Copilot Chat memory is available, call `store_memory` to record lasting project conventions and patterns across conversations.
+- **Keep current**: Remove stale nodes with `memory-delete_entities` when facts become obsolete.
+
 ## Implementation Checklist
 - Validate layer and slice boundaries before coding.
 - Prefer existing patterns over introducing new architecture paths.

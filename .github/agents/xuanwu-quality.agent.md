@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-quality'
 description: 'Project-specific Xuanwu quality agent for lint/build/test review, security checks, Firebase-rule scrutiny, performance review, reliability, and post-edit auto-quality enforcement.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'ESLint/*', 'filesystem/*', 'next-devtools/*', 'memory/*', 'sequentialthinking/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'eslint/*', 'filesystem/*', 'next-devtools/*', 'sonarqube/*', 'codacy/*', 'memory/*', 'sequential-thinking/*']
 hooks:
   PostToolUse:
     - type: command

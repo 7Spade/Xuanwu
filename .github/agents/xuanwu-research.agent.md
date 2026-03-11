@@ -1,18 +1,7 @@
 ---
 name: 'xuanwu-research'
 description: 'Project-specific Xuanwu research and context agent for codebase discovery, Context7-backed docs lookup, knowledge-graph sync, and session context initialization.'
-tools: ['read', 'codebase', 'search', 'web', 'context7/*', 'repomix/*', 'filesystem/*', 'memory/*']
-hooks:
-  SessionStart:
-    - type: command
-      command: "node .github/hooks/scripts/session-inject.js"
-      timeout: 10
-mcp-servers:
-  context7:
-    type: http
-    url: "https://mcp.context7.com/mcp"
-    headers: {"CONTEXT7_API_KEY": "${{ secrets.COPILOT_MCP_CONTEXT7 }}"}
-    tools: ["get-library-docs", "resolve-library-id"]
+tools: ['read', 'codebase', 'search', 'web', 'context7/*', 'repomix/*', 'markitdown/*', 'filesystem/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
@@ -41,6 +30,14 @@ This agent is the single Xuanwu entry point for project context, repository rese
 - Context7 documentation retrieval.
 - Repomix-based broad repo inspection when needed.
 - Context initialization and knowledge-graph-aware summaries.
+
+## Knowledge-graph workflow
+
+1. **Load prior context** — run `memory-search_nodes` with relevant terms before starting any discovery task to avoid duplicating known facts.
+2. **Gather new findings** — use `codebase`, `search`, `context7/*`, or `repomix/*` to collect factual information.
+3. **Persist to graph** — after discovery, write new or updated facts using `memory-create_entities`, `memory-add_observations`, or `memory-create_relations`.
+4. **Remove stale data** — if prior nodes are contradicted by current findings, delete them with `memory-delete_entities` or `memory-delete_observations`.
+5. **Summarize with citations** — return findings with file/line references so downstream agents can verify them.
 
 ## Boundaries
 - Prefer factual findings over recommendations unless asked.

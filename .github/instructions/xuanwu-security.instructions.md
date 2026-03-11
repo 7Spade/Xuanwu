@@ -1,7 +1,7 @@
 ---
 name: Xuanwu Security Guidelines
 description: Secure coding and secret management rules
-applyTo: "**"
+applyTo: "**/*.{ts,tsx,js,jsx,json,yaml,yml}"
 ---
 
 # Security Guidelines
