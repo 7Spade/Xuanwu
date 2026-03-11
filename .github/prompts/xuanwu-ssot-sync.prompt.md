@@ -30,25 +30,25 @@ argument-hint: 'Target scope, e.g.: full sync | check Phase 2 alignment | verify
 ### 📋 全面對齊檢查
 
 ```
-讀取 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md，然後逐一核對 docs/architecture/01-logical-flow.md、docs/architecture/02-governance-rules.md 與 docs/architecture/03-infra-mapping.md，找出與協議 Phase 0/1/2/3 不一致的地方，列出差異清單。
+讀取 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md，然後核對 docs/architecture/README.md 所列出的架構文件，找出與協議 Phase 0/1/2/3 不一致的地方，列出差異清單。
 ```
 
 ### 🔍 Phase 2 匹配協議對齊
 
 ```
-根據 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md Phase 2 的步驟 2.1 至 2.14，確認 docs/architecture/02-governance-rules.md 的 E8（tenantId fail-closed）、GT-2（證照硬過濾）與 L4A（Who/Why/Evidence/Version/Tenant）規則是否完整且準確。
+根據 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md Phase 2 的步驟 2.1 至 2.14，確認 docs/architecture/README.md 中所列架構文件的 E8（tenantId fail-closed）、GT-2（證照硬過濾）與 L4A（Who/Why/Evidence/Version/Tenant）規則是否完整且準確。
 ```
 
 ### 🏗️ 基礎設施路徑驗證
 
 ```
-比較 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md 中的 L0B、L4A、L10、Tool-S、Tool-M、Tool-V 參與者定義，與 docs/architecture/03-infra-mapping.md 路徑對照表，確認路徑欄位是否對齊。
+比較 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md 中的 L0B、L4A、L10、Tool-S、Tool-M、Tool-V 參與者定義，與 docs/architecture/README.md 所列架構文件的路徑對照表，確認路徑欄位是否對齊。
 ```
 
 ### 📊 治理規則完整性審查
 
 ```
-根據 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md，逐項驗證 docs/architecture/99-checklist.md 第 5a 節（AI 匹配安全門）的五項檢核項目是否覆蓋 E8 fail-closed、GT-2 fail-closed、L4A 五欄位、L0B streaming 與工具呼叫順序。
+根據 Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md，逐項驗證 docs/architecture/README.md 所列架構文件中有關 AI 匹配安全門的五項檢核項目是否覆蓋 E8 fail-closed、GT-2 fail-closed、L4A 五欄位、L0B streaming 與工具呼叫順序。
 ```
 
 ### ✏️ 差異修正
@@ -69,13 +69,7 @@ argument-hint: 'Target scope, e.g.: full sync | check Phase 2 alignment | verify
 
 | 文件 | 對齊重點 |
 |------|---------|
-| `docs/architecture/00-index.md` | Phase 表格、參與者說明 |
-| `docs/architecture/01-logical-flow.md` | Phase 1/2/3 鏈路流向 |
-| `docs/architecture/02-governance-rules.md` | E8 / GT-2 / L4A / BF-1 規則 |
-| `docs/architecture/03-infra-mapping.md` | L0B / L4A / L10 / Tool 路徑 |
-| `docs/architecture/99-checklist.md` | 第 5a 節 AI 匹配安全門 |
-| `docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md` | Phase 2 Steps 2.5–2.14 |
-| `docs/architecture/06-DecisionLogic/03-unified-governance-blueprint.md` | 治理藍圖參與者對齊 |
+| `docs/architecture/README.md` | 架構文件資料夾導覽（邏輯流向、治理規則、基礎設施映射、Phase 表格） |
 
 ---
 
@@ -83,5 +77,5 @@ argument-hint: 'Target scope, e.g.: full sync | check Phase 2 alignment | verify
 
 - 對齊時**不得**新增協議未定義的參與者、步驟或規則。
 - 如有衝突，以 `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` 的步驟編號與參與者定義為準。
-- 層位方向與邊界規則仍以 `docs/architecture/00-logic-overview.md` 為最終裁決。
+- 層位方向與邊界規則仍以 `docs/architecture/README.md` 為最終裁決。
 - 更新後必須確保文件間術語一致。

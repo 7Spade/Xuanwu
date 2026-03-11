@@ -19,8 +19,8 @@ description: >
 
 | 文件 | 職責 |
 |------|------|
-| [`docs/architecture/00-architecture-standards.md`](../../../docs/architecture/00-architecture-standards.md) | 命名規範、目錄結構、公開合約、Bootstrap 範本 |
-| [`docs/architecture/01-logical-flow.md`](../../../docs/architecture/01-logical-flow.md) | 三條主鏈、CQRS 隔離、層位依賴、合規規則集 |
+| [`docs/architecture/README.md`](../../../docs/architecture/README.md) | 命名規範、目錄結構、公開合約、Bootstrap 範本 |
+| [`docs/architecture/README.md`](../../../docs/architecture/README.md) | 架構文件資料夾導覽（三條主鏈、CQRS 隔離、層位依賴、合規規則集） |
 
 文件未定義的結構，一律視為合規。
 
@@ -43,8 +43,8 @@ description: >
 將下方提示貼入對話框，讓 Agent 載入法律條文：
 
 ```text
-請讀取並索引專案中的 docs/architecture/00-architecture-standards.md 與
-docs/architecture/01-logical-flow.md。從現在起，你扮演 Xuanwu 架構守護者。
+請讀取並索引專案中的 docs/architecture/README.md 與
+docs/architecture/README.md。從現在起，你扮演 Xuanwu 架構守護者。
 你的所有判斷標準「僅限於」這兩份文件。若代碼違反規範，請指出具體條款
 （如 §3.1 或 L3 層位）；若文件未定義，則視為合規。
 請確認你已準備好執行「三位一體」掃描。
@@ -57,8 +57,8 @@ docs/architecture/01-logical-flow.md。從現在起，你扮演 Xuanwu 架構守
 #### 全量對準（Full Alignment）
 
 ```text
-Run Audit. Compare the current codebase with 00-architecture-standards.md
-and 01-logical-flow.md. Please provide the Drift Report and Compliance Status.
+Run Audit. Compare the current codebase with docs/architecture/README.md
+and docs/architecture/README.md. Please provide the Drift Report and Compliance Status.
 ```
 
 > 輸出：Physical Audit 表 + Boundary Audit 表 + Flow Audit 表 + Auto-Fix 指令 + 健康分
@@ -71,16 +71,16 @@ and 01-logical-flow.md. Please provide the Drift Report and Compliance Status.
 請列出違規行號與重構建議。
 ```
 
-> 對照條款：`00-architecture-standards.md` §4.1
+> 對照條款：`docs/architecture/README.md` §4.1
 
 #### 清理舊債（Migration Audit）
 
 ```text
-根據 00-architecture-standards.md §7 的遷移規則，列出所有舊版命名的檔案
+根據 docs/architecture/README.md §7 的遷移規則，列出所有舊版命名的檔案
 （如 *.actions.ts 或 business.* 目錄），並直接生成 git mv 修正指令。
 ```
 
-> 對照條款：`00-architecture-standards.md` §7.1 + §7.2
+> 對照條款：`docs/architecture/README.md` §7.1 + §7.2
 
 ---
 
@@ -93,17 +93,17 @@ and 01-logical-flow.md. Please provide the Drift Report and Compliance Status.
 目錄結構。確保包含 index.ts 以及私有的 _ 開頭檔案。
 ```
 
-> 對照條款：`00-architecture-standards.md` §8
+> 對照條款：`docs/architecture/README.md` §8
 
 #### 邏輯鏈驗證
 
 ```text
 追蹤 src/features/{feature}.slice 的邏輯流向。
-它是否嚴格遵守 01-logical-flow.md 定義的 L0 -> L3 -> L4 -> L5 流程？
+它是否嚴格遵守 docs/architecture/README.md 定義的 L0 -> L3 -> L4 -> L5 流程？
 特別檢查是否有 Command 流程直接回傳大量 Query Data 的違規。
 ```
 
-> 對照條款：`01-logical-flow.md` § 合規規則集 FC-001
+> 對照條款：`docs/architecture/README.md` § 合規規則集 FC-001
 
 ---
 
@@ -145,7 +145,7 @@ and 01-logical-flow.md. Please provide the Drift Report and Compliance Status.
 ## 關聯資源
 
 - Agent 定義（已整併至專案專屬 agent 套件）：[`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
-- 命名規範 SSOT：[`docs/architecture/00-architecture-standards.md`](../../../docs/architecture/00-architecture-standards.md)
-- 流向規範 SSOT：[`docs/architecture/01-logical-flow.md`](../../../docs/architecture/01-logical-flow.md)
+- 命名規範 SSOT：[`docs/architecture/README.md`](../../../docs/architecture/README.md)
+- 流向規範 SSOT：[`docs/architecture/README.md`](../../../docs/architecture/README.md)
 - 路徑完整性檢查能力：已整合於 [`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
 - 架構文件索引：[`.github/skills/xuanwu-docs-index/SKILL.md`](../xuanwu-docs-index/SKILL.md)

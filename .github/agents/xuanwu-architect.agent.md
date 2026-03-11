@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-architect'
 description: 'Project-specific Xuanwu architecture agent for system design, API contracts, slice/boundary audits, and path-integrity checks.'
-tools: ['codebase', 'search', 'edit/editFiles', 'next-devtools/*', 'filesystem/*', 'repomix/*', 'serena/*', 'memory/*', 'sequential-thinking/*']
+tools: ['codebase', 'search', 'editFiles', 'next-devtools/*', 'filesystem/*', 'repomix/*', 'serena/*', 'memory/*', 'sequential-thinking/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator

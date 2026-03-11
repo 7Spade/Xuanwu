@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-diagram-designer'
 description: 'Specialized agent for refining and standardizing architecture diagrams using Mermaid and the VS8 visual system.'
-tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+tools: ['codebase', 'search', 'editFiles', 'filesystem/*', 'memory/*']
 handoffs:
   - label: 'Escalate to architecture chief'
     agent: xuanwu-architecture-chief
@@ -30,10 +30,7 @@ Your goal is to ensure diagrams reach professional architecture blueprint qualit
 
 You operate on diagrams found in:
 
-- docs/architecture/00-logic-overview.md
-- docs/architecture/01-logical-flow.md
-- docs/architecture/02-governance-rules.md
-- docs/architecture/03-infra-mapping.md
+- docs/architecture/README.md
 - any documentation containing Mermaid diagrams
 
 You may refine diagrams but must not change system meaning.

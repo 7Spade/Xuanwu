@@ -2,7 +2,7 @@
 name: xuanwu-architecture-realign
 description: 'Realign and condense Xuanwu architecture documentation against the canonical SSOT, unify terminology, and refine Mermaid diagrams.'
 agent: 'xuanwu-architecture-chief'
-argument-hint: 'Target doc or realignment scope, e.g.: realign 01-logical-flow.md against SSOT | slim governance doc'
+argument-hint: 'Target doc or realignment scope, e.g.: realign architecture docs against SSOT | slim README navigation'
 ---
 
 ## Xuanwu Architecture Realignment Prompt
@@ -25,10 +25,9 @@ The authoritative architecture SSOT is defined in two layers:
 
 **Topology & Standards SSOT (layers, boundaries, naming):**
 
-- docs/architecture/00-logic-overview.md
-- docs/architecture/00-architecture-standards.md
+- docs/architecture/README.md
 
-All alignment and refinement must strictly follow both layers. On any conflict between topology and protocol, `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` governs participant identity and step ordering; `00-logic-overview.md` governs layer direction and boundary rules.
+All alignment and refinement must strictly follow both layers. On any conflict between topology and protocol, `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` governs participant identity and step ordering; `docs/architecture/README.md` governs layer direction and boundary rules.
 
 ---
 
@@ -36,9 +35,7 @@ All alignment and refinement must strictly follow both layers. On any conflict b
 
 The documents to be refined and aligned:
 
-- docs/architecture/01-logical-flow.md
-- docs/architecture/02-governance-rules.md
-- docs/architecture/03-infra-mapping.md
+- docs/architecture/README.md
 
 ---
 
@@ -85,7 +82,7 @@ Ensure all diagrams and references are aligned with these layers:
 
 After refinement:
 
-- Target documents 01~03 are fully aligned with the Protocol SSOT (`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`) and the topology SSOT (`00-logic-overview.md`, `00-architecture-standards.md`)
+- Target documents are fully aligned with the Protocol SSOT (`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`) and the topology SSOT (`docs/architecture/README.md`)
 - Redundant or bloated sections are shrunk
 - Terminology is consistent across all documents
 - Mermaid diagrams are clean, readable, and VS8-aligned

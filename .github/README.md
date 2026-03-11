@@ -18,7 +18,7 @@ Use the local `docs/copilot/` copies as the repository reference set, and keep t
 
 Copilot customizations in this repository must stay aligned with:
 
-- Business logic: `docs/architecture/00-logic-overview.md`
+- Business logic: `docs/architecture/README.md`
 - Entity semantics: `.memory/knowledge-graph.json`
 - Codebase reference baseline: `.github/skills/xuanwu-skill/SKILL.md`
 
@@ -169,7 +169,7 @@ These documents are stable link targets for prompts and agents that need reposit
 - `docs/domain-glossary.md`
 - `docs/project-structure.md`
 - `docs/persistence-model-overview.md`
-- `docs/architecture/00-logic-overview.md`
+- `docs/architecture/README.md`
 - `.memory/knowledge-graph.json`
 - `.github/skills/xuanwu-skill/SKILL.md`
 

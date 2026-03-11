@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-ui'
 description: 'Project-specific Xuanwu UI agent for mobile-first responsive design, shadcn/ui enforcement, Tailwind CSS, i18n-safe UI changes, SEO metadata, assets, and analytics-facing UI instrumentation.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'playwright/*', 'chrome-devtools/*', 'filesystem/*', 'eslint/*', 'serena/*', 'memory/*']
+tools: ['codebase', 'search', 'editFiles', 'runCommands', 'runTasks', 'shadcn/*', 'next-devtools/*', 'playwright/*', 'chrome-devtools/*', 'filesystem/*', 'eslint/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
