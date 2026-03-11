@@ -22,8 +22,8 @@ You do NOT modify files.
 # Documents to Analyze
 
 - 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
-- docs/02-governance-rules.md
-- docs/03-infra-mapping.md
+- docs/architecture/02-governance-rules.md
+- docs/architecture/03-infra-mapping.md
 
 ---
 

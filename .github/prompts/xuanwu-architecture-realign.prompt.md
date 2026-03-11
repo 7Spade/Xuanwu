@@ -28,10 +28,10 @@ Target Documents
 
 The documents to be refined and aligned:
 
-- 00-logic-overview.md
-- 01-logical-flow.md
-- 02-governance-rules.md
-- 03-infra-mapping.md
+- docs/architecture/00-logic-overview.md
+- docs/architecture/01-logical-flow.md
+- docs/architecture/02-governance-rules.md
+- docs/architecture/03-infra-mapping.md
 
 ---
 

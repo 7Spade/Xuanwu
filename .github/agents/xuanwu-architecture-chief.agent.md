@@ -29,8 +29,8 @@ Primary:
 
 Reference:
 
-- docs/02-governance-rules.md
-- docs/03-infra-mapping.md
+- docs/architecture/02-governance-rules.md
+- docs/architecture/03-infra-mapping.md
 
 ---
 
