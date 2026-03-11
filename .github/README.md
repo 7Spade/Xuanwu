@@ -152,15 +152,16 @@ The repository now follows these consolidation rules:
 3. `.github/skills/` is the canonical project skill location for VS Code settings.
 4. Stable repository references used by prompts must exist under `docs/` or other committed paths.
 5. `README.md` remains the user-facing entry point and must keep its prompt command table synchronized with `.github/prompts/`.
-6. The canonical project-specific agent suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`.
-7. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`.
-8. The canonical prompt suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, and `xuanwu-test-expert`.
-9. `breakdown-plan` is the canonical planning skill; `create-implementation-plan` remains as a compatibility alias.
-10. `refactor` is the canonical refactor skill (including planning mode); `refactor-plan` remains as a compatibility alias.
-11. `prompt-builder` is the canonical Copilot customization authoring skill; `copilot-instructions-blueprint-generator` remains as a compatibility alias.
-12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); `create-specification` remains as a compatibility alias.
-13. `breakdown-plan` is also the canonical backlog decomposition skill; `gen-specs-as-issues` remains as a compatibility alias.
-14. `next-best-practices` is the canonical Next.js skill family entrypoint; `next-cache-components` and `next-upgrade` remain as compatibility aliases.
+6. **`xuanwu-commander` is the primary user entry point** for all Xuanwu tasks. It understands intent and dispatches to the correct specialist agent or prompt. `xuanwu-orchestrator` is the delivery orchestrator used when a task spans multiple functional agents. Use commander when uncertain which specialist to start with; use orchestrator when the scope is already confirmed as cross-functional delivery.
+7. The canonical project-specific agent suite is `xuanwu-commander` (entry point), `xuanwu-orchestrator` (delivery), `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`. The supporting specialist agents `xuanwu-software-planner`, `xuanwu-sequential-thinking`, `xuanwu-architecture-chief`, `xuanwu-architecture-refactor`, `xuanwu-diagram-designer`, and `xuanwu-repo-browser` are available as subagents or direct invocations for targeted tasks.
+8. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`.
+9. The canonical prompt suite (with `name` frontmatter for slash-command discovery) is: `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, `xuanwu-test-expert`, `xuanwu-planning`, `xuanwu-refactor`, `xuanwu-code-review`, `xuanwu-debug`, and `xuanwu-architecture-realign`.
+10. `breakdown-plan` is the canonical planning skill; `create-implementation-plan` remains as a compatibility alias.
+11. `refactor` is the canonical refactor skill (including planning mode); `refactor-plan` remains as a compatibility alias.
+12. `prompt-builder` is the canonical Copilot customization authoring skill; `copilot-instructions-blueprint-generator` remains as a compatibility alias.
+13. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); `create-specification` remains as a compatibility alias.
+14. `breakdown-plan` is also the canonical backlog decomposition skill; `gen-specs-as-issues` remains as a compatibility alias.
+15. `next-best-practices` is the canonical Next.js skill family entrypoint; `next-cache-components` and `next-upgrade` remain as compatibility aliases.
 
 ## Required Reference Documents for Customizations
 

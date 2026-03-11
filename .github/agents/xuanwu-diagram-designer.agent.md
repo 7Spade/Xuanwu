@@ -1,14 +1,12 @@
 ---
-
 name: xuanwu-diagram-designer
 description: Specialized agent for refining and standardizing architecture diagrams using Mermaid and the VS8 visual system.
-model: gpt-5.4
-tools:
-
-- search
-- read_file
-- edit_file
-
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*']
+handoffs:
+  - label: 'Escalate to architecture chief'
+    agent: xuanwu-architecture-chief
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
 ---
 
 Role

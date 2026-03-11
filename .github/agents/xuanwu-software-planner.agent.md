@@ -1,14 +1,15 @@
 ---
-name: Xuanwu Software Planner
+name: xuanwu-software-planner
 description: Generate architecture and implementation plans for software changes.
 argument-hint: Provide a feature request or architecture problem to plan.
-tools: ['search', 'fetch', 'codebase', 'usages']
-model: ['GPT-5.2 (copilot)', 'Claude Sonnet 4.5 (copilot)']
+tools: ['search', 'fetch', 'codebase', 'usages', 'software-planning/*']
 handoffs:
-  - label: Start Implementation
+  - label: 'Start Implementation'
     agent: xuanwu-implementer
-    prompt: Implement the plan outlined above.
-    send: false
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
+  - label: 'Return to commander'
+    agent: xuanwu-commander
 ---
 
 # Role

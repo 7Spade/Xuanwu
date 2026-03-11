@@ -1,10 +1,12 @@
 ---
 name: xuanwu-repo-browser
-description: Reads repository documentation and extracts architecture structure.
-model: gpt-5.4
-tools:
-  - search
-  - read_file
+description: Reads repository documentation and extracts architecture structure. Read-only analysis agent.
+tools: ['codebase', 'search', 'filesystem/*']
+handoffs:
+  - label: 'Hand off to architecture chief'
+    agent: xuanwu-architecture-chief
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
 ---
 
 # Role
