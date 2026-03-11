@@ -1,5 +1,0 @@
-- Run verification after edits; preferred command: npm run check.
-- Run targeted tests when behavior changes (npm run test or scoped tests).
-- Confirm architecture boundaries and dependency direction are preserved.
-- If UI text changes, update both locale files with identical keys.
-- If blocked, report blocker and partial state instead of risky workaround.
