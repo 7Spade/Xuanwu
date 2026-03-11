@@ -1,18 +1,17 @@
 ﻿/**
- * Module: semantic-graph.slice/outbox ??[L10 VS8_IO] Tag Outbox
+ * Module: semantic-graph.slice/outbox — Tag Outbox
  *
- * Outbound broadcast for the VS8 I/O layer [D21-6, S1].
+ * Outbound broadcast for VS8 SIMA (Semantic Intelligent Matching Architecture) [S1].
  *
  * All topology mutations (addEdge, removeEdge, tag FSM transitions) must route
  * their resulting domain events through this outbox before any subscriber
- * outside VS8 is notified [D21-10, SK_OUTBOX SAFE_AUTO].
+ * outside VS8 is notified [S1, SK_OUTBOX SAFE_AUTO].
  *
  * Invariants:
- *   [D21-10] Every graph topology change emits SemanticTopologyChanged via this outbox.
- *   [S1]     Outbox writes are idempotent (deduplication key = eventId).
- *   [D24]    No direct Firebase import ??writes go through the SK_OUTBOX adapter.
+ *   [S1]  Outbox writes are idempotent (deduplication key = eventId).
+ *   [D24] No direct Firebase import — writes go through the SK_OUTBOX adapter.
  *
- * @see docs/architecture/slices/semantic-graph.md ??L10 VS8_IO
+ * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
  */
 
 import type { TagLifecycleEvent, SemanticEdge } from '../_types';
@@ -56,7 +55,7 @@ function _nextId(): string {
 // ??? Public API ???????????????????????????????????????????????????????????????
 
 /**
- * Enqueue a TagLifecycleEvent for broadcast to downstream subscribers [D21-10].
+ * Enqueue a TagLifecycleEvent for broadcast to downstream subscribers [S1].
  * Idempotent: if an entry with the same eventId already exists it is skipped [S1].
  */
 export function emitTagLifecycleEvent(event: TagLifecycleEvent): void {
@@ -73,7 +72,7 @@ export function emitTagLifecycleEvent(event: TagLifecycleEvent): void {
 }
 
 /**
- * Enqueue a topology-changed event (edge added or removed) [D21-10].
+ * Enqueue a topology-changed event (edge added or removed).
  */
 export function emitSemanticTopologyChanged(payload: TopologyChangedPayload): void {
   _queue.push({
@@ -86,7 +85,7 @@ export function emitSemanticTopologyChanged(payload: TopologyChangedPayload): vo
 }
 
 /**
- * Enqueue a weight-updated event (learning engine feedback) [D21-10].
+ * Enqueue a weight-updated event (KG edge weight revision).
  */
 export function emitNeuralWeightUpdated(payload: WeightUpdatedPayload): void {
   _queue.push({

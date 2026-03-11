@@ -1,13 +1,14 @@
 /**
  * Module: relationship-visualizer
- * Purpose: VS8_WIKI — Semantic relationship graph visualization [D21-I~W]
+ * Purpose: SIMA — Semantic relationship graph visualization
  * Responsibilities: Build read-only structural snapshots of the semantic graph
  *   that can be consumed by UI renderers (e.g., force-directed graph, hierarchy
  *   trees); produces pure data — no rendering logic lives here.
  * Constraints: deterministic logic, ZERO infrastructure imports, ZERO React imports
  *
- * TODO [VS8_PROJ]: Re-connect to a semantic edge store once centralized-edges
- * is re-introduced under the new specification.
+ * TODO [VS8_PROJ]: Implement full graph snapshot once the Knowledge Graph (支柱一 🧠)
+ * edge store is wired to Firestore via SK_PORTS.
+ * See: docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md (Phase 2)
  */
 
 import type { SemanticRelationType } from '../_types';
@@ -47,7 +48,7 @@ function _emptySnapshot(): GraphSnapshot {
 
 /**
  * Build a full graph snapshot (all relation types) from the current edge store.
- * [D21-I] globally observable.
+ * [KG-1] Knowledge Graph edges are written exclusively via _actions.ts.
  */
 export function buildFullGraphSnapshot(): GraphSnapshot {
   return _emptySnapshot();

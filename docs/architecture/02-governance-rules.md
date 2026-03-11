@@ -110,12 +110,6 @@
 - `B3`：AI flow 僅可透過 port 使用 VS8；嚴禁 L10 直接寫 VS8 內部模組。
 - `B4`：分類學路徑與向量相似度不可互相取代；兩者必須各司其職。
 
-### D21-MF（記憶回饋閉環）
-
-- `D21-MF1`：L10 pre-parse 僅能讀 `memory-snippet-view` / `feedback-pattern-view`。
-- `D21-MF2`：人工修正必須事件化，不可直接覆寫分類法規則。
-- `D21-MF3`：採納率與誤判率必須落到 `memory-quality-view` 並進 L9 指標。
-
 ## Forbidden（精簡主清單）
 
 - 禁止跨切片直接寫他域 Aggregate。
@@ -135,7 +129,7 @@
 ## 跨切片強制規則（摘要）
 
 - VS5：任務生命週期與金融入口門檻（`A19/A20`）。
-- VS8：語義智慧匹配架構規則（`KG/VD/OT/G/GT/B + D21-MF`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
+- VS8：語義智慧匹配架構規則（`KG/VD/OT/G/GT/B`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
 - VS9：Finance_Request 獨立狀態機與回饋投影（`A21/A22`）。
 - VS6/VS7：排班與通知均不得繞過事件/投影鏈路。
 

@@ -1,16 +1,16 @@
-﻿/**
- * Module: semantic-graph.slice/subscribers ??[L10 VS8_IO] Lifecycle Subscriber
+/**
+ * Module: semantic-graph.slice/subscribers — Lifecycle Subscriber
  *
- * Inbound broadcast listener for the VS8 I/O layer [D21-6, S1].
+ * Inbound broadcast listener for VS8 SIMA tag lifecycle events [S1].
  *
  * Subscribes to external domain events (e.g. TagLifecycleEvent from the IER)
- * and drives the appropriate internal VS8 state transitions.
+ * and drives the appropriate internal SIMA state transitions.
  *
  * Invariants:
- *   [S1]   Subscribers must be idempotent ??duplicate events must be safe to replay.
- *   [D24]  No direct Firebase import ??Firestore I/O goes through SK_PORTS adapters.
+ *   [S1]   Subscribers must be idempotent — duplicate events must be safe to replay.
+ *   [D24]  No direct Firebase import — Firestore I/O goes through SK_PORTS adapters.
  *
- * @see docs/architecture/slices/semantic-graph.md ??L10 VS8_IO
+ * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
  */
 
 import type { TagLifecycleEvent } from '../_types';
@@ -34,7 +34,7 @@ const _handlers: Array<(event: TagLifecycleEvent) => void> = [];
  * Subscribe to an external lifecycle event source.
  *
  * Received events are:
- *   1. Forwarded to the tag outbox for L10 broadcast [D21-10].
+ *   1. Forwarded to the tag outbox for downstream broadcast [S1].
  *   2. Dispatched to all registered internal handlers.
  *
  * Idempotency: duplicate events (same eventId) are filtered before outbox write [S1].
