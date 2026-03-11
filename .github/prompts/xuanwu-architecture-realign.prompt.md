@@ -18,10 +18,9 @@ Baseline Reference
 
 The architecture baseline is defined in:
 
-- 06-unified-architecture-orchestration-and-governance-blueprint.md
-- 05-semantic-data-lifecycle-and-matching-flow.md
+- 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
 
-All alignment and refinement must strictly follow these two files.
+All alignment and refinement must strictly follow this file.
 
 ---
 

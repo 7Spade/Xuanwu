@@ -25,8 +25,7 @@ You operate as the **final architectural authority** for documentation structure
 
 Primary:
 
-- docs/06-unified-architecture-orchestration-and-governance-blueprint.md
-- docs/05-semantic-data-lifecycle-and-matching-flow.md
+- 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
 
 Reference:
 

@@ -21,8 +21,7 @@ You operate under the guidance of **xuanwu-architecture-chief**.
 
 # Target Files
 
-- docs/05-semantic-data-lifecycle-and-matching-flow.md
-- docs/06-unified-architecture-orchestration-and-governance-blueprint.md
+- 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
 
 ---
 

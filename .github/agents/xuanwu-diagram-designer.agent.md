@@ -30,8 +30,7 @@ Scope
 
 You operate on diagrams found in:
 
-- docs/05-semantic-data-lifecycle-and-matching-flow.md
-- docs/06-unified-architecture-orchestration-and-governance-blueprint.md
+- 05-06-unified-semantic-lifecycle-and-orchestration-blueprint.md
 - any documentation containing Mermaid diagrams
 
 You may refine diagrams but must not change system meaning.
