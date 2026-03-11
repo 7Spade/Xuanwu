@@ -182,9 +182,9 @@ flowchart LR
 
 ## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
 
-> 定位：VS8 是全系統的語義權威與語義認知引擎，位於 L3 Semantic Layer；它負責分類法 / 本體論治理、語義索引、Tag 生命週期，以及關係 / 合規推理所需的語義基礎。
-> 與 L10 的關係：L10 負責 AI 編排；VS8 提供 `search_skills → match_candidates → verify_compliance` 所依賴的標準術語、索引查詢與驗證依據。VS8 不是 AI Runtime，也不是 Finance；`semantic-graph.slice = VS8`，`VS9 = Finance`。
-> 公開邊界：`index.ts` 為唯一公開出口；`_actions.ts`（寫入命令）、`_aggregate.ts`（純驗證 / 聚合）、`_queries.ts`（讀出口）、`_services.ts`（語義索引）、`_semantic-authority.ts`（語義權威出口）。`VS8-SemanticBrain` 目錄名稱為歷史文件命名，對應現行切片即 `semantic-graph.slice`。
+> 定位：VS8 是全系統的語義權威與語義認知引擎（L3 Semantic Layer），以四階段語義生命週期驅動系統：Phase 0（語義基石）→ Phase 1（數據攝取）→ Phase 2（智慧匹配）→ Phase 3（結果輸出）。
+> 四大子系統：`semantic-governance-portal`（wiki-editor / proposal-stream，Phase 0 本體論治理）｜`semantic-core-domain`（_types / _aggregate / _actions / _cost-classifier，純領域邏輯）｜`Semantic Compute Engine`（genkit-tools/ + _services.ts，三工具分派 search_skills → match_candidates → verify_compliance）｜`Semantic Output Layer`（projections / outbox / subscribers，Phase 3 輸出與反饋）。
+> 公開邊界：`index.ts` 為唯一公開出口；`_actions.ts`（寫入命令 [KG-1]）、`_aggregate.ts`（純驗證 / 聚合）、`_queries.ts`（讀出口 [VD-2]）、`_services.ts`（向量索引 [VD-1]）、`_semantic-authority.ts`（語義權威常數 [OT-1]）。`VS8-SemanticBrain` 為歷史文件目錄，對應現行切片 `semantic-graph.slice`；`VS9 = Finance`。
 
 ## 關鍵不變量（索引）
 
