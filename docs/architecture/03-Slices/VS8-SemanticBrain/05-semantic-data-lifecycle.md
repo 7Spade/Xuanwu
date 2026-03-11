@@ -1,3 +1,13 @@
+# [索引 ID: @VS8-DIAG-05] VS8 語義數據生命週期與匹配流程（Semantic Data Lifecycle and Matching Flow）
+
+> Status: **Reference Blueprint**
+> Scope: `src/features/semantic-graph.slice/`
+> Purpose: 定義 VS8 三階段語義數據生命週期：(1) 數據攝取與語義化；(2) 智慧匹配執行（search_skills → match_candidates → verify_compliance）；(3) 結果持久化 + 業務指紋自動回饋。
+> Related: `architecture.md`（三大支柱）、`architecture-diagrams.md`（架構圖）、`04-semantic-matching-logic.md`（匹配序列）
+>
+> 關鍵新增概念：`3.4 業務指紋自動回饋 [BF-1]` — 根據任務結果自動調整 Employee 標籤權重，形成語義閉環。
+
+```mermaid
 sequenceDiagram
     autonumber
     
@@ -65,3 +75,4 @@ sequenceDiagram
     %% Everything as a Tag 反饋
     D3->>L8: 3.4 業務指紋自動回饋 (Behavioral Fingerprint Update)
     Note right of L8: 根據任務結果調整 Employee 標籤權重
+```

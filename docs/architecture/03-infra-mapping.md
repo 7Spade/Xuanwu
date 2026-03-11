@@ -63,6 +63,8 @@ Auxiliary slices（非 VS 編號）：
 - Lane：`CRITICAL` / `STANDARD` / `BACKGROUND`
 - DLQ：`SAFE_AUTO` / `REVIEW_REQUIRED` / `SECURITY_BLOCK`
 - `D30`：hop-limit 防循環，SECURITY_BLOCK 禁止自動 replay
+- **AI 嵌入管線 [E8-I]**：`L3(Domain Slice) → L4(IER, BACKGROUND lane) → L10(AI) → L8` — 非同步觸發 Embedding 提取，禁止 L3 同步呼叫 AI
+- **業務指紋回饋 [BF-1]**：`L3(VS5/VS9) → L4(IER, BACKGROUND lane) → VS8(L3) → L8(employees.skillEmbedding)` — 任務結果自動調整員工語義權重
 
 ### L5（Projection）
 
@@ -121,6 +123,17 @@ Auxiliary slices（非 VS 編號）：
 
 VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI 工具解決人力資源複雜分派問題。詳細設計見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)。
 
+> VS8 三階段語義數據生命週期：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
+
+### 四階段基礎設施路徑
+
+| 階段 | 路徑 | 關鍵規則 |
+|------|------|---------|
+| **Phase 0** 語義基石 | `Admin → L8(skills collection)`；`VS0(SK) → L3(domain slices)` | `FI-003` / `OT-1` |
+| **Phase 1** 數據攝取 | `L0A → L2 → L3 → L4(IER, BACKGROUND) → L10(AI) → L8` | `E8-I` / `VD-3` |
+| **Phase 2** 智慧匹配 | `L3 → L10(Genkit Flow) → [search_skills → match_candidates → verify_compliance] → L8` | `GT-1/2/3` / `E8` |
+| **Phase 3** 反饋閉環 | `L4(IER) → L5(recommendation-view)`；`L3(VS5/VS9) → L4 → VS8 → L8(employees.skillEmbedding)` | `BF-1` / `S2` |
+
 ### 三大支柱基礎設施對應
 
 | 支柱 | 角色隱喻 | Genkit 工具 | 資料集合（Firestore） | 模組路徑 |
@@ -134,7 +147,7 @@ VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI
 | 集合 | 向量欄位 | 向量索引 | 用途 |
 |------|---------|---------|------|
 | `skills` | `embedding`（768 維） | ✅ 需建立 | `search_skills` 語義搜尋 |
-| `employees` | `skillEmbedding`（768 維） | ✅ 需建立 | `match_candidates` 候選人匹配 |
+| `employees` | `skillEmbedding`（768 維） | ✅ 需建立 | `match_candidates` 候選人匹配；[BF-1] 業務指紋權重 |
 | `tasks` | `requirementsEmbedding`（768 維） | ✅ 需建立 | 任務需求語義化 |
 
 > Schema 詳細定義（TypeScript Interface）：`src/features/semantic-graph.slice/_schema.ts` → 見 [`architecture-build.md` Phase 1](03-Slices/VS8-SemanticBrain/architecture-build.md)
@@ -144,7 +157,7 @@ VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI
 | 模組 | Layer | 角色 |
 |------|-------|------|
 | `_actions.ts` | L3 → L4 (outbox) | Tag / 圖譜邊寫入命令 [D3] |
-| `_services.ts` | L3 (internal) | 向量索引管理 [VD-1] |
+| `_services.ts` | L3 (internal) | 向量索引管理 [VD-1]；嵌入向量計算（由 L10 AI 非同步觸發 [E8-I]） |
 | `_queries.ts` | L3 → L6 (via global-search) | QGWAY_SEARCH 讀出埠 [D4] [VD-2] |
 | `_semantic-authority.ts` | L1 (constants) | 分類法常數；被 L3/L6 消費 [OT-1] |
 | `_aggregate.ts` | L3 (pure domain) | 時序衝突 + 分類法驗證 [OT-2] |
@@ -155,17 +168,18 @@ VS8 = 語義智慧匹配架構（SIMA），透過三大支柱與三個 Genkit AI
 | `_schema.ts` | L1 (type contracts) | Firestore 集合 TypeScript Interface |
 | `projections/` | L5 → L6 | 語義投影讀取（Tag 快照；圖譜選擇器暫緩） |
 | `outbox/` | L3 → L4 | 拓撲異動外送廣播 |
-| `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent 訂閱廣播 |
+| `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent + [BF-1] 業務指紋事件訂閱 |
 
 ### VS8 外部依賴與接口
 
 | 消費方向 | 接口 | 規則 |
 |---------|------|------|
-| VS8 → `shared-kernel` | `TAXONOMY_DIMENSIONS`、`CentralizedTagEntry`（型別合約） | [D19] 合約在 SK，邏輯在 VS8 |
+| VS8 → `shared-kernel` | `TAXONOMY_DIMENSIONS`、`CentralizedTagEntry`（型別合約） | [FI-003] SK 注入；[D19] 合約在 SK，邏輯在 VS8 |
 | VS8 → `shared-infra/projection-bus` | `publishTagEvent` → `_tag-funnel.ts` | [T1] 事件匯流排出口 |
 | VS8 → Firebase Firestore (L7-A) | 透過 SK_PORTS 讀寫 Tag 文件；Vector Search | [D24] 禁止直連 SDK |
-| VS8 → Vertex AI (`text-embedding-004`) | 嵌入向量生成（透過 Genkit plugin） | [D24] via port；768 維 |
+| VS8 → Vertex AI (`text-embedding-004`) | 嵌入向量生成（透過 Genkit plugin，L4 IER 非同步觸發） | [E8-I] 非同步隔離；768 維 |
 | `global-search.slice` → VS8 | `querySemanticIndex` / `SEARCH_DOMAINS` | [VD-2] 唯一讀出埠 |
 | `workspace.slice` → VS8 | `classifyCostItem` / `classifyParserLineItem` | [D27] 成本語義 |
 | `finance.slice` → VS8 | 成本分類器型別 | [D27] |
+| VS5/VS9 → IER → VS8 | `TaskCompleted` / `TaskRated` 行為事件 | [BF-1] 業務指紋回饋 |
 | Genkit AI Agent → VS8 | `searchSkillsTool`、`matchCandidatesTool`、`verifyComplianceTool` | [GT-1] via `defineTool` |
