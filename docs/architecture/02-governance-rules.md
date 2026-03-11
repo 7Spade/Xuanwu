@@ -70,31 +70,32 @@
 
 ## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
 
-> 定位：VS8 是全系統語義權威與語義認知引擎；三大支柱仍為 Knowledge Graph / Vector Index / Skills Ontology，但在系統中的角色是提供語義治理、索引、驗證與 Tag 生命週期能力，供 L10 編排層消費。
+> 定位：VS8 是全系統語義權威與語義認知引擎，以四子系統運作：`semantic-governance-portal`（Phase 0 本體論治理）｜`semantic-core-domain`（純領域邏輯）｜`Semantic Compute Engine`（三工具分派引擎）｜`Semantic Output Layer`（Phase 3 輸出與反饋）。
 > 邊界：`semantic-graph.slice = VS8`；`VS9 = Finance`。VS8 不是 AI Runtime，也不直接執行跨切片副作用。
 > 詳細設計：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
-### VS8 三工具分派引擎（Genkit Matching Flow）
+### VS8 四階段語義生命週期（Semantic Compute Engine · Genkit Matching Flow）
 
 ```mermaid
 flowchart LR
     Request([匹配請求\nMatching Request]) --> Phase0
 
-    subgraph Phase0["Phase 0 語義基石 ｜ Semantic + Governance Layer"]
-        SK[VS0 SharedKernel\n契約注入 FI-003] --> Ontology[skills 集合\nTag 本體論 OT-1]
+    subgraph Phase0["Phase 0 語義基石 ｜ semantic-governance-portal + VS0 [FI-003]"]
+        Admin[Admin / Ontology\nsemantic-governance-portal] --> Ontology[skills 集合\nTag 本體論 OT-1]
+        SK[VS0 SharedKernel\n契約注入 FI-003]
     end
 
     Phase0 --> Phase1
 
-    subgraph Phase1["Phase 1 數據攝取 ｜ Data Lifecycle + Infrastructure Layer"]
-        D3W[L3 Domain Write\n業務實體寫入] --> IER[L4 IER\nBACKGROUND lane]
+    subgraph Phase1["Phase 1 數據攝取 ｜ semantic-core-domain + L4 IER [E8-I]"]
+        D3W[L3 Domain Write\nsemantic-core-domain\n_actions / _aggregate] --> IER[L4 IER\nBACKGROUND lane]
         IER -->|非同步 E8-I| EmbedAI[L10 AI\nEmbedding 提取]
         EmbedAI --> VecDB[(employees\nskillEmbedding)]
     end
 
     Phase1 --> Phase2
 
-    subgraph Phase2["Phase 2 智慧匹配 ｜ Matching/AI + Semantic Layer"]
+    subgraph Phase2["Phase 2 智慧匹配 ｜ Semantic Compute Engine [GT-2 Fail-closed]"]
         SS[search_skills\nOT-2] -->|Canonical Slug| MC[match_candidates\nVD-2]
         MC -->|Top-K| VC[verify_compliance\nGT-2 Fail-closed]
         VC -->|B1| Out([匹配候選集])
@@ -102,10 +103,10 @@ flowchart LR
 
     Phase2 --> Phase3
 
-    subgraph Phase3["Phase 3 反饋閉環 ｜ Data Lifecycle + Observability Layer"]
-        PB[L5 PB\nrecommendation-view] --> UI([UI 渲染])
-        TaskDone([TaskCompleted 事件]) --> IER2[L4 IER\nBF-1]
-        IER2 -->|Everything as a Tag| VecDB
+    subgraph Phase3["Phase 3 結果輸出 ｜ Semantic Output Layer [BF-1]"]
+        PB[L5 PB\nprojections / recommendation-view] --> UI([UI 渲染])
+        TaskDone([TaskCompleted 事件]) --> IER2[L4 IER\nsubscribers / outbox]
+        IER2 -->|BF-1 業務指紋回饋| VecDB
     end
 ```
 

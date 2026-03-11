@@ -110,45 +110,49 @@ sequenceDiagram
 
 > 完整細節：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 >
-> 定位：VS8 是 L3 的語義權威切片；L10 只負責 AI 編排與 tool orchestration，VS8 則提供標準術語、分類法驗證、語義索引、Tag 生命週期與關係 / 合規語義基礎。`semantic-graph.slice = VS8`（注意：`VS9 = Finance`，與 VS8 的邊界不同）。
+> 定位：VS8 是 L3 的語義權威切片，以四階段語義生命週期運作：Phase 0（語義基石）→ Phase 1（數據攝取）→ Phase 2（智慧匹配）→ Phase 3（結果輸出）。L10 負責 AI 編排；VS8 的 `Semantic Compute Engine` 提供三工具分派（`search_skills → match_candidates → verify_compliance`）。`semantic-graph.slice = VS8`；`VS9 = Finance`。
 
-| 能力面 | 實際模組 | 在 05/06 藍圖中的角色 |
-|------|------|-------------|
-| 語義權威 / 分類法 | `index.ts` → `_semantic-authority.ts` / `_aggregate.ts` | 定義 canonical slugs，驗證 taxonomy assignment / path |
-| 語義索引 | `index.ts` → `_queries.ts` → `_services.ts` | 提供 `search_skills` / `match_candidates` 所需的語義查詢與召回基礎 |
-| 語義寫入 / 關係治理 | `index.ts` → `_actions.ts` | Tag 寫入 funnel；外部切片不得直接寫語義資料 |
-| 生命週期與反饋 | `_bus.ts`、`subscribers/`、`outbox/` | 對接 L4/L5 事件鏈，承接 Tag lifecycle 與 BF-1 閉環 |
+| 子系統 | 模組 | 階段 | 角色 |
+|------|------|------|------|
+| `semantic-governance-portal` | `wiki-editor/` `proposal-stream/` | Phase 0 語義基石 | Admin 定義 Tag 本體論；Skill/Tag 修訂提案 [OT-1] |
+| `semantic-core-domain` | `_types.ts` `_aggregate.ts` `_actions.ts` `_cost-classifier.ts` | Phase 1 數據攝取 | 純領域邏輯：分類法驗證、Tag 寫入 funnel、成本語義 [KG-1] |
+| `Semantic Compute Engine` | `genkit-tools/` `_services.ts` `_queries.ts` | Phase 2 智慧匹配 | 三工具分派引擎（search_skills → match_candidates → verify_compliance）；向量索引 [GT-2] |
+| `Semantic Output Layer` | `projections/` `outbox/` `subscribers/` | Phase 3 結果輸出 | 結果物化投影、外送廣播、BF-1 業務指紋回饋 [BF-1] |
 
 ```mermaid
 flowchart LR
-    subgraph GOV["② Governance Layer"]
+    subgraph GOV["② Governance Layer · semantic-governance-portal (Phase 0)"]
         Admin[Admin / Ontology]
         VS0[VS0 SharedKernel]
+        WikiEd[wiki-editor/]
+        PropS[proposal-stream/]
     end
 
-    subgraph SEM["③ Semantic Layer"]
+    subgraph CORE["③ Semantic Layer · semantic-core-domain (Phase 1)"]
         API[VS8 index.ts]
         Auth[_semantic-authority.ts]
         Agg[_aggregate.ts]
         Act[_actions.ts]
-        Qry[_queries.ts]
-        Svc[_services.ts]
-        Bus[_bus.ts]
     end
 
-    subgraph DL["⑤ Data Lifecycle Layer"]
-        IER[L4 IER]
-        PB[L5 Projection Bus]
-    end
-
-    subgraph AI["⑥ Matching / AI Layer"]
+    subgraph SCE["⑥ Matching / AI Layer · Semantic Compute Engine (Phase 2)"]
         Flow[L10 Genkit Flow]
         ToolS[search_skills]
         ToolM[match_candidates]
         ToolV[verify_compliance]
+        Qry[_queries.ts]
+        Svc[_services.ts]
     end
 
-    Admin --> Auth
+    subgraph SOL["⑤ Data Lifecycle Layer · Semantic Output Layer (Phase 3)"]
+        IER[L4 IER]
+        PB[L5 Projection Bus]
+        Outbox[outbox/]
+        Sub[subscribers/]
+        Proj[projections/]
+    end
+
+    Admin --> WikiEd --> Auth
     VS0 --> Agg
     API --> Act
     API --> Qry
@@ -157,12 +161,14 @@ flowchart LR
     Flow --> ToolS --> Qry
     Flow --> ToolM --> Qry
     Flow --> ToolV --> API
-    Act --> Bus --> IER --> PB
+    Act --> Outbox --> IER --> PB
+    IER --> Sub
+    PB --> Proj
 ```
 
-**讀路徑（語義查詢）**：`global-search.slice → VS8.index.ts → _queries.ts → _services.ts → SemanticSearchHit[]`
+**讀路徑（語義查詢）**：`global-search.slice → VS8.index.ts → _queries.ts → _services.ts → SemanticSearchHit[]`（Semantic Compute Engine）
 
-**分類法管理路徑**：`wiki-editor → VS8.index.ts → _actions.ts → _aggregate.ts(validateTaxonomyAssignment)`
+**Phase 0 語義治理路徑**：`semantic-governance-portal(wiki-editor) → VS8.index.ts → semantic-core-domain(_actions.ts → _aggregate.ts::validateTaxonomyAssignment)`
 
 詳細架構定義：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
