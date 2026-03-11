@@ -4,7 +4,8 @@
 `00` 負責拓撲裁決，`03` 負責路徑映射，`01` 僅為流程可讀視圖。
 
 > 統一架構治理藍圖（對齊基礎）：[`06-DecisionLogic/03-unified-governance-blueprint.md`](06-DecisionLogic/03-unified-governance-blueprint.md)  
-> VS8 語義數據生命週期細節：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
+> VS8 語義數據生命週期細節：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)  
+> **語義核心協議 SSOT**（E8 / GT-2 / L4A / 工具呼叫序列）：[`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`](../../Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md)
 
 ## 分類
 
