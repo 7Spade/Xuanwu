@@ -9,7 +9,7 @@
  *   - Route proposals to proposal-stream/ for async review.
  *   - Enforce governance rules before proposals enter proposal-stream.
  *
- * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
+ * @see docs/architecture/README.md
  */
 
 import type { TagSlugRef } from '@/shared-kernel';

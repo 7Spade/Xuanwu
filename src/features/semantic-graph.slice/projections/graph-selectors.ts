@@ -10,7 +10,7 @@
  */
 
 // TODO [VS8_PROJ]: Implement graph selectors when the semantic-edge store is re-introduced.
-//   See: docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md
+//   See: docs/architecture/README.md
 //   Planned exports:
 //     - getEligibleTags(tagEntities, query): readonly EligibleTagResult[]
 //     - satisfiesSemanticRequirement(candidateSlug, requiredSlug): boolean

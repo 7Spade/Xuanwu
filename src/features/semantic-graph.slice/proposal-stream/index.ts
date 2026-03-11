@@ -9,7 +9,7 @@
  *   - Drive the consensus-validation lifecycle (pending ??approved / rejected).
  *   - Approved proposals are committed to the Knowledge Graph edge store via _actions.ts [KG-1].
  *
- * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
+ * @see docs/architecture/README.md
  */
 
 import type { TagSlugRef } from '@/shared-kernel';

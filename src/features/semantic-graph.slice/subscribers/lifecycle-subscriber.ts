@@ -10,7 +10,7 @@
  *   [S1]   Subscribers must be idempotent — duplicate events must be safe to replay.
  *   [D24]  No direct Firebase import — Firestore I/O goes through SK_PORTS adapters.
  *
- * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
+ * @see docs/architecture/README.md
  */
 
 import type { TagLifecycleEvent } from '../_types';

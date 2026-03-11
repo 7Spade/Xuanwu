@@ -8,7 +8,7 @@
  *
  * TODO [VS8_PROJ]: Implement full graph snapshot once the Knowledge Graph (支柱一 🧠)
  * edge store is wired to Firestore via SK_PORTS.
- * See: docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md (Phase 2)
+ * See: docs/architecture/README.md (Phase 2)
  */
 
 import type { SemanticRelationType } from '../_types';

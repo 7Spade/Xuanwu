@@ -11,7 +11,7 @@
  *   [S1]  Outbox writes are idempotent (deduplication key = eventId).
  *   [D24] No direct Firebase import — writes go through the SK_OUTBOX adapter.
  *
- * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
+ * @see docs/architecture/README.md
  */
 
 import type { TagLifecycleEvent, SemanticEdge } from '../_types';

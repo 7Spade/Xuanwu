@@ -10,7 +10,7 @@
  *   [L7]  Pure, side-effect-free projections only.
  *   [D24] No direct Firebase import.
  *
- * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
+ * @see docs/architecture/README.md
  */
 
 // TODO [VS8_PROJ]: Implement context selectors.
