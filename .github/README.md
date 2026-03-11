@@ -155,14 +155,12 @@ The repository now follows these consolidation rules:
 6. The canonical project-specific agent suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-quality`, `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert`.
 7. The canonical instruction suite is `xuanwu-customization-authoring`, `xuanwu-code-quality`, `xuanwu-application-architecture`, `xuanwu-typescript-platform`, `xuanwu-github-workflows`, `xuanwu-task-tracking`, and `xuanwu-test-expert`.
 8. The canonical prompt suite is `xuanwu-orchestrator`, `xuanwu-product`, `xuanwu-research`, `xuanwu-architect`, `xuanwu-docs`, `xuanwu-implementer`, `xuanwu-ui`, `xuanwu-ops`, and `xuanwu-test-expert`.
-9. `breakdown-plan` is the canonical planning skill; `create-implementation-plan` remains as a compatibility alias.
-10. `refactor` is the canonical refactor skill (including planning mode); `refactor-plan` remains as a compatibility alias.
-11. `prompt-builder` is the canonical Copilot customization authoring skill; `copilot-instructions-blueprint-generator` remains as a compatibility alias.
-12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); `create-specification` remains as a compatibility alias.
-13. `breakdown-plan` is also the canonical backlog decomposition skill; `gen-specs-as-issues` remains as a compatibility alias.
-14. `next-best-practices` is the canonical Next.js skill family entrypoint; `next-cache-components` and `next-upgrade` remain as compatibility aliases.
-15. `prompt-builder` is also the canonical exemplar prompt-authoring skill; `code-exemplars-blueprint-generator` remains as a compatibility alias.
-16. `agent-governance` is the canonical agent safety and governance skill; `agentic-eval` and `ai-prompt-engineering-safety-review` remain as compatibility aliases.
+9. `breakdown-plan` is the canonical planning and backlog decomposition skill; merged wrappers `create-implementation-plan` and `gen-specs-as-issues` were removed.
+10. `refactor` is the canonical refactor skill (including planning mode); merged wrapper `refactor-plan` was removed.
+11. `prompt-builder` is the canonical Copilot customization and exemplar prompt-authoring skill; merged wrappers `copilot-instructions-blueprint-generator` and `code-exemplars-blueprint-generator` were removed.
+12. `breakdown-epic-pm` is the canonical requirements authoring skill (PRD + tech-spec modes); merged wrapper `create-specification` was removed.
+13. `next-best-practices` is the canonical Next.js skill family entrypoint; merged wrappers `next-cache-components` and `next-upgrade` were removed.
+14. `agent-governance` is the canonical agent safety and governance skill; merged wrappers `agentic-eval` and `ai-prompt-engineering-safety-review` were removed.
 
 ## Required Reference Documents for Customizations
 
