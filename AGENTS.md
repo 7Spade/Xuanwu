@@ -33,6 +33,37 @@ Shared always-on guidance for multi-agent workflows in this repository.
 - **Use store_memory**: When VS Code Copilot Chat memory is available, call `store_memory` to record lasting project conventions and patterns across conversations.
 - **Keep current**: Remove stale nodes with `memory-delete_entities` when facts become obsolete.
 
+## Code Intelligence (Serena)
+- Use `serena/*` MCP tools for symbol navigation and code understanding before making changes.
+- `serena-find_symbol` — locate any class, function, or variable by name pattern across the codebase.
+- `serena-find_referencing_symbols` — trace callers and usages of a given symbol.
+- `serena-get_symbols_overview` — get a file's symbol map before editing.
+- `serena-search_for_pattern` — search by regex pattern across files.
+- `serena-replace_symbol_body` / `serena-insert_after_symbol` — make symbol-level edits safely.
+
+## Available MCP Servers
+All MCP servers below are configured in `.vscode/mcp.json`. Reference tools using `<server>/*` in agent frontmatter.
+
+| Server | Tool prefix | Primary use |
+|--------|-------------|-------------|
+| Vercel | `vercel/*` | Deployment and edge-function operations |
+| Everything | `everything/*` | General-purpose MCP protocol testing |
+| Filesystem | `filesystem/*` | Local file read/write |
+| Memory | `memory/*` | Knowledge graph (`.memory/knowledge-graph.json`) |
+| Sequential Thinking | `sequential-thinking/*` | Step-by-step structured reasoning |
+| Software Planning | `software-planning/*` | Implementation plan and todo tracking |
+| Context7 | `context7/*` | Version-accurate framework/library docs |
+| Markitdown | `markitdown/*` | Convert URLs/files to Markdown |
+| Playwright | `playwright/*` | Browser automation and E2E testing |
+| Chrome DevTools | `chrome-devtools/*` | Browser diagnostics and DOM inspection |
+| ESLint | `eslint/*` | Static code analysis |
+| Next.js DevTools | `next-devtools/*` | Next.js dev-server diagnostics |
+| shadcn/ui | `shadcn/*` | Component registry and add commands |
+| SonarQube | `sonarqube/*` | Code quality gates and security hotspots |
+| Codacy | `codacy/*` | Code quality and security review |
+| Repomix | `repomix/*` | Pack repository for AI analysis |
+| Serena | `serena/*` | Code intelligence: symbols, references, refactoring |
+
 ## Implementation Checklist
 - Validate layer and slice boundaries before coding.
 - Prefer existing patterns over introducing new architecture paths.

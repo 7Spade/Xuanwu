@@ -2,13 +2,16 @@
 name: xuanwu-commander
 description: Master entry point — understand user intent, collect context, and dispatch to the correct Xuanwu agent or prompt workflow.
 argument-hint: Describe the task or problem you want to solve.
-tools: ['search', 'fetch', 'codebase', 'usages', 'agent', 'software-planning/*', 'memory/*']
+tools: ['search', 'fetch', 'codebase', 'usages', 'agent', 'software-planning/*', 'memory/*', 'serena/*']
 agents:
   - xuanwu-orchestrator
   - xuanwu-product
   - xuanwu-research
   - xuanwu-architect
   - xuanwu-architecture-chief
+  - xuanwu-architecture-refactor
+  - xuanwu-diagram-designer
+  - xuanwu-repo-browser
   - xuanwu-implementer
   - xuanwu-ui
   - xuanwu-quality
@@ -28,6 +31,12 @@ handoffs:
     agent: xuanwu-architect
   - label: 'Architecture doc realignment'
     agent: xuanwu-architecture-chief
+  - label: 'Refactor architecture docs'
+    agent: xuanwu-architecture-refactor
+  - label: 'Refine architecture diagrams'
+    agent: xuanwu-diagram-designer
+  - label: 'Read-only architecture analysis'
+    agent: xuanwu-repo-browser
   - label: 'Implement or refactor code'
     agent: xuanwu-implementer
   - label: 'UI design or audit'
@@ -60,7 +69,10 @@ Your job is to fully understand the user's request, gather necessary context, an
    - Requirements / planning → `xuanwu-product` or `xuanwu-software-planner`
    - Research / codebase discovery → `xuanwu-research`
    - Architecture design or audit → `xuanwu-architect`
-   - Architecture doc realignment → `xuanwu-architecture-chief`
+   - Architecture doc realignment or refinement → `xuanwu-architecture-chief` (use `/xuanwu-architecture-realign`)
+   - Architecture doc restructuring → `xuanwu-architecture-refactor`
+   - Architecture diagram design → `xuanwu-diagram-designer`
+   - Read-only architecture analysis → `xuanwu-repo-browser`
    - Code implementation or refactor → `xuanwu-implementer`
    - UI design, audit, or localization → `xuanwu-ui`
    - Quality review, lint, or security → `xuanwu-quality`
@@ -68,7 +80,7 @@ Your job is to fully understand the user's request, gather necessary context, an
    - CI/CD or operational changes → `xuanwu-ops`
    - Browser diagnostics or preflight → `xuanwu-test-expert`
    - Complex reasoning or debugging → `xuanwu-sequential-thinking`
-3. **Collect minimal context** using `codebase`, `search`, or `memory/*` tools before routing.
+3. **Collect minimal context** using `codebase`, `search`, `memory/*`, or `serena/*` tools before routing.
 4. **Produce a concise dispatch summary** with problem statement, recommended agent, and suggested prompt.
 
 ## Available prompts
@@ -81,6 +93,7 @@ The following slash-command prompts are available for direct invocation:
 | `/xuanwu-product` | Requirements, planning, blueprints |
 | `/xuanwu-research` | Codebase discovery and reference synthesis |
 | `/xuanwu-architect` | Architecture audit or design |
+| `/xuanwu-architecture-realign` | Architecture doc realignment via xuanwu-architecture-chief |
 | `/xuanwu-implementer` | Code implementation and refactor |
 | `/xuanwu-ui` | UI audit, shadcn/ui, i18n, responsive design |
 | `/xuanwu-code-review` | Quality and security review |
@@ -89,9 +102,7 @@ The following slash-command prompts are available for direct invocation:
 | `/xuanwu-test-expert` | Next.js preflight and runtime diagnostics |
 | `/xuanwu-planning` | Quick implementation plan |
 | `/xuanwu-refactor` | Code refactor guidance |
-| `/xuanwu-code-review` | Code review |
 | `/xuanwu-debug` | Debugging and root-cause analysis |
-| `/xuanwu-architecture-realign` | Architecture doc realignment |
 
 ## Output format
 
