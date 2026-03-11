@@ -5,6 +5,7 @@ sequenceDiagram
     participant Admin as VS8: 語義管理 (Admin/Ontology)
     participant VS0 as VS0: 核心內核 (Kernel/SDK)
     participant UI as L0: 外部入口 (UI/Client/PM/User)
+    participant SA as L0B: Server Action 串流橋接 (Trace Stream)
     participant GW as L0A: CQRS 閘道 (API Ingress)
     participant CBG as L2: 命令管線 (Write Pipeline)
     participant D3 as L3: 領域切片 (VS1-VS9 Slices)
@@ -13,6 +14,7 @@ sequenceDiagram
     participant ToolM as Tool-M: 候選匹配 (match_candidates)
     participant ToolV as Tool-V: 合規驗證 (verify_compliance)
     participant IER as L4: 事件路由器 (IER/LANE)
+    participant Audit as L4A: 稽核切片 (Semantic Decision Audit)
     participant P5 as L5: 投影總線 (Projection/Bus)
     participant Q6 as L6: 查詢閘道 (Query Gateway)
     participant L8 as L8: 數據持久層 (Firebase/Vector DB)
@@ -61,9 +63,10 @@ sequenceDiagram
             ToolS-->>AI: 標準化技能組 (Normalized Skill Set)
 
             AI->>ToolM: 2.6 執行向量匹配 (Execute Vector Match via match_candidates)
-            ToolM->>L8: 語義近鄰搜尋 (Vector Similarity Search)
+            ToolM->>L8: 語義近鄰搜尋 (Vector Similarity Search + metadata.tenantId == request.tenantId)
             L8-->>ToolM: Top-K 候選名單 (Candidate List)
             ToolM-->>AI: 語義匹配得分 (Semantic Scores)
+            Note right of ToolM: E8 多租戶隔離：metadata filter 必須 tenantId 強綁定，未帶入即 fail-closed
 
             AI->>ToolV: 2.7 合規與資格檢核 (Compliance & Cert Check via verify_compliance)
             ToolV->>L8: 驗證證照/可用性 (Verify Certs/Availability)
@@ -72,8 +75,13 @@ sequenceDiagram
             Note right of ToolV: Fail-closed：證照/資格硬過濾 [GT-2]
         end
 
-        AI-->>D3: 2.8 返回推理軌跡與排名 (Ranked List & Trace)
-        D3->>L8: 2.9 自動回饋業務指紋 (Behavioral Fingerprint Update)
+        AI-->>SA: 2.8 串流中間推理軌跡 (Stream Partial Trace Chunks)
+        SA-->>UI: 2.9 即時回推前端進度/理由片段 (Realtime Trace Streaming)
+        AI-->>D3: 2.10 返回最終推理軌跡與排名 (Final Ranked List & Trace)
+        D3->>IER: 2.11 發布匹配決策事件 (Decision Event with reasons/traceRef)
+        IER->>Audit: 2.12 寫入稽核日誌 (Who/Why/Evidence/Version/Tenant)
+        IER->>P5: 2.13 發布投影事件 (Projection Event by Lane)
+        D3->>L8: 2.14 自動回饋業務指紋 (Behavioral Fingerprint Update)
         Note right of L8: 根據任務結果調整 Employee 標籤權重
     end
 
