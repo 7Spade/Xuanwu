@@ -19,6 +19,31 @@
   - A 路（Client SDK）：`L3/L5/L6 -> L1(SK_PORTS) -> L7-A -> L8`
   - B 路（Admin SDK）：`L0/L2 -> L7-B(functions) -> L8`
 
+## 語義核心協議三段鏈（SSOT Reference）
+
+> 權威序列圖：[`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`](../../Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md)
+> （本節為索引摘要；詳細步驟編號、fail-closed 規則、欄位契約以上述 SSOT 為準）
+
+| Phase | 名稱 | 關鍵參與者 |
+|-------|------|------------|
+| Phase 0 | 核心啟動（Kernel Bootstrap） | VS0 → D3 types；Admin → L8 ontology；D3 → L8 tags / profile / task |
+| Phase 1 | 寫入鏈（Write Chain） | UI → L0A → L2 → L3 → L8[FI-002] → L10[embedding] → L4 → L5[LANE] |
+| Phase 2 | 智慧匹配（Intelligent Matching） | UI → L0A → L2 → L3 → L10 → Tool-S → Tool-M[E8] → Tool-V[GT-2] → L0B → L3 → L4 → L4A[Who/Why/Evidence/Version/Tenant] → L5 → L3 → L8[BF-1] |
+| Phase 3 | 讀取鏈（Read Chain） | L3 → L5 → UI；UI → L0A → L6 → L5 → UI |
+
+### 本索引未列之關鍵參與者（補充說明）
+
+| 識別符 | 角色說明 |
+|--------|----------|
+| `VS0` | 共用核心（Kernel / SDK）——D3 types 與 contracts 注入來源 |
+| `L0A` | CQRS 閘道（API Ingress）——CMD 與 QRY 雙向入口 |
+| `L0B` | Server Action 串流橋接——Phase 2 推理軌跡回傳 UI（Steps 2.8-2.9） |
+| `L4A` | 語義決策稽核切片——持久化 Who/Why/Evidence/Version/Tenant（Step 2.12） |
+| `L10` | Genkit AI 編排器——驅動 Tool-S / Tool-M / Tool-V 呼叫序列 |
+| `Tool-S` | `search_skills`——語義查詢工具（B1 Read-only） |
+| `Tool-M` | `match_candidates`——向量查詢工具（E8 fail-closed，tenantId 強綁定） |
+| `Tool-V` | `verify_compliance`——資格硬過濾工具（GT-2 fail-closed） |
+
 ## 架構文件
 
 - `docs/architecture/00-logic-overview.md`

@@ -22,3 +22,13 @@
 - Gov partners: partner group/invite/dismiss + query/subscribe。
 - Gov policy: org policy create/update/delete/query。
 - Gov semantic: org task-type / skill-type 字典 CRUD、resolver、assistant actions、dictionary panel。
+
+## SSOT Phase 對齊（Phase Alignment）
+
+| Phase | 步驟 | VS4 Organization 角色 |
+|-------|------|----------------------|
+| Phase 0 (0.3 Note) | 員工畫像（VS2） | VS4 管理組織架構與成員資格；成員資格確認後，VS2 Account/Profile 的 Phase 0.3 初始化才能完整 |
+| Phase 1 (1.3-1.8) | 寫入鏈 + 事件 | 組織命令（CreateOrg/AddMember）走 D29 TransactionalCommand + FI-002；PolicyChanged → CRITICAL_LANE |
+| Phase 2 (2.6) | Tool-M 候選池 | VS4 的 `ORG_ELIGIBLE_MEMBER_VIEW`（#A16）是 Tool-M（match_candidates）查詢的候選人資料來源之一 |
+
+**E8 邊界**：組織成員查詢必須帶 tenantId；跨租戶組織資料讀寫一律 fail-closed。

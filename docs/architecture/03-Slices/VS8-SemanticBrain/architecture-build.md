@@ -7,7 +7,17 @@
 
 ---
 
+> ⚠️ **命名說明**：本文件使用「Stage 1/2/3/4」描述實作階段（Schema → Vector → Tools → Prompts），
+> 以區別於 `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` 定義的
+> 「SSOT Phase 0/1/2/3」（Kernel Bootstrap → Write Chain → Intelligent Matching → Read Chain）。
+> 實作 Stage 與 SSOT Phase 的對應關係：
+> - Stage 1 (Schema) → 支援 SSOT Phase 0（標籤本體論建立）
+> - Stage 2 (Vector Index) → 支援 SSOT Phase 1/2（FI-002 寫入 + E8 向量搜尋）
+> - Stage 3 (Genkit Tools) → 支援 SSOT Phase 2（Tool-S/M/V + GT-2/E8 fail-closed）
+> - Stage 4 (Prompt Engineering) → 支援 SSOT Phase 2（L10 推理品質 + BF-1 回饋）
+
 ## 前提條件
+
 
 1. 閱讀並理解 `architecture.md`：三大支柱角色（邏輯大腦 / 記憶模塊 / 語言定義）。
 2. 確認現有 TypeScript 無錯誤（`npm run typecheck`）。
@@ -396,3 +406,12 @@ git add -A && git commit -m "feat(vs8/dispatch-flow): add Genkit dispatch flow w
 | 嵌入模型 API 配額限制 | 開發期使用 Firebase Emulator 的 mock embedding |
 | `verify_compliance` 需要完整知識圖譜邊資料 | Phase 3 初期使用 `employees.certifications` 直接比對；圖遍歷為 Phase 3 後期增強 |
 | 外部消費者 import 斷裂 | `index.ts` 維持向後相容；新增匯出不刪除現有匯出 |
+
+## SSOT Phase 對齊摘要（Implementation to Protocol Mapping）
+
+| 實作 Stage | SSOT Phase | 關鍵規則 | 驗證點 |
+|-----------|------------|----------|--------|
+| Stage 1: Schema | Phase 0 (0.1-0.4) | D21-A 語義唯一性, OT-2 分類法驗證 | Tag ontology slugs 建立完成 |
+| Stage 2: Vector Index | Phase 1 (1.5-1.6) + Phase 2 (2.6) | FI-002 事務寫入, E8 tenantId 強綁定 | 768-dim embedding 存儲 + tenantId 過濾驗證 |
+| Stage 3: Genkit Tools | Phase 2 (2.5-2.7) | GT-1 Tool宣告, E8 fail-closed, GT-2 fail-closed | Tool-S/M/V 各自單元測試 + 整合測試 |
+| Stage 4: Prompt Engineering | Phase 2 (2.8-2.14) | R8 traceId, L4A 5-fields, BF-1 feedback | 推理軌跡完整性 + L4A 稽核欄位驗證 |
