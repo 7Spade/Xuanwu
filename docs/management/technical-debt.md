@@ -3,8 +3,6 @@
 > **憲法依據 / Constitutional Basis**: `docs/architecture/00-logic-overview.md`
 > **資料來源 / Data Source**: `/audit` 全鏈路架構合規性審計 (2026-03-09)
 > **說明**: 技術債是「已知的架構欠缺」，不阻礙當前生產，但會限制未來擴展能力或引入隱性風險。
->
-> **注意**: TD-001~007 均已解決，歸檔至 `technical-debt-archive.md`。
 
 ---
 
