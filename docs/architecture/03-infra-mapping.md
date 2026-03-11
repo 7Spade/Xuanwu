@@ -14,11 +14,13 @@
 | Layer | 職責 | 路徑 |
 |---|---|---|
 | `L0` | External triggers | `src/shared-infra/external-triggers/` |
-| `L0A` | API ingress | `src/shared-infra/api-gateway/` |
+| `L0A` | API ingress（CQRS Gateway — Command + Query 統一入口） | `src/shared-infra/api-gateway/` |
+| `L0B` | Server Action 串流橋接（AI 匹配結果 streaming 回傳 UI） | `src/app/**/_actions.ts`（串流橋接層）|
 | `L1` | contracts/constants/pure | `src/shared-kernel/` |
 | `L2` | command gateway | `src/shared-infra/gateway-command/` |
 | `L3` | domain slices | `src/features/*` |
 | `L4` | IER + relay + DLQ | `src/shared-infra/{event-router,outbox-relay,dlq-manager}/` |
+| `L4A` | 語義決策稽核切片（Semantic Decision Audit；欄位：Who/Why/Evidence/Version/Tenant） | `src/features/semantic-graph.slice/audit/` |
 | `L5` | projection bus | `src/shared-infra/projection-bus/` |
 | `L6` | query gateway | `src/shared-infra/gateway-query/` |
 | `L7-A` | firebase-client adapters | `src/shared-infra/firebase-client/` |
@@ -95,6 +97,12 @@
 
 約束：`E8` 生效時，AI flow 不可直連 `firebase/*`、不可跨租戶。
 
+- **Tool-S** (`search_skills`)：語義技能檢索工具；呼叫 L8 本體論索引。路徑：`src/features/semantic-graph.slice/genkit-tools/search-skills.tool.ts`
+- **Tool-M** (`match_candidates`)：向量候選匹配工具；**E8 fail-closed**：`metadata filter 必須 tenantId 強綁定，未帶入即 fail-closed`。路徑：`src/features/semantic-graph.slice/genkit-tools/match-candidates.tool.ts`
+- **Tool-V** (`verify_compliance`)：合規驗證工具；**GT-2 Fail-closed**：證照/資格硬過濾，未通過即排除。路徑：`src/features/semantic-graph.slice/genkit-tools/verify-compliance.tool.ts`
+- **L0B**（Server Action 串流橋接）：AI 匹配流程結束後，Tool-V → L0B → L3 streaming 回傳 UI，攜帶 traceId。
+- **L4A**（語義決策稽核切片）：L4 路由後寫入稽核記錄；欄位必須包含 Who（操作者）/ Why（觸發原因）/ Evidence（推理軌跡）/ Version（模型版本）/ Tenant（租戶 ID）。
+
 ## 遷移策略（四階段）
 
 1. 收斂 canonical path（停止新增 legacy 落點）。
@@ -127,11 +135,13 @@ flowchart TD
 
     subgraph P2["Phase 2 智慧匹配 ｜ Semantic Compute Engine [GT-2 Fail-closed]"]
         Flow[L10 Genkit Flow] --> SCE[Semantic Compute Engine\ngenkit-tools/]
-        SCE --> ToolS[search_skills]
-        SCE --> ToolM[match_candidates]
-        SCE --> ToolV[verify_compliance\nGT-2 Fail-closed]
+        SCE --> ToolS[Tool-S\nsearch_skills]
+        SCE --> ToolM["Tool-M\nmatch_candidates\n[E8 fail-closed tenantId]"]
+        SCE --> ToolV["Tool-V\nverify_compliance\n[GT-2 Fail-closed]"]
         ToolS & ToolM --> QrySvc[_queries.ts / _services.ts]
-        ToolV --> Output[匹配結果 B1]
+        ToolV --> SA[L0B Server Action\n串流橋接]
+        SA --> Output[匹配結果 streaming]
+        Output --> IER3[L4 IER → L4A 稽核切片\nWho/Why/Evidence/Version/Tenant]
     end
 
     subgraph P3["Phase 3 結果輸出 ｜ Semantic Output Layer [BF-1]"]

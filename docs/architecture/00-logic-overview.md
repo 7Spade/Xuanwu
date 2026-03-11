@@ -60,8 +60,9 @@
 %%    notification-hub.slice = 反應中樞（VS7 增強 · 唯一副作用出口 · 標籤感知路由）
 %%    ※ 兩者皆須擁有自己的 _actions.ts / _services.ts，不得寄生於 shared-kernel [D3 D8]
 %%  ── Layer（系統層）──
-%%    L0=ExternalTriggers   L1=SharedKernel       L2=CommandGateway
-%%    L3=DomainSlices       L4=IER                L5=ProjectionBus
+%%    L0=ExternalTriggers   L0A=CQRS閘道(CommandIngress+QueryIngress)   L0B=ServerAction串流橋接(TraceStream)
+%%    L1=SharedKernel       L2=CommandGateway
+%%    L3=DomainSlices       L4=IER                L4A=語義決策稽核切片(SemanticDecisionAudit)   L5=ProjectionBus
 %%    L6=QueryGateway       L7=FirebaseBoundary    L8=FirebaseInfra      L9=Observability
 %%    L10=AIRuntime&Orchestration（Genkit Flow Gateway / Prompt Policy / Tool ACL / Model Routing）
 %%    ※ L7 分層（責任分配）:
@@ -81,6 +82,10 @@
 %%    讀鏈（Query）   : UI/L0 → L0A QUERY_API_GATEWAY → L6 Query Gateway → L5 Projection(Read Model)
 %%    Infra鏈（SDK）  : L3/L5/L6 → L1 Ports/Contracts → L7 Firebase Boundary → L8 Firebase Runtime
 %%    規則：三條鏈並列，不得把 Query/Command/FirebaseBoundary 壓成單一線性排序
+%%  ── Phase 匹配協議三段鏈（與 Canonical Chains 對齊 · SSOT: Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md）──
+%%    Phase1（寫入鏈）: UI → L0A → L2 → L3 → L8(FI-002) → L10(embedding) → L4 → L5(LANE routing)
+%%    Phase2（智慧匹配）: UI → L0A → L2 → L3 → L10(Genkit) → Tool-S(search_skills) → Tool-M(match_candidates, E8 fail-closed tenantId) → Tool-V(verify_compliance, GT-2 Fail-closed) → L0B(stream) → L3 → L4 → L4A(Audit: Who/Why/Evidence/Version/Tenant) → L5 → L3→L8(BF-1)
+%%    Phase3（讀取鏈）: L3 → L5 → UI / UI → L0A → L6 → L5 → UI
 %%  ── 標準目錄結構（Standard Directory Structure · 單向依賴鏈對齊）──
 %%    src/
 %%      shared-kernel/                          # VS0-Kernel / L1: contracts/constants/pure zone
@@ -280,6 +285,9 @@
 %%    P6=parallel-routes-data-contract  P7=realtime-subscription-lifecycle
 %%    P8=dynamic-backpressure-worker-pool
 %%    E7=app-check-enforcement-closure  E8=genkit-tool-governance
+%%    E8-FC=match-candidates-tenant-fail-closed（Tool-M metadata filter 必須 tenantId 強綁定；未帶入即 fail-closed）
+%%    GT-2-FC=verify-compliance-cert-fail-closed（Tool-V 證照/資格硬過濾；Fail-closed：未通過即排除輸出）
+%%    L4A-AUDIT=semantic-decision-audit-fields（欄位：Who · Why · Evidence · Version · Tenant；缺失任一欄位視為稽核記錄不完整）
 %%    D21=VS8-semantic-engine-governance（四層語義引擎 D21-1~D21-10 + D21-A~D21-X；完整正規規則見 G/C/E/O/B series）
 %%    D21-1=semantic-uniqueness(→D21-A)   D21-2=strong-typed-tags(→D22)  D21-3=node-connectivity(→D21-C)
 %%    D21-4=aggregate-constraint          D21-5=semantic-aware-routing(→D27-A)
