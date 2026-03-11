@@ -1,5 +1,5 @@
 /**
- * Module: semantic-graph.slice/proposal-stream ??— Relationship Proposal Stream
+ * Module: semantic-graph.slice/proposal-stream — Relationship Proposal Stream
  *
  * Asynchronous proposal review pipeline for Knowledge Graph edge governance (支柱一 🧠).
  *

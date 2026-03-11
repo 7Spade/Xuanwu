@@ -1,3 +1,10 @@
+# [索引 ID: @VS8-DIAG-04] VS8 語義匹配完整流程圖
+
+> Scope: `src/features/semantic-graph.slice/`
+> Purpose: Mermaid sequence diagram — HR 分派三工具 Genkit AI 完整流程（search_skills → match_candidates → verify_compliance）
+> Related: `architecture.md`（三大支柱）、`architecture-diagrams.md`（概覽圖）
+
+```mermaid
 sequenceDiagram
     autonumber
     
@@ -51,3 +58,4 @@ sequenceDiagram
     
     %% Step 4: 返回 UI
     GW-->>UI: 回傳排名名單與解釋 (Ranked List & Explanation)
+```
