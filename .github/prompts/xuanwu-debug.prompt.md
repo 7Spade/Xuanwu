@@ -1,3 +1,9 @@
+---
+name: xuanwu-debug
+description: 'Analyze a bug or unexpected behavior using step-by-step root-cause analysis and produce a minimal fix.'
+agent: 'xuanwu-sequential-thinking'
+argument-hint: 'Describe the bug or paste the error message and relevant code'
+---
 # Debug Task
 
 Analyze the following bug.

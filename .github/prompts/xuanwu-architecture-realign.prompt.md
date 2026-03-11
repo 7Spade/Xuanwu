@@ -1,3 +1,9 @@
+---
+name: xuanwu-architecture-realign
+description: 'Realign and condense Xuanwu architecture documentation against the baseline blueprint, unify terminology, and refine Mermaid diagrams.'
+agent: 'xuanwu-architecture-chief'
+argument-hint: 'Target doc or realignment scope, e.g.: realign 00-logic-overview.md against baseline | slim governance doc'
+---
 Xuanwu Architecture Realignment Prompt
 
 Role

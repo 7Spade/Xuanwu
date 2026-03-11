@@ -1,11 +1,12 @@
 ---
 name: xuanwu-architecture-refactor
-description: Refines architecture documentation structure and diagrams.
-model: gpt-5.4
-tools:
-  - search
-  - read_file
-  - edit_file
+description: Refines architecture documentation structure and diagrams under the guidance of xuanwu-architecture-chief.
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*']
+handoffs:
+  - label: 'Escalate to architecture chief'
+    agent: xuanwu-architecture-chief
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
 ---
 
 # Role

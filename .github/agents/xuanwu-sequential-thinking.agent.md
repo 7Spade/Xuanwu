@@ -1,9 +1,15 @@
 ---
-name: Xuanwu Sequential Thinking
+name: xuanwu-sequential-thinking
 description: Solve complex problems using step-by-step reasoning and debugging.
 argument-hint: Provide a bug, algorithm problem, or reasoning task.
 tools: ['search', 'fetch', 'codebase', 'usages']
-model: ['GPT-5.2 (copilot)', 'Claude Sonnet 4.5 (copilot)']
+handoffs:
+  - label: 'Hand off findings to commander'
+    agent: xuanwu-commander
+  - label: 'Proceed to implementation'
+    agent: xuanwu-implementer
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
 ---
 
 # Role

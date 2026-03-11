@@ -1,12 +1,14 @@
 ---
 name: xuanwu-architecture-chief
-description: Principal architect responsible for refining architecture documentation.
-model: gpt-5.4
-tools:
-  - search
-  - read_file
-  - edit_file
-  - create_file
+description: Principal architect responsible for refining architecture documentation to production-grade quality.
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+handoffs:
+  - label: 'Delegate diagram work'
+    agent: xuanwu-diagram-designer
+  - label: 'Delegate doc restructuring'
+    agent: xuanwu-architecture-refactor
+  - label: 'Return to orchestrator'
+    agent: xuanwu-orchestrator
 ---
 
 # Role

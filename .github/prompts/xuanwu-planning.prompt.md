@@ -1,3 +1,9 @@
+---
+name: xuanwu-planning
+description: 'Create a quick implementation plan for a feature or change, including architecture, task breakdown, and testing strategy.'
+agent: 'xuanwu-software-planner'
+argument-hint: 'Describe the feature or change to plan'
+---
 # Software Planning
 
 Create an implementation plan.
