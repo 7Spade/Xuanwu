@@ -1,4 +1,4 @@
-﻿# [索引 ID: @ACT-FIN] Finance Cycle (`#A15`, `#A21`, `#A22`)
+﻿# [索引 ID: @ACT-FIN] Finance Cycle (`#A15`, `#A16`)
 
 本檔描述 VS5 財務生命週期與完成條件。
 
@@ -8,7 +8,7 @@
 - MUST: IF 建立 Claim THEN payload 必含勾選 line items 且 `quantity > 0`。
 - FORBIDDEN: 空請款、零數量、負數量。
 
-## 2. Finance Request Lifecycle (`#A21`)
+## 2. Multi-Claim Loop (`#A16`)
 
 固定流程：
 
@@ -30,11 +30,6 @@
 - MUST: IF `outstandingClaimableAmount > 0` THEN 流程回到 Claim Preparation。
 - MUST: IF `outstandingClaimableAmount = 0` THEN 才允許進 `Completed`。
 - FORBIDDEN: 仍有可請款餘額時標記 completed。
-
-## 4a. Finance Label Feedback (`#A22`)
-
-- MUST: Finance 狀態對任務顯示的回饋必須經 `task-finance-label-view` 投影。
-- FORBIDDEN: 前端直接讀取 Finance 內部聚合資料拼裝任務狀態。
 
 ## 5. 與其他規則關聯
 

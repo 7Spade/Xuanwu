@@ -38,24 +38,10 @@
 - [ ] 文件解析與成本分類使用 VS8 `_cost-classifier.ts`，未在 VS5 自建分類器（D27）。
 - [ ] `shouldMaterializeAsTask()` 只允許 `EXECUTABLE` 物化任務（D27-Gate）。
 
-## 5a. AI 匹配安全門（E8 / GT-2 / L4A / L0B）
-- [ ] `match_candidates`（Tool-M）metadata filter 已強制 tenantId 綁定，未帶入即 **fail-closed**（E8 Fail-closed）。
-- [ ] `verify_compliance`（Tool-V）證照/資格硬過濾已启用，未通過候選人一律排除 **fail-closed**（GT-2 Fail-closed）。
-- [ ] L4A 稽核切片記錄包含五大欄位：**Who / Why / Evidence / Version / Tenant**（缺失任一不得進入 L5）。
-- [ ] L0B Server Action 串流橋接：AI 匹配結果經 L0B streaming 回傳 UI，攜帶 traceId（禁止繞過）。
-- [ ] AI Tool 呼叫順序不得倒置：`search_skills → match_candidates → verify_compliance → output`（GT-2）。
-
 ## 6. Authority Exits（D26 / #A12 / #A13）
 - [ ] 跨域搜尋只經 `global-search.slice`。
 - [ ] 通知副作用只經 `notification-hub.slice`。
 - [ ] 其他業務 slice 僅產生事實事件，不直接做搜尋聚合或通知發送策略。
-- [ ] `portal.slice` 僅承載 portal state bridge，不包含跨切片寫入協調責任。
-
-## 6a. Finance Gate（VS9 / #A20 / #A21 / #A22）
-- [ ] `Finance_Staging_Pool` 寫入來源只來自 L5 投影鏈路（`TaskAcceptedConfirmed`），無直接人工或跨 slice 寫入（`#A20`）。
-- [ ] `Finance_Request` 狀態機維持獨立生命週期，無由 VS5 直接改寫（`#A21`）。
-- [ ] 任務金融顯示透過 `task-finance-label-view`，前端不直讀 VS9 內部資料結構（`#A22`）。
-- [ ] VS9 與 VS5 間未出現雙向直接 mutate（僅允許事件/投影協作）。
 
 ## 7. Team Gate（L / R / A）
 - [ ] Layer 合規：依賴方向與層級通訊符合規範。
@@ -67,13 +53,9 @@
 - [ ] `npm run typecheck`
 - [ ] 若變更跨切片規則或 ACL，附上本檔勾選結果與例外說明。
 
-## 8a. Docs 回寫驗證（skills）
-- [ ] 若更新 `03-Slices` capability 文檔，已以 `.github/skills/xuanwu-skill/SKILL.md` 與 `.github/skills/xuanwu-skill/references/*` 完成程式碼定位與交叉驗證。
-- [ ] `Implemented Capabilities (from code)` 與對應 `src/features/{slice}/index.ts` 匯出一致。
-
 ## 9. Folder Placement Gate（新增檔案必答）
 - [ ] 此檔案是否「純函式/純型別/純常數」且無 I/O？若是，放在 `src/shared-kernel/*`（L1）。
-- [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/firebase-client/*`（L7 Adapter）。
+- [ ] 此檔案是否直接呼叫 Firebase SDK？若是，放在 `src/shared-infra/frontend-firebase/*`（L7 Adapter）。
 - [ ] 此檔案是否屬切片核心業務規則（aggregate/policy/invariant）？若是，放在 `src/features/{slice}.slice/*`（L3）。
 - [ ] 此檔案是否屬協調與管線層（L2/L4/L5/L6/L9）而非 L3 業務規則？
 - [ ] 此檔案是否為跨切片權威出口？若是，只能在 `global-search.slice` 或 `notification-hub.slice`。

@@ -5,13 +5,10 @@
 ## 1. 層級定義
 
 - L0: External Triggers
-- L0A: CQRS 閘道 — API Ingress（Command + Query 統一入口；`src/shared-infra/api-gateway`）
-- L0B: Server Action 串流橋接 — Trace Stream（AI 匹配結果由 L10 透過 Server Action streaming 回傳 UI；`src/app/**/_actions.ts` 串流橋接）
 - L1: Shared Kernel
 - L2: Command Gateway
-- L3: Domain Slices (VS1~VS9)
+- L3: Domain Slices (VS1~VS8)
 - L4: Integration Event Router (IER)
-- L4A: 語義決策稽核切片 — Semantic Decision Audit（稽核 AI 匹配決策；欄位：Who · Why · Evidence · Version · Tenant；`src/features/semantic-graph.slice/audit/`）
 - L5: Projection Bus
 - L6: Query Gateway
 - L7: Firebase ACL Adapters

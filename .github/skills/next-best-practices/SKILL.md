@@ -6,10 +6,6 @@ user-invocable: false
 
 # Next Best Practices
 
-## Consolidation Status
-- Canonical Next.js skill family entrypoint.
-- Consolidated and removed wrappers: `next-cache-components`, `next-upgrade`.
-
 ## Reference Files
 
 This skill provides authoritative guidance for the following areas. Load the relevant reference when working on that topic:

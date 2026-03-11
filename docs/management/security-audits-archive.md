@@ -27,8 +27,31 @@
 
 ## 已歸檔條目 / Archived Entries
 
-*目前無已歸檔條目。*
+## SA-001 · CRITICAL — BBB Guard Bypass 允許零權重邊注入
+
+**關閉日期**: 2026-03-09
+**關閉原因**: FIXED
+**修復 Commit**: 請見現行實作 `src/features/semantic-graph.slice/graph/edges/semantic-edge-store.ts`
+**複審人**: Copilot（文件清理複審）
+
+[❗ 漏洞（關閉前）]
+- `addEdge()` 可接受 `weight = 0`，使零權重邊可被注入。
+
+[✅ 驗證證據]
+- `src/features/semantic-graph.slice/graph/edges/semantic-edge-store.ts`
+
+[📈 影響評估]
+- 成效：零權重與越界權重已被拒絕，SA-001 原始攻擊向量已消除。
+- 備註：架構面仍建議持續收斂至單一 BBB 守衛入口。
 
 ---
 
-*最後更新: 2026-03-11 | 維護者: Copilot（清除已完成條目）*
+## 安全審計週期記錄 / Audit Cycle Log
+
+| 審計日期   | 觸發原因              | 審計範圍                      | 發現項目數 | 狀態     |
+|------------|-----------------------|-------------------------------|-----------|----------|
+| 2026-03-06 | 初次架構合規審計（/audit）| 全代碼庫 VS8 語義圖寫入路徑 | 2         | IN PROGRESS |
+
+---
+
+*最後更新: 2026-03-09 | 維護者: Copilot（安全審計清理）*

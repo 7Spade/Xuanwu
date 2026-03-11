@@ -144,8 +144,8 @@ and 01-logical-flow.md. Please provide the Drift Report and Compliance Status.
 
 ## 關聯資源
 
-- Agent 定義（已整併至專案專屬 agent 套件）：[`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
+- Agent 定義：[`.github/agents/x-framework-guardian.agent.md`](../../agents/x-framework-guardian.agent.md)
 - 命名規範 SSOT：[`docs/architecture/00-architecture-standards.md`](../../../docs/architecture/00-architecture-standards.md)
 - 流向規範 SSOT：[`docs/architecture/01-logical-flow.md`](../../../docs/architecture/01-logical-flow.md)
-- 路徑完整性檢查能力：已整合於 [`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
+- 路徑完整性哨兵：[`.github/agents/x-path-integrity-sentinel.agent.md`](../../agents/x-path-integrity-sentinel.agent.md)
 - 架構文件索引：[`.github/skills/xuanwu-docs-index/SKILL.md`](../xuanwu-docs-index/SKILL.md)

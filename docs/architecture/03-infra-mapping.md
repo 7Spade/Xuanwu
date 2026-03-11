@@ -2,8 +2,6 @@
 
 > **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則定義請見 [`00-logic-overview.md`](./00-logic-overview.md)
 >
-> **語義核心協議 SSOT**：L0B / L4A / L10 / Tool-S / Tool-M / Tool-V 路徑定義請見 [`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`](../../Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md)
->
 > 邏輯流圖請見 [`01-logical-flow.md`](./01-logical-flow.md) · 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md)
 
 本視圖提供 **VS0–VS8 路徑對照表、標準目錄結構、L7 Firebase Adapter 索引（決策矩陣請見 [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)）、AI 平台控制面** 與 **L9 可觀測性藍圖**，
@@ -13,146 +11,104 @@
 
 ## VS0–VS9 路徑對照表（Path Map）
 
-| Layer | 職責 | 路徑 |
-|---|---|---|
-| `L0` | External triggers | `src/shared-infra/external-triggers/` |
-| `L0A` | API ingress（CQRS Gateway — Command + Query 統一入口） | `src/shared-infra/api-gateway/` |
-| `L0B` | Server Action 串流橋接（AI 匹配結果 streaming 回傳 UI） | `src/app/**/_actions.ts`（串流橋接層）|
-| `L1` | contracts/constants/pure | `src/shared-kernel/` |
-| `L2` | command gateway | `src/shared-infra/gateway-command/` |
-| `L3` | domain slices | `src/features/*` |
-| `L4` | IER + relay + DLQ | `src/shared-infra/{event-router,outbox-relay,dlq-manager}/` |
-| `L4A` | 語義決策稽核切片（Semantic Decision Audit；欄位：Who/Why/Evidence/Version/Tenant） | `src/features/semantic-graph.slice/audit/` |
-| `L5` | projection bus | `src/shared-infra/projection-bus/` |
-| `L6` | query gateway | `src/shared-infra/gateway-query/` |
-| `L7-A` | firebase-client adapters | `src/shared-infra/firebase-client/` |
-| `L7-B` | functions/admin adapters | `src/shared-infra/firebase-admin/functions/` |
-| `L8` | firebase runtime | external platform |
-| `L9` | observability | `src/shared-infra/observability/` |
-| `L10` | AI runtime | `src/shared-infra/ai-orchestration/` |
+### 垂直域索引（VS0–VS9）
 
-## 標準結構（最小）
+| 編號 | 名稱 | 說明 |
+|------|------|------|
+| `VS0` | Foundation | SharedKernel + SharedInfra（基礎層） |
+| `VS1` | Identity | 身份認證與授權 |
+| `VS2` | Account | 帳戶與個人資料 |
+| `VS3` | Skill XP | 技能 XP 與分級 |
+| `VS4` | Organization | 組織管理 |
+| `VS5` | Workspace | 工作空間與任務 |
+| `VS6` | Workforce Scheduling | 排班與職能配對 |
+| `VS7` | Notification Hub | 通知中樞（唯一副作用出口） |
+| `VS8` | Semantic Memory & Feedback Brain | 語義治理 + 記憶檢索 + 回饋閉環（保留四層邊界） |
+| `VS9` | Finance | 金融聚合閘道（Finance Staging Pool + Finance_Request） |
 
-- `src/shared-kernel/`
-- `src/shared-infra/api-gateway/`
-- `src/shared-infra/gateway-command/`
-- `src/shared-infra/event-router/`
-- `src/shared-infra/projection-bus/`
-- `src/shared-infra/gateway-query/`
-- `src/shared-infra/firebase-client/`
-- `src/shared-infra/firebase-admin/{functions,dataconnect}/`
-- `src/shared-infra/{observability,ai-orchestration}/`
+### 目標路徑（Source Path）
 
-## L4/L5/L6 重點清單
+```
+VS0 = src/shared-kernel/* + src/shared-kernel/observability
+    + src/shared-infra/frontend-firebase/*
+    + src/shared-infra/backend-firebase/*
+    + src/shared-infra/observability
+VS1 = src/features/identity.slice
+VS2 = src/features/account.slice
+VS3 = src/features/skill-xp.slice
+VS4 = src/features/organization.slice
+VS5 = src/features/workspace.slice
+VS6 = src/features/workforce-scheduling.slice
+VS7 = src/features/notification-hub.slice
+VS8 = src/features/semantic-graph.slice
+VS9 = src/features/finance.slice
+```
 
-### L4（IER）
+### VS0 細分規則
 
-- Lane：`CRITICAL` / `STANDARD` / `BACKGROUND`
-- DLQ：`SAFE_AUTO` / `REVIEW_REQUIRED` / `SECURITY_BLOCK`
-- `D30`：hop-limit 防循環，SECURITY_BLOCK 禁止自動 replay
-- **AI 嵌入管線 [E8-I]**：`L3(Domain Slice) → L4(IER, BACKGROUND lane) → L10(AI) → L8` — 非同步觸發 Embedding 提取，禁止 L3 同步呼叫 AI
-- **業務指紋回饋 [BF-1]**：`L3(VS5/VS9) → L4(IER, BACKGROUND lane) → VS8(L3) → L8(employees.skillEmbedding)` — 任務結果自動調整員工語義權重
+| 標記 | 說明 |
+|------|------|
+| `VS0-Kernel` | `src/shared-kernel/*`：契約 / 常數 / 純函式（No I/O） → Layer L1 |
+| `VS0-Infra` | `src/shared-infra/*`：執行層 → L0 / L2 / L4 / L5 / L6 / L7 / L9 / L10（L3 = VS1–VS8 Feature Slices，非 VS0-Infra 管轄；L8 = Firebase 外部平台，不在 codebase 管控範圍） |
 
-### L5（Projection）
+> **規則**：VS0-Kernel 與 VS0-Infra 必須明確區分，不得混稱；檢核時必須標明 `VS0-Kernel` 或 `VS0-Infra`。
 
-- Critical：`workspace-scope-guard-view`、`org-eligible-member-view`、`acl-projection`
-- Standard：`workspace-view`、`tasks-view`、`tag-snapshot`、`task-semantic-view`
-- Memory/Feedback：`memory-snippet-view`、`feedback-pattern-view`、`memory-quality-view`
-- Finance：`finance-staging-pool`、`task-finance-label-view`
+### 水平層位索引（L0–L10）
 
-### L6（Query）
+| Layer | 名稱 | 職責 | 路徑前綴 |
+|-------|------|------|----------|
+| `L0` | External Triggers | 外部觸發入口（HTTP/WebSocket/Schedule/Webhook/AI） | `src/shared-infra/gateway-*` / `src/app/api/` |
+| `L0A` | CQRS Gateway 入口（讀寫分流） | `CMD_API_GW`（write-only ingress）→ L2 Write Path ／ `QRY_API_GW`（read-only ingress）→ L6 Read Path；`UNIFIED_GW` 讀寫分離統一閘道的入口 | `src/shared-infra/api-gateway/` |
+| `L1` | Shared Kernel | 契約/常數/純函式（No I/O, No Side Effects） | `src/shared-kernel/` |
+| `L2` | Command Gateway（Write Path） | CBG_ENTRY（TraceID 注入唯一點）/ CBG_AUTH / CBG_ROUTE；`UNIFIED_GW.CQRS_WRITE` Write Pipeline | `src/shared-infra/gateway-command/` |
+| `L3` | Domain Slices | VS1–VS9 業務切片（Aggregate / Application / Repository） | `src/features/*/` |
+| `L4` | IER（Integration Event Router） | 統一事件出口（三條 Lane） | `src/shared-infra/event-router/` |
+| `L5` | Projection Bus | 投影物化（event-funnel 唯一寫路徑） | `src/shared-infra/projection-bus/` |
+| `L6` | Query Gateway（Read Path） | 統一讀取出口（read-model-registry）；`UNIFIED_GW.CQRS_READ` Read Routes | `src/shared-infra/gateway-query/` |
+| `L7-A` | firebase-client SDK（FIREBASE_ACL） | Client SDK Anti-Corruption Adapters（AuthAdapter / FirestoreAdapter / FCMAdapter / StorageAdapter / RTDBAdapter / AnalyticsAdapter / AppCheckAdapter）；Feature slice → L1 SK_PORTS → L7-A [D24] | `src/shared-infra/frontend-firebase/` |
+| `L7-B` | firebase-admin SDK（Cloud Functions） | Admin SDK 唯一容器；Admin 權限 / 跨租戶 / Trigger / Scheduler / Webhook 驗簽；**`firebase-admin` 一律透過 functions**；禁止在 Next.js server/edge/Server Actions 直接使用 [D25] | `src/shared-infra/backend-firebase/functions/` |
+| `L8` | Firebase Runtime | 外部 Firebase 平台（不在 codebase 管控範圍） | — |
+| `L9` | Observability | 跨切面觀測（metrics/trace/errors）；observe-only，禁止產生 mutation | `src/shared-infra/observability/` |
+| `L10` | AI Runtime & Orchestration | Genkit Flow Gateway / Prompt Policy / Tool ACL [E8] | `src/shared-infra/ai-orchestration/` |
 
-- 只暴露 read models，不直接查 Aggregate。
-- `D31`：所有讀權限過濾依賴 `acl-projection`。
+---
 
-## L7 Firebase Adapter 索引（精簡）
+## 標準目錄結構（Standard Directory Structure）
 
-### L7-A（client）
+### Feature Slice 標準結構
 
-- `AuthAdapter`
-- `FirestoreAdapter`
-- `FCMAdapter`
-- `StorageAdapter`
-- `RTDBAdapter`
-- `AnalyticsAdapter`
-- `AppCheckAdapter`
-- `VisDataAdapter`
+```
+src/features/{slice}/
+  index.ts                   # 公開 API（跨切片只能 import 此檔）
+  _actions.ts                # 所有 mutation [D3]
+  _queries.ts                # 所有 read [D4]
+  core/                      # Aggregate + Domain Events + ValueObjects
+    _aggregate.ts
+    _domain-events.ts
+  application/               # Use Cases / Application Services
+    _use-cases.ts
+  _components/               # UI 元件（"use client" 允許）
+  _hooks/                    # React Hooks（"use client" 允許）
+  _projector.ts              # Projection 投影器（引用 SK_VERSION_GUARD [S2]）
+  _outbox.ts                 # OUTBOX 宣告（必須聲明 DLQ 分級 [S1]）
+```
 
-### L7-B（functions/admin）
+### Shared Kernel 結構
 
-- `FunctionsGateway`
-- `AdminAuthAdapter`
-- `AdminFirestoreAdapter`
-- `AdminMessagingAdapter`
-- `AdminStorageAdapter`
-- `AdminAppCheckAdapter`
-- `DataConnectGatewayAdapter`
+```
+src/shared-kernel/
+  skill-tier/                # getTier() 純函式 [D12]
+  outbox-contract/           # SK_OUTBOX_CONTRACT [S1]
+  version-guard/             # SK_VERSION_GUARD [S2]
+  read-consistency/          # SK_READ_CONSISTENCY [S3]
+  staleness-contract/        # SK_STALENESS_CONTRACT [S4]
+  resilience-contract/       # SK_RESILIENCE_CONTRACT [S5]
+  token-refresh-contract/    # SK_TOKEN_REFRESH_CONTRACT [S6]
+  observability/             # trace-identifier types（注入點在 L2）
+  ports/                     # SK_PORTS（IAuthService / IFirestoreRepo / IMessaging / IFileStore）
+```
 
-約束：`firebase-admin` 只允許於 functions 容器（`D25`）。
-
-## AI 控制面（L10）
-
-- Flow Gateway
-- Prompt Policy
-- Tool ACL
-- AI Storage
-
-約束：`E8` 生效時，AI flow 不可直連 `firebase/*`、不可跨租戶。
-
-- **Tool-S** (`search_skills`)：語義技能檢索工具；呼叫 L8 本體論索引。路徑：`src/features/semantic-graph.slice/genkit-tools/search-skills.tool.ts`
-- **Tool-M** (`match_candidates`)：向量候選匹配工具；**E8 fail-closed**：`metadata filter 必須 tenantId 強綁定，未帶入即 fail-closed`。路徑：`src/features/semantic-graph.slice/genkit-tools/match-candidates.tool.ts`
-- **Tool-V** (`verify_compliance`)：合規驗證工具；**GT-2 Fail-closed**：證照/資格硬過濾，未通過即排除。路徑：`src/features/semantic-graph.slice/genkit-tools/verify-compliance.tool.ts`
-- **L0B**（Server Action 串流橋接）：AI 匹配流程結束後，Tool-V → L0B → L3 streaming 回傳 UI，攜帶 traceId。
-- **L4A**（語義決策稽核切片）：L4 路由後寫入稽核記錄；欄位必須包含 Who（操作者）/ Why（觸發原因）/ Evidence（推理軌跡）/ Version（模型版本）/ Tenant（租戶 ID）。
-
-## 遷移策略（四階段）
-
-1. 收斂 canonical path（停止新增 legacy 落點）。
-2. 導入 adapter/port 合規檢查（D24/D25/D31）。
-3. 收斂 projection 與 query 命名（L5/L6 一致）。
-4. 以 `99-checklist.md` 做 PR gate。
-
-## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
-
-VS8 是 L3 的語義權威切片，以四子系統覆蓋完整語義生命週期：`semantic-governance-portal`（Phase 0，wiki-editor / proposal-stream）、`semantic-core-domain`（_types / _aggregate / _actions / _cost-classifier）、`Semantic Compute Engine`（genkit-tools/ + _services.ts，三工具分派）、`Semantic Output Layer`（projections / outbox / subscribers）。L10 消費 VS8，但不取代 VS8。詳細設計見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md)（`VS8-SemanticBrain` 為歷史文件目錄，對應現行切片 `semantic-graph.slice`；`VS9 = Finance`）。
-
-> VS8 四階段語義認知生命週期：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
-
-### VS8 四階段基礎設施路徑圖
-
-```mermaid
-flowchart TD
-    subgraph P0["Phase 0 語義基石 ｜ semantic-governance-portal (Phase 0)"]
-        Admin[Admin / Ontology] --> WikiEd[semantic-governance-portal\nwiki-editor / proposal-stream]
-        WikiEd --> Authority[_semantic-authority.ts]
-        SK[VS0 SharedKernel] --> Aggregate[semantic-core-domain\n_aggregate.ts]
-    end
-
-    subgraph P1["Phase 1 數據攝取 ｜ semantic-core-domain + L4 IER [E8-I]"]
-        Gateway[L0A / L2] --> DomainWrite[L3 Domain Write]
-        DomainWrite --> Actions[semantic-core-domain\n_actions.ts / _aggregate.ts]
-        Actions --> IER[L4 IER BACKGROUND]
-        IER -->|E8-I| AI[L10 AI]
-    end
-
-    subgraph P2["Phase 2 智慧匹配 ｜ Semantic Compute Engine [GT-2 Fail-closed]"]
-        Flow[L10 Genkit Flow] --> SCE[Semantic Compute Engine\ngenkit-tools/]
-        SCE --> ToolS[Tool-S\nsearch_skills]
-        SCE --> ToolM["Tool-M\nmatch_candidates\n[E8 fail-closed tenantId]"]
-        SCE --> ToolV["Tool-V\nverify_compliance\n[GT-2 Fail-closed]"]
-        ToolS & ToolM --> QrySvc[_queries.ts / _services.ts]
-        ToolV --> SA[L0B Server Action\n串流橋接]
-        SA --> Output[匹配結果 streaming]
-        Output --> IER3[L4 IER → L4A 稽核切片\nWho/Why/Evidence/Version/Tenant]
-    end
-
-    subgraph P3["Phase 3 結果輸出 ｜ Semantic Output Layer [BF-1]"]
-        Outcome[TaskCompleted 事件] --> IER2[L4 IER]
-        IER2 --> SOL[Semantic Output Layer\nsubscribers / outbox]
-        IER2 --> PB[L5 Projection Bus]
-        PB --> Proj[projections/]
-        Proj --> QG[L6 Query Gateway → UI]
-    end
+### Shared Infra 結構
 
 ```
 src/shared-infra/
@@ -161,7 +117,7 @@ src/shared-infra/
   gateway-query/             # L6 read-model-registry（Read Path Routes）
   event-router/              # L4 IER（outbox-relay-worker / lane-router / dlq）
   projection-bus/            # L5 event-funnel + projectors
-  firebase-client/
+  frontend-firebase/
     auth/                    # AuthAdapter（L7-A · firebase/auth）
     firestore/               # FirestoreAdapter（L7-A · firebase/firestore）
     realtime-database/       # RTDBAdapter（L7-A · firebase/database，即時通訊）
@@ -170,7 +126,7 @@ src/shared-infra/
     analytics/               # AnalyticsAdapter（L7-A · firebase/analytics，遙測只寫）
     app-check/               # AppCheckAdapter（L7-A · firebase/app-check）
     vis-data/                # VisDataAdapter（L7-A · vis-data DataSet<> 快取 · [D28]）
-  firebase-admin/
+  backend-firebase/
     functions/               # Cloud Functions（firebase-admin 唯一容器）[D25]
       src/claims/            #   Admin Auth → firebase-admin/auth（自訂 Claims）
       src/gateway/           #   functions-gateway HTTP/Callable 入口
@@ -193,46 +149,7 @@ src/shared-infra/
 
 ---
 
-| 階段 | VS8 子系統 | 路徑 | 關鍵規則 |
-|------|----------|------|---------|
-| **Phase 0** 語義基石 | `semantic-governance-portal` | `Admin → wiki-editor / proposal-stream`；`VS0(SK) → semantic-core-domain(_aggregate) → L3` | `FI-003` / `OT-1` |
-| **Phase 1** 數據攝取 | `semantic-core-domain` | `L0/L2 → L3 → semantic-core-domain(_actions/_aggregate) → L4 IER → L10 AI → L8` | `E8-I` / `KG-1` |
-| **Phase 2** 智慧匹配 | `Semantic Compute Engine` | `L10 Genkit → Semantic Compute Engine(search_skills → match_candidates → verify_compliance)` | `GT-1/2/3` / `E8` |
-| **Phase 3** 結果輸出 | `Semantic Output Layer` | `AI result → Semantic Output Layer(projections / outbox / subscribers) → L5 PB → L6 → UI` | `BF-1` / `S2` |
-
-### 三大支柱基礎設施對應
-
-| 支柱 | 角色隱喻 | Genkit 工具 | 資料集合（Firestore） | 模組路徑 |
-|------|---------|------------|----------------------|---------|
-| **支柱一：知識圖譜** | 🧠 邏輯大腦 | `verify_compliance` | `employees`（certifications 欄位比對） | `_types.ts`、`_actions.ts`、`genkit-tools/verify-compliance.tool.ts` |
-| **支柱二：向量數據庫** | 💾 記憶模塊 | `match_candidates` | `employees`（skillEmbedding 向量索引）、`tasks`（requirementsEmbedding） | `_services.ts`、`_queries.ts`、`genkit-tools/match-candidates.tool.ts` |
-| **支柱三：技能本體論** | 📖 語言定義 | `search_skills` | `skills`（embedding 向量索引 + taxonomyPath） | `_semantic-authority.ts`、`_aggregate.ts`、`genkit-tools/search-skills.tool.ts` |
-
-### Firestore 集合與向量索引
-
-| 集合 | 向量欄位 | 向量索引 | 用途 |
-|------|---------|---------|------|
-| `skills` | `embedding`（768 維） | ✅ 需建立 | `search_skills` 語義搜尋 |
-| `employees` | `skillEmbedding`（768 維） | ✅ 需建立 | `match_candidates` 候選人匹配；[BF-1] 業務指紋權重 |
-| `tasks` | `requirementsEmbedding`（768 維） | ✅ 需建立 | 任務需求語義化 |
-
-### VS8 模組 → Layer 映射（按子系統分組）
-
-| 子系統 | 模組 | Layer | 角色 |
-|-------|------|-------|------|
-| `semantic-governance-portal` | `wiki-editor/` | L0A → L3 | Admin 分類法治理 [OT-1] |
-| `semantic-governance-portal` | `proposal-stream/` | L0A → L3 | Skill / Tag 修訂提案 |
-| `semantic-core-domain` | `_types.ts` | L3 (pure) | 領域型別定義 |
-| `semantic-core-domain` | `_semantic-authority.ts` | L1 (constants) | 分類法常數；被 L3/L6 消費 [OT-1] |
-| `semantic-core-domain` | `_aggregate.ts` | L3 (pure domain) | 時序衝突 + 分類法驗證 [OT-2] |
-| `semantic-core-domain` | `_actions.ts` | L3 → L4 (outbox) | Tag / 圖譜邊寫入命令 [KG-1] |
-| `semantic-core-domain` | `_cost-classifier.ts` | L3 (pure) | 成本語義分類（被 VS5 消費）[D27] |
-| `Semantic Compute Engine` | `genkit-tools/` | L10 (AI Tools) | 三工具分派引擎（`defineTool` 宣告）[GT-1] |
-| `Semantic Compute Engine` | `_services.ts` | L3 (internal) | 向量索引管理 [VD-1]；嵌入向量由 L10 AI 非同步觸發 [E8-I] |
-| `Semantic Compute Engine` | `_queries.ts` | L3 → L6 (via global-search) | QGWAY_SEARCH 讀出埠 [VD-2] |
-| `Semantic Output Layer` | `projections/` | L5 → L6 | 語義投影讀取（Tag 快照） |
-| `Semantic Output Layer` | `outbox/` | L3 → L4 | 拓撲異動外送廣播 |
-| `Semantic Output Layer` | `subscribers/` | L5 → L3 | 接收 TagLifecycleEvent + [BF-1] 業務指紋事件訂閱 |
+## L4 IER 三條 Lane 與 DLQ 分級
 
 ### Lane 路由規則
 
@@ -351,13 +268,13 @@ Firestore onSnapshot (CDC)
 > Firebase SDK 唯一合法呼叫層 [D24 D25]
 >
 > **三層分離原則**：
-> - **L7-A `firebase-client` SDK**（瀏覽器/Next.js client context）→ `firebase-client/` Client Adapters
+> - **L7-A `firebase-client` SDK**（瀏覽器/Next.js client context）→ `frontend-firebase/` Client Adapters
 > - **L7-B `firebase-admin` SDK**（Admin 特權 API）→ L7-B 後端 Adapters
 > - **`functions`（Cloud Functions）→ `firebase-admin` 一律透過 functions** [D25]
 >
 > **路由決策矩陣**（何時用 L7-A vs L7-B）→ [`01-logical-flow.md §Firebase 路由決策`](./01-logical-flow.md#firebase-路由決策l7-a-firebase-client-sdk-vs-l7-b-functionsfirebase-admin)
 
-### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/firebase-client/`）
+### L7-A 前端 Client SDK Adapters（firebase client SDK · `src/shared-infra/frontend-firebase/`）
 
 | Adapter | 實作介面 | 路徑 | 說明 |
 |---------|----------|------|------|
@@ -372,17 +289,17 @@ Firestore onSnapshot (CDC)
 
 ### L7-B 後端 Admin SDK Adapters（firebase-admin SDK — 一律透過 Cloud Functions）[D25]
 
-> **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/firebase-admin/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
+> **firebase-admin 一律透過 functions**：Admin SDK 只在 `src/shared-infra/backend-firebase/functions` 內初始化與執行。禁止在 Next.js Server Components / Server Actions / Edge Functions 中直接 import `firebase-admin`（[D25]）。
 
 | Adapter | 實作介面 | 路徑 | 說明 |
 |---------|----------|------|------|
-| `FunctionsGateway` | — | `src/shared-infra/firebase-admin/functions/src/gateway/` | HTTP/Callable 入口；Admin SDK 初始化容器 |
+| `FunctionsGateway` | — | `src/shared-infra/backend-firebase/functions/src/gateway/` | HTTP/Callable 入口；Admin SDK 初始化容器 |
 | `AdminAuthAdapter` | `IAuthService`（BE） | `.../functions/src/claims/` | sole `firebase-admin/auth` 呼叫點（自訂 Claims）|
 | `AdminFirestoreAdapter` | `IFirestoreRepo`（BE） | `.../functions/src/relay/` 與 `.../projection/` | sole `firebase-admin/firestore` 呼叫點（強一致寫入/跨集合 TX）|
 | `AdminMessagingAdapter` | `IMessaging`（BE） | `.../functions/src/` | sole `firebase-admin/messaging` 呼叫點（Server-side FCM 主要通道）|
 | `AdminStorageAdapter` | `IFileStore`（BE） | `.../functions/src/document-ai/` | sole `firebase-admin/storage` 呼叫點（後端簽署 URL / 跨租戶操作）|
 | `AdminAppCheckAdapter` | — | `.../functions/src/` | sole `firebase-admin/app-check` 呼叫點（服務端 App Check token 驗簽）[D25 E7] |
-| `DataConnectGatewayAdapter` | — | `src/shared-infra/firebase-admin/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
+| `DataConnectGatewayAdapter` | — | `src/shared-infra/backend-firebase/dataconnect/` | 受治理 GraphQL schema/connector；sole `firebase/data-connect` 呼叫點 |
 
 ---
 
