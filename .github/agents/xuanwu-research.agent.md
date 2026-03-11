@@ -2,17 +2,6 @@
 name: 'xuanwu-research'
 description: 'Project-specific Xuanwu research and context agent for codebase discovery, Context7-backed docs lookup, knowledge-graph sync, and session context initialization.'
 tools: ['read', 'codebase', 'search', 'web', 'context7/*', 'repomix/*', 'filesystem/*', 'memory/*']
-hooks:
-  SessionStart:
-    - type: command
-      command: "node .github/hooks/scripts/session-inject.js"
-      timeout: 10
-mcp-servers:
-  context7:
-    type: http
-    url: "https://mcp.context7.com/mcp"
-    headers: {"CONTEXT7_API_KEY": "${{ secrets.COPILOT_MCP_CONTEXT7 }}"}
-    tools: ["get-library-docs", "resolve-library-id"]
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator

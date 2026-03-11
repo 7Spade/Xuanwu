@@ -51,6 +51,11 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/xuanwu-ui` | `.github/prompts/xuanwu-ui.prompt.md` |
 | `/xuanwu-ops` | `.github/prompts/xuanwu-ops.prompt.md` |
 | `/xuanwu-test-expert` | `.github/prompts/xuanwu-test-expert.prompt.md` |
+| `/xuanwu-planning` | `.github/prompts/xuanwu-planning.prompt.md` |
+| `/xuanwu-refactor` | `.github/prompts/xuanwu-refactor.prompt.md` |
+| `/xuanwu-code-review` | `.github/prompts/xuanwu-code-review.prompt.md` |
+| `/xuanwu-debug` | `.github/prompts/xuanwu-debug.prompt.md` |
+| `/xuanwu-architecture-realign` | `.github/prompts/xuanwu-architecture-realign.prompt.md` |
 
 ## i18n Requirement
 

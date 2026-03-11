@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-implementer'
 description: 'Project-specific Xuanwu implementation agent for Next.js, React, TypeScript, server/client boundaries, and focused type migrations.'
-tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'runTests', 'findTestFiles', 'shadcn/*', 'filesystem/*', 'ESLint/*', 'next-devtools/*', 'memory/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'runCommands', 'runTasks', 'runTests', 'findTestFiles', 'shadcn/*', 'filesystem/*', 'ESLint/*', 'memory/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
