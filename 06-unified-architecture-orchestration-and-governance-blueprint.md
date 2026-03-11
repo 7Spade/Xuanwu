@@ -2,63 +2,64 @@ sequenceDiagram
     autonumber
     
     %% 參與者定義
-    participant UI as L0: 外部入口 (UI/Client)
-    participant GW as L0A: CQRS 閘道 (API Ingress)
-    participant CBG as L2: 命令管線 (Write Pipeline)
-    participant VS0 as VS0: 核心內核 (Kernel/SDK)
-    participant D3 as L3: 領域切片 (VS1-VS9 Slices)
-    participant AI as L10: Genkit 編排器 (AI Runtime)
+    participant Admin as VS8: 語義管理 (Admin/Ontology)
+    participant UI as L0: 外部入口 (PM/User)
+    participant GW as L0A: API 閘道 (CQRS Ingress)
+    participant VS0 as VS0: 內核契約 (Kernel/SK)
+    participant D3 as L3: 領域切片 (VS2/VS3/VS5/VS9)
+    participant AI as L10: Genkit 編排器 (AI Orchestrator)
+    participant Tool as L10-Tools: AI 工具集 (S/M/V)
     participant IER as L4: 事件路由器 (IER/LANE)
-    participant P5 as L5: 投影總線 (Projection/Bus)
-    participant Q6 as L6: 查詢閘道 (Query Gateway)
-    participant L8 as L8: 數據持久層 (Firebase/Vector DB)
+    participant P5 as L5: 投影總線 (Projection Bus)
+    participant L8 as L8: 數據持久層 (Firebase/Vector/Semantic)
 
-    Note over UI, L8: 架構準則：架構正確性優先 [Architectural Correctness First]
+    Note over Admin, L8: 核心原則：架構正確性優先 | Everything as a Tag | 語義權威治理
 
-    %% --- 階段一：數據來源與治理 (Source & Ingestion) ---
+    %% --- 階段 0：語義基石 (The Ontology Phase) ---
+    rect rgb(250, 250, 250)
+        Note over Admin, L8: 【階段 0】語義本體論定義 (Standardizing the World)
+        Admin->>L8: 0.1 定義全域標籤本體 (Define Tag Ontology Slugs)
+        L8-->>L8: 建立語義關聯圖譜 (Build Semantic Graph)
+        VS0->>D3: 注入 SharedKernel 契約與 Tag 型別 [FI-003]
+    end
+
+    %% --- 階段 1：數據來源生命週期 (The Ingestion Phase) ---
     rect rgb(245, 245, 245)
-        Note over VS0, L8: 【階段一】數據生命週期與語義來源 (Data Lifecycle)
-        VS0->>D3: 注入共用型別與枚舉 (Inject Kernal Types) [VS0]
-        D3->>L8: 1.1 定義標籤本體論 (Define VS8 Tag Ontology)
-        D3->>L8: 1.2 更新員工畫像與證照 (VS2 Account/Profile)
-        D3->>L8: 1.3 建立任務需求 (VS5 Workspace/Task)
+        Note over UI, L8: 【階段 1】數據來源與語義化 (Data Ingestion & Tagging)
+        UI->>GW: 1.1 更新履歷/發布任務 (Update Profile / Post Task)
+        GW->>D3: 1.2 執行領域寫入 (VS2 Account / VS5 Workspace)
+        D3->>L8: 1.3 存儲業務實體 + 自動標籤化 [VS8 Authority]
+        D3->>IER: 1.4 發布數據變更事件 (Integration Events)
+        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8 Isolation]
+        AI->>L8: 1.6 存儲向量特徵 (Store Embeddings)
     end
 
-    %% --- 階段二：寫鏈路 (The Write Chain) ---
-    rect rgb(240, 240, 240)
-        Note over UI, L8: 【階段二】寫鏈路：事務與治理 (Command Chain)
-        UI->>GW: 2.1 提交業務命令 (Submit CMD)
-        GW->>CBG: 2.2 路由與身份驗證 (VS1 Identity/Auth)
-        CBG->>D3: 2.3 執行領域命令 [D29 TransactionalCommand]
-        
-        Note right of D3: VS3: Ledger 記帳 [#13]<br/>VS9: 進入 Staging Pool<br/>VS7: 透過 Port 發送通知 [A13]
-        
-        D3->>L8: 2.4 執行 Firestore 單一事務寫入 [FI-002]
-        D3->>IER: 2.5 發布整合事件 (Integration Events)
-        IER->>P5: 2.6 按 Lane 分流 (Critical/Standard) [LANE]
-    end
-
-    %% --- 階段三：AI 語義匹配執行序 (AI Orchestration) ---
+    %% --- 階段 2：智慧匹配編排鏈 (The Orchestration Chain) ---
     rect rgb(230, 245, 255)
-        Note over D3, AI: 【階段三】語義智慧匹配 (Intelligent Matching)
-        D3->>AI: 3.1 觸發 Genkit Flow (E8 Tenant Isolation)
-        
-        par AI 調度工具鏈 (Tool Calling)
-            AI->>L8: 3.2 術語標準化 (Normalize via VS8 Tag)
-            AI->>L8: 3.3 向量相似度召回 (Vector Retrieval)
-            AI->>L8: 3.4 合規性硬過濾 (Verify via VS1/VS6)
+        Note over UI, AI: 【階段 2】智慧匹配執行 (Intelligent Matching Execution)
+        UI->>GW: 2.1 請求匹配建議 (Submit Matching Request)
+        GW->>D3: 2.2 觸發匹配指令 (VS5 Domain Command)
+        D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tool ACL]
+
+        rect rgb(200, 230, 255)
+            Note right of AI: AI 決策路徑 (遵循 05 號細節)
+            AI->>Tool: 2.4 術語正規化 (Normalize via search_skills)
+            Tool->>L8: 查詢 VS8 本體論映射
+            AI->>Tool: 2.5 向量召回 (match_candidates)
+            Tool->>L8: 語義相似度搜尋 (Vector Search)
+            AI->>Tool: 2.6 合規驗證 (verify_compliance)
+            Note right of Tool: Fail-closed: 證照/資格硬過濾
         end
-        
-        AI-->>D3: 3.5 返回推理軌跡與排名 (Trace & Rank)
-        D3->>L8: 3.6 自動回饋業務指紋 (Behavioral Fingerprint)
+
+        AI-->>D3: 2.7 回傳推理軌跡與排名結果
+        D3->>IER: 2.8 發布匹配完成事件 (MatchingConfirmed)
     end
 
-    %% --- 階段四：讀鏈路 (The Read Chain) ---
+    %% --- 階段 3：投影與查詢 (The Read Chain) ---
     rect rgb(255, 250, 240)
-        Note over UI, Q6: 【階段四】讀鏈路：解耦查詢 (Query Chain)
-        UI->>GW: 4.1 請求數據 (Submit QRY)
-        GW->>Q6: 4.2 委派查詢 (Delegate to QGWAY)
-        Note right of Q6: VS6: 讀取排班視圖 [D27]<br/>VS5: 讀取物化任務清單
-        Q6->>P5: 4.3 讀取物化視圖 (Read Materialized Model)
-        P5-->>UI: 4.4 回傳 UI 渲染數據 (Streaming/Parallel)
+        Note over IER, UI: 【階段 3】結果物化與展示 (Query Chain)
+        IER->>P5: 3.1 寫入投影模型 (Materialize Recommendation View)
+        UI->>GW: 3.2 發起查詢請求 (QRY)
+        GW->>P5: 3.3 讀取物化視圖 (Read Materialized Model)
+        P5-->>UI: 3.4 渲染智慧推薦列表 (UI Rendering)
     end
