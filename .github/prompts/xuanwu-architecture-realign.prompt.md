@@ -17,12 +17,18 @@ Your goal is to make the repository fully consistent with the canonical SSOT, re
 
 ### Baseline Reference
 
-The authoritative architecture SSOT is defined in:
+The authoritative architecture SSOT is defined in two layers:
+
+**Protocol SSOT (Semantic Kernel & Matchmaking — primary sequence authority):**
+
+- `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` — Phase 0/1/2/3 participant definitions, step numbers, fail-closed rules (E8, GT-2), L4A audit fields (Who/Why/Evidence/Version/Tenant), and tool call ordering.
+
+**Topology & Standards SSOT (layers, boundaries, naming):**
 
 - docs/architecture/00-logic-overview.md
 - docs/architecture/00-architecture-standards.md
 
-All alignment and refinement must strictly follow this file.
+All alignment and refinement must strictly follow both layers. On any conflict between topology and protocol, `Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md` governs participant identity and step ordering; `00-logic-overview.md` governs layer direction and boundary rules.
 
 ---
 
@@ -79,7 +85,7 @@ Ensure all diagrams and references are aligned with these layers:
 
 After refinement:
 
-- Target documents 01~03 are fully aligned with the SSOT in 00-logic-overview.md and 00-architecture-standards.md
+- Target documents 01~03 are fully aligned with the Protocol SSOT (`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`) and the topology SSOT (`00-logic-overview.md`, `00-architecture-standards.md`)
 - Redundant or bloated sections are shrunk
 - Terminology is consistent across all documents
 - Mermaid diagrams are clean, readable, and VS8-aligned

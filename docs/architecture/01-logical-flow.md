@@ -2,6 +2,8 @@
 
 > **原始檔（Source of Truth）**：完整 Mermaid 源碼與所有規則定義請見 [`00-logic-overview.md`](./00-logic-overview.md)
 >
+> **語義核心協議 SSOT**：Phase 0/1/2/3 參與者定義、步驟編號與 fail-closed 規則請見 [`Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md`](../../Xuanwu-Semantic-Kernel-and-Matchmaking-Protocol.md)
+>
 > 治理規則請見 [`02-governance-rules.md`](./02-governance-rules.md) · 基礎設施路徑請見 [`03-infra-mapping.md`](./03-infra-mapping.md)
 
 本視圖呈現系統三條主鏈（**Canonical Chains**）的端到端流向與各 VS0–VS8 子圖結構。Infra 鏈依 SDK 分成 A（前端 Client SDK）與 B（後端 Admin SDK）兩路，合計仍視為三條主鏈。
