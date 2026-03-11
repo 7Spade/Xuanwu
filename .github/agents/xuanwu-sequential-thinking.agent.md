@@ -2,7 +2,7 @@
 name: 'xuanwu-sequential-thinking'
 description: 'Solve complex problems using step-by-step reasoning and debugging.'
 argument-hint: Provide a bug, algorithm problem, or reasoning task.
-tools: ['search', 'fetch', 'codebase', 'usages']
+tools: ['search', 'fetch', 'codebase', 'usages', 'sequential-thinking/*']
 handoffs:
   - label: 'Proceed to implementation'
     agent: xuanwu-implementer

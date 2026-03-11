@@ -61,3 +61,30 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 - Repository Copilot customization guide: `.github/README.md`
 - Shared multi-agent conventions: `AGENTS.md`
 - File-scoped rules: `.github/instructions/*.instructions.md`
+
+## Available MCP Tools
+
+The following MCP servers are configured in `.vscode/mcp.json` and available to agents.
+Reference them in agent `tools:` lists using `<server-name>/*`.
+
+| Server | Key | Primary Use |
+|--------|-----|-------------|
+| Vercel | `vercel/*` | Deployment and edge-function operations |
+| Everything | `everything/*` | General-purpose MCP protocol testing and utilities |
+| Filesystem | `filesystem/*` | Local file read/write operations |
+| Memory | `memory/*` | Persistent knowledge-graph storage (`.memory/knowledge-graph.json`) |
+| Sequential Thinking | `sequential-thinking/*` | Multi-step structured reasoning for debugging, algorithm design, and complex analysis tasks that benefit from explicit thought steps |
+| Software Planning | `software-planning/*` | Implementation plan and todo tracking |
+| Context7 | `context7/*` | Version-accurate framework and library documentation |
+| Markitdown | `markitdown/*` | Convert URLs and files to Markdown for AI consumption |
+| Playwright | `playwright/*` | Browser automation and end-to-end testing |
+| Chrome DevTools | `chrome-devtools/*` | Browser diagnostics, performance profiling, and DOM inspection |
+| ESLint | `eslint/*` | Static code analysis and lint enforcement |
+| Next.js DevTools | `next-devtools/*` | Next.js dev-server diagnostics and runtime inspection |
+| shadcn/ui | `shadcn/*` | shadcn/ui component registry and add commands |
+| SonarQube | `sonarqube/*` | Code quality gates, issue search, and security hotspots |
+| Codacy | `codacy/*` | Code quality and security review via Codacy API |
+| Repomix | `repomix/*` | Pack repository or remote repos into AI-readable format |
+| Serena | `serena/*` | Code intelligence: symbol search, references, and refactoring |
+
+Agents must only include tools they genuinely need. See `.github/README.md` for the per-agent tool assignment rationale.

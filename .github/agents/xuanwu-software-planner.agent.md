@@ -2,7 +2,7 @@
 name: 'xuanwu-software-planner'
 description: 'Generate architecture and implementation plans for software changes.'
 argument-hint: Provide a feature request or architecture problem to plan.
-tools: ['search', 'fetch', 'codebase', 'usages', 'software-planning/*']
+tools: ['search', 'fetch', 'codebase', 'usages', 'software-planning/*', 'sequential-thinking/*']
 handoffs:
   - label: 'Start Implementation'
     agent: xuanwu-implementer
