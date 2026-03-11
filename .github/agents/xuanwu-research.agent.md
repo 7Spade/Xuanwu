@@ -31,6 +31,14 @@ This agent is the single Xuanwu entry point for project context, repository rese
 - Repomix-based broad repo inspection when needed.
 - Context initialization and knowledge-graph-aware summaries.
 
+## Knowledge-graph workflow
+
+1. **Load prior context** — run `memory-search_nodes` with relevant terms before starting any discovery task to avoid duplicating known facts.
+2. **Gather new findings** — use `codebase`, `search`, `context7/*`, or `repomix/*` to collect factual information.
+3. **Persist to graph** — after discovery, write new or updated facts using `memory-create_entities`, `memory-add_observations`, or `memory-create_relations`.
+4. **Remove stale data** — if prior nodes are contradicted by current findings, delete them with `memory-delete_entities` or `memory-delete_observations`.
+5. **Summarize with citations** — return findings with file/line references so downstream agents can verify them.
+
 ## Boundaries
 - Prefer factual findings over recommendations unless asked.
 - Do not perform broad code edits.

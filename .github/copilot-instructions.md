@@ -56,6 +56,25 @@ If a task touches business rules or domain terminology, read the SSOT documents 
 3. Reuse established repository patterns from `.github/skills/xuanwu-skill/SKILL.md` and existing code.
 4. For Copilot customization changes, follow `.github/README.md` first, then the matching spec under `docs/copilot/customization/`, before editing `.github/agents`, `.github/hooks`, `.github/instructions`, `.github/prompts`, or `.github/skills`.
 
+## Knowledge Persistence
+
+The project knowledge graph lives at `.memory/knowledge-graph.json` and is accessible via the `memory/*` MCP tools. Agents must treat it as a living project context store — not a static file.
+
+### Read before reasoning
+
+- At the start of any session involving domain entities, architecture decisions, or prior context, query the graph with `memory-search_nodes` before producing output.
+- Use `memory-open_nodes` to load specific named entities, or `memory-read_graph` for a full picture when onboarding to an unfamiliar area.
+
+### Write after discovering facts
+
+- After research, architecture decisions, or uncovering codebase conventions, persist findings with `memory-create_entities`, `memory-add_observations`, or `memory-create_relations`.
+- Remove stale data with `memory-delete_entities` or `memory-delete_observations` when facts become obsolete.
+
+### Use store_memory for conventions
+
+- When VS Code Copilot Chat built-in memory is available (`github.copilot.chat.copilotMemory.enabled`), use `store_memory` to persist important project conventions, patterns, and preferences so they carry forward across separate conversations.
+- Prioritize persisting: naming conventions, architectural decisions, recurring patterns, and facts that are unlikely to be obvious from a limited code sample.
+
 ## Companion Files
 
 - Repository Copilot customization guide: `.github/README.md`
