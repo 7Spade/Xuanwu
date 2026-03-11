@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-architecture-chief'
 description: 'Principal architect responsible for refining architecture documentation to production-grade quality.'
-tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'repomix/*', 'filesystem/*', 'serena/*', 'memory/*']
 handoffs:
   - label: 'Delegate diagram work'
     agent: xuanwu-diagram-designer

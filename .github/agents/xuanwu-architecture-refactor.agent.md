@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-architecture-refactor'
 description: 'Refines architecture documentation structure and diagrams under the guidance of xuanwu-architecture-chief.'
-tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*']
+tools: ['codebase', 'search', 'edit/editFiles', 'filesystem/*', 'memory/*']
 handoffs:
   - label: 'Escalate to architecture chief'
     agent: xuanwu-architecture-chief
