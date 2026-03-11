@@ -1561,26 +1561,28 @@ sequenceDiagram
     autonumber
 
     participant Admin as VS8: 語義管理 (Admin/Ontology)
-    participant UI as L0: 外部入口 (PM/User)
-    participant GW as L0A: API 閘道 (CQRS Ingress)
-    participant VS0 as VS0: 內核契約 (Kernel/SK)
-    participant D3 as L3: 領域切片 (VS2/VS3/VS5/VS9)
-    participant AI as L10: Genkit 編排器
-    participant Tool as L10-Tools: AI 工具集 (S/M/V)
+    participant VS0 as VS0: 核心內核 (Kernel/SDK)
+    participant UI as L0: 外部入口 (UI/Client/PM/User)
+    participant GW as L0A: CQRS 閘道 (API Ingress)
+    participant D3 as L3: 領域切片 (VS1-VS9 Slices)
+    participant AI as L10: Genkit 編排器 (AI Orchestrator)
+    participant ToolS as Tool-S: 技能檢索 (search_skills)
+    participant ToolM as Tool-M: 候選匹配 (match_candidates)
+    participant ToolV as Tool-V: 合規驗證 (verify_compliance)
     participant IER as L4: 事件路由器 (IER/LANE)
-    participant P5 as L5: 投影總線 (Projection Bus)
-    participant L8 as L8: 數據持久層 (Firebase/Vector)
+    participant P5 as L5: 投影總線 (Projection/Bus)
+    participant L8 as L8: 數據持久層 (Firebase/Vector DB)
 
     Note over Admin,L8: 架構正確性優先 | Everything as a Tag | 語義權威治理
 
     rect rgb(250, 250, 250)
-        Note over Admin,L8: Phase 0 語義基石
+        Note over Admin,L8: 【階段 0】語義基石：核心初始化 (Kernel Bootstrap & Tag Ontology)
         Admin->>L8: 0.1 定義全域 Tag 本體 (Ontology Slugs)
         VS0->>D3: 0.2 注入 SharedKernel 契約與 Tag 型別 [FI-003]
     end
 
     rect rgb(245, 245, 245)
-        Note over UI,L8: Phase 1 數據攝取與語義化
+        Note over UI,L8: 【階段 1】寫鏈路：數據攝取與治理 (Command Chain & Data Ingestion)
         UI->>GW: 1.1 更新履歷/發布任務
         GW->>D3: 1.2 執行領域寫入
         D3->>L8: 1.3 存儲業務實體 + 自動標籤化
@@ -1590,19 +1592,19 @@ sequenceDiagram
     end
 
     rect rgb(230, 245, 255)
-        Note over UI,AI: Phase 2 智慧匹配執行
+        Note over UI,AI: 【階段 2】語義智慧匹配執行 (Intelligent Matching Execution)
         UI->>GW: 2.1 請求匹配建議
         GW->>D3: 2.2 觸發匹配指令
-        D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tool ACL]
-        AI->>Tool: 2.4 search_skills 術語正規化
-        AI->>Tool: 2.5 match_candidates 向量召回
-        AI->>Tool: 2.6 verify_compliance 合規驗證 [GT-2 Fail-closed]
+        D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tenant Isolation]
+        AI->>ToolS: 2.4 search_skills 術語正規化
+        AI->>ToolM: 2.5 match_candidates 向量召回
+        AI->>ToolV: 2.6 verify_compliance 合規驗證 [GT-2 Fail-closed]
         AI-->>D3: 2.7 回傳推理軌跡與排名結果
         D3->>IER: 2.8 發布 MatchingConfirmed 事件
     end
 
     rect rgb(255, 250, 240)
-        Note over IER,UI: Phase 3 投影物化與業務指紋反饋
+        Note over IER,UI: 【階段 3】讀鏈路：結果輸出與解耦查詢 (Output & Query Chain)
         IER->>P5: 3.1 物化 Recommendation View
         GW->>P5: 3.2 讀取物化視圖 (QRY)
         P5-->>UI: 3.3 渲染智慧推薦列表
@@ -1613,10 +1615,10 @@ sequenceDiagram
 
 | 階段 | 核心規則 |
 |------|---------|
-| Phase 0 語義基石 | `FI-003` |
-| Phase 1 數據攝取 | `E8-I` |
-| Phase 2 智慧匹配 | `GT-2` / `E8` |
-| Phase 3 投影反饋 | `BF-1` / `S2` |
+| 階段 0 語義基石：核心初始化 | `FI-003` |
+| 階段 1 寫鏈路：數據攝取與治理 | `E8-I` |
+| 階段 2 語義智慧匹配執行 | `GT-2` / `E8` |
+| 階段 3 讀鏈路：結果輸出與解耦查詢 | `BF-1` / `S2` |
 
 ## 三條主鏈（Canonical Chains）
 
