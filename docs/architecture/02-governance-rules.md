@@ -48,7 +48,7 @@
 | `OT-2` | Tag 分配路徑必須通過 `validateTaxonomyAssignment` 驗證後方可寫入 |
 | `OT-3` | `TAXONOMY_DIMENSIONS` 為唯讀常數；修改須走架構審查流程 |
 | `GT-1` | VS8 Genkit 工具必須透過 `defineTool` 宣告；禁止 AI Flow 直調內部模組 |
-| `GT-2` | AI 分派流程必須合規優先：`verify_compliance` 先於候選人輸出 |
+| `GT-2` | AI 匹配流程遵循 `search_skills → match_candidates → verify_compliance → output`；`verify_compliance` 必須在候選人輸出前完成 |
 | `GT-3` | `search_skills` 返回之 `skillId` 作為後續查詢的標準術語依據 |
 | `BF-1` | 業務指紋回饋：任務結果確認後，Domain Slice 透過 IER 事件觸發 VS8 更新 `employees.skillEmbedding` 權重；嚴禁其他切片直接寫入 `employees.skillEmbedding` |
 | `G7` | 跨切片語義訊號必帶 `semanticTagSlugs`；嚴禁傳遞裸字串語義標籤 |
@@ -68,9 +68,10 @@
 - `global-search.slice`：跨域搜尋權威出口（D26）。
 - `portal.slice`：門戶 state 橋接切片（不編入 VS0~VS9）。
 
-## VS8：語義智慧匹配架構（SIMA）規則集
+## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
 
-> 定位：語義智慧匹配架構（SIMA）；三大支柱：Knowledge Graph / Vector DB / Skills Ontology。
+> 定位：VS8 是全系統語義權威與語義認知引擎；三大支柱仍為 Knowledge Graph / Vector Index / Skills Ontology，但在系統中的角色是提供語義治理、索引、驗證與 Tag 生命週期能力，供 L10 編排層消費。
+> 邊界：`semantic-graph.slice = VS8`；`VS9 = Finance`。VS8 不是 AI Runtime，也不直接執行跨切片副作用。
 > 詳細設計：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
 ### VS8 三工具分派引擎（Genkit Matching Flow）
@@ -114,7 +115,7 @@ flowchart LR
 
 ### G（Governance — 語義治理）
 
-- `G1`：全域語義標籤 SSOT 由 VS8 `_semantic-authority.ts` 與 `_aggregate.ts` 維護；嚴禁其他切片自行管理 Tag 語義。
+- `G1`：全域語義權威出口為 `src/features/semantic-graph.slice`；分類法常數經 `_semantic-authority.ts` 暴露，分類法 / 時序驗證由 `_aggregate.ts` 執行，語義寫入由 `_actions.ts` funnel。`shared-kernel` 只承載契約，不承載 VS8 業務決策。
 - `G7`：跨切片語義訊號必帶 `semanticTagSlugs`（SK 定義的型別）；嚴禁傳遞裸字串標籤。
 
 > **Everything as a Tag 原則**：系統中所有能力、資格、角色偏好均以語義 Slug 表示；業務結果透過 [BF-1] 回饋更新標籤權重，形成語義演進閉環。此原則是 G7 與 BF-1 的共同設計基礎。
@@ -141,7 +142,7 @@ flowchart LR
 ### GT（Genkit Tools — AI 工具整合）
 
 - `GT-1`：VS8 Genkit 工具（`search_skills` / `match_candidates` / `verify_compliance`）必須透過 `defineTool` 在 Genkit 中宣告；禁止在 AI Flow 中直接呼叫內部模組。
-- `GT-2`：AI 分派流程必須遵守「合規優先（Fail-closed）」順序：若任務含 `requiredCertifications`，必須先呼叫 `verify_compliance`，不合規候選人排除後才能輸出。
+- `GT-2`：AI 匹配流程必須遵守 `search_skills → match_candidates → verify_compliance → output`；`verify_compliance` 必須在候選人結果輸出前完成，並以 Fail-closed 排除不合規候選人。
 - `GT-3`：`search_skills` 返回的 `skillId` 必須作為後續 `match_candidates` 的標準術語依據；禁止 AI 自行發明未經本體論驗證的技能術語。
 
 ### E8-I（Embedding Isolation — 嵌入向量非同步隔離）
@@ -165,7 +166,7 @@ flowchart LR
 - 禁止 Feature slice 直連 `firebase/*`、`firebase-admin`。
 - 禁止 Query 路徑反向驅動 Command 路徑。
 - 禁止 Domain Slice 同步呼叫 AI 服務計算嵌入向量（必須透過 IER 非同步 [E8-I]）。
-- 禁止 VS8 直接觸發 VS5/VS6/VS7 副作用（僅輸出語義提示 [B1]）。
+- 禁止 VS8 直接觸發任何跨切片副作用（僅輸出語義提示 [B1]）。
 - 禁止繞過 `VisDataAdapter` 直連可視化資料來源。
 - 禁止繞過 `acl-projection` 在讀路徑重算高成本鑑權。
 - 禁止在非 `global-search.slice` 內建立平行的跨域搜尋權威出口。
@@ -182,7 +183,7 @@ flowchart LR
 
 - VS0：SharedKernel 契約注入所有 Domain Slices（`FI-003`）。
 - VS5：任務生命週期與金融入口門檻（`A19/A20`）；任務結果觸發業務指紋回饋事件 [BF-1]。
-- VS8：語義智慧匹配架構規則（`FI/KG/VD/OT/G/GT/E8-I/BF/B`）。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) 與 [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)。
+- VS8（`src/features/semantic-graph.slice`）：Semantic Cognition Engine 規則集（`FI/KG/VD/OT/G/GT/E8-I/BF/B`）；提供語義權威、分類法驗證、語義索引、Tag 生命週期與合規推理基礎。詳見 [`03-Slices/VS8-SemanticBrain/architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) 與 [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)。
 - VS9：Finance_Request 獨立狀態機與回饋投影（`A21/A22`）；Finance 結果觸發業務指紋回饋事件 [BF-1]。
 - VS6/VS7：排班與通知均不得繞過事件/投影鏈路。
 

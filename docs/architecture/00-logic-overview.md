@@ -17,7 +17,7 @@
 |------|------|
 | **架構正確性優先** | 先守層級、邊界、權威出口，再談實作成本。任何「為了方便」的繞道均視為違規。 |
 | **Everything as a Tag** | 系統中的能力、資格、角色、偏好均以語義標籤（Tag Slug）表示；禁止裸字串傳遞語義。業務結果回饋自動更新標籤權重 [BF-1]。 |
-| **語義權威治理** | VS8 是全系統唯一語義 SSOT；所有切片不得自行維護語義標籤定義；跨切片語義訊號必須帶 `semanticTagSlugs` [G7]。 |
+| **語義權威治理** | VS8（`src/features/semantic-graph.slice`）是全系統唯一語義 SSOT；所有切片不得自行維護語義標籤定義；跨切片語義訊號必須帶 `semanticTagSlugs` [G7]。 |
 
 ## 四階段系統生命週期（System Lifecycle Phases）
 
@@ -99,7 +99,7 @@ sequenceDiagram
 ### Vertical（VS0~VS9）
 
 - `VS0`: Foundation（`VS0-Kernel` + `VS0-Infra`）
-- `VS1~VS9`: 業務切片（Identity/Account/Skill/Organization/Workspace/Scheduling/Notification/Semantic/Finance）
+- `VS1~VS9`: 業務切片（Identity / Account / Skill XP / Organization / Workspace / Scheduling / Notification / Semantic Cognition / Finance）
 
 ### Auxiliary Feature Slices（現況補充）
 
@@ -139,7 +139,7 @@ flowchart LR
   end
 
   subgraph SEM["③ Semantic Layer"]
-    VS8[VS8 SIMA]
+    VS8[VS8 Semantic Cognition]
   end
 
   subgraph TSL["④ Task / Skill Layer"]
@@ -180,10 +180,11 @@ flowchart LR
   IER -. lag .-> L9
 ```
 
-## VS8：語義智慧匹配架構（Semantic Intelligent Matching Architecture）
+## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
 
-> 定位：語義智慧匹配架構（SIMA）；三大支柱：Knowledge Graph（🧠 邏輯大腦） / Vector DB（💾 記憶模塊） / Skills Ontology（📖 語言定義）。
-> 詳細設計：[`architecture.md`](03-Slices/VS8-SemanticBrain/architecture.md) · [`05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
+> 定位：VS8 是全系統的語義權威與語義認知引擎，位於 L3 Semantic Layer；它負責分類法 / 本體論治理、語義索引、Tag 生命週期，以及關係 / 合規推理所需的語義基礎。
+> 與 L10 的關係：L10 負責 AI 編排；VS8 提供 `search_skills → match_candidates → verify_compliance` 所依賴的標準術語、索引查詢與驗證依據。VS8 不是 AI Runtime，也不是 Finance；`semantic-graph.slice = VS8`，`VS9 = Finance`。
+> 公開邊界：`index.ts` 為唯一公開出口；`_actions.ts`（寫入命令）、`_aggregate.ts`（純驗證 / 聚合）、`_queries.ts`（讀出口）、`_services.ts`（語義索引）、`_semantic-authority.ts`（語義權威出口）。`VS8-SemanticBrain` 目錄名稱為歷史文件命名，對應現行切片即 `semantic-graph.slice`。
 
 ## 關鍵不變量（索引）
 

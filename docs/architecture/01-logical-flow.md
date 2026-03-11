@@ -9,7 +9,7 @@
 
 1. 先看四條主鏈（系統流向概覽）。
 2. 再看四階段系統生命週期序列圖（06 藍圖）。
-3. 最後看 VS8 語義數據生命週期序列圖（05 藍圖）。
+3. 最後看 VS8 語義認知生命週期序列圖（05 藍圖）。
 4. 對照 `02` 的規則 ID 做審查。
 
 ## 四條主鏈（最小版）
@@ -106,85 +106,63 @@ sequenceDiagram
 
 ---
 
-## VS8：語義智慧匹配架構在邏輯流中的定位（源自 @VS8-DIAG-05）
+## 🧠 VS8 · Semantic Cognition Engine（src/features/semantic-graph.slice）[#A6 #17]
 
 > 完整細節：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
+>
+> 定位：VS8 是 L3 的語義權威切片；L10 只負責 AI 編排與 tool orchestration，VS8 則提供標準術語、分類法驗證、語義索引、Tag 生命週期與關係 / 合規語義基礎。`semantic-graph.slice = VS8`（注意：`VS9 = Finance`，與 VS8 的邊界不同）。
 
-VS8（`semantic-graph.slice`）是 L3 Domain Slice 中的語義中樞，透過三大支柱與三個 Genkit 工具為其他切片提供語義匹配能力：
-
-| 支柱 | 角色 | Genkit 工具 |
+| 能力面 | 實際模組 | 在 05/06 藍圖中的角色 |
 |------|------|-------------|
-| 知識圖譜（Knowledge Graph） | 🧠 邏輯大腦 | `verify_compliance` |
-| 向量數據庫（Vector Database） | 💾 記憶模塊 | `match_candidates` |
-| 技能本體論（Skills Ontology） | 📖 語言定義 | `search_skills` |
+| 語義權威 / 分類法 | `index.ts` → `_semantic-authority.ts` / `_aggregate.ts` | 定義 canonical slugs，驗證 taxonomy assignment / path |
+| 語義索引 | `index.ts` → `_queries.ts` → `_services.ts` | 提供 `search_skills` / `match_candidates` 所需的語義查詢與召回基礎 |
+| 語義寫入 / 關係治理 | `index.ts` → `_actions.ts` | Tag 寫入 funnel；外部切片不得直接寫語義資料 |
+| 生命週期與反饋 | `_bus.ts`、`subscribers/`、`outbox/` | 對接 L4/L5 事件鏈，承接 Tag lifecycle 與 BF-1 閉環 |
 
 ```mermaid
-sequenceDiagram
-    autonumber
-
-    participant Admin as 管理員/本體論 (Admin/Ontology)
-    participant UI as L0: 外部 UI (External UI/PM/User)
-    participant CBG as L2: 命令閘道 (Command Gateway)
-    participant IER as L4: 事件路由器 (IER/LANE)
-    participant AI as L10: Genkit 編排器 (AI Orchestrator)
-    participant ToolS as Tool: 技能檢索 (search_skills)
-    participant ToolM as Tool: 候選匹配 (match_candidates)
-    participant ToolV as Tool: 合規驗證 (verify_compliance)
-    participant D3 as L3: 領域切片 (Domain Slice)
-    participant L8 as L8: 語義與數據層 (Semantic/Vector/DB)
-    participant L5 as L5: 投影匯流排 (Projection Bus)
-
-    Note over Admin,L8: 第一階段：數據來源生成 (Phase 1: Data Ingestion & Governance)
-
-    rect rgb(245, 245, 245)
-        Admin->>L8: 1.1 定義技能本體論 (Define Skill Ontology Slugs)
-        Note right of L8: 確立語義權威 (Standardized Tag Authority) [OT-1]
-
-        UI->>CBG: 1.2 發布任務/更新履歷 (Post Task / Update Profile)
-        CBG->>D3: 1.3 執行領域聚合寫入 (Execute Aggregate Write)
-        D3->>IER: 1.4 發布數據變更事件 (Integration Events)
-        IER-->>AI: 1.5 非同步觸發 Embedding 提取 [E8-I]
-        AI->>L8: 1.6 存儲向量嵌入 (Store Task/Profile Embeddings)
+flowchart LR
+    subgraph GOV["② Governance Layer"]
+        Admin[Admin / Ontology]
+        VS0[VS0 SharedKernel]
     end
 
-    Note over UI,L8: 第二階段：智慧匹配執行 (Phase 2: Execution Flow)
-
-    UI->>CBG: 2.1 提交匹配請求 (Submit Matching Request)
-    CBG->>D3: 2.2 觸發匹配指令 (Trigger Match Command)
-    D3->>AI: 2.3 啟動 Genkit Matching Flow [E8 Tool ACL]
-
-    rect rgb(230, 245, 255)
-        Note right of AI: AI 決策路徑 (AI Decision Reasoning)
-
-        AI->>ToolS: 2.4 術語正規化 (Normalize Terms) [OT-2]
-        ToolS->>L8: 查詢本體論映射 (Ontology Lookup)
-        L8-->>ToolS: 返回標準 Slug (Canonical Slugs)
-        ToolS-->>AI: 標準化技能組 (Normalized Skill Set)
-
-        AI->>ToolM: 2.5 執行向量匹配 (Execute Vector Match) [VD-2]
-        ToolM->>L8: 語義近鄰搜尋 (Vector Similarity Search)
-        L8-->>ToolM: Top-K 候選名單 (Candidate List)
-        ToolM-->>AI: 語義匹配得分 (Semantic Scores)
-
-        AI->>ToolV: 2.6 合規與資格檢核 (Compliance & Cert Check) [GT-2]
-        ToolV->>L8: 驗證證照/可用性 (Verify Certs/Availability)
-        L8-->>ToolV: 原始數據 (Raw Qualifications)
-        ToolV-->>AI: 通過判定與理由 (Decisions & Reasons)
+    subgraph SEM["③ Semantic Layer"]
+        API[VS8 index.ts]
+        Auth[_semantic-authority.ts]
+        Agg[_aggregate.ts]
+        Act[_actions.ts]
+        Qry[_queries.ts]
+        Svc[_services.ts]
+        Bus[_bus.ts]
     end
 
-    Note over AI,L5: 第三階段：結果持久化與反饋 (Phase 3: Output & Feedback Loop)
+    subgraph DL["⑤ Data Lifecycle Layer"]
+        IER[L4 IER]
+        PB[L5 Projection Bus]
+    end
 
-    AI->>D3: 3.1 回傳排名名單與推理軌跡 (Ranked List & Trace)
-    D3->>L5: 3.2 發布投影事件 (Emit Projection Event)
-    L5-->>UI: 3.3 更新前端讀模型 (Update Read Model / UI)
-    D3->>IER: 3.4 [BF-1] 業務指紋回饋事件 (TaskCompleted/TaskRated)
-    IER-->>AI: 3.5 VS8 調整 employees.skillEmbedding 權重
-    Note right of AI: Everything as a Tag 閉環：根據任務結果調整 Employee 標籤權重 [BF-1]
+    subgraph AI["⑥ Matching / AI Layer"]
+        Flow[L10 Genkit Flow]
+        ToolS[search_skills]
+        ToolM[match_candidates]
+        ToolV[verify_compliance]
+    end
+
+    Admin --> Auth
+    VS0 --> Agg
+    API --> Act
+    API --> Qry
+    Act --> Agg
+    Qry --> Svc
+    Flow --> ToolS --> Qry
+    Flow --> ToolM --> Qry
+    Flow --> ToolV --> API
+    Act --> Bus --> IER --> PB
 ```
 
-**讀路徑（語義查詢）**：`global-search.slice → VS8._queries.ts [D4] → _services.ts → SemanticSearchHit[]`
+**讀路徑（語義查詢）**：`global-search.slice → VS8.index.ts → _queries.ts → _services.ts → SemanticSearchHit[]`
 
-**分類法管理路徑**：`wiki-editor → _actions.ts [D3] → validateTaxonomyAssignment [OT-2] → Firestore`
+**分類法管理路徑**：`wiki-editor → VS8.index.ts → _actions.ts → _aggregate.ts(validateTaxonomyAssignment)`
 
 詳細架構定義：[`03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md`](03-Slices/VS8-SemanticBrain/05-semantic-data-lifecycle.md)
 
@@ -209,7 +187,7 @@ flowchart TD
     end
 
     subgraph SEM["③ Semantic Layer"]
-        VS8[VS8 SIMA]
+        VS8[VS8 Semantic Cognition]
     end
 
     subgraph TSL["④ Task / Skill Layer"]
@@ -252,7 +230,7 @@ flowchart TD
 
 ## Auxiliary Slice 邊界（現況）
 
-- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑對接 VS8 語義索引（支柱二 `querySemanticIndex`）與 L6 讀取出口。
+- `global-search.slice`：系統唯一跨域搜尋入口；查詢路徑對接 VS8 `index.ts → _queries.ts → _services.ts` 與 L6 讀取出口。
 - `portal.slice`：門戶殼層 state 橋接；不取代 L2/L3 業務決策，不可繞過主鏈。
 
 ## VS9 Finance 流向索引
