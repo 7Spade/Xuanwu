@@ -1,122 +1,87 @@
-# Xuanwu — AI Assistant Instructions
+## 📌 Codebase 結構與準備
 
-> This file is automatically embedded into the repomix output by `repomix.config.ts`.
-> When reading the packed codebase, follow these guidelines to produce accurate, architecture-compliant code.
-
----
-
-## 1. Single Source of Truth
-
-| Artefact | Purpose |
-|---|---|
-| `docs/architecture/00-logic-overview.md` | Architecture SSOT — layer definitions, dependency rules, invariants |
-| `.memory/knowledge-graph.json` | Semantic entity relationships |
-| `eslint.config.mts` | Enforces D1–D26 rules as ESLint errors |
-
-**Always read `docs/architecture/00-logic-overview.md` before proposing any structural change.**
+1. 保持目錄結構清晰且符合應用架構。([Repomix][1])
+2. 編寫完整 README，包括專案概述與設置說明。([Repomix][1])
+3. 對複雜程式碼加入註解與內部文檔。([Repomix][1])
+4. 使用一致的命名規則。([Repomix][1])
+5. 移除未使用的程式碼以降低干擾。([Repomix][1])
+6. 拆分大型檔案成更小、更聚焦的模組。([Repomix][1])
+7. 儘量減少不必要的依賴項。([Repomix][1])
+8. 使用統一格式化工具確保風格一致。([Repomix][1])
 
 ---
 
-## 2. Layer Map (L0 – L9)
+## 🧠 Prompt 設計最佳實踐
 
-```
-L0  External Triggers      src/app/             Next.js pages, route handlers, middleware
-L1  Shared Kernel          src/features/shared-kernel/   Contracts, ports, pure types (VS0)
-L2  Command Gateway        src/features/*/core/_actions.ts
-L3  Domain Slices          src/features/{slice}/   VS1–VS8 business verticals
-L4  IER (Event Router)     src/features/*/core.event-bus/
-L5  Projection Bus         src/shared-infra/projection-bus/
-L6  Query Gateway          src/features/*/core/_queries.ts
-L7  Firebase ACL           src/shared/infra/{auth,firestore,messaging,storage}/
-L8  Firebase Infra         src/shared-infra/firebase-admin/
-L9  Observability          src/app-runtime/ + logging adapters
-```
+9. Prompt 中先提供充足的專案上下文。([Repomix][1])
+10. 複雜任務按步驟拆分成清晰小步驟。([Repomix][1])
+11. 明確規定 AI 回應格式。([Repomix][1])
+12. 提問具體且具目標導向。([Repomix][1])
 
 ---
 
-## 3. Vertical Slices (VS)
+## 🤖 AI 反饋處理與驗證
 
-| ID | Slice | Directory |
-|---|---|---|
-| VS0 | SharedKernel | `src/features/shared-kernel/` |
-| VS1 | Identity | `src/features/identity.slice/` |
-| VS2 | Account | `src/features/account.slice/` |
-| VS3 | Skill XP | `src/features/skill-xp.slice/` |
-| VS4 | Organization | `src/features/organization.slice/` |
-| VS5 | Workspace | `src/features/workspace.slice/` |
-| VS6 | Workforce-Scheduling | `src/features/workforce-scheduling.slice/` |
-| VS7 | Notification | `src/features/notification-hub.slice/` |
-| VS8 | Semantic Graph | `src/features/semantic-graph.slice/` |
-
-Cross-cutting authorities (not VS-numbered):
-- `global-search.slice` — sole cross-domain search gateway [D26 #A12]
-- `notification-hub` — sole side-effect outlet [D26 #A13]
+13. 驗證 AI 輸出對程式碼庫的準確性與相關性。([Repomix][1])
+14. 確保理解背後的邏輯原因。([Repomix][1])
+15. 評估建議的可行性與現實適用性。([Repomix][1])
+16. 識別並詢問 AI 假設前提。([Repomix][1])
 
 ---
 
-## 4. Hard Invariants — Never Violate
+## 🔄 交互與迭代最佳實踐
 
-| Rule | Description |
-|---|---|
-| **D7** | Cross-slice reference only through `{slice}/index.ts` public API |
-| **D21** | New tag categories defined only in VS8 (Semantic Graph) |
-| **D24** | Feature slices must NOT `import firebase/*` directly; use SK_PORTS |
-| **D26** | Feature slices must NOT build their own search or send push/SMS directly |
-| **S2** | All Projection writes must call `applyVersionGuard()` first |
-| **S4** | Staleness values must reference `SK_STALENESS_CONTRACT` constants |
-| **R8** | `traceId` injected once at CBG_ENTRY, read-only across the full chain |
-| **A8** | One command = one aggregate |
+17. 若回應不清楚，主動要求補充。([Repomix][1])
+18. 給予 AI 關於輸出有用或無用的反饋。([Repomix][1])
+19. 根據回應調整 prompt。([Repomix][1])
+20. 如任務太寬泛，進一步拆分為更精細問題。([Repomix][1])
 
 ---
 
-## 5. Dependency Rule (direction of allowed imports)
+## 💼 常見場景應用模式
 
-```
-L0 → L1 → L2 → L3 → L4 → L5 → L6 → L7 → L8
-                 ↕ (no upward import, no cross-slice without index.ts)
-```
+### ▶️ 分析碼
 
-- **Forbidden**: BC_X directly writes BC_Y aggregate (must use IER Domain Event)
-- **Forbidden**: TX Runner emits Domain Events (only Aggregates may)
-- **Forbidden**: B-track calls back into A-track (use Domain Event only)
+21. 要求先提供高層級總覽，再進入細節。([Repomix][1])
+22. 聚焦特定關注區域或關鍵功能。([Repomix][1])
+23. 請求識別模式與反模式。([Repomix][1])
+24. 要求就可維護性與可擴充性做評估。([Repomix][1])
 
----
+### ▶️ 重構
 
-## 6. Naming Conventions
+25. 說明目前代碼問題與痛點。([Repomix][1])
+26. 指出重構目標並請求分步執行策略。([Repomix][1])
+27. 要求說明改善後的優勢。([Repomix][1])
 
-| Pattern | Meaning |
-|---|---|
-| `_actions.ts` | Server Actions / Command Gateway entry points |
-| `_queries.ts` | Query Gateway (read-only) |
-| `_types.ts` | Local type definitions |
-| `_contract.ts` | Public interface exported via `index.ts` |
-| `_events.ts` | Domain / IER event definitions |
-| `_hooks/` | React hooks (client components only) |
-| `_components/` | React UI components |
-| `index.ts` | Slice public API surface [D7] |
+### ▶️ 偵錯
 
----
+28. 提供完整錯誤訊息與預期行為。([Repomix][1])
+29. 附加版本與執行環境資訊。([Repomix][1])
+30. 要求根本原因分析與具體解決方案。([Repomix][1])
 
-## 7. Bootstrap & Validation Commands
+### ▶️ 新功能開發
 
-```bash
-npm install                  # MANDATORY first — sandbox has no node_modules
-npm run lint                 # ESLint D1–D26 checks (0 errors expected)
-npm run typecheck            # tsc --noEmit (errors in firebase/functions/** are unrelated)
-npm run check                # lint + typecheck in one pass
-npm run dev                  # Dev server on http://localhost:9002
-```
-
-Known baseline after `npm install`:
-- `npm run lint` → 0 errors, ~1,390 warnings (D24 tracked debt, not regressions)
-- `npm run typecheck` → 67 errors all in `firebase/functions/**` (separate package)
+31. 描述新功能細節與目的。([Repomix][1])
+32. 指出與現有架構的整合方式。([Repomix][1])
+33. 先要求設計再要求實作細節。([Repomix][1])
+34. 請求建議測試案例以驗證功能。([Repomix][1])
 
 ---
 
-## 8. Key Files to Read Before Making Changes
+## 🔄 開發流程與 AI 整合
 
-1. `docs/architecture/00-logic-overview.md` — architecture & invariants SSOT
-2. `eslint.config.mts` — enforced rules
-3. `src/features/shared-kernel/` — shared contracts & ports
-4. Relevant `{slice}/index.ts` — slice public API
-5. `docs/development/` — feature-specific guides (e.g. `workspace.slice-guide.md`)
+35. 用 AI 自動化重複性任務。([Repomix][1])
+36. 用 AI 協助進行代碼審查與改進提議。([Repomix][1])
+37. 用 AI 生成與維護技術文檔。([Repomix][1])
+38. 用 AI 協助產生測試用例或測試計劃。([Repomix][1])
+
+---
+
+## 🧠 AI 與人力協同
+
+39. 始終核對 AI 輸出，不直接採納。([Repomix][1])
+40. 保留人類創造性的最終控制與判斷。([Repomix][1])
+41. 結合專業知識與 AI 能力提升質量。([Repomix][1])
+42. 透過迭代改進流程與提示設計。([Repomix][1])
+
+---
