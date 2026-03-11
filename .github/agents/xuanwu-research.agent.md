@@ -1,7 +1,7 @@
 ---
 name: 'xuanwu-research'
 description: 'Project-specific Xuanwu research and context agent for codebase discovery, Context7-backed docs lookup, knowledge-graph sync, and session context initialization.'
-tools: ['read', 'codebase', 'search', 'web', 'context7/*', 'repomix/*', 'markitdown/*', 'filesystem/*', 'memory/*']
+tools: ['fetch', 'codebase', 'search', 'web', 'context7/*', 'repomix/*', 'markitdown/*', 'filesystem/*', 'memory/*', 'serena/*']
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator

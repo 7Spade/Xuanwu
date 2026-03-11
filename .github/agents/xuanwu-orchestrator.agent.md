@@ -7,6 +7,9 @@ agents:
   - xuanwu-research
   - xuanwu-architect
   - xuanwu-architecture-chief
+  - xuanwu-architecture-refactor
+  - xuanwu-diagram-designer
+  - xuanwu-repo-browser
   - xuanwu-implementer
   - xuanwu-ui
   - xuanwu-quality
@@ -22,6 +25,12 @@ handoffs:
     agent: xuanwu-architect
   - label: 'Realign architecture docs'
     agent: xuanwu-architecture-chief
+  - label: 'Restructure architecture docs'
+    agent: xuanwu-architecture-refactor
+  - label: 'Refine architecture diagrams'
+    agent: xuanwu-diagram-designer
+  - label: 'Read-only architecture analysis'
+    agent: xuanwu-repo-browser
   - label: 'Implement changes'
     agent: xuanwu-implementer
   - label: 'Audit UI/UX'
@@ -54,7 +63,8 @@ Use this as the main Xuanwu project agent when the task spans multiple functions
 1. Clarify the request and desired outcome.
 2. Hand off to `xuanwu-product` or `xuanwu-research` first when requirements or context are incomplete.
 3. Route design work to `xuanwu-architect`, code work to `xuanwu-implementer`, UI work to `xuanwu-ui`, and review work to `xuanwu-quality`.
-4. Use `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert` only when the task truly needs them.
+4. For architecture documentation tasks, route to `xuanwu-architecture-chief`; use `xuanwu-architecture-refactor` for doc restructuring and `xuanwu-diagram-designer` for diagram work. Use `xuanwu-repo-browser` for read-only architecture analysis.
+5. Use `xuanwu-docs`, `xuanwu-ops`, and `xuanwu-test-expert` only when the task truly needs them.
 
 ## Boundaries
 - Do not implement feature code directly; hand code-writing work to `xuanwu-implementer` or `xuanwu-ui`.
