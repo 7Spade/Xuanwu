@@ -1,15 +1,15 @@
-﻿/**
- * Module: semantic-graph.slice/wiki-editor ??[L8 VS8_WIKI] Wiki Governance Editor
+/**
+ * Module: semantic-graph.slice/wiki-editor — Relationship Governance Editor
  *
  * Knowledge governance layer: tag relationship proposals, consensus validation,
- * and the relationship visualiser UI surface [D21-I~W].
+ * and the relationship visualiser UI surface.
  *
  * Responsibilities:
  *   - Accept tag-relationship proposals from authorised contributors.
  *   - Route proposals to proposal-stream/ for async review.
  *   - Enforce governance rules before proposals enter proposal-stream.
  *
- * @see docs/architecture/slices/semantic-graph.md ??L8 VS8_WIKI
+ * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
  */
 
 import type { TagSlugRef } from '@/shared-kernel';
@@ -40,8 +40,8 @@ export interface ProposalSubmission {
  * Minimal governance pre-check before a proposal enters proposal-stream.
  *
  * Rules enforced here:
- *   - Self-loops are rejected (from === to) [D21-3].
- *   - Weight must be in (0, 1] [D21-9].
+ *   - Self-loops are rejected (from === to).
+ *   - Weight must be in (0, 1].
  *   - Duplicate pending proposals for the same edge are rejected.
  */
 function _validateSubmission(
@@ -49,10 +49,10 @@ function _validateSubmission(
   existing: readonly RelationshipProposal[],
 ): void {
   if ((submission.fromTagSlug as string) === (submission.toTagSlug as string)) {
-    throw new Error('[VS8_WIKI] Self-loop proposals are not allowed [D21-3]');
+    throw new Error('[SIMA] Self-loop proposals are not allowed');
   }
   if (submission.weight <= 0 || submission.weight > 1) {
-    throw new Error(`[VS8_WIKI] Proposal weight must be in (0, 1], got: ${submission.weight} [D21-9]`);
+    throw new Error(`[SIMA] Proposal weight must be in (0, 1], got: ${submission.weight}`);
   }
   const alreadyPending = existing.some(
     (p) =>
@@ -63,7 +63,7 @@ function _validateSubmission(
   );
   if (alreadyPending) {
     throw new Error(
-      `[VS8_WIKI] A pending proposal already exists for edge ${submission.fromTagSlug as string}→${submission.toTagSlug as string}`,
+      `[SIMA] A pending proposal already exists for edge ${submission.fromTagSlug as string}→${submission.toTagSlug as string}`,
     );
   }
 }

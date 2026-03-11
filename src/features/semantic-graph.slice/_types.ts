@@ -54,7 +54,7 @@ export interface SemanticEdge {
   readonly fromTagSlug: TagSlugRef;
   readonly toTagSlug: TagSlugRef;
   readonly relationType: SemanticRelationType;
-  /** Relation strength: 0.0 (weak) → 1.0 (direct). Defaults to 1.0. [D21-3] */
+  /** Relation strength: 0.0 (weak) → 1.0 (direct). Defaults to 1.0. */
   readonly weight: number;
   readonly createdAt: string;
 }
