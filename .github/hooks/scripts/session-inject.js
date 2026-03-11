@@ -13,13 +13,13 @@ const { join } = require('path');
 const cwd = process.cwd();
 
 const kgExists = existsSync(join(cwd, '.memory', 'knowledge-graph.json'));
-const ssotExists = existsSync(join(cwd, 'docs', 'architecture', '00-logic-overview.md'));
+const ssotExists = existsSync(join(cwd, 'docs', 'architecture', 'README.md'));
 
 const context = [
   '## Xuanwu Project Context',
   '',
   '### SSOT References',
-  `- Architecture SSOT: docs/architecture/00-logic-overview.md${ssotExists ? ' ✓' : ' (missing)'}`,
+  `- Architecture SSOT: docs/architecture/README.md${ssotExists ? ' ✓' : ' (missing)'}`,
   `- Entity semantics: .memory/knowledge-graph.json${kgExists ? ' ✓' : ' (missing)'}`,
   '- Skills index: .github/skills/',
   '- Verify: npm run check  (lint + typecheck)',
