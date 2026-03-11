@@ -28,6 +28,7 @@ export default function LandingPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const plainToggleClassName = "relative min-h-0 min-w-0 rounded-md size-9"
 
   useEffect(() => {
     if (state.user) {
@@ -102,8 +103,8 @@ export default function LandingPage() {
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-b from-background via-zinc-50/40 to-background dark:from-background dark:via-zinc-950/30 dark:to-background">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(161,161,170,0.12),transparent_36%),radial-gradient(circle_at_80%_90%,rgba(113,113,122,0.12),transparent_34%)]" />
       <div className="absolute right-3 top-3 z-20 flex w-[calc(100%-1.5rem)] items-center justify-end gap-2 sm:right-4 sm:top-4 sm:w-auto">
-        <ModeToggle />
-        <LanguageSwitcher />
+        <ModeToggle triggerClassName={plainToggleClassName} />
+        <LanguageSwitcher triggerClassName={plainToggleClassName} />
         <Button
           aria-label={t("auth.enterDimension")}
           variant="outline"

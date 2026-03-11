@@ -89,7 +89,7 @@ export function Header() {
       dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: organization })
   }
 
-  const plainHeaderIconClassName = "min-h-0 min-w-0 rounded-md size-9";
+  const plainHeaderIconClassName = "relative min-h-0 min-w-0 rounded-md size-9";
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-background/70 ring-1 ring-border/55 backdrop-blur-xl transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 supports-[backdrop-filter]:bg-background/65 sm:h-16">

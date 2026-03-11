@@ -1,80 +1,98 @@
-這是一份為 VS8 Semantic Graph (The Brain) 量身打造的宏大願景 README.md。
-這不僅僅是一個組件說明，它是整個系統的「語義憲法」。它告訴 Copilot 和所有開發者：「如果業務切片是肢體，VS8 就是指揮一切的神經中樞。」
-🧠 VS8: Semantic Graph (The Brain) — 全域語義中樞
-🌌 宏大願景：Everything as a Tag
-在我們的架構中，VS8 不僅是個切片，它是所有現實的投影儀。
-我們拒絕硬編碼的枚舉、拒絕孤立的 ID 字串。所有領域概念——無論是人的能力、項目的風險、組織的權限，還是通知的緊急度——都必須轉化為 Semantic Tags，納入這個「全球語義圖譜」進行統一治理。
-> 架構師指令： 作為 Lead Software Architect，你必須確保任何新功能的第一步不是建立資料表，而是在 VS8 中定義其語義節點（TE1~TE6）。
-> 
-🕸️ 全域協作大餅：語義神經網絡 (The Neural Network)
-VS8 的觸角延伸至每一個業務切片，構建起一套跨領域的「智慧連動」：
-1. 🛡️ 身份與權限 (VS1 Identity & VS2 Account)
- * 協作行為：當一個標籤被標記為 Deprecated，VS8 會透過 BACKGROUND_LANE 觸發 ClaimsRefresh。
- * 大餅：未來我們將實現 「語義存取控制 (SAC)」。權限不再是手動分配，而是根據帳號身上標籤的「語義距離」自動推導。
-2. 📈 能力與進化 (VS3 Skill & VS4 Organization)
- * 協作行為：VS3 提供 XP，VS8 負責將其轉化為具備市場競爭力語義的 skill-tier。
- * 大餅：「動態人才地圖」。系統能預測組織缺口——當 VS5 出現大量 #tech:rust 任務標籤時，VS8 會自動通知 VS4 調整招聘語義權重。
-3. 📅 協作與調度 (VS5 Workspace & VS6 Scheduling)
- * 協作行為：VS6 的適格性檢查（Eligibility）不再是簡單的布林值，而是由 VS8 計算出的「無衝突語義空間」。
- * 大餅：「因果追蹤補償」。如果一個 #priority:high 的任務（VS5）因為人力（VS6）變動而延期，VS8 將追蹤其關聯的標籤鏈條，自動標記受影響的下游任務為 #status:at-risk。
-4. 👁️ 感知與出口 (Global Search & VS7 Notification)
- * 協作行為：Global Search 是 VS8 的眼睛（語義索引出口）；Notification Hub 是 VS8 的嘴巴（根據標籤語義決定路由策略）。
- * 大餅：「自適應反饋閉環」。搜尋結果的點擊率會反饋給 VS8，動態調整標籤間的 Edge 權重，讓系統越用越聰明。
-🏗️ 技術實體架構 (The Engine Room) — 已完成 centralized-* 遷移
-目錄結構 (遷移後)：
+# VS8：語義智慧匹配架構（Semantic Intelligent Matching Architecture）
+
+VS8 是全系統語義權威，定位為「**基於語義的智慧匹配架構（SIMA）**」，透過整合三大核心支柱與三個 Genkit AI 工具解決人力資源中的複雜分派問題：
+
+| 支柱 | 技術 | 角色隱喻 | Genkit 工具 | Firestore 集合 |
+|------|------|---------|------------|---------------|
+| **支柱一** | 知識圖譜（Knowledge Graph） | 🧠 **邏輯大腦** | `verify_compliance` | `employees.certifications` |
+| **支柱二** | 向量數據庫（Vector Database） | 💾 **記憶模塊** | `match_candidates` | `employees.skillEmbedding`、`tasks` |
+| **支柱三** | 技能本體論/分類法（Skills Ontology） | 📖 **語言定義** | `search_skills` | `skills.embedding` + `taxonomyPath` |
+
+> 架構詳情請見：
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md) — 三大支柱設計、Firestore Schema、Genkit 工具規格
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture-diagrams.md) — Genkit 工具整合圖、HR 分派序列圖、Firestore 集合關聯圖
+> - [`docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md`](../../../docs/architecture/03-Slices/VS8-SemanticBrain/architecture-build.md) — Phase 1-4 實施計畫（Schema → Vector Index → Genkit Tools → Prompt Engineering）
+
+## 目錄結構
+
 ```
 semantic-graph.slice/
-├── centralized-tag/          L1 VS8_CL  靈魂 (Neuron DNA)
-├── centralized-nodes/        L1 VS8_CL  骨骼 (Tag Entities)
-├── centralized-embeddings/   L1 VS8_CL  直覺 (Vector Store)
-├── centralized-edges/        L2 VS8_SL  神經 (Synapse Layer)
-├── centralized-neural-net/   L3 VS8_NG  計算核 (Neural Computation)
-├── centralized-causality/    L3 VS8_NG  因果追蹤
-├── centralized-workflows/    L4 VS8_ROUT 脈搏 (Reflection Arc)
-│   ├── policy-mapper/
-│   └── dispatch-bridge/
-├── centralized-guards/       L5 VS8_GUARD 血腦屏障 (BBB)
-├── centralized-learning/     L6 VS8_PLAST 可塑性 (Plasticity)
-├── projections/              L7 VS8_PROJ  投影讀取 (Projection)
-├── wiki-editor/              L8 VS8_WIKI  維基治理 (Governance)
-├── proposal-stream/          L8 VS8_WIKI  提案流 (Proposal)
-├── subscribers/              L10 VS8_IO   訂閱廣播 (I/O)
-├── outbox/                   L10 VS8_IO   外送廣播 (Outbox)
-├── core/types/               共享型別 (Shared Types)
-├── core/utils/               工具函式 (Utilities)
-├── _actions.ts               命令入口 (Command Handlers)
-├── _aggregate.ts             聚合根 (Aggregate Root)
-├── _cost-classifier.ts       成本分類 (Cost Classifier)
-├── _queries.ts               查詢出口 (Query Port)
-├── _semantic-authority.ts    語義權威 (Semantic Authority)
-├── _services.ts              語義索引服務 (Semantic Index)
-├── _types.ts                 領域型別 (Domain Types)
-└── index.ts                  公開 API (Public API)
+├── index.ts               公開 API 唯一出口 [D7]
+├── _schema.ts             [Phase 1] Firestore 集合 TypeScript Interface
+│                          (SkillDocument / EmployeeDocument / TaskDocument)
+├── _semantic-authority.ts [支柱三] TAXONOMY_DIMENSIONS / SEARCH_DOMAINS
+├── _aggregate.ts          [支柱三] validateTaxonomyAssignment + 時序衝突偵測
+├── _services.ts           [支柱二] 語義向量索引：indexEntity / querySemanticIndex
+├── _queries.ts            [D4] 查詢出口（包裝 _services.ts）[VD-2]
+├── _types.ts              領域型別（含 SemanticEdge / SemanticRelationType 等）
+├── _actions.ts            [D3] Tag / 圖譜邊寫入命令入口 [KG-1]
+├── _bus.ts                Tag 生命週期事件匯流排 [T1]
+├── _cost-classifier.ts    [D27] 純函式成本語義分類器
+├── _dispatch-flow.ts      [Phase 4] Genkit Flow（合規優先系統提示詞）
+├── genkit-tools/          [Phase 3] 三工具分派引擎（via defineTool）[GT-1]
+│   ├── search-skills.tool.ts      支柱三：術語標準化工具
+│   ├── match-candidates.tool.ts   支柱二：向量候選人匹配工具
+│   ├── verify-compliance.tool.ts  支柱一：合規邏輯驗證工具
+│   └── index.ts
+├── projections/
+│   ├── context-selectors.ts   【暫緩】語義情境選擇器
+│   ├── graph-selectors.ts     【暫緩】知識圖譜選擇器
+│   └── tag-snapshot.slice.ts  Tag 快照展示 API
+├── wiki-editor/           分類法維基治理視圖（支柱三管理入口）
+│   ├── index.ts
+│   └── relationship-visualizer.ts  【暫緩】知識圖譜視覺化
+├── proposal-stream/       技能/標籤修訂提案串流
+│   └── index.ts
+├── subscribers/           訂閱外部事件（TagLifecycleEvent）
+│   └── lifecycle-subscriber.ts
+└── outbox/                外送語義事件
+    └── tag-outbox.ts
 ```
-層級對照：
-| 層 | ID | 模組 | 角色 | SSOT 契約約束 |
-|---|---|---|---|---|
-| L1 | VS8_CL  | `centralized-tag/`         | 靈魂 (Neuron DNA)    | 唯一真相 Aggregate；管理標籤生命週期 Draft→Active→Stale→Deprecated。 |
-| L1 | VS8_CL  | `centralized-nodes/`       | 骨骼                  | TE1~TE6 實體定義，確保 tag::category 的嚴格一致性。 |
-| L1 | VS8_CL  | `centralized-embeddings/`  | 直覺 (Vector Store)  | 向量化引擎。禁止直連 SDK，必須走 FIREBASE_ACL [D24]。 |
-| L2 | VS8_SL  | `centralized-edges/`       | 神經 (Synapse Layer)  | 實作 IS_A (繼承) 與 REQUIRES (依賴) 等邏輯關係；weight ∈ (0,1]。 |
-| L3 | VS8_NG  | `centralized-neural-net/`  | 計算核 (Neural Comp.) | Dijkstra 最短路徑、距離矩陣、孤立節點偵測。 |
-| L3 | VS8_NG  | `centralized-causality/`   | 因果追蹤               | CausalityTracer：traceAffectedNodes / buildCausalityChain。 |
-| L4 | VS8_ROUT| `centralized-workflows/`   | 脈搏 (Reflection Arc) | PolicyMapper + DispatchBridge：將 L3 輸出映射為業務調度策略。 |
-| L5 | VS8_GUARD| `centralized-guards/`     | 血腦屏障 (BBB)         | SemanticGuard 最高否決：拒絕自迴圈、IS_A 循環、無效權重、重複邊。 |
-| L6 | VS8_PLAST| `centralized-learning/`   | 可塑性 (Plasticity)   | learning-engine.ts 權重回饋；decay-service.ts 自然衰減。 |
-| L7 | VS8_PROJ | `projections/`            | 投影讀取 (Projection) | graph-selectors.ts、context-selectors.ts；唯一合法讀出口 [D4]。 |
-| L8 | VS8_WIKI | `wiki-editor/`            | 維基治理 (Governance) | 提案審查、共識驗證、關係視覺化。 |
-| L8 | VS8_WIKI | `proposal-stream/`        | 提案流 (Proposal)     | 提案串流；通過後轉至 L5 BBB 驗證再進邊存儲。 |
-| L9 | VS8_RL  | `_cost-classifier.ts`      | 決策輸出 (Cost-Output)| 純函式成本分類器 → CostItemType；無副作用、無非同步 [D8]。 |
-| L10| VS8_IO  | `subscribers/`             | 訂閱廣播 (I/O)        | lifecycle-subscriber.ts：接收上游 TagLifecycleEvent。 |
-| L10| VS8_IO  | `outbox/`                  | 外送廣播 (Outbox)     | tag-outbox.ts：SK_OUTBOX SAFE_AUTO 廣播拓撲異動事件。 |
-🚫 絕對禁止項 (The Forbidden List)
-為了保護「大腦」的純粹性，開發者必須遵守：
- * 禁止私設標籤 [D21]：嚴禁在業務切片中直接寫死 status: "done"，必須在 VS8 中定義語義標籤。
- * 禁止繞過 ACL [D24]：向量運算與存取禁止直接 import Firebase，必須透過 SK_PORTS 接口。
- * 禁止修改 TraceID [R8]：語義推論鏈條必須完整保留 traceId，嚴禁覆蓋，以利因果追蹤。
- * 禁止忽略版本 [S2]：所有標籤投影寫入必須通過 applyVersionGuard()，防止語義混亂。
-🛠️ 給 AI 開發者的「角色注入指令」
-> 「你是這個專案的 Lead Software Architect。當你在這個 Slice 工作時，你的目標是建立一個能讓系統『理解自己』的知識圖譜。你產出的每一行代碼都必須考慮：這如何服務於全域的語義化搜尋？這如何確保排班的適格性檢測具備因果邏輯？請開始你的演化。」
->
+
+## 架構規則
+
+| 規則 | 說明 |
+|------|------|
+| [D3] | 所有 Tag / 圖譜邊寫入必須透過 `_actions.ts`，嚴禁直接寫 Firestore |
+| [D4] | 所有讀取透過 `_queries.ts` 出口 |
+| [D7] | 公開 API 僅暴露 `index.ts`；內部模組隱藏 |
+| [D8] | Tag 業務邏輯在此 slice，不下放至 shared-kernel |
+| [D21] | 新 Tag 分類只能在 VS8 定義 |
+| [D24] | 禁止直接 import Firebase；必須走 SK_PORTS 接口 |
+| [D27] | 成本語義決策在此 slice；VS5 不可自判 |
+| [B1] | VS8 只輸出語義提示；嚴禁直接觸發跨切片副作用 |
+| [GT-1] | Genkit 工具必須透過 `defineTool` 宣告 |
+| [GT-2] | AI 分派流程必須合規優先：`verify_compliance` 先於候選人輸出 |
+| [GT-3] | `search_skills` 返回的 `skillId` 作為後續查詢標準術語 |
+| [KG-1] | 知識圖譜邊只能透過 `_actions.ts` 寫入 |
+| [VD-1] | 向量索引由 `_services.ts` 獨家管理 |
+| [VD-2] | 外部切片透過 `_queries.ts` 查詢語義索引；嚴禁直調 `_services.ts` |
+| [VD-4] | Firestore 向量索引欄位維度必須與嵌入模型一致（768 維） |
+| [OT-1] | 新分類法維度只能在 `_semantic-authority.ts` 定義 |
+| [OT-2] | Tag 路徑必須通過 `validateTaxonomyAssignment` 驗證 |
+| [T1] | 外部切片訂閱 `onTagEvent()`；嚴禁自行維護 Tag 資料 |
+
+## 公開 API 摘要
+
+| 類型 | 主要匯出 | 對應支柱 |
+|------|---------|---------|
+| Schema 型別（Firestore 集合） | `SkillDocument`、`EmployeeDocument`、`TaskDocument` | 全三支柱 |
+| Genkit 工具 | `searchSkillsTool`、`matchCandidatesTool`、`verifyComplianceTool` | 全三支柱 |
+| 分類法（本體論） | `TAXONOMY_DIMENSIONS`、`validateTaxonomyAssignment` | 支柱三 |
+| 語義索引（向量） | `indexEntity`、`querySemanticIndex`、`getIndexStats` | 支柱二 |
+| 知識圖譜型別 | `SemanticEdge`、`SemanticRelationType` | 支柱一 |
+| Tag 命令 | `upsertTagWithConflictCheck`、`assignSemanticTag`、`removeTag` | 三大支柱 |
+| Tag 事件匯流排 | `onTagEvent`、`publishTagEvent` | 生命週期 |
+| 成本語義分類 | `classifyCostItem`、`classifyParserLineItem` | D27 |
+| Tag 快照展示 | `getTagSnapshotPresentationMap` | 投影輸出 |
+
+## 絕對禁止項
+
+- **禁止私設標籤 [D21]**：嚴禁在業務切片中直接寫死語義分類；必須在 VS8 定義標準 Tag。
+- **禁止繞過 ACL [D24]**：禁止直接 import Firebase；必須透過 SK_PORTS 接口。
+- **禁止修改 TraceID [R8]**：語義推論鏈條必須完整保留 `traceId`，嚴禁覆蓋。
+- **禁止跨切片副作用 [B1]**：VS8 只輸出語義提示；嚴禁直接觸發其他切片副作用。
+- **禁止外部定義分類法維度 [OT-1]**：新維度只能在 `_semantic-authority.ts` 定義。
+- **禁止直接建立圖譜邊 [KG-1]**：圖譜邊只能透過 `_actions.ts` 寫入。
+- **禁止跳過合規驗證 [GT-2]**：AI 分派必須先執行 `verify_compliance`，不合規候選人直接排除。
+- **禁止使用未驗證術語 [GT-3]**：AI 必須先呼叫 `search_skills` 確認標準術語後再進行匹配。

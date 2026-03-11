@@ -1,6 +1,13 @@
-import type { ImplementsEventEnvelopeContract } from '@/shared-kernel';
+/**
+ * semantic-graph.slice — _bus.ts
+ *
+ * In-process event bus for tag lifecycle events.
+ * Consumers subscribe with onTagEvent(); producers call publishTagEvent().
+ *
+ * [T1] New slices MUST subscribe via onTagEvent() — do NOT maintain own tag data.
+ */
 
-import type { TagLifecycleEventPayloadMap, TagLifecycleEventKey } from './_events';
+import type { ImplementsEventEnvelopeContract, TagLifecycleEventPayloadMap, TagLifecycleEventKey } from '@/shared-kernel';
 
 type TagEventHandler<K extends TagLifecycleEventKey> = (
   payload: TagLifecycleEventPayloadMap[K]
@@ -42,12 +49,14 @@ export function publishTagEvent<K extends TagLifecycleEventKey>(
     try {
       const result = handler(payload);
       if (result && typeof result.catch === 'function') {
+        // Internal debug log — not user-facing; no i18n required.
         result.catch((err: unknown) =>
-          console.error('[centralized-tag] async handler error for', eventKey, err)
+          console.error('[semantic-graph/_bus] async handler error for', eventKey, err)
         );
       }
     } catch (err) {
-      console.error('[centralized-tag] sync handler error for', eventKey, err);
+      // Internal debug log — not user-facing; no i18n required.
+      console.error('[semantic-graph/_bus] sync handler error for', eventKey, err);
     }
   }
 }

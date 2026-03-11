@@ -1,21 +1,20 @@
-﻿/**
- * Module: semantic-graph.slice/proposal-stream ??[L8 VS8_WIKI] Proposal Stream
+/**
+ * Module: semantic-graph.slice/proposal-stream — Relationship Proposal Stream
  *
- * Asynchronous proposal review pipeline for tag relationship governance [D21-I~W].
+ * Asynchronous proposal review pipeline for Knowledge Graph edge governance (支柱一 🧠).
  *
  * Responsibilities:
  *   - Receive proposals from wiki-editor/.
  *   - Persist proposals as pending items in the proposal queue.
  *   - Drive the consensus-validation lifecycle (pending ??approved / rejected).
- *   - Approved proposals are forwarded to L5 BBB (centralized-guards/) before
- *     being committed to L2 (centralized-edges/).
+ *   - Approved proposals are committed to the Knowledge Graph edge store via _actions.ts [KG-1].
  *
- * @see docs/architecture/slices/semantic-graph.md ??L8 VS8_WIKI
+ * @see docs/architecture/03-Slices/VS8-SemanticBrain/architecture.md
  */
 
 import type { TagSlugRef } from '@/shared-kernel';
 
-import type { SemanticRelationType } from '../core/types';
+import type { SemanticRelationType } from '../_types';
 
 // ??? Types ????????????????????????????????????????????????????????????????????
 
@@ -63,12 +62,12 @@ export function enqueueProposal(
 
 /**
  * Approve a pending proposal.
- * The caller (L5 BBB guard) is responsible for committing the edge to L2.
+ * The caller is responsible for committing the approved edge via _actions.ts [KG-1].
  */
 export function approveProposal(proposalId: ProposalId): void {
   const p = _proposals.get(proposalId);
-  if (!p) throw new Error(`[VS8_WIKI] Unknown proposal: ${proposalId}`);
-  if (p.status !== 'pending') throw new Error(`[VS8_WIKI] Proposal ${proposalId} is not pending`);
+  if (!p) throw new Error(`[SIMA] Unknown proposal: ${proposalId}`);
+  if (p.status !== 'pending') throw new Error(`[SIMA] Proposal ${proposalId} is not pending`);
   p.status = 'approved';
   p.resolvedAt = new Date().toISOString();
 }
@@ -78,8 +77,8 @@ export function approveProposal(proposalId: ProposalId): void {
  */
 export function rejectProposal(proposalId: ProposalId, reason: string): void {
   const p = _proposals.get(proposalId);
-  if (!p) throw new Error(`[VS8_WIKI] Unknown proposal: ${proposalId}`);
-  if (p.status !== 'pending') throw new Error(`[VS8_WIKI] Proposal ${proposalId} is not pending`);
+  if (!p) throw new Error(`[SIMA] Unknown proposal: ${proposalId}`);
+  if (p.status !== 'pending') throw new Error(`[SIMA] Proposal ${proposalId} is not pending`);
   p.status = 'rejected';
   p.rejectionReason = reason;
   p.resolvedAt = new Date().toISOString();
