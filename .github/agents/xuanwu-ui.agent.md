@@ -5,12 +5,16 @@ tools: ['codebase', 'search', 'editFiles', 'runCommands', 'runTasks', 'shadcn/*'
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader delivery with the UI work complete.'
   - label: 'Hand off implementation-heavy changes'
     agent: xuanwu-implementer
+    prompt: 'Implement the non-UI changes identified during the UI work above.'
   - label: 'Request browser diagnostics'
     agent: xuanwu-test-expert
+    prompt: 'Run browser diagnostics and preflight tests to verify the UI changes above.'
   - label: 'Request quality review'
     agent: xuanwu-quality
+    prompt: 'Review the UI changes for correctness, accessibility, and maintainability.'
 ---
 
 # Role: xuanwu-ui

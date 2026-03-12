@@ -1,5 +1,7 @@
 # Copilot Instructions for Xuanwu
 
+> Every time a conversation ends using Serena, a forced update of the memory and index is required.
+
 Project-wide always-on instructions for GitHub Copilot Chat in this repository.
 
 ## Scope

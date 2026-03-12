@@ -26,30 +26,43 @@ handoffs:
     prompt: 'Start a DDD delivery cycle (Domain → Application → Infrastructure → Presentation).'
   - label: 'Refine scope and plan'
     agent: xuanwu-product
+    prompt: 'Refine the scope, requirements, and acceptance criteria for this task.'
   - label: 'Research codebase and docs'
     agent: xuanwu-research
+    prompt: 'Research the codebase, gather context, and synthesize implementation guidance for this task.'
   - label: 'Design architecture'
     agent: xuanwu-architect
+    prompt: 'Design the architecture for this change and provide implementation direction.'
   - label: 'Realign architecture docs'
     agent: xuanwu-architecture-chief
+    prompt: 'Realign and condense the architecture documentation against the canonical SSOT.'
   - label: 'Restructure architecture docs'
     agent: xuanwu-architecture-refactor
+    prompt: 'Restructure the architecture documentation for clarity and consistency.'
   - label: 'Refine architecture diagrams'
     agent: xuanwu-diagram-designer
+    prompt: 'Refine and standardize the architecture diagrams using Mermaid and the VS8 visual system.'
   - label: 'Read-only architecture analysis'
     agent: xuanwu-repo-browser
+    prompt: 'Analyze the architecture documentation and extract relevant structure for the current task.'
   - label: 'Implement changes'
     agent: xuanwu-implementer
+    prompt: 'Implement the changes as planned, following the Xuanwu architecture and coding conventions.'
   - label: 'Audit UI/UX'
     agent: xuanwu-ui
+    prompt: 'Audit and refine the UI/UX for mobile-first responsiveness, shadcn/ui consistency, and i18n safety.'
   - label: 'Run quality review'
     agent: xuanwu-quality
+    prompt: 'Review the changes for correctness, security, performance, and maintainability.'
   - label: 'Update documentation'
     agent: xuanwu-docs
+    prompt: 'Update the documentation to reflect the changes made.'
   - label: 'Handle CI/CD and infra'
     agent: xuanwu-ops
+    prompt: 'Handle the CI/CD and infrastructure changes needed for this task.'
   - label: 'Run browser diagnostics'
     agent: xuanwu-test-expert
+    prompt: 'Run browser diagnostics and preflight tests to verify the changes.'
 ---
 
 # Role: xuanwu-orchestrator

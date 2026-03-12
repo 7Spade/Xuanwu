@@ -2374,6 +2374,32 @@ export function usePortalState(): PortalState
 
 ```
 
+## File: src/features/semantic-graph.slice/_actions.ts
+```typescript
+import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
+import type { CommandResult } from '@/shared-kernel';
+import type { TaxonomyNode } from '@/shared-kernel';
+import { detectTemporalConflicts, validateTaxonomyAssignment } from './_aggregate';
+import { indexEntity, removeFromIndex } from './_services';
+import type {
+  TemporalTagAssignment,
+  SemanticIndexEntry,
+} from './_types';
+export async function upsertTagWithConflictCheck(
+  node: TaxonomyNode,
+  temporalAssignment: TemporalTagAssignment | null,
+  existingNodes: readonly TaxonomyNode[],
+  existingAssignments: readonly TemporalTagAssignment[]
+): Promise<CommandResult>
+export async function removeTag(tagSlug: string): Promise<CommandResult>
+export async function assignSemanticTag(
+  node: TaxonomyNode,
+  temporalAssignment: TemporalTagAssignment | null,
+  existingNodes: readonly TaxonomyNode[],
+  existingAssignments: readonly TemporalTagAssignment[]
+): Promise<CommandResult>
+```
+
 ## File: src/features/semantic-graph.slice/_aggregate.ts
 ```typescript
 import { tagSlugRef } from '@/shared-kernel';
@@ -2421,6 +2447,26 @@ function makeError(
 ): TaxonomyValidationError
 ```
 
+## File: src/features/semantic-graph.slice/_bus.ts
+```typescript
+import type { ImplementsEventEnvelopeContract, TagLifecycleEventPayloadMap, TagLifecycleEventKey } from '@/shared-kernel';
+type TagEventHandler<K extends TagLifecycleEventKey> = (
+  payload: TagLifecycleEventPayloadMap[K]
+) => void | Promise<void>;
+type TagEventHandlerMap = {
+  [K in TagLifecycleEventKey]?: Array<TagEventHandler<K>>;
+};
+⋮----
+export function onTagEvent<K extends TagLifecycleEventKey>(
+  eventKey: K,
+  handler: TagEventHandler<K>
+): () => void
+export function publishTagEvent<K extends TagLifecycleEventKey>(
+  eventKey: K,
+  payload: TagLifecycleEventPayloadMap[K]
+): void
+```
+
 ## File: src/features/semantic-graph.slice/_cost-classifier.ts
 ```typescript
 import { CostItemType } from '@/shared-kernel';
@@ -2463,6 +2509,11 @@ export function classifyParserLineItem(name: string): ParserLineItemClassificati
 export function shouldMaterializeAsTask(costItemType: CostItemType): boolean
 ```
 
+## File: src/features/semantic-graph.slice/_queries.ts
+```typescript
+import { querySemanticIndex, getIndexStats } from './_services';
+```
+
 ## File: src/features/semantic-graph.slice/_semantic-authority.ts
 ```typescript
 
@@ -2489,6 +2540,89 @@ function isValidSearchDomain(domain: string): domain is SearchDomain
 function computeRelevanceScore(entry: SemanticIndexEntry, terms: string[]): number
 ```
 
+## File: src/features/semantic-graph.slice/_types.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+export type SemanticRelationType = 'IS_A' | 'REQUIRES';
+export interface SemanticEdge {
+  readonly edgeId: string;
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly createdAt: string;
+}
+export type TagLifecycleState = 'Draft' | 'Active' | 'Stale' | 'Deprecated';
+export type TagLifecycleEventType =
+  | 'TAG_CREATED'
+  | 'TAG_ACTIVATED'
+  | 'TAG_DEPRECATED'
+  | 'TAG_STALE_FLAGGED'
+  | 'TAG_DELETED';
+export interface TagLifecycleEvent {
+  readonly eventId: string;
+  readonly tagSlug: TagSlugRef;
+  readonly eventType: TagLifecycleEventType;
+  readonly fromState: TagLifecycleState;
+  readonly toState: TagLifecycleState;
+  readonly transitionedAt: string;
+  readonly triggeredBy: string;
+  readonly aggregateVersion: number;
+}
+export interface StaleTagWarning {
+  readonly tagSlug: TagSlugRef;
+  readonly stalenessMs: number;
+  readonly detectedAt: string;
+}
+```
+
+## File: src/features/semantic-graph.slice/index.ts
+```typescript
+
+```
+
+## File: src/features/semantic-graph.slice/outbox/tag-outbox.ts
+```typescript
+import type { TagLifecycleEvent, SemanticEdge } from '../_types';
+export type OutboxEventKind =
+  | 'TAG_LIFECYCLE'
+  | 'TOPOLOGY_CHANGED'
+  | 'WEIGHT_UPDATED';
+export interface OutboxEntry {
+  readonly eventId: string;
+  readonly kind: OutboxEventKind;
+  readonly payload: TagLifecycleEvent | TopologyChangedPayload | WeightUpdatedPayload;
+  readonly enqueuedAt: string;
+  delivered: boolean;
+}
+export interface TopologyChangedPayload {
+  readonly edge: SemanticEdge;
+  readonly mutation: 'ADDED' | 'REMOVED';
+}
+export interface WeightUpdatedPayload {
+  readonly edgeId: string;
+  readonly previousWeight: number;
+  readonly newWeight: number;
+}
+⋮----
+function _nextId(): string
+export function emitTagLifecycleEvent(event: TagLifecycleEvent): void
+export function emitSemanticTopologyChanged(payload: TopologyChangedPayload): void
+export function emitNeuralWeightUpdated(payload: WeightUpdatedPayload): void
+export function drainPendingEntries(): OutboxEntry[]
+export function _clearOutboxForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/projections/context-selectors.ts
+```typescript
+
+```
+
+## File: src/features/semantic-graph.slice/projections/graph-selectors.ts
+```typescript
+
+```
+
 ## File: src/features/semantic-graph.slice/projections/tag-snapshot.slice.ts
 ```typescript
 import { getTagSnapshot } from '@/shared-infra/projection-bus';
@@ -2507,6 +2641,97 @@ export async function getTagSnapshotPresentation(tagSlug: string): Promise<TagSn
 export async function getTagSnapshotPresentationMap(
   tagSlugs: readonly string[],
 ): Promise<Record<string, TagSnapshotPresentation>>
+```
+
+## File: src/features/semantic-graph.slice/proposal-stream/index.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { SemanticRelationType } from '../_types';
+export type ProposalId = string & { readonly _brand: 'ProposalId' };
+export type ProposalStatus = 'pending' | 'approved' | 'rejected';
+export interface RelationshipProposal {
+  readonly proposalId: ProposalId;
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly proposedBy: string;
+  readonly proposedAt: string;
+  status: ProposalStatus;
+  rejectionReason?: string;
+  resolvedAt?: string;
+}
+⋮----
+function _newId(): ProposalId
+export function enqueueProposal(
+  proposal: Omit<RelationshipProposal, 'proposalId' | 'status'>,
+): ProposalId
+export function approveProposal(proposalId: ProposalId): void
+export function rejectProposal(proposalId: ProposalId, reason: string): void
+export function listPendingProposals(): readonly RelationshipProposal[]
+export function listAllProposals(): readonly RelationshipProposal[]
+export function _clearProposalsForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/subscribers/lifecycle-subscriber.ts
+```typescript
+import type { TagLifecycleEvent } from '../_types';
+import { emitTagLifecycleEvent } from '../outbox/tag-outbox';
+export type Unsubscribe = () => void;
+export type LifecycleEventSource = (handler: (event: TagLifecycleEvent) => void) => Unsubscribe;
+⋮----
+export function createLifecycleSubscriber(source: LifecycleEventSource): Unsubscribe
+export function onLifecycleEvent(handler: (event: TagLifecycleEvent) => void): Unsubscribe
+export function _clearHandlersForTest(): void
+```
+
+## File: src/features/semantic-graph.slice/wiki-editor/index.ts
+```typescript
+import type { TagSlugRef } from '@/shared-kernel';
+import type { SemanticRelationType } from '../_types';
+import {
+  type ProposalId,
+  type RelationshipProposal,
+  enqueueProposal,
+  listAllProposals,
+} from '../proposal-stream';
+export interface ProposalSubmission {
+  readonly fromTagSlug: TagSlugRef;
+  readonly toTagSlug: TagSlugRef;
+  readonly relationType: SemanticRelationType;
+  readonly weight: number;
+  readonly submittedBy: string;
+}
+function _validateSubmission(
+  submission: ProposalSubmission,
+  existing: readonly RelationshipProposal[],
+): void
+export function submitProposal(submission: ProposalSubmission): ProposalId
+export function getProposalHistory(tagSlug: TagSlugRef): readonly RelationshipProposal[]
+```
+
+## File: src/features/semantic-graph.slice/wiki-editor/relationship-visualizer.ts
+```typescript
+import type { SemanticRelationType } from '../_types';
+export interface VisNode {
+  readonly id: string;
+  readonly label: string;
+  readonly category: 'tag' | 'workspace-tag' | 'global-tag';
+}
+export interface VisEdge {
+  readonly source: string;
+  readonly target: string;
+  readonly relationType: SemanticRelationType;
+}
+export interface GraphSnapshot {
+  readonly nodes: readonly VisNode[];
+  readonly edges: readonly VisEdge[];
+  readonly generatedAt: string;
+}
+function _emptySnapshot(): GraphSnapshot
+export function buildFullGraphSnapshot(): GraphSnapshot
+export function buildIsAHierarchySnapshot(): GraphSnapshot
+export function buildRequiresDependencySnapshot(): GraphSnapshot
 ```
 
 ## File: src/features/skill-xp.slice/_actions.ts
@@ -4759,6 +4984,40 @@ import { AccountSwitcher } from "./account-switcher";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { NavWorkspaces } from "./nav-workspaces";
+```
+
+## File: src/features/workspace.slice/core/_components/shell/header.tsx
+```typescript
+import { Search, Command, BookOpen } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { GlobalSearch } from "@/features/global-search.slice";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
+import type { Account } from '@/shared-kernel'
+import { NotificationCenter } from "./notification-center";
+⋮----
+function usePageBreadcrumbs(pathname: string)
+⋮----
+const down = (e: KeyboardEvent) =>
+⋮----
+const handleSwitchOrganization = (organization: Account) =>
+⋮----
+aria-label=
 ```
 
 ## File: src/features/workspace.slice/core/_components/shell/index.ts
@@ -12835,263 +13094,4 @@ interface AuthTabsRootProps {
 }
 ⋮----
 handleRegister=
-```
-
-## File: src/features/semantic-graph.slice/_actions.ts
-```typescript
-import { commandSuccess, commandFailureFrom } from '@/shared-kernel';
-import type { CommandResult } from '@/shared-kernel';
-import type { TaxonomyNode } from '@/shared-kernel';
-import { detectTemporalConflicts, validateTaxonomyAssignment } from './_aggregate';
-import { indexEntity, removeFromIndex } from './_services';
-import type {
-  TemporalTagAssignment,
-  SemanticIndexEntry,
-} from './_types';
-export async function upsertTagWithConflictCheck(
-  node: TaxonomyNode,
-  temporalAssignment: TemporalTagAssignment | null,
-  existingNodes: readonly TaxonomyNode[],
-  existingAssignments: readonly TemporalTagAssignment[]
-): Promise<CommandResult>
-export async function removeTag(tagSlug: string): Promise<CommandResult>
-export async function assignSemanticTag(
-  node: TaxonomyNode,
-  temporalAssignment: TemporalTagAssignment | null,
-  existingNodes: readonly TaxonomyNode[],
-  existingAssignments: readonly TemporalTagAssignment[]
-): Promise<CommandResult>
-```
-
-## File: src/features/semantic-graph.slice/_bus.ts
-```typescript
-import type { ImplementsEventEnvelopeContract, TagLifecycleEventPayloadMap, TagLifecycleEventKey } from '@/shared-kernel';
-type TagEventHandler<K extends TagLifecycleEventKey> = (
-  payload: TagLifecycleEventPayloadMap[K]
-) => void | Promise<void>;
-type TagEventHandlerMap = {
-  [K in TagLifecycleEventKey]?: Array<TagEventHandler<K>>;
-};
-⋮----
-export function onTagEvent<K extends TagLifecycleEventKey>(
-  eventKey: K,
-  handler: TagEventHandler<K>
-): () => void
-export function publishTagEvent<K extends TagLifecycleEventKey>(
-  eventKey: K,
-  payload: TagLifecycleEventPayloadMap[K]
-): void
-```
-
-## File: src/features/semantic-graph.slice/_queries.ts
-```typescript
-import { querySemanticIndex, getIndexStats } from './_services';
-```
-
-## File: src/features/semantic-graph.slice/index.ts
-```typescript
-
-```
-
-## File: src/features/semantic-graph.slice/projections/context-selectors.ts
-```typescript
-
-```
-
-## File: src/features/semantic-graph.slice/projections/graph-selectors.ts
-```typescript
-
-```
-
-## File: src/features/workspace.slice/core/_components/shell/header.tsx
-```typescript
-import { Search, Command, BookOpen } from "lucide-react";
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useI18n } from '@/app-runtime/providers/i18n-provider';
-import { GlobalSearch } from "@/features/global-search.slice";
-import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
-import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
-import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/shadcn-ui/breadcrumb";
-import { Button } from "@/shadcn-ui/button";
-import { Separator } from "@/shadcn-ui/separator";
-import { SidebarTrigger } from "@/shadcn-ui/sidebar";
-import type { Account } from '@/shared-kernel'
-import { NotificationCenter } from "./notification-center";
-⋮----
-function usePageBreadcrumbs(pathname: string)
-⋮----
-const down = (e: KeyboardEvent) =>
-⋮----
-const handleSwitchOrganization = (organization: Account) =>
-⋮----
-aria-label=
-```
-
-## File: src/features/semantic-graph.slice/_types.ts
-```typescript
-import type { TagSlugRef } from '@/shared-kernel';
-export type SemanticRelationType = 'IS_A' | 'REQUIRES';
-export interface SemanticEdge {
-  readonly edgeId: string;
-  readonly fromTagSlug: TagSlugRef;
-  readonly toTagSlug: TagSlugRef;
-  readonly relationType: SemanticRelationType;
-  readonly weight: number;
-  readonly createdAt: string;
-}
-export type TagLifecycleState = 'Draft' | 'Active' | 'Stale' | 'Deprecated';
-export type TagLifecycleEventType =
-  | 'TAG_CREATED'
-  | 'TAG_ACTIVATED'
-  | 'TAG_DEPRECATED'
-  | 'TAG_STALE_FLAGGED'
-  | 'TAG_DELETED';
-export interface TagLifecycleEvent {
-  readonly eventId: string;
-  readonly tagSlug: TagSlugRef;
-  readonly eventType: TagLifecycleEventType;
-  readonly fromState: TagLifecycleState;
-  readonly toState: TagLifecycleState;
-  readonly transitionedAt: string;
-  readonly triggeredBy: string;
-  readonly aggregateVersion: number;
-}
-export interface StaleTagWarning {
-  readonly tagSlug: TagSlugRef;
-  readonly stalenessMs: number;
-  readonly detectedAt: string;
-}
-```
-
-## File: src/features/semantic-graph.slice/outbox/tag-outbox.ts
-```typescript
-import type { TagLifecycleEvent, SemanticEdge } from '../_types';
-export type OutboxEventKind =
-  | 'TAG_LIFECYCLE'
-  | 'TOPOLOGY_CHANGED'
-  | 'WEIGHT_UPDATED';
-export interface OutboxEntry {
-  readonly eventId: string;
-  readonly kind: OutboxEventKind;
-  readonly payload: TagLifecycleEvent | TopologyChangedPayload | WeightUpdatedPayload;
-  readonly enqueuedAt: string;
-  delivered: boolean;
-}
-export interface TopologyChangedPayload {
-  readonly edge: SemanticEdge;
-  readonly mutation: 'ADDED' | 'REMOVED';
-}
-export interface WeightUpdatedPayload {
-  readonly edgeId: string;
-  readonly previousWeight: number;
-  readonly newWeight: number;
-}
-⋮----
-function _nextId(): string
-export function emitTagLifecycleEvent(event: TagLifecycleEvent): void
-export function emitSemanticTopologyChanged(payload: TopologyChangedPayload): void
-export function emitNeuralWeightUpdated(payload: WeightUpdatedPayload): void
-export function drainPendingEntries(): OutboxEntry[]
-export function _clearOutboxForTest(): void
-```
-
-## File: src/features/semantic-graph.slice/subscribers/lifecycle-subscriber.ts
-```typescript
-import type { TagLifecycleEvent } from '../_types';
-import { emitTagLifecycleEvent } from '../outbox/tag-outbox';
-export type Unsubscribe = () => void;
-export type LifecycleEventSource = (handler: (event: TagLifecycleEvent) => void) => Unsubscribe;
-⋮----
-export function createLifecycleSubscriber(source: LifecycleEventSource): Unsubscribe
-export function onLifecycleEvent(handler: (event: TagLifecycleEvent) => void): Unsubscribe
-export function _clearHandlersForTest(): void
-```
-
-## File: src/features/semantic-graph.slice/wiki-editor/index.ts
-```typescript
-import type { TagSlugRef } from '@/shared-kernel';
-import type { SemanticRelationType } from '../_types';
-import {
-  type ProposalId,
-  type RelationshipProposal,
-  enqueueProposal,
-  listAllProposals,
-} from '../proposal-stream';
-export interface ProposalSubmission {
-  readonly fromTagSlug: TagSlugRef;
-  readonly toTagSlug: TagSlugRef;
-  readonly relationType: SemanticRelationType;
-  readonly weight: number;
-  readonly submittedBy: string;
-}
-function _validateSubmission(
-  submission: ProposalSubmission,
-  existing: readonly RelationshipProposal[],
-): void
-export function submitProposal(submission: ProposalSubmission): ProposalId
-export function getProposalHistory(tagSlug: TagSlugRef): readonly RelationshipProposal[]
-```
-
-## File: src/features/semantic-graph.slice/wiki-editor/relationship-visualizer.ts
-```typescript
-import type { SemanticRelationType } from '../_types';
-export interface VisNode {
-  readonly id: string;
-  readonly label: string;
-  readonly category: 'tag' | 'workspace-tag' | 'global-tag';
-}
-export interface VisEdge {
-  readonly source: string;
-  readonly target: string;
-  readonly relationType: SemanticRelationType;
-}
-export interface GraphSnapshot {
-  readonly nodes: readonly VisNode[];
-  readonly edges: readonly VisEdge[];
-  readonly generatedAt: string;
-}
-function _emptySnapshot(): GraphSnapshot
-export function buildFullGraphSnapshot(): GraphSnapshot
-export function buildIsAHierarchySnapshot(): GraphSnapshot
-export function buildRequiresDependencySnapshot(): GraphSnapshot
-```
-
-## File: src/features/semantic-graph.slice/proposal-stream/index.ts
-```typescript
-import type { TagSlugRef } from '@/shared-kernel';
-import type { SemanticRelationType } from '../_types';
-export type ProposalId = string & { readonly _brand: 'ProposalId' };
-export type ProposalStatus = 'pending' | 'approved' | 'rejected';
-export interface RelationshipProposal {
-  readonly proposalId: ProposalId;
-  readonly fromTagSlug: TagSlugRef;
-  readonly toTagSlug: TagSlugRef;
-  readonly relationType: SemanticRelationType;
-  readonly weight: number;
-  readonly proposedBy: string;
-  readonly proposedAt: string;
-  status: ProposalStatus;
-  rejectionReason?: string;
-  resolvedAt?: string;
-}
-⋮----
-function _newId(): ProposalId
-export function enqueueProposal(
-  proposal: Omit<RelationshipProposal, 'proposalId' | 'status'>,
-): ProposalId
-export function approveProposal(proposalId: ProposalId): void
-export function rejectProposal(proposalId: ProposalId, reason: string): void
-export function listPendingProposals(): readonly RelationshipProposal[]
-export function listAllProposals(): readonly RelationshipProposal[]
-export function _clearProposalsForTest(): void
 ```
