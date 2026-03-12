@@ -58,6 +58,19 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/xuanwu-architecture-realign` | `.github/prompts/xuanwu-architecture-realign.prompt.md` |
 | `/xuanwu-ssot-sync` | `.github/prompts/xuanwu-ssot-sync.prompt.md` |
 
+### DDD Prompt Commands（4-Layer DDD）
+
+Use the following prompts to drive DDD architecture work (Presentation → Application → Domain → Infrastructure).
+The `ddd-orchestrator` agent coordinates the full DDD delivery cycle.
+
+| Command | What it does | Agent |
+| --- | --- | --- |
+| `/ddd-domain-model` | Design Entities, VOs, Aggregates, Domain Services | `ddd-domain-modeler` |
+| `/ddd-application-service` | Design Use Cases, Command/Query Handlers | `ddd-application-layer` |
+| `/ddd-infrastructure-adapter` | Implement Repository, Outbox, EventBus adapters | `ddd-infrastructure` |
+| `/ddd-layer-audit` | Audit layer compliance and D24 Firebase violations | `ddd-orchestrator` |
+| `/ddd-slice-scaffold` | Scaffold a complete DDD slice (all 4 layers) | `ddd-orchestrator` |
+
 ## i18n Requirement
 
 Do not hardcode UI text in components/pages.
@@ -67,6 +80,6 @@ When UI text changes, update both locale files with identical keys:
 
 ## Architecture Sources
 
-- `docs/architecture/00-logic-overview.md`
+- `docs/architecture/README.md`
 - `.memory/knowledge-graph.json`
 - `.github/skills/xuanwu-skill/SKILL.md`
