@@ -3,7 +3,7 @@
  *
  * [L0] External Triggers ??ResilienceGuard [S5]
  *
- * Per logic-overview_v1.md L0 · External Triggers:
+ * Per docs/architecture/README.md · External Triggers (runtime pipeline L0):
  *   EXT_CLIENT  ??Next.js _actions.ts ??rate-limit ??circuit-break ??CBG_ENTRY
  *   EXT_WEBHOOK ??Webhook / Edge Fn  ??rate-limit ??circuit-break ??(handler)
  *   EXT_AUTH    ??Firebase Auth      ??AUTH_ID    ??ID_LINK      ??CTX_MGR

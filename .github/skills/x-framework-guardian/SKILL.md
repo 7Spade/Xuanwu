@@ -4,7 +4,8 @@ description: >
   Xuanwu 架構守護者三位一體掃描工作流。Use this skill when you need to run an
   architecture compliance audit, check for cross-slice boundary violations,
   generate migration git mv commands, bootstrap a new feature slice, or
-  validate a feature's logic chain against the L0→L5 canonical flow.
+  validate a feature's runtime data-flow against the pipeline sequence
+  (External Trigger → CBG → Domain Slice → IER → Projection Bus).
   Trigger keywords: architecture audit, drift report, boundary audit,
   migration audit, new slice, logic chain, compliance status, 架構審計,
   邊界巡邏, 清理舊債, 建立切片, 邏輯鏈驗證.
@@ -19,8 +20,8 @@ description: >
 
 | 文件 | 職責 |
 |------|------|
-| [`docs/architecture/README.md`](../../../docs/architecture/README.md) | 命名規範、目錄結構、公開合約、Bootstrap 範本 |
-| [`docs/architecture/README.md`](../../../docs/architecture/README.md) | 架構文件資料夾導覽（三條主鏈、CQRS 隔離、層位依賴、合規規則集） |
+| [`src/features/README.md`](../../../src/features/README.md) | Feature Slice 命名規範、目錄結構、依賴規則、Bootstrap 範本 |
+| [`docs/architecture/README.md`](../../../docs/architecture/README.md) | 架構文件導覽（L1→L9 設計層、CQRS 隔離、邊界驗證順序、合規規則集） |
 
 文件未定義的結構，一律視為合規。
 
@@ -31,7 +32,7 @@ description: >
 - 執行架構合規審計（全量 or 專項）
 - 檢查跨切片邊界違規（cross-slice private import）
 - 列出舊版命名殘留並生成 `git mv` 修正指令
-- 驗證某 Slice 的邏輯流向是否符合 L0→L3→L4→L5
+- 驗證某 Slice 的運行時流向是否符合管線順序（L0 External Trigger → CBG → L3 Domain Slice → L4 IER → L5 Projection Bus）
 - 為新功能 Bootstrap 正確的 Slice 目錄結構
 
 ---
@@ -43,10 +44,10 @@ description: >
 將下方提示貼入對話框，讓 Agent 載入法律條文：
 
 ```text
-請讀取並索引專案中的 docs/architecture/README.md 與
+請讀取並索引專案中的 src/features/README.md 與
 docs/architecture/README.md。從現在起，你扮演 Xuanwu 架構守護者。
 你的所有判斷標準「僅限於」這兩份文件。若代碼違反規範，請指出具體條款
-（如 §3.1 或 L3 層位）；若文件未定義，則視為合規。
+（如 Slice Autonomy Rules 或 L3 層位）；若文件未定義，則視為合規。
 請確認你已準備好執行「三位一體」掃描。
 ```
 
@@ -57,7 +58,7 @@ docs/architecture/README.md。從現在起，你扮演 Xuanwu 架構守護者。
 #### 全量對準（Full Alignment）
 
 ```text
-Run Audit. Compare the current codebase with docs/architecture/README.md
+Run Audit. Compare the current codebase with src/features/README.md
 and docs/architecture/README.md. Please provide the Drift Report and Compliance Status.
 ```
 
@@ -71,16 +72,16 @@ and docs/architecture/README.md. Please provide the Drift Report and Compliance 
 請列出違規行號與重構建議。
 ```
 
-> 對照條款：`docs/architecture/README.md` §4.1
+> 對照條款：`src/features/README.md` — Slice Autonomy Rules
 
 #### 清理舊債（Migration Audit）
 
 ```text
-根據 docs/architecture/README.md §7 的遷移規則，列出所有舊版命名的檔案
+根據 src/features/README.md 的 Intra-Slice Directory Convention，列出所有舊版命名的檔案
 （如 *.actions.ts 或 business.* 目錄），並直接生成 git mv 修正指令。
 ```
 
-> 對照條款：`docs/architecture/README.md` §7.1 + §7.2
+> 對照條款：`src/features/README.md` — Intra-Slice Directory Convention
 
 ---
 
@@ -89,21 +90,21 @@ and docs/architecture/README.md. Please provide the Drift Report and Compliance 
 #### 建立新 Slice
 
 ```text
-依照 §8 的 Bootstrap Template，為我生成一個名為 {feature-name} 的新切片（Slice）
+依照 src/features/README.md 的 Intra-Slice Directory Convention，為我生成一個名為 {feature-name} 的新切片（Slice）
 目錄結構。確保包含 index.ts 以及私有的 _ 開頭檔案。
 ```
 
-> 對照條款：`docs/architecture/README.md` §8
+> 對照條款：`src/features/README.md` — Intra-Slice Directory Convention
 
 #### 邏輯鏈驗證
 
 ```text
 追蹤 src/features/{feature}.slice 的邏輯流向。
-它是否嚴格遵守 docs/architecture/README.md 定義的 L0 -> L3 -> L4 -> L5 流程？
+它是否嚴格遵守運行時管線順序：L0(External Trigger) → CBG → L3(Domain Slice) → L4(IER) → L5(Projection Bus)？
 特別檢查是否有 Command 流程直接回傳大量 Query Data 的違規。
 ```
 
-> 對照條款：`docs/architecture/README.md` § 合規規則集 FC-001
+> 對照條款：`docs/architecture/README.md` — 合規規則集（CQRS 隔離、FC-001 禁止 Command 回傳 Query Data）
 
 ---
 
@@ -145,7 +146,7 @@ and docs/architecture/README.md. Please provide the Drift Report and Compliance 
 ## 關聯資源
 
 - Agent 定義（已整併至專案專屬 agent 套件）：[`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
-- 命名規範 SSOT：[`docs/architecture/README.md`](../../../docs/architecture/README.md)
-- 流向規範 SSOT：[`docs/architecture/README.md`](../../../docs/architecture/README.md)
+- Slice 結構規範 SSOT：[`src/features/README.md`](../../../src/features/README.md)
+- 架構文件導覽 SSOT：[`docs/architecture/README.md`](../../../docs/architecture/README.md)
 - 路徑完整性檢查能力：已整合於 [`.github/agents/xuanwu-architect.agent.md`](../../agents/xuanwu-architect.agent.md)
 - 架構文件索引：[`.github/skills/xuanwu-docs-index/SKILL.md`](../xuanwu-docs-index/SKILL.md)

@@ -1,6 +1,8 @@
-# Shared Kernel（L1 · VS0）
+# Shared Kernel（VS0 · 運行時管線 L1）
 
-此層為全域契約中心，對齊 `docs/architecture/README.md` 的 L1（Shared Kernel）定義。
+此層為全域契約中心（VS0），對應**運行時管線 L1**（Shared Kernel）。
+注意：此 L1 為運行時管線的層位編號（L0 External Triggers → **L1 Shared Kernel** → L2 CBG → L3 Domain Slices…），
+與 `docs/architecture/README.md` 的 L1→L9 文件層級（L1 = Platform Use Cases）為**不同編號空間**。
 
 ## 目錄結構
 

@@ -13,6 +13,7 @@
       "entityType": "System_Layer",
       "observations": [
         "Layer pipeline: L0 External Triggers → L1 Shared Kernel → L2 Command Gateway → L3 Domain Slices → L4 IER → L5 Projection Bus → L6 Query Gateway → L7 Firebase ACL → L8 Firebase Infra → L9 Observability.",
+    "Note: This L0-L9 runtime-pipeline numbering is distinct from the L1-L9 documentation hierarchy in docs/architecture/README.md (where L1=Platform Use Cases, L2=Workspace Use Cases, …, L9=Infrastructure Spec). Do not conflate the two numbering spaces.",
         "L6 Query Gateway schedule routes use single-shape contracts: SCHEDULE_CALENDAR_DAY, SCHEDULE_CALENDAR_ALL, SCHEDULE_TIMELINE_MEMBER, SCHEDULE_TIMELINE_ALL (replacing ambiguous mixed-shape routes).",
         "Infrastructure note: L5 ProjectionBus and L9 Observability are infrastructure layers (no VS designation).",
         "Runtime stack snapshot: Next.js 15 App Router + React 19 + TypeScript 5 + Tailwind CSS 3 + Firebase SDK; dev server runs with Turbopack.",

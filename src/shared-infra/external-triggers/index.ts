@@ -3,7 +3,7 @@
  *
  * [L0] External Triggers — 外部觸發入口應用層模組 [S5]
  *
- * Per logic-overview_v1.md L0 · External Triggers:
+ * Per docs/architecture/README.md · External Triggers (runtime pipeline L0):
  *   所有命令寫入路徑在到達 CBG_ENTRY 前，必須通過：
  *     rate-limiter → circuit-breaker → bulkhead
  *
