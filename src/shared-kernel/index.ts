@@ -283,3 +283,11 @@ export type {
 export type { WorkspaceIssue, IssueComment } from './types/workspace-issue';
 export type { WorkspaceRole, WorkspaceGrant } from './types/workspace-role';
 export type { WorkspaceTask, TaskWithChildren } from './types/workspace-task';
+
+// ─── Value Objects (DDD) ───────────────────────────────────────────────────────
+export { WorkspaceId, WORKSPACE_ID_ERRORS } from './value-objects/workspace-id';
+export type { WorkspaceIdError } from './value-objects/workspace-id';
+export { TaskId, TASK_ID_ERRORS } from './value-objects/task-id';
+export type { TaskIdError } from './value-objects/task-id';
+export { Money, MONEY_ERRORS } from './value-objects/money';
+export type { CurrencyCode, MoneyError } from './value-objects/money';
