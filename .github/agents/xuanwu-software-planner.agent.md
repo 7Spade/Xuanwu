@@ -6,8 +6,10 @@ tools: ['search', 'fetch', 'codebase', 'usages', 'software-planning/*', 'sequent
 handoffs:
   - label: 'Start Implementation'
     agent: xuanwu-implementer
+    prompt: 'Implement the plan outlined above, following the Xuanwu architecture and coding conventions.'
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the implementation plan complete.'
 ---
 
 # Role

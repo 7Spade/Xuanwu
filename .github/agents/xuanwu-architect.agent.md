@@ -5,10 +5,13 @@ tools: ['codebase', 'search', 'editFiles', 'next-devtools/*', 'filesystem/*', 'r
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the delivery with the architecture direction defined above.'
   - label: 'Start implementation'
     agent: xuanwu-implementer
+    prompt: 'Implement the changes following the architecture direction defined above.'
   - label: 'Request quality review'
     agent: xuanwu-quality
+    prompt: 'Review the architectural changes for boundary compliance and correctness.'
 ---
 
 # Role: xuanwu-architect

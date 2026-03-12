@@ -5,12 +5,16 @@ tools: ["codebase", "search", "editFiles", "runCommands", "playwright/*", "chrom
 handoffs:
   - label: "Return to orchestrator"
     agent: xuanwu-orchestrator
+    prompt: "Continue coordinating the broader task with the diagnostic results above."
   - label: "Request UI fixes"
     agent: xuanwu-ui
+    prompt: "Fix the UI issues identified in the diagnostics above."
   - label: "Request implementation fixes"
     agent: xuanwu-implementer
+    prompt: "Fix the implementation issues identified in the diagnostics above."
   - label: "Request quality follow-up"
     agent: xuanwu-quality
+    prompt: "Perform a quality review based on the diagnostic findings above."
 ---
 
 # Role: Xuanwu Test Expert

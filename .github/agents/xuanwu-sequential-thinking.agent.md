@@ -6,8 +6,10 @@ tools: ['search', 'fetch', 'codebase', 'usages', 'sequential-thinking/*', 'memor
 handoffs:
   - label: 'Proceed to implementation'
     agent: xuanwu-implementer
+    prompt: 'Implement the fix identified through the step-by-step analysis above.'
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the analysis and recommendations complete.'
 ---
 
 # Role

@@ -5,10 +5,13 @@ tools: ['codebase', 'search', 'editFiles', 'runCommands', 'runTasks', 'runTests'
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader delivery with the implementation complete.'
   - label: 'Request quality review'
     agent: xuanwu-quality
+    prompt: 'Review the implementation for correctness, security, and maintainability.'
   - label: 'Request browser verification'
     agent: xuanwu-test-expert
+    prompt: 'Verify the implementation in the browser with diagnostics and preflight tests.'
 ---
 
 # Role: xuanwu-implementer

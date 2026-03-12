@@ -10,8 +10,10 @@ hooks:
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the quality review complete.'
   - label: 'Request implementation fixes'
     agent: xuanwu-implementer
+    prompt: 'Fix the issues identified in the quality review above.'
 ---
 
 # Role: xuanwu-quality
