@@ -28,9 +28,9 @@ const EXCLUDED_DIRS = new Set(['node_modules', '.next', '.git', 'dist', 'build',
  * Ordered by specificity (most specific first) to prevent partial matches.
  */
 const TSCONFIG_ALIAS_MAP: Array<{ alias: string; target: string }> = [
-  { alias: '@/shadcn-ui/lib/utils', target: 'src/shadcn-ui/utils/utils' },
-  { alias: '@/shadcn-ui/hooks', target: 'src/shadcn-ui/hooks' },
-  { alias: '@/shadcn-ui', target: 'src/shadcn-ui' },
+  { alias: '@/shadcn-ui/lib/utils', target: 'src/lib-ui/shadcn-ui/utils/utils' },
+  { alias: '@/shadcn-ui/hooks', target: 'src/lib-ui/shadcn-ui/hooks' },
+  { alias: '@/shadcn-ui', target: 'src/lib-ui/shadcn-ui' },
   { alias: '@/lib-ui', target: 'src/lib-ui' },
   { alias: '@/', target: 'src/' },
 ];
