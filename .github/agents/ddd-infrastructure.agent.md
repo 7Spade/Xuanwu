@@ -2,7 +2,6 @@
 name: 'ddd-infrastructure'
 description: 'Design and implement Infrastructure layer adapters for progressive DDD migration: repositories, outbox writers, event buses, storage, and other concrete I/O behind ports.'
 tools: ['codebase', 'search', 'editFiles', 'filesystem/*', 'serena/*', 'memory/*']
-user-invocable: false
 handoffs:
   - label: 'Return to DDD orchestrator'
     agent: ddd-orchestrator

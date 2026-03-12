@@ -2,7 +2,6 @@
 name: 'ddd-application-layer'
 description: 'Design and implement the Application layer for progressive DDD migration: use cases, actions, queries, and port-oriented orchestration.'
 tools: ['codebase', 'search', 'editFiles', 'filesystem/*', 'serena/*', 'memory/*']
-user-invocable: false
 handoffs:
   - label: 'Implement infrastructure adapters'
     agent: ddd-infrastructure
