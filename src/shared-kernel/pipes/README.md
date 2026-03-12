@@ -93,4 +93,4 @@ export function isoToMillis(iso: string): number {
 ---
 
 > **架構對齊**：`src/shared-kernel/pipes/` = VS0-Kernel 純粹資料轉換管道（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（Allowed in L1 → 共享純函式邏輯：跨切片通用轉換）。
+> 規則依據：`docs/architecture/README.md`（Allowed in L1 → 共享純函式邏輯：跨切片通用轉換）。

@@ -86,4 +86,4 @@ export type AddressInput = z.infer<typeof addressSchema>;
 ---
 
 > **架構對齊**：`src/shared-kernel/schemas/` = VS0-Kernel 跨切片資料驗證契約（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`；Feature Slice 架構規則 § Validation and Types。
+> 規則依據：`docs/architecture/README.md`；Feature Slice 架構規則 § Validation and Types。

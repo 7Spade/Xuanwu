@@ -89,4 +89,4 @@ export type TagTaxonomyDimension = typeof TAG_TAXONOMY_DIMENSIONS[number];
 
 > **架構對齊**：`src/shared-kernel/ontologys/` = VS0-Kernel 領域本體層（L1）。  
 > 語義治理權威：VS8 SemanticBrain（`src/features/semantic-graph.slice`）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（D21：新 Tag 類別定義在 VS8；此層放可跨切片引用的概念契約）。
+> 規則依據：`docs/architecture/README.md`（D21：新 Tag 類別定義在 VS8；此層放可跨切片引用的概念契約）。

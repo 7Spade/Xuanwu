@@ -86,4 +86,4 @@ export function createDateRange(startISO: string, endISO: string): DateRange {
 ---
 
 > **架構對齊**：`src/shared-kernel/value-objects/` = VS0-Kernel 值物件層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（L1 純函式/契約、禁止副作用）。
+> 規則依據：`docs/architecture/README.md`（L1 純函式/契約、禁止副作用）。

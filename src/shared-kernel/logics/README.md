@@ -83,4 +83,4 @@ export function getTierFromXp(xp: number): SkillTier { ... }
 ---
 
 > **架構對齊**：`src/shared-kernel/logics/` = VS0-Kernel 共享純函式層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（Allowed in L1 / VS0 → 共享純函式邏輯）。
+> 規則依據：`docs/architecture/README.md`（Allowed in L1 / VS0 → 共享純函式邏輯）。

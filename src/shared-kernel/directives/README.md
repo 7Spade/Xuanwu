@@ -106,4 +106,4 @@ export function buildIdempotencyKey(aggId: string, eventId: string, version: num
 ---
 
 > **架構對齊**：`src/shared-kernel/directives/` = VS0-Kernel 橫切行為指令層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（D30 hopCount 守衛、R8 traceId 整鏈共享、S1 Idempotency）。
+> 規則依據：`docs/architecture/README.md`（D30 hopCount 守衛、R8 traceId 整鏈共享、S1 Idempotency）。

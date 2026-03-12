@@ -95,4 +95,4 @@ export function canTransitionWorkflow(
 ---
 
 > **架構對齊**：`src/shared-kernel/state-machines/` = VS0-Kernel 狀態轉移規格層（L1）。  
-> 規則依據：`docs/architecture/00-logic-overview.md`（L1 僅允許純契約/純函式，禁止副作用）。
+> 規則依據：`docs/architecture/README.md`（L1 僅允許純契約/純函式，禁止副作用）。

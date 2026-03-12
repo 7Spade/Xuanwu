@@ -144,7 +144,7 @@ IF 發現同一常數/型別在多切片重複宣告
 THEN 收斂至 Shared Kernel 並由 index.ts 單一匯出
 
 IF 新增 Shared Kernel 公開 API
-THEN 必須同步更新 docs/architecture/00-logic-overview.md 與本檔
+THEN 必須同步更新 docs/architecture/README.md 與本檔
 ```
 
 ## 相容遷移（Legacy → Canonical）
