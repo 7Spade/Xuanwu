@@ -5,8 +5,10 @@ tools: ['codebase', 'search', 'filesystem/*', 'repomix/*', 'serena/*', 'memory/*
 handoffs:
   - label: 'Hand off to architecture chief'
     agent: xuanwu-architecture-chief
+    prompt: 'Refine and realign the architecture documentation based on the analysis above.'
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the architecture analysis complete.'
 ---
 
 # Role: xuanwu-repo-browser

@@ -23,36 +23,52 @@ agents:
 handoffs:
   - label: 'Full delivery (multi-function)'
     agent: xuanwu-orchestrator
+    prompt: 'Route and coordinate the cross-functional task described above.'
   - label: 'Refine requirements / plan'
     agent: xuanwu-product
+    prompt: 'Refine the requirements and build an implementation plan for the task above.'
   - label: 'Research codebase or docs'
     agent: xuanwu-research
+    prompt: 'Research the codebase and gather context for the task above.'
   - label: 'Design or audit architecture'
     agent: xuanwu-architect
+    prompt: 'Design or audit the architecture for the task above.'
   - label: 'Architecture doc realignment'
     agent: xuanwu-architecture-chief
+    prompt: 'Realign the architecture documentation against the canonical SSOT.'
   - label: 'Refactor architecture docs'
     agent: xuanwu-architecture-refactor
+    prompt: 'Restructure the architecture documentation for clarity and consistency.'
   - label: 'Refine architecture diagrams'
     agent: xuanwu-diagram-designer
+    prompt: 'Refine the architecture diagrams using Mermaid and the VS8 visual system.'
   - label: 'Read-only architecture analysis'
     agent: xuanwu-repo-browser
+    prompt: 'Analyze the architecture documentation for the task above without making changes.'
   - label: 'Implement or refactor code'
     agent: xuanwu-implementer
+    prompt: 'Implement or refactor the code as described above.'
   - label: 'UI design or audit'
     agent: xuanwu-ui
+    prompt: 'Design or audit the UI following the task context above.'
   - label: 'Quality review or lint'
     agent: xuanwu-quality
+    prompt: 'Review the code for correctness, security, and maintainability.'
   - label: 'Update documentation'
     agent: xuanwu-docs
+    prompt: 'Update the documentation for the changes described above.'
   - label: 'CI/CD or infra operations'
     agent: xuanwu-ops
+    prompt: 'Handle the CI/CD and infrastructure operations for the task above.'
   - label: 'Browser diagnostics or preflight'
     agent: xuanwu-test-expert
+    prompt: 'Run browser diagnostics and preflight tests for the task above.'
   - label: 'Generate software plan'
     agent: xuanwu-software-planner
+    prompt: 'Generate an implementation plan for the task described above.'
   - label: 'Step-by-step reasoning or debug'
     agent: xuanwu-sequential-thinking
+    prompt: 'Analyze and debug the problem described above using step-by-step reasoning.'
 ---
 
 # Role: xuanwu-commander
@@ -94,6 +110,7 @@ The following slash-command prompts are available for direct invocation:
 | `/xuanwu-research` | Codebase discovery and reference synthesis |
 | `/xuanwu-architect` | Architecture audit or design |
 | `/xuanwu-architecture-realign` | Architecture doc realignment via xuanwu-architecture-chief |
+| `/xuanwu-ssot-sync` | Sync architecture docs with Semantic Kernel SSOT |
 | `/xuanwu-implementer` | Code implementation and refactor |
 | `/xuanwu-ui` | UI audit, shadcn/ui, i18n, responsive design |
 | `/xuanwu-code-review` | Quality and security review |
@@ -103,6 +120,12 @@ The following slash-command prompts are available for direct invocation:
 | `/xuanwu-planning` | Quick implementation plan |
 | `/xuanwu-refactor` | Code refactor guidance |
 | `/xuanwu-debug` | Debugging and root-cause analysis |
+| `/ddd-domain-model` | Design or implement DDD Domain Layer |
+| `/ddd-application-service` | Design or implement DDD Application Layer |
+| `/ddd-infrastructure-adapter` | Design or implement DDD Infrastructure adapters |
+| `/ddd-layer-audit` | Audit DDD layer boundary compliance |
+| `/ddd-slice-scaffold` | Scaffold a full DDD-structured feature slice |
+| `/ddd-progressive-layering` | Progressively migrate a slice toward DDD layers |
 
 ## Output format
 

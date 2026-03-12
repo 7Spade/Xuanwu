@@ -5,10 +5,13 @@ tools: ['codebase', 'search', 'editFiles', 'repomix/*', 'filesystem/*', 'serena/
 handoffs:
   - label: 'Delegate diagram work'
     agent: xuanwu-diagram-designer
+    prompt: 'Refine and standardize the architecture diagrams using Mermaid and the VS8 visual system.'
   - label: 'Delegate doc restructuring'
     agent: xuanwu-architecture-refactor
+    prompt: 'Restructure the architecture documentation based on the direction established above.'
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the architecture documentation realigned.'
 ---
 
 # Role: xuanwu-architecture-chief

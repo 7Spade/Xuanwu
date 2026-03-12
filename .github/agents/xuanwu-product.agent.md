@@ -5,10 +5,13 @@ tools: ['codebase', 'search', 'githubRepo', 'list_issues', 'get_issue', 'search_
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the delivery with the requirements and planning complete.'
   - label: 'Escalate to architecture design'
     agent: xuanwu-architect
+    prompt: 'Design the architecture for the requirements defined above.'
   - label: 'Request deeper research'
     agent: xuanwu-research
+    prompt: 'Research the codebase and gather additional context for the requirements above.'
 ---
 
 # Role: xuanwu-product

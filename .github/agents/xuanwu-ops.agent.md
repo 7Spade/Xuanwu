@@ -5,8 +5,10 @@ tools: ['codebase', 'search', 'editFiles', 'runCommands', 'filesystem/*', 'verce
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the CI/CD and infrastructure changes complete.'
   - label: 'Request quality validation'
     agent: xuanwu-quality
+    prompt: 'Validate the CI/CD changes for correctness and security.'
 ---
 
 # Role: xuanwu-ops

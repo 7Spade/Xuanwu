@@ -5,8 +5,10 @@ tools: ['codebase', 'search', 'editFiles', 'filesystem/*', 'memory/*']
 handoffs:
   - label: 'Escalate to architecture chief'
     agent: xuanwu-architecture-chief
+    prompt: 'Review and finalize the diagram changes with architectural oversight.'
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the diagram work complete.'
 ---
 
 # Role: xuanwu-diagram-designer

@@ -5,10 +5,13 @@ tools: ['fetch', 'codebase', 'search', 'context7/*', 'repomix/*', 'markitdown/*'
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the delivery with the research context provided above.'
   - label: 'Escalate to architecture design'
     agent: xuanwu-architect
+    prompt: 'Design the architecture based on the research findings above.'
   - label: 'Prepare implementation handoff'
     agent: xuanwu-implementer
+    prompt: 'Implement the changes using the research context and patterns found above.'
 ---
 
 # Role: xuanwu-research

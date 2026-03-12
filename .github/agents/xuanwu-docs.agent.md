@@ -5,6 +5,7 @@ tools: ['codebase', 'search', 'editFiles', 'repomix/*', 'markitdown/*', 'filesys
 handoffs:
   - label: 'Return to orchestrator'
     agent: xuanwu-orchestrator
+    prompt: 'Continue coordinating the broader task with the documentation updated.'
 ---
 
 # Role: xuanwu-docs
