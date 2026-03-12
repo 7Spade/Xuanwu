@@ -103,12 +103,3 @@ L1 平台/組織邊界  ✅
 > ✅ = 已建立並通過邊界驗證　　🔲 = 待建立
 
 ---
-
-## 現況同步備註
-
-- 共享 UI 邊界：shadcn 官方 primitive 固定於 `src/lib/ui/shadcn/*`；共享再加工元件固定於 `src/lib/ui/custom-ui/*`。
-- Firebase 邊界：client 固定於 `src/integrations/firebase/*`；admin 僅允許透過 `functions/`。
-- Firebase 基礎設施：Firestore、Storage、Auth 以 `*.read.ts` / `*.write.ts` 分離，並以 anti-corruption adapter 隔離 SDK 專有型別。
-- Firebase Web 能力：Analytics 採 write boundary；Messaging 與 App Check 採 browser-safe adapter，避免 SSR 或非支援瀏覽器直接碰 SDK 初始化。
-- 前端接線現況：`src/features/auth/service/bootstrap-client-capabilities.ts` 統一處理 auth session、analytics actor、App Check、Messaging token 與 Firestore profile/device registration 同步；`src/features/auth/ui/auth-page.tsx` 與 `src/features/graph/ui/graph-page.tsx` 已拆成正式 route page，首頁僅做導流。
-- 視覺互動基礎：graph drag/drop 以 `src/integrations/pragmatic-dnd/*`、`src/features/graph/service/*`、`src/features/graph/ui/*` 三段式落地，避免把互動邏輯直接塞進 primitive 層。
