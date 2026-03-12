@@ -195,6 +195,7 @@ export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';
 export type { IMessaging, PushNotificationPayload } from './ports';
 export type { IFileStore, UploadOptions } from './ports';
+export type { ITaskRepository } from './ports';
 
 export type {
 	ScheduleStatus,
