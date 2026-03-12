@@ -1,0 +1,146 @@
+
+/**
+ * Module: workspace/[id]/layout
+ * Purpose: Compose workspace-scoped shell and capability slot surfaces.
+ * Responsibilities: provide WorkspaceProvider and render workspace header/navigation shell.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+// [職責] 為特定工作區的所有頁面提供共享的 Context 和 UI 佈局。
+"use client";
+
+import { ArrowLeft, ChevronRight, MapPin } from "lucide-react";
+import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+import { useEffect, useMemo, useRef, use } from "react";
+
+import { WorkspaceProvider, useWorkspace , useWorkspaceEventHandler , WorkspaceStatusBar , WorkspaceNavTabs , useApp } from "@/features/workspace.slice"
+import { Button } from "@/shadcn-ui/button";
+import { PageHeader } from "@/lib-ui/custom-ui";
+
+const PERMANENT_CAPABILITY_IDS = ["capabilities", "audit"];
+const GOVERNANCE_CAPABILITY_ID = "members";
+const NON_BUSINESS_CAPABILITY_IDS = [
+  ...PERMANENT_CAPABILITY_IDS,
+  GOVERNANCE_CAPABILITY_ID,
+];
+
+/**
+ * WorkspaceLayoutInner - The actual UI layout component.
+ * It consumes the context provided by WorkspaceLayout.
+ */
+function WorkspaceLayoutInner({ workspaceId, businesstab, modal, panel }: { workspaceId: string; businesstab: React.ReactNode; modal: React.ReactNode; panel: React.ReactNode }) {
+  useWorkspaceEventHandler()
+  const { workspace } = useWorkspace()
+  const { state } = useApp();
+  const router = useRouter();
+  const activeCapability = useSelectedLayoutSegment("businesstab");
+
+  const redirectingCapabilityRef = useRef<string | null>(null);
+
+  const allowedCapabilityIds = useMemo(() => {
+    const activeAccount = state.activeAccount;
+    const isPersonalWorkspace =
+      activeAccount?.accountType === "user" && activeAccount.id === workspace.dimensionId;
+    const governance = isPersonalWorkspace ? [] : [GOVERNANCE_CAPABILITY_ID];
+    const mountedBusiness = (workspace.capabilities ?? [])
+      .map((cap) => cap.id)
+      .filter((capId) => !NON_BUSINESS_CAPABILITY_IDS.includes(capId));
+
+    // Treat schedule and timeline as paired runtime views of the same business domain.
+    const mountedWithAliases = new Set(mountedBusiness);
+    if (mountedWithAliases.has("schedule")) {
+      mountedWithAliases.add("timeline");
+    }
+    if (mountedWithAliases.has("timeline")) {
+      mountedWithAliases.add("schedule");
+    }
+
+    return new Set([...PERMANENT_CAPABILITY_IDS, ...governance, ...mountedWithAliases]);
+  }, [state.activeAccount, workspace.dimensionId, workspace.capabilities]);
+
+  useEffect(() => {
+    if (activeCapability === null) {
+      redirectingCapabilityRef.current = null;
+      return;
+    }
+
+    if (allowedCapabilityIds.has(activeCapability)) {
+      redirectingCapabilityRef.current = null;
+      return;
+    }
+
+    if (redirectingCapabilityRef.current === activeCapability) {
+      return;
+    }
+
+    redirectingCapabilityRef.current = activeCapability;
+    router.replace(`/workspaces/${workspaceId}/capabilities`);
+  }, [activeCapability, allowedCapabilityIds, router, workspaceId]);
+
+  const formattedAddress = workspace.address ? [workspace.address.street, workspace.address.city, workspace.address.state, workspace.address.country, workspace.address.postalCode].filter(Boolean).join(', ') : 'No address defined.';
+
+  return (
+     <div className="gpu-accelerated mx-auto max-w-7xl space-y-4 pb-16 pt-1 duration-500 animate-in fade-in slide-in-from-bottom-2 sm:space-y-6 sm:pb-20 md:space-y-8 md:pb-24">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.back()}
+          className="size-8 rounded-lg ring-1 ring-transparent ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-primary/5 hover:ring-border/60 active:scale-[0.98]"
+        >
+          <ArrowLeft className="size-4" />
+        </Button>
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em]">
+          <span className="hidden sm:inline">Dimension Space</span>
+          <ChevronRight className="size-3 hidden opacity-30 sm:block" />
+          <span className="text-foreground">{workspace.name}</span>
+        </div>
+      </div>
+
+      <PageHeader
+        title={workspace.name}
+        description="Manage this space's atomic capability stack, data exchange, and governance protocols."
+      >
+        <div className="mb-2 max-w-full overflow-x-auto">
+            <WorkspaceStatusBar />
+        </div>
+      </PageHeader>
+      
+      {workspace.address && (
+          <div className="-mt-3 flex items-center gap-3 rounded-2xl bg-background/70 p-3 shadow-sm ring-1 ring-border/60 backdrop-blur-sm sm:gap-4 sm:p-4">
+              <MapPin className="size-4 shrink-0 text-muted-foreground sm:size-5" />
+              <p className="text-sm font-medium text-muted-foreground">{formattedAddress}</p>
+          </div>
+      )}
+
+      <WorkspaceNavTabs workspaceId={workspaceId} />
+      {businesstab}
+      {panel}
+      {modal}
+    </div>
+  )
+}
+
+
+/**
+ * WorkspaceLayout - The main layout component.
+ * Its sole responsibility is to provide the WorkspaceContext.
+ */
+export default function WorkspaceLayout({
+  businesstab: businesstab,
+  modal,
+  panel,
+  params,
+}: {
+  businesstab: React.ReactNode;
+  modal: React.ReactNode;
+  panel: React.ReactNode;
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = use(params);
+  return (
+    <WorkspaceProvider workspaceId={resolvedParams.id}>
+      <WorkspaceLayoutInner workspaceId={resolvedParams.id} businesstab={businesstab} modal={modal} panel={panel} />
+    </WorkspaceProvider>
+  );
+}
+

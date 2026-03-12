@@ -1,0 +1,180 @@
+
+/**
+ * Module: header.tsx
+ * Purpose: render shared shell top header across dashboard and workspace routes
+ * Responsibilities: breadcrumb/search/actions composition and global header controls
+ * Constraints: deterministic logic, respect module boundaries
+ */
+"use client";
+
+import { Search, Command, BookOpen } from "lucide-react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { GlobalSearch } from "@/features/global-search.slice";
+import { useApp } from "@/features/workspace.slice/core/_hooks/use-app";
+import { useVisibleWorkspaces } from '@/features/workspace.slice/core/_hooks/use-visible-workspaces';
+import { LanguageSwitcher, ModeToggle } from "@/lib-ui/custom-ui";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/shadcn-ui/breadcrumb";
+import { Button } from "@/shadcn-ui/button";
+import { Separator } from "@/shadcn-ui/separator";
+import { SidebarTrigger } from "@/shadcn-ui/sidebar";
+import type { Account } from '@/shared-kernel'
+
+import { NotificationCenter } from "./notification-center";
+
+
+
+
+const SEGMENT_LABELS: Record<string, string> = {
+  dashboard: 'Dashboard',
+  workspaces: 'Workspaces',
+  account: 'Account',
+  members: 'Members',
+  teams: 'Teams',
+  partners: 'Partners',
+  settings: 'Settings',
+  matrix: 'Matrix',
+  schedule: 'Schedule',
+  daily: 'Daily',
+  audit: 'Audit',
+  new: 'New',
+};
+
+function usePageBreadcrumbs(pathname: string) {
+  const segments = pathname.split('/').filter(Boolean);
+  return segments.map((seg, i) => ({
+    label: SEGMENT_LABELS[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1),
+    href: '/' + segments.slice(0, i + 1).join('/'),
+    isLast: i === segments.length - 1,
+  }));
+}
+
+export function Header() {
+  const { t } = useI18n();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { state: appState, dispatch } = useApp();
+  const pathname = usePathname();
+
+  const { accounts, notifications, activeAccount } = appState
+  
+  const visibleWorkspaces = useVisibleWorkspaces()
+  const breadcrumbs = usePageBreadcrumbs(pathname);
+
+  const organizationsArray: Account[] = Object.values(accounts).filter(a => a.accountType === 'organization')
+  const activeOrganization = activeAccount?.accountType === 'organization' ? accounts[activeAccount.id] : null
+  const activeOrganizationMembers = activeOrganization?.members ?? []
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setIsSearchOpen((open) => !open);
+      }
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  const handleSwitchOrganization = (organization: Account) => {
+      dispatch({ type: 'SET_ACTIVE_ACCOUNT', payload: organization })
+  }
+
+  const plainHeaderIconClassName = "relative min-h-0 min-w-0 rounded-md size-9";
+
+  return (
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 bg-background/70 ring-1 ring-border/55 backdrop-blur-xl transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 supports-[backdrop-filter]:bg-background/65 sm:h-16">
+      <div className="flex min-w-0 items-center gap-2 px-2 sm:px-4">
+        <SidebarTrigger className="tap-target -ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Breadcrumb className="min-w-0">
+          <BreadcrumbList className="no-scrollbar flex-nowrap overflow-x-auto">
+            {breadcrumbs.flatMap((crumb) =>
+              crumb.isLast ? [
+                <BreadcrumbItem key={crumb.href}>
+                  <BreadcrumbPage className="max-w-[46vw] truncate font-semibold capitalize tracking-tight sm:max-w-none">{crumb.label}</BreadcrumbPage>
+                </BreadcrumbItem>,
+              ] : [
+                <BreadcrumbItem key={crumb.href} className="hidden md:block">
+                  <BreadcrumbLink asChild>
+                    <Link href={crumb.href} className="capitalize tracking-tight">{crumb.label}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>,
+                <BreadcrumbSeparator key={`sep-${crumb.href}`} className="hidden md:block" />,
+              ]
+            )}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
+      <div className="hidden flex-1 items-center justify-center md:flex">
+        <Button
+          variant="outline"
+          className="group relative h-10 w-full max-w-md justify-start border-0 bg-background/55 text-sm text-muted-foreground shadow-sm ring-1 ring-border/60 ring-offset-2 ring-offset-background transition-all duration-200 ease-out hover:bg-background/90 hover:text-foreground hover:ring-border/90 active:scale-[0.98]"
+          onClick={() => setIsSearchOpen(true)}
+        >
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-hover:text-primary" />
+          <span className="pl-7">{t('workspaces.searchDimensionsPlaceholder')}</span>
+          <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
+            <div className="ml-1 hidden items-center gap-1 rounded-md bg-background/95 px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-border/70 md:flex">
+              <Command className="size-2.5" /> K
+            </div>
+          </div>
+        </Button>
+      </div>
+
+      <div className="ml-auto flex items-center gap-1 pr-3 sm:gap-2 sm:pr-4">
+        {/* Mobile search trigger — visible only below md */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="tap-target size-10 md:hidden"
+          onClick={() => setIsSearchOpen(true)}
+          aria-label="Search"
+        >
+          <Search className="size-4" />
+        </Button>
+        <div className="flex items-center gap-1 sm:gap-1.5">
+          <LanguageSwitcher triggerClassName={plainHeaderIconClassName} />
+          <div className="hidden sm:block">
+            <ModeToggle triggerClassName={plainHeaderIconClassName} />
+          </div>
+        </div>
+        <Button
+          asChild
+          variant="ghost"
+          size="icon"
+          className="hidden size-9 min-h-0 min-w-0 rounded-md sm:flex"
+          aria-label={t('wiki.title')}
+        >
+          <Link href="/wiki">
+            <BookOpen className="size-4" />
+          </Link>
+        </Button>
+        <NotificationCenter
+          notifications={notifications}
+          dispatch={dispatch}
+          triggerClassName="relative min-h-0 min-w-0 rounded-md size-9"
+        />
+      </div>
+      <GlobalSearch
+        isOpen={isSearchOpen}
+        onOpenChange={setIsSearchOpen}
+        organizations={organizationsArray}
+        workspaces={visibleWorkspaces}
+        members={activeOrganizationMembers}
+        activeOrganizationId={activeOrganization?.id || null}
+        onSwitchOrganization={handleSwitchOrganization}
+      />
+    </header>
+  );
+}

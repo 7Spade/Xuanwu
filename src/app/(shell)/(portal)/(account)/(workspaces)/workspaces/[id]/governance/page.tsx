@@ -1,0 +1,40 @@
+// [職責] Canonical governance route — full-page fallback for direct URL access
+"use client"
+
+import { useRouter } from "next/navigation"
+import { useMemo } from "react"
+
+import { GovernanceSidebar , useScheduleActions } from "@/features/workforce-scheduling.slice"
+import { useWorkspace } from "@/features/workspace.slice"
+import { useAccount } from "@/features/workspace.slice"
+import type { ScheduleItem } from "@/shared-kernel"
+
+export default function GovernancePage() {
+  const router = useRouter()
+  const { workspace } = useWorkspace()
+  const { state: accountState } = useAccount()
+  const { approveItem, rejectItem } = useScheduleActions()
+
+  const proposals = useMemo(() =>
+    Object.values(accountState.schedule_items).filter(
+      (item: ScheduleItem) => item.workspaceId === workspace.id && item.status === "PROPOSAL"
+    ),
+    [accountState.schedule_items, workspace.id]
+  )
+
+  return (
+    <div className="mx-auto max-w-2xl py-8">
+      <GovernanceSidebar
+        proposals={proposals}
+        onApprove={approveItem}
+        onReject={rejectItem}
+      />
+      <button
+        onClick={() => router.back()}
+        className="mt-4 text-xs text-muted-foreground underline"
+      >
+        ← Back
+      </button>
+    </div>
+  )
+}

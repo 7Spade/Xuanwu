@@ -1,0 +1,259 @@
+/**
+ * Module: files-table.tsx
+ * Purpose: Render workspace file rows and parser action matrix.
+ * Responsibilities: enforce source-aware action availability and emit parse context.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
+"use client";
+
+import {
+  AlertCircle,
+  ChevronDown,
+  ChevronRight,
+  Download,
+  FileScan,
+  History,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
+import { Fragment } from 'react';
+import { useState } from 'react';
+
+import { useI18n } from '@/app-runtime/providers/i18n-provider';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/shadcn-ui/dropdown-menu';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/shadcn-ui/table';
+
+import type { WorkspaceFile, WorkspaceFileVersion } from '../_types';
+
+import { FileTypeIcon } from './file-type-icon';
+import {
+  formatBytes,
+  getCurrentVersion,
+  getRelatedStructuredFile,
+  getStructuredDataSnapshot,
+  isStructuredSidecarFile,
+  type WorkspaceFileWithRelations,
+} from './files-view.utils';
+
+interface FilesTableProps {
+  readonly files: readonly WorkspaceFileWithRelations[];
+  readonly onOpenHistory: (file: WorkspaceFileWithRelations, tab?: 'versions' | 'processing') => void;
+  readonly onDeregister: (file: WorkspaceFile) => void;
+  readonly onDownload: (version?: WorkspaceFileVersion) => void;
+  readonly onParseWithAi: (
+    file: WorkspaceFile,
+    version: WorkspaceFileVersion | undefined,
+    context: {
+      parseMode: 'document-ai' | 'genkit-ai';
+      sourceType: 'original' | 'structured-sidecar';
+      triggeredFrom: 'files-table-row' | 'files-expanded-panel';
+    },
+  ) => void;
+}
+
+export function FilesTable({
+  files,
+  onOpenHistory,
+  onDeregister,
+  onDownload,
+  onParseWithAi,
+}: FilesTableProps) {
+  const { t } = useI18n();
+  const [expandedFileIds, setExpandedFileIds] = useState<Record<string, boolean>>({});
+
+  const toggleExpanded = (fileId: string) => {
+    setExpandedFileIds((prev) => ({
+      ...prev,
+      [fileId]: !prev[fileId],
+    }));
+  };
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/40 shadow-sm backdrop-blur-md">
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-[48%]">{t('workspaces.file')}</TableHead>
+            <TableHead className="text-center">{t('workspaces.version')}</TableHead>
+            <TableHead>{t('workspaces.size')}</TableHead>
+            <TableHead className="text-right">{t('workspaces.actions')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {files.map((file) => {
+            const current = getCurrentVersion(file);
+            const summary = getStructuredDataSnapshot(file, current);
+            const summaryText = JSON.stringify(summary.summary, null, 2);
+            const isExpanded = Boolean(expandedFileIds[file.id]);
+            const relatedStructuredFile = getRelatedStructuredFile(file);
+            const isCurrentStructuredFile = isStructuredSidecarFile(file.name);
+            const genkitAiSourceFile = isCurrentStructuredFile
+              ? file
+              : relatedStructuredFile;
+            const genkitAiSourceVersion = genkitAiSourceFile
+              ? getCurrentVersion(genkitAiSourceFile)
+              : undefined;
+            const documentAiFile = file;
+            const documentAiVersion = current;
+            const canRunDocumentAi = !isCurrentStructuredFile && Boolean(documentAiVersion?.downloadURL);
+            const genkitSourceType: 'original' | 'structured-sidecar' = 'structured-sidecar';
+            const canRunGenkitAi = Boolean(
+              genkitAiSourceVersion?.downloadURL
+              && genkitAiSourceFile
+              && isStructuredSidecarFile(genkitAiSourceFile.name),
+            );
+
+            return (
+              <Fragment key={file.id}>
+                <TableRow className="group border-b-0">
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-4">
+                      <div className="flex size-6 items-center justify-center rounded border border-primary/30 bg-primary/10 text-primary">
+                        <button
+                          type="button"
+                          aria-label={isExpanded ? t('common.collapse') : t('common.expand')}
+                          onClick={() => toggleExpanded(file.id)}
+                          className="flex size-5 items-center justify-center rounded hover:bg-primary/15"
+                        >
+                          {isExpanded ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
+                        </button>
+                      </div>
+                      <div className="rounded-xl border bg-background p-2.5 text-primary shadow-sm transition-all group-hover:bg-primary group-hover:text-white">
+                        <FileTypeIcon fileName={file.name} />
+                      </div>
+                      <span className="truncate text-sm font-black tracking-tight">{file.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="secondary" className="h-5 border-none bg-primary/10 text-[9px] font-black text-primary">
+                      V{current?.versionNumber}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-mono text-[10px] uppercase text-muted-foreground">
+                    {formatBytes(current?.size || 0)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="size-8 hover:bg-primary/5">
+                          <MoreVertical className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-52 rounded-xl">
+                        <DropdownMenuItem
+                          onClick={() => onDownload(current)}
+                          disabled={!current?.downloadURL}
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
+                        >
+                          <Download className="size-3.5 text-primary" /> {t('workspaces.download')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={!canRunDocumentAi}
+                          onClick={() =>
+                            onParseWithAi(documentAiFile, documentAiVersion, {
+                              parseMode: 'document-ai',
+                              sourceType: 'original',
+                              triggeredFrom: 'files-table-row',
+                            })
+                          }
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
+                        >
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.documentAi')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          disabled={!canRunGenkitAi}
+                          onClick={() =>
+                            genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                              parseMode: 'genkit-ai',
+                              sourceType: genkitSourceType,
+                              triggeredFrom: 'files-table-row',
+                            })
+                          }
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
+                        >
+                          <FileScan className="size-3.5 text-primary" /> {t('workspaces.genkitAi')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onOpenHistory(file, 'versions')}
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase"
+                        >
+                          <History className="size-3.5 text-primary" /> {t('workspaces.versionHistory')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => onDeregister(file)}
+                          className="cursor-pointer gap-2 py-2.5 text-[10px] font-bold uppercase text-destructive"
+                        >
+                          <Trash2 className="size-3.5" /> {t('workspaces.deregisterFile')}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+
+                {isExpanded && (
+                  <TableRow className="hover:bg-transparent">
+                    <TableCell colSpan={4} className="pt-0">
+                      <div className="ml-10 rounded-xl border border-primary/20 bg-primary/5 p-3">
+                        <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-primary">
+                          {t('workspaces.structuredSummary')}
+                        </p>
+                        <pre className="overflow-x-auto rounded-md bg-background/70 p-3 text-[10px] leading-relaxed text-foreground/90">{summaryText}</pre>
+                        <div className="mt-3 flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-[10px] font-bold"
+                            onClick={() => onOpenHistory(file, 'versions')}
+                          >
+                            {t('workspaces.viewFullJson')}
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-7 text-[10px] font-bold"
+                            disabled={!canRunGenkitAi}
+                            onClick={() =>
+                              genkitAiSourceFile && onParseWithAi(genkitAiSourceFile, genkitAiSourceVersion, {
+                                parseMode: 'genkit-ai',
+                                sourceType: genkitSourceType,
+                                triggeredFrom: 'files-expanded-panel',
+                              })
+                            }
+                          >
+                            {t('workspaces.genkitAi')}
+                          </Button>
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </Fragment>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      {files.length === 0 && (
+        <div className="flex flex-col items-center gap-3 p-20 text-center opacity-20">
+          <AlertCircle className="size-12" />
+          <p className="text-[10px] font-black uppercase tracking-widest">{t('workspaces.noTechnicalDocuments')}</p>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,602 @@
+/**
+ * Module: document-parser-view.tsx
+ * Purpose: Coordinate document OCR and semantic parsing import workflow.
+ * Responsibilities: receive parser handoff payloads and drive parser actions.
+ * Constraints: deterministic logic, respect module boundaries
+ */
+
+'use client';
+
+import { Loader2, UploadCloud, File as FileIcon, ClipboardList, CheckCircle2, Clock, AlertCircle, ListChecks } from 'lucide-react';
+import { useActionState, useTransition, useRef, useEffect, useCallback, useState, type ChangeEvent } from 'react';
+
+import type { WorkItem } from '@/app-runtime/ai/schemas/docu-parse';
+import { getOrgTaskTypes, resolveOrgTaskTypeByItemName } from '@/features/organization.slice';
+import { classifyParserLineItem } from '@/features/semantic-graph.slice';
+import { getTagSnapshotPresentationMap, type TagSnapshotPresentation } from '@/features/semantic-graph.slice';
+import { persistWorkspaceOutboxEvent } from '@/features/workspace.slice/domain.application/_outbox';
+import { useWorkspace } from '@/features/workspace.slice/core';
+import {
+  clearPendingParseFile,
+  loadPendingParseFile,
+} from '@/features/workspace.slice/core/_utils/pending-parse-storage';
+import type { FileSendToParserPayload } from '@/features/workspace.slice/core.event-bus';
+import { Badge } from '@/shadcn-ui/badge';
+import { Button } from '@/shadcn-ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shadcn-ui/card';
+import { useToast } from '@/shadcn-ui/hooks/use-toast';
+import { logDomainError } from '@/shared-infra/observability';
+import type { SkillRequirement } from '@/shared-kernel';
+
+
+
+import {
+  extractDataFromDocument,
+  runAiParsingFromOcrDocument,
+  type OcrDocumentPayload,
+  type ActionState,
+} from '../_form-actions';
+import {
+  INITIAL_PARSING_INTENT_VERSION,
+  saveParsingIntent,
+} from '../_intent-actions';
+import { subscribeToParsingIntents } from '../_queries';
+import type { IntentID, SourcePointer, ParsingIntent } from '../_types';
+
+import { ParsedItemsTable, WorkItemsTable } from './document-parser-tables';
+
+
+const initialState: ActionState = {
+  data: undefined,
+  error: undefined,
+  fileName: undefined,
+};
+
+function dedupeSkillRequirements(items: Array<{ requiredSkills?: SkillRequirement[] }>): SkillRequirement[] {
+  const map = new Map<string, SkillRequirement>();
+  for (const item of items) {
+    const requirements = item.requiredSkills ?? [];
+    for (const requirement of requirements) {
+      const key = `${requirement.tagSlug}|${requirement.minimumTier}|${requirement.minXp ?? ''}`;
+      const existing = map.get(key);
+      if (!existing) {
+        map.set(key, requirement);
+        continue;
+      }
+      if (requirement.quantity > existing.quantity) {
+        map.set(key, requirement);
+      }
+    }
+  }
+  return Array.from(map.values());
+}
+
+export function WorkspaceDocumentParser() {
+  const [state, formAction] = useActionState(
+    extractDataFromDocument,
+    initialState
+  );
+  const { eventBus, logAuditEvent, workspace, pendingParseFile, setPendingParseFile } = useWorkspace();
+  const [isOcrPending, startOcrTransition] = useTransition();
+  const [isAiPending, startAiTransition] = useTransition();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const { toast } = useToast();
+  const [aiWorkItems, setAiWorkItems] = useState<WorkItem[]>([]);
+  const [activeParseMode, setActiveParseMode] = useState<'document-ai' | 'genkit-ai'>('document-ai');
+  // Tracks the WorkspaceFile ID when a file is sent from the Files tab for full traceability
+  const sourceFileIdRef = useRef<string | undefined>(undefined);
+  const sourceFileVersionIdRef = useRef<string | undefined>(undefined);
+  const sourceFileStoragePathRef = useRef<string | undefined>(undefined);
+  // Tracks the original download URL (SourcePointer) for the Digital Twin ParsingIntent
+  const sourceFileDownloadURLRef = useRef<string | undefined>(undefined);
+  // Tracks the last saved intentId so that re-parses supersede the prior intent [#A4]
+  const previousIntentIdRef = useRef<IntentID | undefined>(undefined);
+  const lastHandledPendingParseKeyRef = useRef<string | null>(null);
+
+  // Real-time ParsingIntent history (Digital Twin 解析合約 list)
+  const [parsingIntents, setParsingIntents] = useState<ParsingIntent[]>([]);
+  // Currently selected intent for line-item inspection
+  const [selectedIntent, setSelectedIntent] = useState<ParsingIntent | null>(null);
+  const [tagPresentationMap, setTagPresentationMap] = useState<Record<string, TagSnapshotPresentation>>({});
+  useEffect(() => {
+    const unsub = subscribeToParsingIntents(workspace.id, (intents) => {
+      setParsingIntents(intents);
+      // Keep selectedIntent in sync with latest Firestore data (e.g. after status update).
+      setSelectedIntent((prev) =>
+        prev ? (intents.find((i) => i.id === prev.id) ?? prev) : null
+      );
+    });
+    return () => unsub();
+  }, [workspace.id]);
+
+  useEffect(() => {
+    const parsedWorkItemSlugs = aiWorkItems.map((item) => {
+      const semantic = classifyParserLineItem(item.item);
+      return typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
+        ? item.semanticTagSlug
+        : semantic.semanticTagSlug;
+    });
+
+    const intentSlugs = selectedIntent?.lineItems.map((item) => item.semanticTagSlug) ?? [];
+    const allSlugs = [...parsedWorkItemSlugs, ...intentSlugs].filter((slug) => slug.length > 0);
+
+    if (allSlugs.length === 0) {
+      setTagPresentationMap({});
+      return;
+    }
+
+    let cancelled = false;
+    const hydrateTagPresentationMap = async () => {
+      const map = await getTagSnapshotPresentationMap(allSlugs);
+      if (!cancelled) {
+        setTagPresentationMap(map);
+      }
+    };
+
+    void hydrateTagPresentationMap();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedIntent, aiWorkItems]);
+
+  // Helper: trigger the AI extraction pipeline from a Firebase Storage URL.
+  // The URL is passed directly to the Server Action which fetches it server-side,
+  // avoiding the browser CORS restriction on Firebase Storage URLs.
+  const triggerParseFromURL = useCallback((payload: FileSendToParserPayload) => {
+    sourceFileIdRef.current = payload.fileId;
+    sourceFileVersionIdRef.current = payload.versionId;
+    sourceFileStoragePathRef.current = payload.storagePath;
+    sourceFileDownloadURLRef.current = payload.downloadURL;
+    const formData = new FormData();
+    formData.append('fileName', payload.fileName);
+    formData.append('fileType', payload.fileType || '');
+    formData.append('workspaceId', workspace.id);
+    if (payload.fileId) {
+      formData.append('fileId', payload.fileId);
+    }
+    if (payload.versionId) {
+      formData.append('versionId', payload.versionId);
+    }
+    if (payload.storagePath) {
+      formData.append('storagePath', payload.storagePath);
+    }
+    if (payload.sourceType) {
+      formData.append('sourceType', payload.sourceType);
+    }
+    if (payload.downloadURL) {
+      formData.append('downloadURL', payload.downloadURL);
+    }
+    const nextParseMode = payload.parseMode ?? 'document-ai';
+    formData.append('parseMode', nextParseMode);
+    setActiveParseMode(nextParseMode);
+    setAiWorkItems([]);
+    startOcrTransition(() => formAction(formData));
+  }, [formAction, startOcrTransition, workspace.id]);
+
+  useEffect(() => {
+    const workItems = state.data?.workItems;
+    if (!workItems || workItems.length === 0) {
+      return;
+    }
+    setAiWorkItems(workItems);
+  }, [state.data?.workItems]);
+
+  // Consume queued parser payloads from Files tab whenever they arrive.
+  // Keyed dedupe prevents duplicate trigger under StrictMode double-invocation.
+  useEffect(() => {
+    if (!pendingParseFile) {
+      return;
+    }
+
+    const pendingKey = [
+      pendingParseFile.fileId,
+      pendingParseFile.versionId,
+      pendingParseFile.parseMode ?? 'document-ai',
+      pendingParseFile.sourceType ?? 'original',
+    ].join('|');
+
+    if (lastHandledPendingParseKeyRef.current === pendingKey) {
+      return;
+    }
+
+    lastHandledPendingParseKeyRef.current = pendingKey;
+    clearPendingParseFile(workspace.id);
+    setPendingParseFile(null);
+    triggerParseFromURL(pendingParseFile);
+  }, [pendingParseFile, setPendingParseFile, triggerParseFromURL, workspace.id]);
+
+  useEffect(() => {
+    if (pendingParseFile) {
+      return;
+    }
+
+    const persistedPayload = loadPendingParseFile(workspace.id);
+    if (!persistedPayload) {
+      return;
+    }
+
+    clearPendingParseFile(workspace.id);
+    triggerParseFromURL(persistedPayload);
+  }, [pendingParseFile, triggerParseFromURL, workspace.id]);
+
+  useEffect(() => {
+    if (state.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Extraction Failed',
+        description: state.error,
+      });
+      eventBus.publish('workspace:document-parser:failed', {
+        sourceDocument: state.fileName || 'Document',
+        reason: state.error,
+      });
+      const parseModeLabel = state.parseMode ?? 'document-ai';
+      logAuditEvent('Parsing Failed', `Document: ${state.fileName || 'Unknown'} (${parseModeLabel})`, 'create');
+    }
+  }, [state.error, state.fileName, state.parseMode, eventBus, toast, logAuditEvent]);
+
+  // Subscribe to files:sendToParser — handles same-tab publishes (edge case fallback).
+  // The primary cross-tab path uses WorkspaceProvider pendingParseFile state.
+  useEffect(() => {
+    const unsubFiles = eventBus.subscribe(
+      'workspace:files:sendToParser',
+      (payload) => triggerParseFromURL(payload)
+    );
+    return () => unsubFiles();
+  }, [eventBus, triggerParseFromURL]);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      if (formRef.current) {
+        const formData = new FormData(formRef.current);
+        setActiveParseMode('document-ai');
+        setAiWorkItems([]);
+        startOcrTransition(() => {
+          formAction(formData);
+        });
+      }
+    }
+  };
+
+  const handleRunAiParsing = () => {
+    if (!state.data?.ocrDocument) {
+      toast({
+        variant: 'destructive',
+        title: 'OCR not ready',
+        description: 'Run Document AI OCR first.',
+      });
+      return;
+    }
+
+    startAiTransition(() => {
+      runAiParsingFromOcrDocument(state.data?.ocrDocument as OcrDocumentPayload)
+        .then((result) => {
+          setAiWorkItems(result.workItems);
+          toast({
+            title: 'AI parsing completed',
+            description: `Parsed ${result.workItems.length} item(s).`,
+          });
+        })
+        .catch((error: unknown) => {
+          toast({
+            variant: 'destructive',
+            title: 'AI parsing failed',
+            description: error instanceof Error ? error.message : 'Unknown error',
+          });
+        });
+    });
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    fileInputRef.current?.click();
+  };
+
+  const handleImport = async () => {
+    if (!aiWorkItems || aiWorkItems.length === 0) return;
+
+    let orgTaskTypes = [] as Awaited<ReturnType<typeof getOrgTaskTypes>>;
+    if (workspace.dimensionId) {
+      try {
+        orgTaskTypes = await getOrgTaskTypes(workspace.dimensionId);
+      } catch (error: unknown) {
+        console.warn('Failed to load org task-type dictionary; fallback to global semantic classification only.', error);
+      }
+    }
+
+    const lineItems = aiWorkItems.map((item, index) => {
+      const semantic = classifyParserLineItem(item.item);
+      const resolvedTaskType = resolveOrgTaskTypeByItemName(item.item, orgTaskTypes);
+      return {
+      name: item.item,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      // Omit discount entirely when undefined to avoid Firestore "Unsupported field value: undefined"
+      ...(item.discount !== undefined ? { discount: item.discount } : {}),
+      subtotal: item.price,
+      // Layer-2 Semantic Classification (VS8) — applied here during the import phase.
+      costItemType: semantic.costItemType,
+      lineItemType: semantic.lineItemType,
+      routingStatus: semantic.routingStatus,
+      billingMode: semantic.billingMode,
+      semanticTagSlug:
+        typeof item.semanticTagSlug === 'string' && item.semanticTagSlug.trim() !== ''
+          ? item.semanticTagSlug
+          : semantic.semanticTagSlug,
+      sourceIntentIndex:
+        typeof item.sourceIntentIndex === 'number' && Number.isFinite(item.sourceIntentIndex)
+          ? item.sourceIntentIndex
+          : index,
+      ...(resolvedTaskType
+        ? {
+            taskTypeSlug: resolvedTaskType.taskTypeSlug,
+            taskTypeName: resolvedTaskType.taskTypeName,
+            requiredSkills: resolvedTaskType.requiredSkills,
+          }
+        : {}),
+    }});
+    const aggregatedSkillRequirements = dedupeSkillRequirements(lineItems);
+
+    let intentId: IntentID;
+    let oldIntentId: IntentID | undefined;
+    try {
+      const result = await saveParsingIntent(
+        workspace.id,
+        state.fileName || 'Unknown Document',
+        lineItems,
+        {
+          sourceFileId: sourceFileIdRef.current,
+          sourceFileVersionId: sourceFileVersionIdRef.current,
+          sourceFileStoragePath: sourceFileStoragePathRef.current,
+          // SourcePointer: immutable link to the original file in Firebase Storage
+          sourceFileDownloadURL: sourceFileDownloadURLRef.current as SourcePointer | undefined,
+          // Supersede the prior intent when re-parsing the same session [#A4]
+          previousIntentId: previousIntentIdRef.current,
+          ...(aggregatedSkillRequirements.length > 0
+            ? { skillRequirements: aggregatedSkillRequirements }
+            : {}),
+        }
+      );
+      intentId = result.intentId;
+      oldIntentId = result.oldIntentId;
+    } catch (error: unknown) {
+      console.error('Failed to save parsing intent:', error);
+      const reason = error instanceof Error ? error.message : 'Could not persist the parsing intent. Import aborted.';
+      toast({
+        variant: 'destructive',
+        title: 'Failed to Save Parsing Record',
+        description: reason,
+      });
+
+      eventBus.publish('workspace:document-parser:failed', {
+        sourceDocument: state.fileName || 'Document',
+        reason,
+      });
+
+      logAuditEvent('Parsing Intent Persist Failed', `Document: ${state.fileName || 'Unknown'}`, 'create');
+      return;
+    }
+
+    // Publish event with intentId so tasks and schedule proposals can reference the Digital Twin.
+    // Prefer item.requiredSkills resolved from org task-type dictionary.
+    // payload.skillRequirements remains for compatibility with legacy consumers.
+    // oldIntentId is forwarded when a prior intent was superseded so the import handler can
+    // reconcile existing `todo` tasks in-place rather than creating duplicates [#A4].
+    eventBus.publish('workspace:document-parser:itemsExtracted', {
+        sourceDocument: state.fileName || 'Unknown Document',
+        intentId,
+        intentVersion: INITIAL_PARSING_INTENT_VERSION,
+        autoImport: true,
+        items: lineItems,
+        ...(aggregatedSkillRequirements.length > 0
+          ? { skillRequirements: aggregatedSkillRequirements }
+          : {}),
+        ...(oldIntentId && { oldIntentId }),
+    });
+
+    // Dispatch IntentDeltaProposed [#A4] — at-least-once delivery via wsOutbox [S1][E5].
+    // This cross-BC event notifies external consumers (e.g. scheduling.slice) that a new
+    // Digital Twin delta is available, without exposing document-parser internals [D7].
+    // oldIntentId is included when a prior intent was superseded so consumers can retract
+    // draft tasks linked to the previous intent.
+    const taskDraftCount = lineItems.filter((item) => item.routingStatus === 'TASK_CANDIDATE').length;
+
+    const deltaPayload = {
+      intentId,
+      intentVersion: INITIAL_PARSING_INTENT_VERSION,
+      workspaceId: workspace.id,
+      sourceFileName: state.fileName || 'Unknown Document',
+      taskDraftCount,
+      ...(aggregatedSkillRequirements.length > 0
+        ? { skillRequirements: aggregatedSkillRequirements }
+        : {}),
+      ...(oldIntentId && { oldIntentId }),
+    };
+    eventBus.publish('workspace:parsing-intent:deltaProposed', deltaPayload);
+    persistWorkspaceOutboxEvent(workspace.id, 'workspace:parsing-intent:deltaProposed', deltaPayload)
+      .catch((err: unknown) => {
+        logDomainError({
+          occurredAt: new Date().toISOString(),
+          traceId: crypto.randomUUID(),
+          source: 'document-parser:handleImport:persistWorkspaceOutboxEvent',
+          message: 'wsOutbox persist failed for deltaProposed — at-least-once delivery may be degraded.',
+          detail: err instanceof Error ? (err.stack ?? err.message) : String(err),
+        });
+      });
+
+    // Record the new intentId so any subsequent re-parse in this session supersedes it [#A4]
+    previousIntentIdRef.current = intentId;
+    // Reset source file references after successful import
+    sourceFileIdRef.current = undefined;
+    sourceFileVersionIdRef.current = undefined;
+    sourceFileStoragePathRef.current = undefined;
+    sourceFileDownloadURLRef.current = undefined;
+    logAuditEvent('Triggered Task Import', `From document: ${state.fileName}`, 'create');
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card className="w-full bg-card/50 shadow-lg backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle>Document Upload</CardTitle>
+          <CardDescription>
+            Select a document to begin AI data extraction.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form ref={formRef}>
+            <div
+              className="relative flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 transition-colors hover:border-primary"
+              onClick={handleUploadClick}
+              onKeyDown={(e) => e.key === 'Enter' && handleUploadClick()}
+              role="button"
+              tabIndex={0}
+              aria-label="Upload document"
+            >
+              <UploadCloud className="size-12 text-muted-foreground" />
+              <p className="mt-4 text-sm text-muted-foreground">
+                <span className="font-semibold text-primary">
+                  Click to upload
+                </span>{' '}
+                or drag and drop
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Supported formats: PDF, PNG, JPG
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="file"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isOcrPending}
+                accept=".pdf,.png,.jpg,.jpeg"
+              />
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+
+       {isOcrPending && (
+        <div className="mt-8 flex flex-col items-center justify-center text-center">
+          <Loader2 className="mb-4 size-16 animate-spin text-primary" />
+          <p className="text-lg font-medium text-foreground">
+            {activeParseMode === 'genkit-ai' ? 'Running Genkit AI Tagging...' : 'Running Document AI OCR...'}
+          </p>
+          <p className="text-muted-foreground">
+            {activeParseMode === 'genkit-ai'
+              ? 'This step applies AI semantic tagging on OCR-ready content.'
+              : 'This step only extracts OCR text and entities.'}
+          </p>
+        </div>
+      )}
+
+      {state.data && !isOcrPending && (
+        <div className="mt-8">
+            <Card className="bg-card shadow-2xl">
+                <CardHeader>
+                <div className="flex items-center justify-between">
+                    <div>
+                    <CardTitle className="text-2xl">Extracted Items</CardTitle>
+                    <CardDescription className="flex items-center gap-2 pt-2">
+                        <FileIcon className="size-4" />
+                        {state.fileName} · OCR extracted
+                    </CardDescription>
+                    </div>
+                </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="mb-4 flex items-center gap-2">
+                      <Button onClick={handleRunAiParsing} disabled={isAiPending}>
+                        {isAiPending ? 'Running Genkit AI...' : 'Run Genkit AI Parsing'}
+                      </Button>
+                    </div>
+                    {aiWorkItems.length > 0 ? (
+                      <WorkItemsTable initialData={aiWorkItems} onImport={handleImport} tagPresentationMap={tagPresentationMap} />
+                    ) : (
+                      <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                        Genkit parsing not executed yet. Click &quot;Run Genkit AI Parsing&quot;.
+                      </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+      )}
+
+      {/* ParsingIntent History — Digital Twin 解析合約 */}
+      {parsingIntents.length > 0 && (
+        <Card className="mt-8 bg-card/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+              <ClipboardList className="size-4" /> Parsing Intent History
+            </CardTitle>
+            <CardDescription>Digital Twin records — click a row to inspect its line items.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {parsingIntents.map((intent) => (
+                <button
+                  key={intent.id}
+                  type="button"
+                  onClick={() => setSelectedIntent((prev) => prev?.id === intent.id ? null : intent)}
+                  className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-xs transition-colors hover:bg-muted/50 ${selectedIntent?.id === intent.id ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    {intent.status === 'imported' ? (
+                      <CheckCircle2 className="size-4 shrink-0 text-green-500" />
+                    ) : intent.status === 'failed' ? (
+                      <AlertCircle className="size-4 shrink-0 text-destructive" />
+                    ) : (
+                      <Clock className="size-4 shrink-0 text-muted-foreground" />
+                    )}
+                    <div>
+                      <p className="font-semibold">{intent.sourceFileName}</p>
+                      <p className="text-muted-foreground">{intent.lineItems.length} line item(s)</p>
+                    </div>
+                  </div>
+                  <Badge variant={intent.status === 'imported' ? 'default' : intent.status === 'failed' ? 'destructive' : 'secondary'} className="text-[10px] uppercase">
+                    {intent.status}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Parsing Intent Line Items — shown when a history row is selected */}
+      {selectedIntent && (
+        <Card className="mt-4 bg-card/50">
+          <CardHeader>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <ListChecks className="size-4" /> Parsing Intent
+                </CardTitle>
+                <CardDescription className="mt-1 flex items-center gap-2">
+                  <FileIcon className="size-3" />
+                  {selectedIntent.sourceFileName}
+                  <span className="text-muted-foreground">·</span>
+                  {selectedIntent.lineItems.length} item(s)
+                </CardDescription>
+              </div>
+              <Badge
+                variant={selectedIntent.status === 'imported' ? 'default' : selectedIntent.status === 'failed' ? 'destructive' : 'secondary'}
+                className="mt-0.5 text-[10px] uppercase"
+              >
+                {selectedIntent.status}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ParsedItemsTable intent={selectedIntent} tagPresentationMap={tagPresentationMap} />
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,309 @@
+/**
+ * @fileoverview Workspace Core Repository.
+ *
+ * Firestore read and write operations for the `workspaces` top-level collection:
+ * workspace lifecycle, settings, capability management, member grants, and team access.
+ * Corresponds to the `workspace-core` feature slice.
+ */
+
+import {
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  getDoc,
+  runTransaction,
+  type FieldValue,
+} from 'firebase/firestore';
+
+import type {
+  Workspace,
+  WorkspaceRole,
+  WorkspaceGrant,
+  WorkspaceFile,
+  Capability,
+  WorkspaceLifecycleState,
+  WorkspaceLocation,
+  Address,
+  WorkspacePersonnel,
+} from '@/features/workspace.slice';
+
+import { db } from '../firestore.client';
+import {
+  updateDocument,
+  addDocument,
+  deleteDocument,
+} from '../firestore.write.adapter';
+
+export interface WorkspaceAccountRef {
+  readonly accountId: string;
+  readonly accountType: 'user' | 'organization';
+}
+
+/**
+ * Creates a new workspace with default values, based on the active account context.
+ * @param name The name of the new workspace.
+ * @param accountRef The active account reference creating the workspace.
+ * @returns The ID of the newly created workspace.
+ */
+export const createWorkspace = async (
+  name: string,
+  accountRef: WorkspaceAccountRef
+): Promise<string> => {
+  const workspaceData: Omit<Workspace, 'id' | 'createdAt'> & { createdAt: FieldValue } = {
+    name: name.trim(),
+    dimensionId: accountRef.accountId, // The single source of truth for ownership.
+    lifecycleState: 'preparatory',
+    visibility: accountRef.accountType === 'organization' ? 'visible' : 'hidden',
+    protocol: 'Standard Access Protocol',
+    scope: ['Authentication', 'Compute'],
+    capabilities: [],
+    grants: [],
+    teamIds: [],
+    createdAt: serverTimestamp(),
+  };
+
+  const docRef = await addDocument('workspaces', workspaceData);
+  return docRef.id;
+};
+
+/**
+ * Authorizes a team to access a workspace.
+ * @param workspaceId The ID of the workspace.
+ * @param teamId The ID of the team to authorize.
+ */
+export const authorizeWorkspaceTeam = async (
+  workspaceId: string,
+  teamId: string
+): Promise<void> => {
+  const updates = { teamIds: arrayUnion(teamId) };
+  return updateDocument(`workspaces/${workspaceId}`, updates);
+};
+
+/**
+ * Revokes a team's access from a workspace.
+ * @param workspaceId The ID of the workspace.
+ * @param teamId The ID of the team to revoke.
+ */
+export const revokeWorkspaceTeam = async (
+  workspaceId: string,
+  teamId: string
+): Promise<void> => {
+  const updates = { teamIds: arrayRemove(teamId) };
+  return updateDocument(`workspaces/${workspaceId}`, updates);
+};
+
+/**
+ * Grants an individual member a specific role in a workspace.
+ * Uses a transaction to atomically guard against duplicate active grants.
+ * @param workspaceId The ID of the workspace.
+ * @param userId The ID of the user to grant access to.
+ * @param role The role to grant.
+ * @param protocol The access protocol to apply.
+ */
+export const grantIndividualWorkspaceAccess = async (
+  workspaceId: string,
+  userId: string,
+  role: WorkspaceRole,
+  protocol?: string
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  return runTransaction(db, async (transaction) => {
+    const wsSnap = await transaction.get(wsRef);
+    if (!wsSnap.exists()) throw new Error('Workspace not found');
+
+    const data = wsSnap.data() as Workspace;
+    const grants = data.grants || [];
+    const hasActiveGrant = grants.some(
+      (g) => g.userId === userId && g.status === 'active'
+    );
+    if (hasActiveGrant) {
+      throw new Error('User already has an active grant for this workspace.');
+    }
+
+    const newGrant: Omit<WorkspaceGrant, 'grantedAt'> & { grantedAt: FieldValue } = {
+      grantId: crypto.randomUUID(),
+      userId,
+      role,
+      protocol: protocol || 'Standard Bridge',
+      status: 'active',
+      grantedAt: serverTimestamp(),
+    };
+    transaction.update(wsRef, { grants: arrayUnion(newGrant) });
+  });
+};
+
+/**
+ * Revokes an individual's direct access grant from a workspace.
+ * Uses a transaction to atomically read-modify-write the grants array.
+ * @param workspaceId The ID of the workspace.
+ * @param grantId The ID of the grant to revoke.
+ */
+export const revokeIndividualWorkspaceAccess = async (
+  workspaceId: string,
+  grantId: string
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  return runTransaction(db, async (transaction) => {
+    const wsSnap = await transaction.get(wsRef);
+    if (!wsSnap.exists()) throw new Error('Workspace not found');
+
+    const data = wsSnap.data() as Workspace;
+    const grants = data.grants || [];
+    const updatedGrants = grants.map((g) =>
+      g.grantId === grantId
+        ? { ...g, status: 'revoked' as const, revokedAt: serverTimestamp() }
+        : g
+    );
+    transaction.update(wsRef, { grants: updatedGrants });
+  });
+};
+
+/**
+ * Mounts (adds) capabilities to a workspace.
+ * @param workspaceId The ID of the workspace.
+ * @param capabilities An array of capability objects to mount.
+ */
+export const mountCapabilities = async (
+  workspaceId: string,
+  capabilities: Capability[]
+): Promise<void> => {
+  const updates = { capabilities: arrayUnion(...capabilities) };
+  return updateDocument(`workspaces/${workspaceId}`, updates);
+};
+
+/**
+ * Unmounts (removes) a capability from a workspace.
+ * Uses a transaction with filter-by-id to avoid fragile deep-equality matching.
+ * @param workspaceId The ID of the workspace.
+ * @param capability The capability object to unmount.
+ */
+export const unmountCapability = async (
+  workspaceId: string,
+  capability: Capability
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  return runTransaction(db, async (transaction) => {
+    const wsSnap = await transaction.get(wsRef);
+    if (!wsSnap.exists()) throw new Error('Workspace not found');
+
+    const data = wsSnap.data() as Workspace;
+    const updated = (data.capabilities || []).filter((c) => c.id !== capability.id);
+    transaction.update(wsRef, { capabilities: updated });
+  });
+};
+
+/**
+ * Updates the settings of a workspace.
+ * @param workspaceId The ID of the workspace.
+ * @param settings The settings to update.
+ */
+export const updateWorkspaceSettings = async (
+  workspaceId: string,
+  settings: {
+    name: string;
+    visibility: 'visible' | 'hidden';
+    lifecycleState: WorkspaceLifecycleState;
+    address?: Address;
+    personnel?: WorkspacePersonnel;
+    photoURL?: string;
+  }
+): Promise<void> => {
+  return updateDocument(`workspaces/${workspaceId}`, settings);
+};
+
+/**
+ * Deletes an entire workspace.
+ * @param workspaceId The ID of the workspace to delete.
+ */
+export const deleteWorkspace = async (workspaceId: string): Promise<void> => {
+  // This just deletes the doc. In a real app, we'd need a Cloud Function
+  // to delete all subcollections (tasks, issues, etc.).
+  return deleteDocument(`workspaces/${workspaceId}`);
+};
+
+export const getWorkspaceFiles = async (
+  workspaceId: string
+): Promise<WorkspaceFile[]> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  const snap = await getDoc(wsRef);
+  if (!snap.exists()) return [];
+  const data = snap.data() as Workspace;
+  return Object.values(data.files ?? {});
+};
+
+export const getWorkspaceGrants = async (
+  workspaceId: string
+): Promise<WorkspaceGrant[]> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  const snap = await getDoc(wsRef);
+  if (!snap.exists()) return [];
+  const data = snap.data() as Workspace;
+  return data.grants ?? [];
+};
+
+// =================================================================
+// WorkspaceLocation CRUD ??FR-L1/FR-L2/FR-L3
+// =================================================================
+
+/**
+ * Adds a new sub-location to a workspace.
+ * FR-L1: Workspace OWNER can create sub-locations.
+ */
+export const createWorkspaceLocation = async (
+  workspaceId: string,
+  location: WorkspaceLocation
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(wsRef);
+    if (!snap.exists()) throw new Error(`Workspace ${workspaceId} not found`);
+    const data = snap.data() as Workspace;
+    const existing = data.locations ?? [];
+    if (existing.some((l) => l.locationId === location.locationId)) {
+      throw new Error(`Location ${location.locationId} already exists`);
+    }
+    tx.update(wsRef, { locations: arrayUnion(location) });
+  });
+};
+
+/**
+ * Updates a sub-location label/description/capacity.
+ * FR-L2: Workspace OWNER can edit sub-locations.
+ */
+export const updateWorkspaceLocation = async (
+  workspaceId: string,
+  locationId: string,
+  updates: Partial<Pick<WorkspaceLocation, 'label' | 'description' | 'capacity'>>
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(wsRef);
+    if (!snap.exists()) throw new Error(`Workspace ${workspaceId} not found`);
+    const data = snap.data() as Workspace;
+    const locations = (data.locations ?? []).map((l) =>
+      l.locationId === locationId ? { ...l, ...updates } : l
+    );
+    tx.update(wsRef, { locations });
+  });
+};
+
+/**
+ * Removes a sub-location from a workspace.
+ * FR-L3: Workspace OWNER can delete sub-locations.
+ */
+export const deleteWorkspaceLocation = async (
+  workspaceId: string,
+  locationId: string
+): Promise<void> => {
+  const wsRef = doc(db, 'workspaces', workspaceId);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(wsRef);
+    if (!snap.exists()) throw new Error(`Workspace ${workspaceId} not found`);
+    const data = snap.data() as Workspace;
+    const location = (data.locations ?? []).find((l) => l.locationId === locationId);
+    if (location) {
+      tx.update(wsRef, { locations: arrayRemove(location) });
+    }
+  });
+};

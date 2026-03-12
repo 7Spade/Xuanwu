@@ -1,0 +1,19 @@
+"use client"
+
+import { useI18n } from "@/app-runtime/providers/i18n-provider"
+import { PersonalSkillPanel } from "@/features/skill-xp.slice"
+import { PageHeader } from "@/lib-ui/custom-ui"
+
+export function AccountSkillsSection() {
+  const { t } = useI18n()
+
+  return (
+    <div className="space-y-4">
+      <PageHeader
+        title={t("settings.skillProgressTitle")}
+        description={t("settings.skillProgressDescription")}
+      />
+      <PersonalSkillPanel />
+    </div>
+  )
+}

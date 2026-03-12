@@ -1,0 +1,83 @@
+"use client";
+// [職責] Workspaces list view — contains all state and rendering logic
+
+import { Terminal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+
+import { useI18n } from "@/app-runtime/providers/i18n-provider";
+import { useWorkspaceFilters } from "@/features/workspace.slice/domain.files/_hooks/use-workspace-filters";
+import { Button } from "@/shadcn-ui/button";
+import { ROUTES } from "@/shared-kernel";
+
+
+import { useApp } from "../_hooks/use-app";
+import { useVisibleWorkspaces } from "../_hooks/use-visible-workspaces";
+
+
+
+import { WorkspaceGridView } from "./workspace-grid-view";
+import { WorkspaceListHeader } from "./workspace-list-header";
+import { WorkspaceTableView } from "./workspace-table-view";
+
+
+export function WorkspacesView() {
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const { t } = useI18n();
+  const router = useRouter();
+
+  const {
+    state: { activeAccount },
+  } = useApp();
+  const allVisibleWorkspaces = useVisibleWorkspaces();
+  const filteredWorkspaces = useWorkspaceFilters(
+    allVisibleWorkspaces,
+    searchQuery
+  );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !activeAccount) return null;
+
+  return (
+    <div className="gpu-accelerated mx-auto max-w-7xl space-y-6 duration-500 animate-in fade-in">
+      <WorkspaceListHeader
+        activeAccountName={activeAccount.name}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+      />
+
+      {filteredWorkspaces.length > 0 ? (
+        viewMode === "grid" ? (
+          <WorkspaceGridView workspaces={filteredWorkspaces} />
+        ) : (
+          <WorkspaceTableView workspaces={filteredWorkspaces} />
+        )
+      ) : (
+        <div className="rounded-3xl border-2 border-dashed border-border/40 bg-muted/5 px-6 py-16 text-center sm:p-24">
+          <Terminal className="mx-auto mb-6 size-12 text-muted-foreground opacity-10 sm:size-16" />
+          <h3 className="mb-2 font-headline text-2xl font-bold">
+            {t("workspaces.spaceVoid")}
+          </h3>
+          <p className="mx-auto mb-8 max-w-sm text-sm text-muted-foreground">
+            {t("workspaces.noSpacesFound")}
+          </p>
+          <Button
+            size="lg"
+            className="rounded-full px-8 text-xs font-bold uppercase tracking-widest shadow-lg"
+            onClick={() => router.push(ROUTES.WORKSPACES_NEW)}
+          >
+            {t("workspaces.createInitialSpace")}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
