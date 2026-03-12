@@ -57,6 +57,12 @@ Use the table below to invoke specialized prompts in Copilot Chat with `/command
 | `/xuanwu-debug` | `.github/prompts/xuanwu-debug.prompt.md` |
 | `/xuanwu-architecture-realign` | `.github/prompts/xuanwu-architecture-realign.prompt.md` |
 | `/xuanwu-ssot-sync` | `.github/prompts/xuanwu-ssot-sync.prompt.md` |
+| `/ddd-domain-model` | `.github/prompts/ddd-domain-model.prompt.md` |
+| `/ddd-application-service` | `.github/prompts/ddd-application-service.prompt.md` |
+| `/ddd-infrastructure-adapter` | `.github/prompts/ddd-infrastructure-adapter.prompt.md` |
+| `/ddd-layer-audit` | `.github/prompts/ddd-layer-audit.prompt.md` |
+| `/ddd-slice-scaffold` | `.github/prompts/ddd-slice-scaffold.prompt.md` |
+| `/ddd-progressive-layering` | `.github/prompts/ddd-progressive-layering.prompt.md` |
 
 ## i18n Requirement
 
