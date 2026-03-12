@@ -68,6 +68,19 @@ export {
 } from './_actions';
 
 // =================================================================
+// CTA CRUD — Centralized Tag Authority operations [D3][D8][D21][D26]
+// Primary tag lifecycle operations for the tag authority.
+// =================================================================
+export {
+  createTag,
+  updateTag,
+  deprecateTag,
+  deleteTag,
+  getTag,
+} from './core/tags/_actions';
+export type { CreateTagInput, UpdateTagInput } from './core/tags/_actions';
+
+// =================================================================
 // Services — Semantic Index (query interface for global-search)
 // =================================================================
 export {

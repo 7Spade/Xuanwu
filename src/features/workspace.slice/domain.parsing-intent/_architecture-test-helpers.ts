@@ -28,7 +28,7 @@ export function collectSourceFiles(dir: string): string[] {
   return files;
 }
 
-/** Returns files that import directly from 'firebase/firestore' or 'firebase/app'. */
+/** Returns files that have direct SDK imports from the firebase/firestore or firebase/app packages. */
 export function findDirectFirebaseImports(dir: string): string[] {
   return collectSourceFiles(dir).filter((file) => {
     const content = fs.readFileSync(file, 'utf8');
