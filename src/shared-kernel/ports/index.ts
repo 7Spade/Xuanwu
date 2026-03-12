@@ -14,3 +14,4 @@ export type {
 } from './i-firestore.repo';
 export type { IMessaging, PushNotificationPayload } from './i-messaging';
 export type { IFileStore, UploadOptions } from './i-file-store';
+export type { ITaskRepository } from './i-task-repository';
