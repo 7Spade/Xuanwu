@@ -12,10 +12,9 @@ const DEFAULT_QUANTITY = 1;
 /** Progress percentage representing full completion. */
 const FULL_PROGRESS = 100;
 /** Terminal states that count as completed for atomic (non-divisible) tasks. */
-const COMPLETED_STATES: WorkspaceTask["progressState"][] = [
-  "completed",
-  "verified",
-  "accepted",
+const COMPLETED_STATES: WorkspaceTask["status"][] = [
+  "done",
+  "review",
 ];
 
 /**
@@ -61,7 +60,7 @@ export const buildTaskTree = (tasks: WorkspaceTask[]): TaskWithChildren[] => {
         const total = node.quantity!;
         node.progress = total > 0 ? Math.round((completed / total) * FULL_PROGRESS) : 0;
       } else {
-        node.progress = COMPLETED_STATES.includes(node.progressState) ? FULL_PROGRESS : 0;
+        node.progress = COMPLETED_STATES.includes(node.status) ? FULL_PROGRESS : 0;
       }
     } else {
       const weightedProgressSum = node.children.reduce(

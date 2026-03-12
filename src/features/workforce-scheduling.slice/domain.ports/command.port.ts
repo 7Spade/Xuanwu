@@ -30,7 +30,7 @@ export interface SchedulingCommandPort {
   updateScheduleItemStatus(
     organizationId: string,
     itemId: string,
-    newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
+    newStatus: 'confirmed' | 'cancelled' | 'completed'
   ): Promise<CommandResult>;
   updateScheduleItemDateRange(
     accountId: string,

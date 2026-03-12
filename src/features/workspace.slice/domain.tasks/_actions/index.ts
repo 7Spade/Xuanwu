@@ -91,11 +91,11 @@ export async function batchImportTasks(
  * **Matching rule**: items are matched to existing tasks by exact `name`.
  *
  * **Per-item decision table**:
- * - Old task found AND `progressState === 'todo'`
+ * - Old task found AND `status === 'draft'`
  *   ??update the task's mutable line-item fields (qty / price / discount / subtotal)
  *     **and** re-point `sourceIntentId` / `sourceIntentVersion` to the new intent so
  *     subsequent idempotency guards work correctly.
- * - Old task found BUT in any other state (doing / blocked / completed / ??
+ * - Old task found BUT in any other state (in_progress / blocked / done / …)
  *   ??create a **new** task; the in-progress work is left untouched.
  * - No old task found for this item name
  *   ??create a **new** task (net-new line item introduced in the re-parse).
@@ -141,7 +141,7 @@ export async function reconcileIntentTasks(
       items.map(async (item) => {
         const oldTask = oldTasksByName.get(item.name);
 
-        if (oldTask && oldTask.progressState === 'todo') {
+        if (oldTask && oldTask.status === 'draft') {
           await reconcileTaskFacade(
             workspaceId,
             oldTask.id,

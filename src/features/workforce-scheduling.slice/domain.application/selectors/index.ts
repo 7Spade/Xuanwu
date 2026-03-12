@@ -48,16 +48,16 @@ export function selectAllScheduleItems(
 }
 
 /**
- * Returns items that are awaiting org assignment (status === 'PROPOSAL').
+ * Returns items that are awaiting org assignment (status === 'pending').
  */
 export function selectPendingProposals(
   items: ScheduleItemWithWorkspace[]
 ): ScheduleItemWithWorkspace[] {
-  return items.filter(item => item.status === 'PROPOSAL');
+  return items.filter(item => item.status === 'pending');
 }
 
 /**
- * Returns OFFICIAL and REJECTED items updated within the last 7 days, sorted
+ * Returns confirmed and cancelled items updated within the last 7 days, sorted
  * by most-recently-updated first.
  */
 export function selectDecisionHistory(
@@ -67,14 +67,14 @@ export function selectDecisionHistory(
   return items
     .filter(
       item =>
-        (item.status === 'OFFICIAL' || item.status === 'REJECTED') &&
+        (item.status === 'confirmed' || item.status === 'cancelled') &&
         (item.updatedAt?.toDate() ?? new Date(0)) > sevenDaysAgo
     )
     .sort((a, b) => (b.updatedAt?.seconds ?? 0) - (a.updatedAt?.seconds ?? 0));
 }
 
 /**
- * Returns OFFICIAL items whose startDate is in the future, enriched with
+ * Returns confirmed items whose startDate is in the future, enriched with
  * the provided members list and sorted by startDate ascending.
  */
 export function selectUpcomingEvents<M>(
@@ -84,7 +84,7 @@ export function selectUpcomingEvents<M>(
   return items
     .filter(
       item =>
-        item.status === 'OFFICIAL' &&
+        item.status === 'confirmed' &&
         item.startDate != null &&
         isFuture(item.startDate.toDate())
     )
@@ -93,7 +93,7 @@ export function selectUpcomingEvents<M>(
 }
 
 /**
- * Returns OFFICIAL items that are currently in progress (today falls within
+ * Returns confirmed items that are currently in progress (today falls within
  * [startOfDay(startDate), endOfDay(endDate)]), enriched with the members list
  * and sorted by startDate ascending.
  */
@@ -104,7 +104,7 @@ export function selectPresentEvents<M>(
   const today = new Date();
   return items
     .filter(item => {
-      if (item.status !== 'OFFICIAL' || item.startDate == null) return false;
+      if (item.status !== 'confirmed' || item.startDate == null) return false;
       const start = item.startDate.toDate();
       const end = item.endDate?.toDate() ?? start;
       return isWithinInterval(today, { start: startOfDay(start), end: endOfDay(end) });

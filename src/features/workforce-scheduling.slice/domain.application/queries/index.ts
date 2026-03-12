@@ -80,14 +80,14 @@ export function subscribeToPendingProposals(
   orgId: string,
   onUpdate: (items: ScheduleItem[]) => void
 ): Unsubscribe {
-  return subscribeToOrgScheduleProposals(orgId, onUpdate, { status: 'PROPOSAL' });
+  return subscribeToOrgScheduleProposals(orgId, onUpdate, { status: 'pending' });
 }
 
 export function subscribeToConfirmedProposals(
   orgId: string,
   onUpdate: (items: ScheduleItem[]) => void
 ): Unsubscribe {
-  return subscribeToOrgScheduleProposals(orgId, onUpdate, { status: 'OFFICIAL' });
+  return subscribeToOrgScheduleProposals(orgId, onUpdate, { status: 'confirmed' });
 }
 
 // =================================================================

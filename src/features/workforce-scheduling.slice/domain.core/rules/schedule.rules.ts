@@ -14,10 +14,11 @@ import type { ScheduleStatus } from '@/shared-kernel'
  * Key: current status ??Value: allowed next statuses.
  */
 export const VALID_STATUS_TRANSITIONS: Record<ScheduleStatus, ScheduleStatus[]> = {
-  PROPOSAL: ["OFFICIAL", "REJECTED"],
-  OFFICIAL: ["COMPLETED", "REJECTED"],
-  REJECTED: ["PROPOSAL"],
-  COMPLETED: [],
+  pending:      ['confirmed', 'cancelled'],
+  confirmed:    ['in_execution', 'completed', 'cancelled'],
+  in_execution: ['completed', 'cancelled'],
+  completed:    [],
+  cancelled:    [],
 }
 
 // ---------------------------------------------------------------------------

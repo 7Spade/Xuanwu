@@ -33,7 +33,7 @@ export function ProposalRow({ item, orgMembers, eligibleMembers, orgId }: Govern
   const handleApprove = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await updateScheduleItemStatus(orgId, item.id, 'OFFICIAL');
+      const result = await updateScheduleItemStatus(orgId, item.id, 'confirmed');
       if (result.success) {
         toast({ title: '排程已核准', description: `「${item.title}」已確認。` });
       } else {
@@ -67,7 +67,7 @@ export function ProposalRow({ item, orgMembers, eligibleMembers, orgId }: Govern
   const handleCancel = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await updateScheduleItemStatus(orgId, item.id, 'REJECTED');
+      const result = await updateScheduleItemStatus(orgId, item.id, 'cancelled');
       if (result.success) {
         toast({ title: '提案已取消', description: `「${item.title}」已由 HR 撤回。` });
       } else {

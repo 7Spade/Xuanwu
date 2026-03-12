@@ -5,9 +5,9 @@
  * Per docs/prd-schedule-workforce-skills.md FR-W0 / FR-W6 and
  * docs/architecture/README.md (VS6 Demand Board read model):
  *
- *   PROPOSAL  — proposal submitted, awaiting assignment (visible)
- *   OFFICIAL  — member confirmed (visible with assignee details)
- *   REJECTED / COMPLETED — closed (hidden from default board view)
+ *   pending   — proposal submitted, awaiting assignment (visible)
+ *   confirmed — member confirmed (visible with assignee details)
+ *   cancelled / completed — closed (hidden from default board view)
  *
  * Single source of truth: accounts/{orgId}/schedule_items/{scheduleItemId}
  *
@@ -46,7 +46,7 @@ export async function getDemandBoardItem(
 
 /**
  * Returns all open demand-board items for an org.
- * "Open" means status is PROPOSAL or OFFICIAL; REJECTED / COMPLETED are excluded.
+ * "Open" means status is pending or confirmed; cancelled / completed are excluded.
  *
  * Results are ordered by createdAt descending (newest first).
  */
@@ -57,7 +57,7 @@ export async function getOpenDemandBoardItems(
   const snap = await getDocs(
     query(
       ref,
-      where('status', 'in', ['PROPOSAL', 'OFFICIAL'] satisfies ScheduleStatus[]),
+      where('status', 'in', ['pending', 'confirmed'] satisfies ScheduleStatus[]),
       orderBy('createdAt', 'desc')
     )
   );
@@ -69,7 +69,7 @@ export async function getOpenDemandBoardItems(
 
 /**
  * Returns all demand-board items for an org with a specific status.
- * Use getOpenDemandBoardItems for the default board view (PROPOSAL + OFFICIAL).
+ * Use getOpenDemandBoardItems for the default board view (pending + confirmed).
  */
 export async function getDemandBoardItemsByStatus(
   orgId: string,

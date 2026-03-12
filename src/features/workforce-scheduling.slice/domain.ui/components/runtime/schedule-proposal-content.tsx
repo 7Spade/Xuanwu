@@ -62,7 +62,7 @@ export function ScheduleProposalContent({ fullPage = false }: ScheduleProposalCo
       startDate: data.startDate ?? null,
       endDate: data.endDate ?? null,
       location: effectiveTask?.location ?? data.location,
-      status: "PROPOSAL",
+      status: "pending",
       originType: "MANUAL",
       assigneeIds: [],
       ...(effectiveTask?.id ? { originTaskId: effectiveTask.id } : {}),

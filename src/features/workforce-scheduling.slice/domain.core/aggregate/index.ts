@@ -64,11 +64,11 @@ export type {
  *   assignmentCancelled ??confirmed assignment withdrawn post-approval; ScheduleAssignmentCancelled event published
  *
  * These domain states map to ScheduleStatus as follows:
- *   proposed            -> PROPOSAL
- *   confirmed           -> OFFICIAL
- *   cancelled           -> REJECTED
- *   completed           -> COMPLETED
- *   assignmentCancelled -> REJECTED
+ *   proposed            -> pending
+ *   confirmed           -> confirmed
+ *   cancelled           -> cancelled
+ *   completed           -> completed
+ *   assignmentCancelled -> cancelled
  */
 /** Firestore path for a schedule item (single source of truth). */
 function scheduleItemPath(orgId: string, scheduleItemId: string): string {
@@ -190,7 +190,7 @@ export async function approveOrgScheduleProposal(
   const writeOp: WriteOp = {
     path: scheduleItemPath(opts.orgId, scheduleItemId),
     data: {
-      status: 'OFFICIAL' satisfies ScheduleStatus,
+      status: 'confirmed' satisfies ScheduleStatus,
       version: nextVersion,
     },
     arrayUnionFields: { assigneeIds: [targetAccountId] },
@@ -248,7 +248,7 @@ async function _buildCancelWriteOp(
 
   return {
     path: scheduleItemPath(opts.orgId, scheduleItemId),
-    data: { status: 'REJECTED' satisfies ScheduleStatus },
+    data: { status: 'cancelled' satisfies ScheduleStatus },
   };
 }
 
@@ -294,7 +294,7 @@ export async function cancelOrgScheduleProposal(
 
   return {
     path: scheduleItemPath(orgId, scheduleItemId),
-    data: { status: 'REJECTED' satisfies ScheduleStatus },
+    data: { status: 'cancelled' satisfies ScheduleStatus },
   };
 }
 
@@ -327,9 +327,9 @@ export async function completeOrgSchedule(
   const existing = await getDocumentByPathFromGateway<ScheduleItem>(
     scheduleItemPath(orgId, scheduleItemId)
   );
-  if (!existing || existing.status !== 'OFFICIAL') {
+  if (!existing || existing.status !== 'confirmed') {
     throw new Error(
-      `completeOrgSchedule: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
+      `completeOrgSchedule: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "confirmed".`
     );
   }
   const nextVersion = (existing.version ?? 1) + 1;
@@ -352,7 +352,7 @@ export async function completeOrgSchedule(
   return {
     path: scheduleItemPath(orgId, scheduleItemId),
     data: {
-      status: 'COMPLETED' satisfies ScheduleStatus,
+      status: 'completed' satisfies ScheduleStatus,
       version: nextVersion,
     },
   };
@@ -390,9 +390,9 @@ export async function cancelOrgScheduleAssignment(
   const existing = await getDocumentByPathFromGateway<ScheduleItem>(
     scheduleItemPath(orgId, scheduleItemId)
   );
-  if (!existing || existing.status !== 'OFFICIAL') {
+  if (!existing || existing.status !== 'confirmed') {
     throw new Error(
-      `cancelOrgScheduleAssignment: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "OFFICIAL".`
+      `cancelOrgScheduleAssignment: invalid state transition ??scheduleItemId "${scheduleItemId}" is "${existing?.status ?? 'not found'}", expected "confirmed".`
     );
   }
   const nextVersion = (existing.version ?? 1) + 1;
@@ -416,7 +416,7 @@ export async function cancelOrgScheduleAssignment(
   return {
     path: scheduleItemPath(orgId, scheduleItemId),
     data: {
-      status: 'REJECTED' satisfies ScheduleStatus,
+      status: 'cancelled' satisfies ScheduleStatus,
       version: nextVersion,
     },
   };

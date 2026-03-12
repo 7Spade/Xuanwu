@@ -208,7 +208,7 @@ export function useWorkspaceEventHandler() {
             title: `Review: ${payload.task.name}`,
             startDate: new Date(),
             endDate: new Date(),
-            status: "PROPOSAL",
+            status: "pending",
             originType: "TASK_AUTOMATION",
             originTaskId: payload.task.id,
             assigneeIds: [],
@@ -252,7 +252,7 @@ export function useWorkspaceEventHandler() {
             title: `Assignment: ${payload.taskName}`,
             startDate: new Date(),
             endDate: new Date(),
-            status: "PROPOSAL",
+            status: "pending",
             originType: "TASK_AUTOMATION",
             originTaskId: payload.taskId,
             assigneeIds: [payload.assigneeId],
@@ -402,7 +402,7 @@ export function useWorkspaceEventHandler() {
     // VS6 scheduling saga — enrich the proposal with org-domain fields
     // (proposedBy, version, traceId, requiredSkills) as soon as it is published.
     // The event is fired by createScheduleItem in workspace-provider after the
-    // Firestore document has been created with status=PROPOSAL.
+    // Firestore document has been created with status=pending.
     const unsubScheduleProposed = eventBus.subscribe(
       "workspace:schedule:proposed",
       async (payload) => {

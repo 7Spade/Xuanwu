@@ -17,7 +17,7 @@ export default function GovernancePage() {
 
   const proposals = useMemo(() =>
     Object.values(accountState.schedule_items).filter(
-      (item: ScheduleItem) => item.workspaceId === workspace.id && item.status === "PROPOSAL"
+      (item: ScheduleItem) => item.workspaceId === workspace.id && item.status === "pending"
     ),
     [accountState.schedule_items, workspace.id]
   )

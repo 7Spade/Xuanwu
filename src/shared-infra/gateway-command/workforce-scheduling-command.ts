@@ -67,7 +67,7 @@ export async function approveScheduleItemWithMemberThroughGateway(
 export async function updateScheduleItemStatusThroughGateway(
   organizationId: string,
   itemId: string,
-  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED',
+  newStatus: 'confirmed' | 'cancelled' | 'completed',
 ): Promise<void> {
   await setScheduleItemStatus(organizationId, itemId, newStatus);
 }

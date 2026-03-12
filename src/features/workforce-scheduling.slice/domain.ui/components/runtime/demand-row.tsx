@@ -62,7 +62,7 @@ export function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isOpen = item.status === "PROPOSAL";
+  const isOpen = item.status === "pending";
 
   const statusBadge = isOpen ? (
     <Badge variant="outline" className="shrink-0 border-amber-500 text-[9px] uppercase tracking-widest text-amber-600">
@@ -102,7 +102,7 @@ export function DemandRow({ item, orgMembers, orgId }: DemandRowProps) {
   const handleCancel = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await updateScheduleItemStatus(orgId, item.id, "REJECTED");
+      const result = await updateScheduleItemStatus(orgId, item.id, "cancelled");
       if (result.success) {
         toast({ title: "請求已取消", description: `${item.title} 已通知 HR 更新狀態。` });
       } else {

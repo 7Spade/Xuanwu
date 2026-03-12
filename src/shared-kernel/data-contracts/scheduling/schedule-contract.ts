@@ -15,7 +15,7 @@ export interface Location {
   description: string;
 }
 
-export type ScheduleStatus = 'PROPOSAL' | 'OFFICIAL' | 'REJECTED' | 'COMPLETED';
+export type ScheduleStatus = 'pending' | 'confirmed' | 'in_execution' | 'completed' | 'cancelled';
 export type ScheduleTemporalKind = 'point' | 'range' | 'allDay';
 
 export interface ScheduleItem {

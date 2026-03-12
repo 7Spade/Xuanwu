@@ -61,8 +61,7 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
               progress: 0,
               type: item.taskTypeName ?? 'Imported',
               priority: 'medium',
-              progressState: 'todo',
-              sourceIntentId: payload.intentId,
+              status: 'draft',
               sourceIntentIndex: item.sourceIntentIndex ?? originalIndex,
               ...(item.requiredSkills?.length
                 ? { requiredSkills: item.requiredSkills }
@@ -129,7 +128,7 @@ export function createWorkspaceImportHandler(input: CreateWorkspaceImportHandler
                       progress: 0,
                       type: 'Imported',
                       priority: 'medium',
-                      progressState: 'todo',
+                      status: 'draft',
                       ...(payload.skillRequirements?.length
                         ? { requiredSkills: payload.skillRequirements }
                         : {}),

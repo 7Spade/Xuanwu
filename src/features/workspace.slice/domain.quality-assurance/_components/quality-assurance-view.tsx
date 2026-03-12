@@ -28,7 +28,7 @@ export function WorkspaceQualityAssurance() {
   // 1. Independent State Hydration: Consumes task data from the parent context on mount.
   useEffect(() => {
     const initialTasks = Object.values(workspace.tasks || {}).filter(
-      (task) => task.progressState === "completed"
+      (task) => task.status === "done"
     );
     setQaTasks(initialTasks);
   }, [workspace.tasks]);
@@ -73,7 +73,7 @@ export function WorkspaceQualityAssurance() {
 
 
   const handleApprove = async (task: WorkspaceTask) => {
-    const updates = { progressState: 'verified' as const };
+    const updates = { status: 'review' as const };
     
     try {
       await updateTask(task.id, updates);
@@ -94,7 +94,7 @@ export function WorkspaceQualityAssurance() {
   };
 
   const handleReject = async (task: WorkspaceTask) => {
-    const updates = { progressState: 'todo' as const };
+    const updates = { status: 'draft' as const };
     
     try {
       await updateTask(task.id, updates);

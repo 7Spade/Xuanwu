@@ -165,7 +165,7 @@ export function UnifiedCalendarGrid({
                             <div 
                                 className={cn(
                                     "rounded-lg border text-xs", 
-                                    item.status === 'PROPOSAL' ? 'border-dashed border-primary/50 bg-primary/5' : 'bg-background shadow-sm'
+                                    item.status === 'pending' ? 'border-dashed border-primary/50 bg-primary/5' : 'bg-background shadow-sm'
                                 )}
                             >
                             {/* Section 1: Title — workspace name prepended in org view */}
@@ -216,7 +216,7 @@ export function UnifiedCalendarGrid({
                                           {req.quantity > 1 && ` ×${req.quantity}`}
                                         </Badge>
                                         {/* One assign button per skill requirement row */}
-                                        {item.status === 'PROPOSAL' && renderItemActions && renderItemActions(item)}
+                                        {item.status === 'pending' && renderItemActions && renderItemActions(item)}
                                       </div>
                                     ))
                                   ) : (
@@ -234,7 +234,7 @@ export function UnifiedCalendarGrid({
                                         </TooltipProvider>
                                       ))}
                                       {/* Assign button when there are no skill requirements */}
-                                      {item.status === 'PROPOSAL' && renderItemActions && renderItemActions(item)}
+                                      {item.status === 'pending' && renderItemActions && renderItemActions(item)}
                                     </div>
                                   )}
                                 </div>
@@ -255,7 +255,7 @@ export function UnifiedCalendarGrid({
                                       ))}
                                     </div>
                                   )}
-                                  {viewMode === 'organization' && item.status === 'PROPOSAL' && onApproveProposal && onRejectProposal && (
+                                  {viewMode === 'organization' && item.status === 'pending' && onApproveProposal && onRejectProposal && (
                                     <div className="flex gap-0.5">
                                         <Button size="icon" variant="ghost" className="size-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onRejectProposal(item); }}>
                                             <X className="size-3"/>

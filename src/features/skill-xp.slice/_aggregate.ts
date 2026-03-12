@@ -29,8 +29,8 @@ import { appendXpLedgerEntry } from './_ledger';
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Maximum XP value per skill ??matches TIER_DEFINITIONS cap (Titan tier). */
-export const SKILL_XP_MAX = 525;
+/** Maximum XP value per skill — L6 domain-model.md §XP cap: 524 inclusive (Titan tier). */
+export const SKILL_XP_MAX = 524;
 /** Minimum XP value per skill. */
 export const SKILL_XP_MIN = 0;
 

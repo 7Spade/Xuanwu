@@ -54,7 +54,7 @@ export function useWorkspaceTimeline() {
 
     return Object.values(workspace.tasks ?? {})
       .filter((task) => !scheduledTaskIds.has(task.id))
-      .filter((task) => !['completed', 'verified', 'accepted'].includes(task.progressState));
+      .filter((task) => !['done', 'review', 'archived', 'cancelled'].includes(task.status));
   }, [items, workspace.tasks]);
 
   return {

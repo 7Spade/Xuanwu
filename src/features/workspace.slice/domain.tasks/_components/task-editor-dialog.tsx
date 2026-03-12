@@ -84,11 +84,11 @@ export function TaskEditorDialog({
           <div className="space-y-1.5">
             <Label className="ml-1 text-xs font-semibold text-foreground">{t('tasks.status')}</Label>
             <Select
-              value={editingTask?.progressState}
+              value={editingTask?.status}
               onValueChange={(v) =>
                 setEditingTask({
                   ...editingTask,
-                  progressState: v as WorkspaceTask['progressState'],
+                  status: v as WorkspaceTask['status'],
                 })
               }
             >
@@ -96,12 +96,11 @@ export function TaskEditorDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="todo">{t('tasks.toDo')}</SelectItem>
-                <SelectItem value="doing">{t('tasks.doing')}</SelectItem>
+                <SelectItem value="draft">{t('tasks.toDo')}</SelectItem>
+                <SelectItem value="in_progress">{t('tasks.doing')}</SelectItem>
                 <SelectItem value="blocked">{t('tasks.blocked')}</SelectItem>
-                <SelectItem value="completed">{t('tasks.completed')}</SelectItem>
-                <SelectItem value="verified">{t('tasks.verified')}</SelectItem>
-                <SelectItem value="accepted">{t('tasks.accepted')}</SelectItem>
+                <SelectItem value="done">{t('tasks.completed')}</SelectItem>
+                <SelectItem value="review">{t('tasks.verified')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

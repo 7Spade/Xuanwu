@@ -31,11 +31,13 @@ L0 External Triggers
 | `account.slice` | VS2 | User account, wallet, governance policy |
 | `identity.slice` | VS1 | Authentication, active context, token refresh |
 | `organization.slice` | VS3 | Org membership, roles, partner management |
+| `finance.slice` | VS4 | Platform billing, subscription, wallet ledger |
 | `workspace.slice` | VS5 | Workspace tasks, workflow, document parsing |
 | `workforce-scheduling.slice` | VS6 | Schedule proposals, assignment sagas |
 | `skill-xp.slice` | VS7 | Skill XP tracking, tag-lifecycle |
 | `notification-hub.slice` | VS8 | Push notification routing, FCM |
 | `semantic-graph.slice` | VS9 | Semantic tag graph, indexed search backend |
+| `portal.slice` | — | Portal shell state bridge (routing context, not domain) |
 | `global-search.slice` | — | Cross-slice semantic search (Cmd+K) [D26] |
 | `projection-bus` | — | Event projections → read-model views [L5] |
 | `infra.event-router` | — | Integration Event Router (IER) [L4] |

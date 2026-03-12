@@ -60,11 +60,11 @@ export function OrgScheduleGovernance() {
   );
 
   const pending = useMemo(
-    () => allItems.filter((i) => i.status === 'PROPOSAL'),
+    () => allItems.filter((i) => i.status === 'pending'),
     [allItems]
   );
   const confirmed = useMemo(
-    () => allItems.filter((i) => i.status === 'OFFICIAL'),
+    () => allItems.filter((i) => i.status === 'confirmed'),
     [allItems]
   );
 

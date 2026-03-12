@@ -150,7 +150,7 @@ export function WorkspaceTimeline() {
       workspaceName: workspace.name,
       title: task.name,
       description: task.description,
-      status: 'PROPOSAL',
+      status: 'pending',
       originType: 'TASK_AUTOMATION',
       originTaskId: task.id,
       assigneeIds: task.assigneeId ? [String(task.assigneeId)] : [],

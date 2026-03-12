@@ -195,6 +195,52 @@ export type { IAuthService, AuthUser } from './ports';
 export type { IFirestoreRepo, FirestoreDoc, Timestamp, WriteOptions } from './ports';
 export type { IMessaging, PushNotificationPayload } from './ports';
 export type { IFileStore, UploadOptions } from './ports';
+export type { EventBus } from './ports';
+export type { IdempotencyStore } from './ports';
+export type { AggregateRoot } from './ports';
+export type { NotificationGateway } from './ports';
+export type { AiServiceAdapter, SkillSuggestion } from './ports';
+
+export { OptimisticLockException } from './errors';
+
+// ─── State Machines (L6) ──────────────────────────────────────────────────────
+// Per docs/architecture/models/domain-model.md — 4 aggregate state machines.
+export type {
+	TaskItemStatus,
+	TaskItemEvent,
+	TaskItemTransitionResult,
+} from './state-machines';
+export {
+	transitionTaskItem,
+	canTransitionTaskItem,
+	TASK_ITEM_INVALID_TRANSITION,
+} from './state-machines';
+export type { PostStatus, PostEvent, PostTransitionResult } from './state-machines';
+export {
+	transitionPost,
+	canTransitionPost,
+	POST_INVALID_TRANSITION,
+} from './state-machines';
+export type {
+	ScheduleItemStatus,
+	ScheduleItemEvent,
+	ScheduleItemTransitionResult,
+} from './state-machines';
+export {
+	transitionScheduleItem,
+	canTransitionScheduleItem,
+	SCHEDULE_ITEM_INVALID_TRANSITION,
+} from './state-machines';
+export type {
+	SkillMintLogStage,
+	SkillMintLogEvent,
+	SkillMintLogTransitionResult,
+} from './state-machines';
+export {
+	transitionSkillMintLog,
+	canTransitionSkillMintLog,
+	SKILL_MINT_LOG_INVALID_TRANSITION,
+} from './state-machines';
 
 export type {
 	ScheduleStatus,

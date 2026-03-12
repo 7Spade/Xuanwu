@@ -157,7 +157,7 @@ export function TaskTreeNode({
             )}
             {visibleColumns.has('status') && (
               <div className="flex items-center justify-end">
-                {node.progress === 100 && ['todo', 'doing'].includes(node.progressState) ? (
+                {node.progress === 100 && ['draft', 'in_progress'].includes(node.status) ? (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -171,13 +171,11 @@ export function TaskTreeNode({
                   <div
                     className={cn(
                       'w-2 h-2 rounded-full self-center',
-                      node.progressState === 'completed'
+                      node.status === 'done'
                         ? 'bg-blue-500'
-                        : node.progressState === 'verified'
+                        : node.status === 'review'
                         ? 'bg-purple-500'
-                        : node.progressState === 'accepted'
-                        ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]'
-                        : node.progressState === 'blocked'
+                        : node.status === 'blocked'
                         ? 'bg-red-500'
                         : 'bg-amber-500'
                     )}
@@ -221,7 +219,7 @@ export function TaskTreeNode({
           >
             <CalendarPlus className="size-3.5" />
           </Button>
-          {['todo', 'doing'].includes(node.progressState) && (
+          {['draft', 'in_progress'].includes(node.status) && (
             <Button
               variant="ghost"
               size="icon"

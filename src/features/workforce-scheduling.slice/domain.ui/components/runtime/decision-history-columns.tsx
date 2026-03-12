@@ -35,10 +35,10 @@ export const decisionHistoryColumns: ColumnDef<DecisionHistoryItem>[] = [
     header: "決策結果",
     cell: ({ row }) => {
       const status = row.original.status
-      if (status === "OFFICIAL") {
+      if (status === "confirmed") {
         return <Badge variant="secondary" className="border-green-500/20 bg-green-500/10 text-green-700"><CheckCircle className="mr-1 size-3" />已核准</Badge>
       }
-      if (status === "REJECTED") {
+      if (status === "cancelled") {
          return <Badge variant="destructive" className="border-red-500/20 bg-red-500/10 text-red-700"><XCircle className="mr-1 size-3" />已駁回</Badge>
       }
       return <Badge variant="outline">{status}</Badge>

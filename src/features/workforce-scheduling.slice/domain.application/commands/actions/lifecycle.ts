@@ -37,7 +37,7 @@ export async function approveScheduleItemWithMember(
 export async function updateScheduleItemStatus(
   organizationId: string,
   itemId: string,
-  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
+  newStatus: 'confirmed' | 'cancelled' | 'completed'
 ): Promise<CommandResult> {
   try {
     await updateScheduleItemStatusThroughGateway(organizationId, itemId, newStatus);

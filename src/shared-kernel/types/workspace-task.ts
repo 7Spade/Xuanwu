@@ -8,6 +8,7 @@
 import type { SkillRequirement } from '@/shared-kernel/data-contracts/skill-tier';
 import type { Location } from '@/shared-kernel/data-contracts/scheduling/schedule-contract';
 import type { Timestamp } from '@/shared-kernel';
+import type { TaskItemStatus } from '@/shared-kernel/state-machines';
 
 // Location is owned by shared-kernel/schedule-contract [D19], re-exported here for backward compatibility.
 export type { Location };
@@ -16,7 +17,7 @@ export interface WorkspaceTask {
   id: string;
   name: string;
   description?: string;
-  progressState: 'todo' | 'doing' | 'blocked' | 'completed' | 'verified' | 'accepted';
+  status: TaskItemStatus;
   priority: 'low' | 'medium' | 'high';
   type?: string;
   progress?: number;

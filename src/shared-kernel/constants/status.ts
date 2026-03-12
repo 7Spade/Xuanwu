@@ -23,10 +23,11 @@ import type { ScheduleStatus, InviteState, NotificationType, Presence } from '@/
 
 /** Stable ordered list of ScheduleStatus values. */
 export const SCHEDULE_STATUSES: readonly ScheduleStatus[] = [
-  'PROPOSAL',
-  'OFFICIAL',
-  'REJECTED',
-  'COMPLETED',
+  'pending',
+  'confirmed',
+  'in_execution',
+  'completed',
+  'cancelled',
 ] as const;
 
 export interface ScheduleStatusMeta {
@@ -40,33 +41,40 @@ export interface ScheduleStatusMeta {
 }
 
 export const SCHEDULE_STATUS_META: Record<ScheduleStatus, ScheduleStatusMeta> = {
-  PROPOSAL: {
-    status: 'PROPOSAL',
+  pending: {
+    status: 'pending',
     zhLabel: '提案中',
-    enLabel: 'Proposal',
+    enLabel: 'Pending',
     colorClass: 'bg-amber-100 text-amber-800',
     bgClass: 'bg-amber-50',
   },
-  OFFICIAL: {
-    status: 'OFFICIAL',
+  confirmed: {
+    status: 'confirmed',
     zhLabel: '已排班',
-    enLabel: 'Official',
+    enLabel: 'Confirmed',
     colorClass: 'bg-green-100 text-green-800',
     bgClass: 'bg-green-50',
   },
-  REJECTED: {
-    status: 'REJECTED',
-    zhLabel: '已拒絕',
-    enLabel: 'Rejected',
-    colorClass: 'bg-red-100 text-red-800',
-    bgClass: 'bg-red-50',
+  in_execution: {
+    status: 'in_execution',
+    zhLabel: '執行中',
+    enLabel: 'In Execution',
+    colorClass: 'bg-blue-100 text-blue-800',
+    bgClass: 'bg-blue-50',
   },
-  COMPLETED: {
-    status: 'COMPLETED',
+  completed: {
+    status: 'completed',
     zhLabel: '已完成',
     enLabel: 'Completed',
     colorClass: 'bg-slate-100 text-slate-600',
     bgClass: 'bg-slate-50',
+  },
+  cancelled: {
+    status: 'cancelled',
+    zhLabel: '已取消',
+    enLabel: 'Cancelled',
+    colorClass: 'bg-red-100 text-red-800',
+    bgClass: 'bg-red-50',
   },
 } as const;
 

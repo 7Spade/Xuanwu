@@ -59,7 +59,7 @@ export const createScheduleItem = async (
 export const updateScheduleItemStatus = async (
   organizationId: string,
   itemId: string,
-  newStatus: 'OFFICIAL' | 'REJECTED' | 'COMPLETED'
+  newStatus: 'confirmed' | 'cancelled' | 'completed'
 ): Promise<void> => {
   const itemRef = doc(db, `accounts/${organizationId}/schedule_items`, itemId)
   return updateDoc(itemRef, { status: newStatus, updatedAt: serverTimestamp() })
@@ -79,7 +79,7 @@ export const updateScheduleItemDateRange = async (
 }
 
 /**
- * Assigns a member to a schedule item and marks it OFFICIAL in a single write.
+ * Assigns a member to a schedule item and marks it confirmed in a single write.
  * Used by scheduling governance flows to keep UI views in sync via
  * the single source of truth: accounts/{orgId}/schedule_items.
  */
@@ -91,7 +91,7 @@ export const assignMemberAndApprove = async (
   const itemRef = doc(db, `accounts/${organizationId}/schedule_items`, itemId)
   return updateDoc(itemRef, {
     assigneeIds: arrayUnion(memberId),
-    status: 'OFFICIAL',
+    status: 'confirmed',
     updatedAt: serverTimestamp(),
   })
 }

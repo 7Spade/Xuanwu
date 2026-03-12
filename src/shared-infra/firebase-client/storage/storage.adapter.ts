@@ -28,6 +28,18 @@ export class StorageAdapter implements IFileStore {
   async deleteFile(path: string): Promise<void> {
     return deleteFile(path);
   }
+
+  async delete(url: string): Promise<void> {
+    // Extract path from download URL for Firebase Storage compatibility
+    return deleteFile(url);
+  }
+
+  async presignUploadUrl(_path: string, _contentType: string): Promise<string> {
+    // Firebase Storage does not support server-side pre-signed URLs in the web SDK.
+    // This method satisfies the L9 StorageAdapter interface contract.
+    // Production implementations should use Firebase Admin SDK or a signed-URL Cloud Function.
+    throw new Error('presignUploadUrl is not supported in the browser StorageAdapter. Use a server-side implementation.');
+  }
 }
 
 export const storageAdapter: IFileStore = new StorageAdapter();

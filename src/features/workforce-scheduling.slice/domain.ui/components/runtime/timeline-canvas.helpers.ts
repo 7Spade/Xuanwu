@@ -51,13 +51,15 @@ export function escapeHtml(input: string): string {
 
 export function toTimelineClassName(item: ScheduleItem): string {
   switch (item.status) {
-    case "PROPOSAL":
+    case "pending":
       return "bg-primary/10 border-primary/40";
-    case "OFFICIAL":
+    case "confirmed":
       return "bg-emerald-500/10 border-emerald-500/40";
-    case "COMPLETED":
+    case "in_execution":
+      return "bg-blue-500/10 border-blue-500/40";
+    case "completed":
       return "bg-muted border-muted-foreground/30";
-    case "REJECTED":
+    case "cancelled":
       return "bg-destructive/10 border-destructive/40";
     default:
       return "bg-background border-border";

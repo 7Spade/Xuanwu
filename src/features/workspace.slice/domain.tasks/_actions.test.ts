@@ -58,7 +58,7 @@ describe('workspace business.tasks updateTask', () => {
 
     const updates: Partial<WorkspaceTask> = {
       title: 'Only editable fields',
-      progressState: 'doing',
+      status: 'in_progress',
     };
 
     await updateTask('ws-1', 'task-2', updates);
@@ -92,7 +92,7 @@ const makeTask = (overrides: Partial<WorkspaceTask> = {}): WorkspaceTask => ({
   progress: 0,
   type: 'Imported',
   priority: 'medium',
-  progressState: 'todo',
+  status: 'draft',
   sourceIntentId: 'old-intent',
   sourceIntentVersion: 1,
   createdAt: { seconds: 0, nanoseconds: 0, toDate: () => new Date(0), toMillis: () => 0 } as unknown as import('firebase/firestore').Timestamp,
@@ -109,7 +109,7 @@ describe('reconcileIntentTasks', () => {
     progress: 0,
     type: 'Imported' as const,
     priority: 'medium' as const,
-    progressState: 'todo' as const,
+    status: 'draft' as const,
   };
 
   beforeEach(() => {
@@ -119,7 +119,7 @@ describe('reconcileIntentTasks', () => {
   });
 
   it('reconciles existing todo tasks in-place and does not create duplicates', async () => {
-    const existingTask = makeTask({ name: 'Widget A', progressState: 'todo' });
+    const existingTask = makeTask({ name: 'Widget A', status: 'draft' });
     mockGetTasksBySourceIntentIdFacade.mockResolvedValue([existingTask]);
     mockReconcileTaskFacade.mockResolvedValue(undefined);
 
@@ -141,7 +141,7 @@ describe('reconcileIntentTasks', () => {
   });
 
   it('creates a new task when an existing task is not in todo state', async () => {
-    const existingTask = makeTask({ name: 'Widget B', progressState: 'doing' });
+    const existingTask = makeTask({ name: 'Widget B', status: 'in_progress' });
     mockGetTasksBySourceIntentIdFacade.mockResolvedValue([existingTask]);
     mockCreateTaskFacade.mockResolvedValue('new-task-id');
 
@@ -175,9 +175,9 @@ describe('reconcileIntentTasks', () => {
   it('produces the minimum number of writes for mixed scenarios (9 todo + 1 doing + 2 new)', async () => {
     // Simulate: 9 matching todo tasks, 1 matching doing task, 2 net-new items.
     const todoTasks = Array.from({ length: 9 }, (_, i) =>
-      makeTask({ id: `t-${i}`, name: `Item ${i}`, progressState: 'todo' })
+      makeTask({ id: `t-${i}`, name: `Item ${i}`, status: 'draft' })
     );
-    const doingTask = makeTask({ id: 't-doing', name: 'Item Doing', progressState: 'doing' });
+    const doingTask = makeTask({ id: 't-doing', name: 'Item Doing', status: 'in_progress' });
     mockGetTasksBySourceIntentIdFacade.mockResolvedValue([...todoTasks, doingTask]);
     mockReconcileTaskFacade.mockResolvedValue(undefined);
     mockCreateTaskFacade.mockResolvedValue('new-id');

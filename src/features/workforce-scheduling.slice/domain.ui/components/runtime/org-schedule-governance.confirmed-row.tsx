@@ -40,7 +40,7 @@ export function ConfirmedRow({ item, orgId, orgMembers }: GovernanceConfirmedRow
   const handleComplete = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await updateScheduleItemStatus(orgId, item.id, 'COMPLETED');
+      const result = await updateScheduleItemStatus(orgId, item.id, 'completed');
       if (result.success) {
         toast({ title: '排程已完成', description: `「${item.title}」標記完成成功。` });
       } else {

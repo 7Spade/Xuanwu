@@ -33,6 +33,16 @@ export interface EventEnvelope<TPayload = unknown> {
   readonly occurredAt: string;
   /** ID of the aggregate or entity that produced the event. */
   readonly sourceId: string;
+  /**
+   * L9-canonical aggregate identifier. [L9 DomainEvent §aggregateId]
+   * Preferred over sourceId for new code; sourceId kept for backward compatibility.
+   */
+  readonly aggregateId?: string;
+  /**
+   * L9-canonical aggregate type name, e.g. "TaskItem", "ScheduleItem". [L9 DomainEvent §aggregateType]
+   * Used by projection handlers to route events to the correct read-model.
+   */
+  readonly aggregateType?: string;
   /** Event-specific payload — typed per event bus contract. */
   readonly payload: TPayload;
   /**
@@ -62,6 +72,18 @@ export interface EventEnvelope<TPayload = unknown> {
    * Injected at saga entry; propagated unchanged through the chain.
    */
   readonly correlationId?: string;
+  /**
+   * L9 DomainEvent metadata object. [L9 DomainEvent §metadata]
+   * Carries actor, workspace, org, and correlation context in a nested object.
+   * Flat top-level causationId/correlationId fields are kept for backward compatibility.
+   */
+  readonly metadata?: {
+    readonly actorId?: string;
+    readonly workspaceId?: string;
+    readonly orgId?: string;
+    readonly correlationId?: string;
+    readonly causationId?: string;
+  };
 }
 
 // ─── Conformance marker ───────────────────────────────────────────────────────

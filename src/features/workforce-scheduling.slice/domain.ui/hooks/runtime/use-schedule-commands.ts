@@ -124,18 +124,18 @@ export function useScheduleActions() {
   }, [user, activeAccount]);
 
   const approveItem = useCallback(async (item: ScheduleItem) => {
-    if (!canTransitionScheduleStatus(item.status, "OFFICIAL")) {
-      throw new Error(`Cannot approve: invalid transition ${item.status} ??OFFICIAL`);
+    if (!canTransitionScheduleStatus(item.status, "confirmed")) {
+      throw new Error(`Cannot approve: invalid transition ${item.status} → confirmed`);
     }
-    const result = await updateScheduleItemStatus(item.accountId, item.id, "OFFICIAL");
+    const result = await updateScheduleItemStatus(item.accountId, item.id, "confirmed");
     if (!result.success) throw new Error(result.error.message);
   }, []);
 
   const rejectItem = useCallback(async (item: ScheduleItem) => {
-    if (!canTransitionScheduleStatus(item.status, "REJECTED")) {
-      throw new Error(`Cannot reject: invalid transition ${item.status} ??REJECTED`);
+    if (!canTransitionScheduleStatus(item.status, "cancelled")) {
+      throw new Error(`Cannot reject: invalid transition ${item.status} → cancelled`);
     }
-    const result = await updateScheduleItemStatus(item.accountId, item.id, "REJECTED");
+    const result = await updateScheduleItemStatus(item.accountId, item.id, "cancelled");
     if (!result.success) throw new Error(result.error.message);
   }, []);
 

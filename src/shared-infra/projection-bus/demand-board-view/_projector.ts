@@ -3,9 +3,9 @@
  *
  * Maintains the Demand Board read model.
  * Per docs/prd-schedule-workforce-skills.md FR-W0 / FR-W6:
- *   - PROPOSAL: proposal submitted, awaiting assignment (visible)
- *   - OFFICIAL: member confirmed (visible with assignee details)
- *   - REJECTED / COMPLETED: closed (hidden from default board view)
+ *   - pending: proposal submitted, awaiting assignment (visible)
+ *   - confirmed: member confirmed (visible with assignee details)
+ *   - cancelled / completed: closed (hidden from default board view)
  *
  * Single source of truth: accounts/{orgId}/schedule_items/{scheduleItemId}
  * All projector functions write to this path (same document the workspace and
@@ -67,10 +67,10 @@ export async function applyDemandProposed(
 }
 
 /**
- * Marks a schedule item as assigned (OFFICIAL).
+ * Marks a schedule item as assigned (confirmed).
  * Called by projection.event-funnel on 'organization:schedule:assigned'.
  *
- * Note: approveOrgScheduleProposal (domain) sets status='OFFICIAL' and increments
+ * Note: approveOrgScheduleProposal (domain) sets status='confirmed' and increments
  * version BEFORE publishing this event. The version guard therefore naturally skips
  * this write when the domain has already applied the update (nextVersion == existing.version).
  * [S2] versionGuardAllows enforced before write.
@@ -87,7 +87,7 @@ export async function applyDemandAssigned(payload: ScheduleAssignedPayload): Pro
     return;
   }
   await updateDocument(path, {
-    status: 'OFFICIAL' satisfies ScheduleStatus,
+    status: 'confirmed' satisfies ScheduleStatus,
     assigneeIds: arrayUnion(payload.targetAccountId),
     version: payload.aggregateVersion,
     ...(payload.traceId ? { traceId: payload.traceId } : {}),
@@ -95,7 +95,7 @@ export async function applyDemandAssigned(payload: ScheduleAssignedPayload): Pro
 }
 
 /**
- * Marks a schedule item as completed (COMPLETED).
+ * Marks a schedule item as completed (completed).
  * Called by projection.event-funnel on 'organization:schedule:completed'.
  * [S2] versionGuardAllows enforced before write.
  */
@@ -103,14 +103,14 @@ export async function applyDemandCompleted(payload: ScheduleCompletedPayload): P
   await _closeScheduleItem(
     payload.orgId,
     payload.scheduleItemId,
-    'COMPLETED',
+    'completed',
     payload.aggregateVersion,
     payload.traceId
   );
 }
 
 /**
- * Marks a schedule item as rejected due to assignment cancellation (REJECTED).
+ * Marks a schedule item as cancelled due to assignment cancellation (cancelled).
  * Called by projection.event-funnel on 'organization:schedule:assignmentCancelled'.
  * [S2] versionGuardAllows enforced before write.
  */
@@ -120,14 +120,14 @@ export async function applyDemandAssignmentCancelled(
   await _closeScheduleItem(
     payload.orgId,
     payload.scheduleItemId,
-    'REJECTED',
+    'cancelled',
     payload.aggregateVersion,
     payload.traceId
   );
 }
 
 /**
- * Marks a schedule item as rejected due to proposal cancellation (REJECTED).
+ * Marks a schedule item as cancelled due to proposal cancellation (cancelled).
  * Called by projection.event-funnel on 'organization:schedule:proposalCancelled'.
  * [S2] No aggregateVersion in this payload ??guard via status: skip if already closed.
  */
@@ -137,17 +137,17 @@ export async function applyDemandProposalCancelled(
   const path = scheduleItemPath(payload.orgId, payload.scheduleItemId);
   const existing = await getDocument<ScheduleItem>(path);
   // [S2] Status-based guard: skip if item is already in a terminal state.
-  if (!existing || existing.status === 'REJECTED' || existing.status === 'COMPLETED') {
+  if (!existing || existing.status === 'cancelled' || existing.status === 'completed') {
     return;
   }
   await updateDocument(path, {
-    status: 'REJECTED' satisfies ScheduleStatus,
+    status: 'cancelled' satisfies ScheduleStatus,
     ...(payload.traceId ? { traceId: payload.traceId } : {}),
   });
 }
 
 /**
- * Marks a schedule item as rejected due to skill validation failure (REJECTED).
+ * Marks a schedule item as cancelled due to skill validation failure (cancelled).
  * Called by projection.event-funnel on 'organization:schedule:assignRejected'.
  * [S2] No aggregateVersion in this payload ??guard via status: skip if already closed.
  */
@@ -157,11 +157,11 @@ export async function applyDemandAssignRejected(
   const path = scheduleItemPath(payload.orgId, payload.scheduleItemId);
   const existing = await getDocument<ScheduleItem>(path);
   // [S2] Status-based guard: skip if item is already in a terminal state.
-  if (!existing || existing.status === 'REJECTED' || existing.status === 'COMPLETED') {
+  if (!existing || existing.status === 'cancelled' || existing.status === 'completed') {
     return;
   }
   await updateDocument(path, {
-    status: 'REJECTED' satisfies ScheduleStatus,
+    status: 'cancelled' satisfies ScheduleStatus,
     ...(payload.traceId ? { traceId: payload.traceId } : {}),
   });
 }
@@ -173,7 +173,7 @@ export async function applyDemandAssignRejected(
 async function _closeScheduleItem(
   orgId: string,
   scheduleItemId: string,
-  status: 'COMPLETED' | 'REJECTED',
+  status: 'completed' | 'cancelled',
   aggregateVersion: number,
   traceId?: string
 ): Promise<void> {

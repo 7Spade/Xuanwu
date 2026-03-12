@@ -167,7 +167,7 @@ export function WorkspaceTasks() {
       const finalData: Partial<WorkspaceTask> = {
         ...editingTask,
         subtotal,
-        progressState: editingTask.progressState || 'todo',
+        status: editingTask.status || 'draft',
       };
       delete finalData.progress; // Ensure calculated progress is not saved
 
@@ -185,14 +185,14 @@ export function WorkspaceTasks() {
           ...finalData,
         } as WorkspaceTask;
         
-        if (finalData.progressState === 'completed') {
+        if (finalData.status === 'done') {
           eventBus.publish('workspace:tasks:completed', { task: updatedTaskForEvent });
         }
       } else {
         const taskToCreate: Omit<WorkspaceTask, 'id' | 'createdAt' | 'updatedAt'> = {
             ...finalData,
             name: finalData.name!,
-            progressState: finalData.progressState!,
+            status: finalData.status!,
             subtotal: finalData.subtotal!,
             completedQuantity: 0,
         };
@@ -230,14 +230,14 @@ export function WorkspaceTasks() {
   };
 
   const handleSubmitForQA = async (task: TaskWithChildren) => {
-    const updates = { progressState: 'completed' as const };
+    const updates = { status: 'done' as const };
 
     try {
       await updateTask(task.id, updates);
       
       const updatedTaskForEvent: WorkspaceTask = {
         ...task,
-        progressState: 'completed',
+        status: 'done',
       };
       
       eventBus.publish('workspace:tasks:completed', { task: updatedTaskForEvent });
@@ -279,10 +279,10 @@ export function WorkspaceTasks() {
   };
 
   const handleMarkBlocked = async (task: TaskWithChildren) => {
-    if (!['todo', 'doing'].includes(task.progressState)) return;
+    if (!['draft', 'in_progress'].includes(task.status)) return;
     try {
-      await updateTask(task.id, { progressState: 'blocked' as const });
-      const updatedTask: WorkspaceTask = { ...task, progressState: 'blocked' as WorkspaceTask['progressState'] };
+      await updateTask(task.id, { status: 'blocked' as const });
+      const updatedTask: WorkspaceTask = { ...task, status: 'blocked' as WorkspaceTask['status'] };
       eventBus.publish('workspace:tasks:blocked', { task: updatedTask });
       logAuditEvent('Task Blocked', task.name, 'update');
       toast({
@@ -396,8 +396,7 @@ export function WorkspaceTasks() {
                 discount: 0,
                 type: 'Top-level Project',
                 priority: 'medium',
-                progressState: 'todo',
-                photoURLs: [],
+                status: 'draft',
                 location: { description: '' }
               });
               setIsAddOpen(true);
@@ -477,7 +476,7 @@ export function WorkspaceTasks() {
                   discount: 0,
                   type: 'Sub-task',
                   priority: 'medium',
-                  progressState: 'todo',
+                  status: 'draft',
                 });
                 setIsAddOpen(true);
               }}

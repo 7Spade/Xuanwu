@@ -50,7 +50,7 @@ export function useOrgSchedule(
 }
 
 /**
- * Convenience hook that only returns pending proposals (status = 'PROPOSAL').
+ * Convenience hook that only returns pending proposals (status = 'pending').
  * Used by the approval workflow in the org governance UI.
  */
 export function usePendingScheduleProposals(orgId: string | null) {
@@ -77,7 +77,7 @@ export function usePendingScheduleProposals(orgId: string | null) {
 }
 
 /**
- * Convenience hook that returns confirmed items only (status = 'OFFICIAL').
+ * Convenience hook that returns confirmed items only (status = 'confirmed').
  * Used by the FR-S6 "Complete Schedule" governance UI.
  */
 export function useConfirmedScheduleProposals(orgId: string | null) {

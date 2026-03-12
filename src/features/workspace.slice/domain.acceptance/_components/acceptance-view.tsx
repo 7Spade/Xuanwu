@@ -28,7 +28,7 @@ export function WorkspaceAcceptance() {
   // 1. Independent State Hydration: Consumes task data from the parent context on mount.
   useEffect(() => {
     const initialTasks = Object.values(workspace.tasks || {}).filter(
-      (task) => task.progressState === "verified"
+      (task) => task.status === "review"
     );
     setVerifiedTasks(initialTasks);
   }, [workspace.tasks]);
@@ -72,7 +72,7 @@ export function WorkspaceAcceptance() {
 
 
   const handleAccept = async (task: WorkspaceTask) => {
-    const updates = { progressState: 'accepted' as const };
+    const updates = { status: 'done' as const };
     
     try {
       await updateTask(task.id, updates);
@@ -93,7 +93,7 @@ export function WorkspaceAcceptance() {
   };
 
   const handleFail = async (task: WorkspaceTask) => {
-    const updates = { progressState: 'todo' as const };
+    const updates = { status: 'draft' as const };
     
     try {
       await updateTask(task.id, updates);
