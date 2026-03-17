@@ -14,13 +14,15 @@
 3. [MDDD 核心概念](#3-mddd-核心概念)
 4. [目標 TO-BE：MDDD 結構樹](#4-目標-to-be-mddd-結構樹)
    - [頂層目錄樹](#41-頂層目錄樹)
-   - [Bounded Context 標準結構](#42-bounded-context-標準結構)
-   - [各 Bounded Context 完整樹](#43-各-bounded-context-完整樹)
+   - [模組標準結構（五層）](#42-模組標準結構五層)
+   - [各模組完整樹](#43-各模組完整樹)
 5. [現況 → MDDD 對映表](#5-現況--mddd-對映表)
 6. [差距分析](#6-差距分析)
 7. [遷移路徑](#7-遷移路徑)
 8. [風險與注意事項](#8-風險與注意事項)
 9. [VS8 企業知識庫重構（獨立路線）](#9-vs8-企業知識庫重構獨立路線)
+
+> 📄 **配套文件：[docs/mddd-target-tree.md](./mddd-target-tree.md)** — 完整目標目錄樹（modules/ 全展開版）
 
 ---
 
@@ -231,7 +233,7 @@ organization.slice/
 │  Bounded Context (BC)                                        │
 │                                                             │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Interface Layer (interface/)                         │  │
+│  │  Interface Layer (interfaces/)                        │  │
 │  │  React Components · React Hooks (Presenters)         │  │
 │  │  Next.js Route Handlers · API Controllers            │  │
 │  └──────────────────────────┬───────────────────────────┘  │
@@ -244,16 +246,18 @@ organization.slice/
 │  └────────────┬──────────────────────────┬──────────────┘  │
 │               │ domain calls             │ port contracts    │
 │  ┌────────────▼─────────────┐ ┌──────────▼──────────────┐  │
-│  │  Domain Layer (domain/)  │ │  Infrastructure Layer    │  │
+│  │  Domain Layer (domains/) │ │  Infrastructure Layer    │  │
 │  │  Entities · VOs          │ │  (infrastructure/)       │  │
 │  │  Aggregates              │ │  Repository Impls        │  │
 │  │  Domain Events           │ │  External Service Adapts │  │
 │  │  Domain Services         │ │  Outbox / Relay          │  │
-│  │  Repository Ports        │ └──────────────────────────┘  │
-│  └──────────────────────────┘                               │
+│  └──────────────────────────┘ └──────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐    │
+│  │  Ports Layer (ports/) — Port 契約介面（不含實作）     │    │
+│  └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 
-依賴方向：Interface → Application → Domain ← (Port ← Infrastructure)
+依賴方向：interfaces/ → application/ → domains/ ← (ports/ ← infrastructure/)
 ```
 
 ### MDDD vs 現有 VS 慣例對照
@@ -262,113 +266,128 @@ organization.slice/
 |--------|----------|------|
 | `core/_actions.ts` | `application/commands/` | 命令動作 → 命令處理器 |
 | `core/_queries.ts` | `application/queries/` | 查詢 → 查詢處理器 |
-| `core/_hooks/` | `interface/hooks/` | Presenter hooks |
-| `core/_components/` | `interface/components/` | UI 元件 |
+| `core/_hooks/` | `interfaces/hooks/` | Presenter hooks |
+| `core/_components/` | `interfaces/components/` | UI 元件 |
 | `domain.*/_actions.ts` | `application/commands/` | 子領域命令 |
-| `domain.*/aggregate*` | `domain/aggregates/` | 聚合根 |
-| `domain.*/rules*` | `domain/` 或 `domain/services/` | 領域規則 |
+| `domain.*/aggregate*` | `domains/aggregates/` | 聚合根 |
+| `domain.*/rules*` | `domains/` 或 `domains/services/` | 領域規則 |
 | `gov.*/_actions.ts` | `application/commands/governance/` | 治理命令 |
-| `gov.*/_components/` | `interface/components/governance/` | 治理 UI |
-| `domain.ports/` | `domain/ports/` | Port 介面 (位置對) |
-| `shared-infra/projection-bus/X-view/` | BC `application/projections/` | Read Model |
-| `shared-infra/firebase-client/repositories/` | BC `infrastructure/persistence/` | Repository 實作 |
+| `gov.*/_components/` | `interfaces/components/governance/` | 治理 UI |
+| `domain.ports/` | `ports/` | Port 契約（獨立頂層層） |
+| `shared-infra/projection-bus/X-view/` | module `application/projections/` | Read Model |
+| `shared-infra/firebase-client/repositories/` | module `infrastructure/persistence/` | Repository 實作 |
+| `shared-kernel/` | `shared/kernel/` | Shared Kernel 精煉後 |
+| `lib-ui/` | `ui/` | UI 組件庫重命名 |
+| `infrastructure/` | `lib/` + `infrastructure/` | SDK 封裝 + 跨模組基礎設施 |
 
 ---
 
 ## 4. 目標 TO-BE：MDDD 結構樹
 
+> 📄 完整目錄樹請見配套文件：**[docs/mddd-target-tree.md](./mddd-target-tree.md)**
+
 ### 4.1 頂層目錄樹
 
 ```
 src/
-├── app/                        # Next.js App Router (不變)
-│   └── (同現況)
+├── app/                          # Next.js App Router（不變）
 │
-├── app-runtime/                # Runtime providers (不變)
+├── modules/                      # ★ 垂直功能模組（每個 feature 自包含）
+│   ├── workspace/                #   VS3-5：工作區管理
+│   ├── organization/             #   VS2：組織治理
+│   ├── scheduling/               #   VS6：人力排班
+│   ├── finance/                  #   VS9：財務追蹤
+│   ├── account/                  #   VS1：帳號管理
+│   ├── skill-xp/                 #   VS7：技能經驗值
+│   ├── notification/             #   通知中樞
+│   ├── identity/                 #   身分認證（登入/註冊）
+│   ├── search/                   #   跨域搜尋（橫切輔助）
+│   └── portal/                   #   門戶殼層（橫切輔助）
+│   # ⚠️ semantic-graph (VS8) 不在 modules/ 內 — 獨立重構，見第 9 節
 │
-├── contexts/                   # ← NEW: Bounded Contexts 根目錄
-│   ├── workspace/              # BC: 工作區管理 (含 task / daily / file / workflow)
-│   ├── organization/           # BC: 組織治理 (含 member / team / partner / policy)
-│   ├── scheduling/             # BC: 人力排班
-│   ├── finance/                # BC: 財務追蹤
-│   ├── account/                # BC: 帳號 / 個人資料 / 錢包
-│   ├── skill-xp/               # BC: 技能經驗值
-│   ├── notification/           # BC: 通知中樞
-│   ├── identity/               # BC: 身分認證 (登入/註冊)
-│   ├── search/                 # BC: 跨域搜尋 (橫切輔助)
-│   └── portal/                 # BC: 門戶殼層 (橫切輔助)
+├── infrastructure/               # ★ 全域共用基礎設施（SDK 適配器）
+│   ├── firebase/                 #   Firebase Admin + Client SDK
+│   ├── upstash/                  #   Redis / QStash / Vector / Workflow
+│   ├── document-ai/              #   Google Document AI + Genkit
+│   └── event-bus/                #   跨模組事件匯流排
 │
-│   # ⚠️ semantic-graph (VS8) 不在 contexts/ 內 — 獨立重構為企業知識庫，見第 9 節
+├── interfaces/                   # ★ 全域共用 API / Adapter
+│   ├── api/                      #   Next.js API Routes（Command / Query Gateway）
+│   ├── webhooks/                 #   Webhook endpoints
+│   └── event-consumers/          #   外部事件消費者適配器
 │
-├── shared-kernel/              # Shared Kernel (精煉後)
-│   ├── value-objects/          # 跨 BC 共用 VO (WorkspaceId, TaskId, Money…)
-│   ├── events/                 # 跨 BC 領域事件契約
-│   ├── ports/                  # 跨 BC Port 介面
-│   ├── data-contracts/         # DTO / 契約類型
-│   ├── constants/
-│   ├── enums/
-│   ├── observability/
+├── shared/                       # ★ 自家共用程式碼
+│   ├── kernel/                   #   Shared Kernel（← shared-kernel/ 精煉後）
+│   │   ├── value-objects/        #   WorkspaceId / TaskId / Money
+│   │   ├── ports/                #   跨模組 Port 介面
+│   │   ├── events/               #   跨模組領域事件契約
+│   │   ├── data-contracts/       #   DTO / 命令結果契約
+│   │   └── index.ts
+│   └── utils/                    #   跨模組純工具函式
+│
+├── ui/                           # ★ 可重用 UI 組件（← lib-ui/ 重命名）
+│   ├── shadcn-ui/
+│   ├── custom-ui/
 │   └── index.ts
 │
-├── infrastructure/             # 共享基礎設施 (SDK 適配器)
-│   ├── firebase/               # Firebase SDK (Admin + Client 初始化)
-│   ├── upstash/                # Redis / QStash / Vector / Workflow
-│   ├── document-ai/            # Google Document AI + Genkit
-│   └── event-bus/              # ← NEW: 跨 BC 事件匯流排實作
-│       ├── event-router.ts
-│       ├── outbox-relay.ts
-│       └── dlq-manager.ts
-│
-├── lib-ui/                     # UI 元件庫 (不變)
-│
-└── config/                     # 全域配置 (不變)
-```
-
-### 4.2 Bounded Context 標準結構
-
-每個 BC 遵循以下四層結構：
-
-```
-contexts/<bc-name>/
-├── domain/                     # 領域層 — 零外部依賴
-│   ├── entities/               # 領域實體 (有 ID 的業務物件)
-│   ├── value-objects/          # 值物件 (不可變，以值判等)
-│   ├── aggregates/             # 聚合根 (一致性邊界)
-│   ├── events/                 # 領域事件 (已發生的事實)
-│   ├── services/               # 領域服務 (跨 entity 的業務規則)
-│   ├── ports/                  # Repository 介面 & 服務 Port
+├── lib/                          # ★ 第三方套件封裝（薄包裝層）
+│   ├── firebase/                 #   Firebase SDK 初始化 singleton
+│   ├── upstash/                  #   Upstash SDK 初始化（redis / vector / qstash）
+│   ├── ai/                       #   Genkit pipeline 封裝
 │   └── index.ts
 │
-├── application/                # 應用層 — 協調領域物件完成使用案例
-│   ├── commands/               # 命令處理器 (寫操作)
+└── config/                       # 全域配置（不變）
+```
+
+### 4.2 模組標準結構（五層）
+
+每個功能模組 `modules/[feature]/` 遵循以下**五層結構**：
+
+```
+modules/<module-name>/
+├── domains/                      # 領域層 — 零外部依賴
+│   ├── entities/                 # 領域實體（有 ID 的業務物件）
+│   ├── value-objects/            # 值物件（不可變，以值判等）
+│   ├── aggregates/               # 聚合根（一致性邊界）
+│   ├── events/                   # 領域事件（已發生的事實）
+│   └── services/                 # 領域服務（跨 entity 的業務規則）
+│
+├── application/                  # 應用層 — 協調領域物件完成 Use Case
+│   ├── commands/                 # 命令處理器（寫操作）
 │   │   └── <subdomain>/
-│   ├── queries/                # 查詢處理器 (讀操作)
+│   ├── queries/                  # 查詢處理器（讀操作）
 │   │   └── <subdomain>/
-│   ├── projections/            # Read Model 投影 (從 shared-infra 遷移)
-│   ├── sagas/                  # 長時序協調 (Saga / Process Manager)
-│   ├── policies/               # 業務策略 (事件驅動)
-│   └── index.ts
+│   ├── projections/              # Read Model 投影（從 shared-infra 遷移）
+│   ├── sagas/                    # 長時序協調（Saga / Process Manager）
+│   └── policies/                 # 業務策略（事件驅動）
 │
-├── infrastructure/             # 基礎設施層 — 實作 Port 介面
-│   ├── persistence/            # Repository 實作 (Firestore)
-│   ├── adapters/               # 外部服務適配器
-│   └── index.ts
+├── infrastructure/               # 基礎設施層 — 實作 Port 介面
+│   ├── persistence/              # Repository 實作（Firestore）
+│   └── adapters/                 # 外部服務適配器
 │
-├── interface/                  # 介面層 — UI + API 橋接
-│   ├── components/             # React 元件 (純展示)
-│   ├── hooks/                  # React hooks (Presenter)
-│   └── index.ts
+├── interfaces/                   # 介面層 — UI + API 橋接
+│   ├── components/               # React 元件（純展示）
+│   └── hooks/                    # React hooks（Presenter）
 │
-└── index.ts                    # BC 公開 API (ACL 邊界)
+├── ports/                        # Port 契約層 — 定義抽象介面（不含實作）
+│   ├── i-<resource>.repo.ts      # Repository 介面
+│   └── i-<service>.port.ts       # 服務 Port 介面
+│
+└── index.ts                      # 模組公開 API（ACL 邊界）
 ```
 
-### 4.3 各 Bounded Context 完整樹
+**依賴方向：**
+```
+interfaces/ → application/ → domains/ ← (ports/ ← infrastructure/)
+```
 
-#### BC: workspace（工作區管理）
+### 4.3 各模組完整樹
+
+#### modules/workspace（工作區管理）
 
 ```
-contexts/workspace/
-├── domain/
+modules/workspace/
+├── domains/
 │   ├── entities/
 │   │   ├── workspace.entity.ts         # ← workspace.slice/core/_types.ts
 │   │   ├── task.entity.ts              # ← workspace.slice/domain.tasks/_entity.ts
@@ -377,10 +396,10 @@ contexts/workspace/
 │   │   ├── issue.entity.ts             # ← workspace.slice/domain.issues/*
 │   │   └── file.entity.ts              # ← workspace.slice/domain.files/*
 │   ├── value-objects/
-│   │   ├── workspace-id.vo.ts          # ← shared-kernel/value-objects/WorkspaceId
-│   │   ├── task-id.vo.ts               # ← shared-kernel/value-objects/TaskId
+│   │   ├── workspace-id.vo.ts          # ← shared/kernel/value-objects/WorkspaceId
+│   │   ├── task-id.vo.ts               # ← shared/kernel/value-objects/TaskId
 │   │   ├── workflow-stage.vo.ts        # ← workspace.slice/domain.workflow/*
-│   │   └── acceptance-status.vo.ts    # ← workspace.slice/domain.acceptance/*
+│   │   └── acceptance-status.vo.ts     # ← workspace.slice/domain.acceptance/*
 │   ├── aggregates/
 │   │   ├── workspace.aggregate.ts      # ← workspace.slice/core/_actions.ts (aggregate root)
 │   │   ├── task.aggregate.ts           # ← workspace.slice/domain.tasks/_actions/*
@@ -390,13 +409,9 @@ contexts/workspace/
 │   │   ├── task-assigned.event.ts
 │   │   ├── workflow-stage-changed.event.ts
 │   │   └── daily-log-submitted.event.ts
-│   ├── services/
-│   │   ├── workspace-policy.service.ts # ← workspace.slice/domain.application/policy-engine
-│   │   └── parsing-intent.service.ts  # ← workspace.slice/domain.parsing-intent/*
-│   └── ports/
-│       ├── i-workspace.repo.ts
-│       ├── i-task.repo.ts
-│       └── i-file-store.port.ts        # ← shared-kernel/ports/i-file-store.ts
+│   └── services/
+│       ├── workspace-policy.service.ts # ← workspace.slice/domain.application/policy-engine
+│       └── parsing-intent.service.ts   # ← workspace.slice/domain.parsing-intent/*
 │
 ├── application/
 │   ├── commands/
@@ -431,7 +446,7 @@ contexts/workspace/
 │   └── adapters/
 │       └── file-storage.adapter.ts     # ← infrastructure/firebase/client/storage
 │
-├── interface/
+├── interfaces/
 │   ├── components/
 │   │   ├── shell/                      # ← workspace.slice/core/_components/
 │   │   ├── task/                       # ← workspace.slice/domain.tasks/_components/
@@ -443,29 +458,32 @@ contexts/workspace/
 │       ├── use-workspace-tasks.ts
 │       └── use-visible-workspaces.ts
 │
+├── ports/
+│   ├── i-workspace.repo.ts
+│   ├── i-task.repo.ts
+│   └── i-file-store.port.ts            # ← shared/kernel/ports/i-file-store.ts
+│
 └── index.ts                            # ← workspace.slice/index.ts
 ```
 
-#### BC: organization（組織治理）
+#### modules/organization（組織治理）
 
 ```
-contexts/organization/
-├── domain/
+modules/organization/
+├── domains/
 │   ├── entities/
 │   │   ├── organization.entity.ts      # ← organization.slice/core/_types.ts
 │   │   ├── member.entity.ts            # ← organization.slice/gov.members/*
 │   │   ├── team.entity.ts              # ← organization.slice/gov.teams/*
-│   │   └── partner.entity.ts          # ← organization.slice/gov.partners/*
+│   │   └── partner.entity.ts           # ← organization.slice/gov.partners/*
 │   ├── value-objects/
 │   │   ├── organization-id.vo.ts
 │   │   └── membership-role.vo.ts
 │   ├── aggregates/
 │   │   └── organization.aggregate.ts
-│   ├── events/
-│   │   ├── member-joined.event.ts      # ← organization.slice/core.event-bus/_events.ts
-│   │   └── team-created.event.ts
-│   └── ports/
-│       └── i-organization.repo.ts
+│   └── events/
+│       ├── member-joined.event.ts      # ← organization.slice/core.event-bus/_events.ts
+│       └── team-created.event.ts
 │
 ├── application/
 │   ├── commands/
@@ -477,8 +495,7 @@ contexts/organization/
 │   │   └── semantic/                   # ← organization.slice/gov.semantic/_actions.ts
 │   ├── queries/
 │   │   ├── org/                        # ← organization.slice/core/_queries.ts
-│   │   ├── members/                    # ← organization.slice/gov.members/_queries.ts
-│   │   └── ...
+│   │   └── members/                    # ← organization.slice/gov.members/_queries.ts
 │   └── projections/
 │       ├── organization-view/          # ← shared-infra/projection-bus/organization-view/
 │       ├── org-eligible-member-view/   # ← shared-infra/projection-bus/org-eligible-member-view/
@@ -488,7 +505,7 @@ contexts/organization/
 │   └── persistence/
 │       └── organization.repo.ts
 │
-├── interface/
+├── interfaces/
 │   ├── components/
 │   │   ├── core/                       # ← organization.slice/core/_components/
 │   │   ├── members/                    # ← organization.slice/gov.members/_components/
@@ -498,14 +515,17 @@ contexts/organization/
 │   └── hooks/
 │       └── use-organization-management.ts
 │
+├── ports/
+│   └── i-organization.repo.ts
+│
 └── index.ts
 ```
 
-#### BC: scheduling（人力排班）
+#### modules/scheduling（人力排班）
 
 ```
-contexts/scheduling/
-├── domain/
+modules/scheduling/
+├── domains/
 │   ├── entities/
 │   │   └── schedule-item.entity.ts     # ← workforce-scheduling.slice/domain.core/types/
 │   ├── value-objects/
@@ -514,13 +534,9 @@ contexts/scheduling/
 │   │   └── org-schedule.aggregate.ts   # ← workforce-scheduling.slice/domain.core/aggregate/
 │   ├── events/
 │   │   └── schedule-proposed.event.ts
-│   ├── services/
-│   │   ├── eligibility.service.ts      # ← domain.core/eligibility/
-│   │   └── policy-mapper.service.ts    # ← domain.core/policy-mapper/
-│   └── ports/
-│       ├── i-scheduling-command.port.ts # ← domain.ports/command.port.ts
-│       ├── i-scheduling-query.port.ts   # ← domain.ports/query.port.ts
-│       └── i-scheduling-event.port.ts   # ← domain.ports/event.port.ts
+│   └── services/
+│       ├── eligibility.service.ts      # ← domain.core/eligibility/
+│       └── policy-mapper.service.ts    # ← domain.core/policy-mapper/
 │
 ├── application/
 │   ├── commands/                       # ← domain.application/commands/
@@ -537,31 +553,34 @@ contexts/scheduling/
 │   └── persistence/
 │       └── schedule.repo.ts
 │
-├── interface/
+├── interfaces/
 │   ├── components/                     # ← domain.ui/components/runtime/
 │   └── hooks/                          # ← domain.ui/hooks/runtime/
+│
+├── ports/
+│   ├── i-scheduling-command.port.ts    # ← domain.ports/command.port.ts
+│   ├── i-scheduling-query.port.ts      # ← domain.ports/query.port.ts
+│   └── i-scheduling-event.port.ts      # ← domain.ports/event.port.ts
 │
 └── index.ts
 ```
 
 #### ⚠️ VS8 semantic-graph（不納入 MDDD 遷移）
 
-> `semantic-graph.slice` 將被獨立重構為**企業知識庫**（Enterprise Knowledge Base），採用 Upstash Vector + Redis，新結構為 `knowledge/`、`taxonomy/`、`vector-ingestion/`，詳見[第 9 節](#9-vs8-企業知識庫重構獨立路線)。此 BC **不存在於** `contexts/` 目錄中。
+> `semantic-graph.slice` 將被獨立重構為**企業知識庫**，採用 Upstash Vector + Redis，新結構為 `knowledge/`、`taxonomy/`、`vector-ingestion/`，詳見[第 9 節](#9-vs8-企業知識庫重構獨立路線)。此模組**不存在於** `modules/` 目錄中。
 
-#### BC: finance（財務追蹤）
+#### modules/finance（財務追蹤）
 
 ```
-contexts/finance/
-├── domain/
+modules/finance/
+├── domains/
 │   ├── entities/
 │   │   └── finance-item.entity.ts      # ← finance.slice/_types.ts
 │   ├── aggregates/
 │   │   └── finance.aggregate.ts        # ← finance.slice/_services/finance-aggregate-query-gateway.ts
 │   ├── events/
-│   ├── services/
-│   │   └── finance-lifecycle.service.ts # ← finance.slice/_hooks/use-finance-lifecycle.ts
-│   └── ports/
-│       └── i-finance.repo.ts
+│   └── services/
+│       └── finance-lifecycle.service.ts # ← finance.slice/_hooks/use-finance-lifecycle.ts
 │
 ├── application/
 │   ├── commands/                       # ← finance.slice/_actions.ts
@@ -573,18 +592,21 @@ contexts/finance/
 │   └── persistence/
 │       └── finance.repo.ts
 │
-├── interface/
+├── interfaces/
 │   ├── components/                     # ← finance.slice/_components/
 │   └── hooks/                          # ← finance.slice/_hooks/
+│
+├── ports/
+│   └── i-finance.repo.ts
 │
 └── index.ts
 ```
 
-#### BC: account（帳號管理）
+#### modules/account（帳號管理）
 
 ```
-contexts/account/
-├── domain/
+modules/account/
+├── domains/
 │   ├── entities/
 │   │   ├── account.entity.ts           # ← account.slice/domain.profile/*
 │   │   └── wallet.entity.ts            # ← account.slice/domain.wallet/*
@@ -592,10 +614,8 @@ contexts/account/
 │   │   └── account-role.vo.ts          # ← account.slice/gov.role/*
 │   ├── events/
 │   │   └── (account event bus)         # ← account.slice/account-event-bus.ts
-│   ├── services/
-│   │   └── account-policy.service.ts   # ← account.slice/gov.policy/*
-│   └── ports/
-│       └── i-account.repo.ts
+│   └── services/
+│       └── account-policy.service.ts   # ← account.slice/gov.policy/*
 │
 ├── application/
 │   ├── commands/
@@ -615,61 +635,63 @@ contexts/account/
 │   └── persistence/
 │       └── account.repo.ts
 │
-├── interface/
+├── interfaces/
 │   ├── components/                     # ← account.slice/domain.profile/_components/
 │   └── hooks/
 │       └── use-user.ts                 # ← account.slice/domain.profile/_hooks/
 │
+├── ports/
+│   └── i-account.repo.ts
+│
 └── index.ts
 ```
 
-#### BC: skill-xp（技能經驗值）
+#### modules/skill-xp（技能經驗值）
 
 ```
-contexts/skill-xp/
-├── domain/
-│   ├── aggregates/
-│   │   └── skill-xp.aggregate.ts       # ← skill-xp.slice/_aggregate.ts
+modules/skill-xp/
+├── domains/
 │   ├── entities/
 │   │   └── skill-tag.entity.ts         # ← skill-xp.slice/_tag-pool.ts
+│   ├── aggregates/
+│   │   └── skill-xp.aggregate.ts       # ← skill-xp.slice/_aggregate.ts
 │   ├── events/
 │   │   └── skill-gained.event.ts
-│   ├── services/
-│   │   ├── tag-lifecycle.service.ts    # ← skill-xp.slice/_tag-lifecycle.ts
-│   │   └── org-recognition.service.ts  # ← skill-xp.slice/_org-recognition.ts
-│   └── ports/
-│       └── i-skill-xp.repo.ts
+│   └── services/
+│       ├── tag-lifecycle.service.ts    # ← skill-xp.slice/_tag-lifecycle.ts
+│       └── org-recognition.service.ts  # ← skill-xp.slice/_org-recognition.ts
 │
 ├── application/
 │   ├── commands/                       # ← skill-xp.slice/_actions.ts
 │   ├── queries/                        # ← skill-xp.slice/_queries.ts
 │   └── projections/
-│       └── (account-skill-view 共享 account BC)
+│       └── (account-skill-view 與 account 模組共享)
 │
 ├── infrastructure/
 │   └── persistence/
 │       └── skill-xp.repo.ts
 │
-├── interface/
+├── interfaces/
 │   └── components/
 │       └── personal-skill-panel.tsx    # ← skill-xp.slice/_components/
+│
+├── ports/
+│   └── i-skill-xp.repo.ts
 │
 └── index.ts
 ```
 
-#### BC: notification（通知中樞）
+#### modules/notification（通知中樞）
 
 ```
-contexts/notification/
-├── domain/
+modules/notification/
+├── domains/
 │   ├── entities/
 │   │   └── notification.entity.ts      # ← notification-hub.slice/_types.ts
 │   ├── aggregates/
 │   │   └── notification-hub.aggregate.ts # ← notification-hub.slice/_notification-authority.ts
-│   ├── services/
-│   │   └── notification-router.service.ts # ← notification-hub.slice/gov.notification-router/
-│   └── ports/
-│       └── i-notification.repo.ts
+│   └── services/
+│       └── notification-router.service.ts # ← notification-hub.slice/gov.notification-router/
 │
 ├── application/
 │   ├── commands/                       # ← notification-hub.slice/_actions.ts
@@ -679,108 +701,111 @@ contexts/notification/
 │
 ├── infrastructure/
 │   └── adapters/
-│       └── push-notification.adapter.ts # ← shared-kernel/ports/i-messaging.ts 實作
+│       └── push-notification.adapter.ts # ← 實作 ports/i-notification.port.ts
 │
-├── interface/
+├── interfaces/
 │   └── components/
 │       ├── notification-bell.tsx       # ← notification-hub.slice/_components/
 │       └── notification-badge/         # ← notification-hub.slice/domain.notification/_components/
 │
+├── ports/
+│   └── i-notification.port.ts          # ← shared/kernel/ports/i-messaging.ts 精煉
+│
 └── index.ts
 ```
 
-#### BC: identity（身分認證）
+#### modules/identity（身分認證）
 
 ```
-contexts/identity/
-├── domain/
+modules/identity/
+├── domains/
 │   ├── value-objects/
-│   │   ├── email.vo.ts                 # Email 格式 VO
-│   │   └── auth-token.vo.ts            # 認證 Token VO
-│   ├── services/
-│   │   └── auth-policy.service.ts      # 登入策略 (重試限制 / MFA)
-│   └── ports/
-│       └── i-auth.port.ts              # ← shared-kernel/ports/i-auth.service.ts
+│   │   ├── email.vo.ts
+│   │   └── auth-token.vo.ts
+│   └── services/
+│       └── auth-policy.service.ts      # 登入策略（重試限制 / MFA）
 │
 ├── application/
 │   ├── commands/
 │   │   ├── login/                      # ← identity.slice/ 登入 actions
 │   │   ├── register/                   # ← identity.slice/ 註冊 actions
-│   │   └── reset-password/             # ← identity.slice/ 密碼重置 actions
+│   │   └── reset-password/
 │   └── queries/
-│       └── session/                    # 目前登入會話查詢
+│       └── session/
 │
 ├── infrastructure/
 │   └── adapters/
 │       └── firebase-auth.adapter.ts    # ← infrastructure/firebase/client/auth
-│                                       #   實作 IAuthPort (Firebase Authentication)
+│                                       #   實作 ports/i-auth.port.ts
 │
-├── interface/
+├── interfaces/
 │   └── components/
 │       ├── login-form.tsx              # ← identity.slice/ login page
-│       ├── register-form.tsx           # ← identity.slice/ register page
-│       └── reset-password-form.tsx     # ← app/(shell)/(public)/@modal/reset-password
+│       ├── register-form.tsx
+│       └── reset-password-form.tsx
+│
+├── ports/
+│   └── i-auth.port.ts                  # ← shared/kernel/ports/i-auth.service.ts
 │
 └── index.ts
 ```
 
-#### BC: search（跨域搜尋，橫切輔助）
+#### modules/search（跨域搜尋，橫切輔助）
 
-> `search` 是橫切輔助 BC，不擁有業務資料，僅作為查詢路由器——接收搜尋請求、扇出至各 BC 的 `application/queries/`，並彙整結果。
+> `search` 是橫切輔助模組，不擁有業務資料，僅作為查詢路由器——接收搜尋請求、扇出至各模組的 `application/queries/`，並彙整結果。
 
 ```
-contexts/search/
-├── domain/
-│   ├── value-objects/
-│   │   └── search-query.vo.ts          # 搜尋關鍵字 + 篩選條件 VO
-│   └── ports/
-│       └── i-search-provider.port.ts   # 各 BC 實作此 Port，Search BC 聚合呼叫
+modules/search/
+├── domains/
+│   └── value-objects/
+│       └── search-query.vo.ts          # 搜尋關鍵字 + 篩選條件 VO
 │
 ├── application/
-│   ├── queries/
-│   │   └── global-search/              # ← global-search.slice/_actions.ts + _queries.ts
-│   │       ├── federated-search.handler.ts   # 扇出至各 BC Provider
-│   │       └── result-merger.ts              # 彙整並排序搜尋結果
-│   └── projections/
-│       └── (各 BC 自行維護其 SemanticIndexEntry，Search BC 讀取)
+│   └── queries/
+│       └── global-search/              # ← global-search.slice/_actions.ts + _queries.ts
+│           ├── federated-search.handler.ts
+│           └── result-merger.ts
 │
 ├── infrastructure/
 │   └── adapters/
-│       └── vector-search.adapter.ts    # ← infrastructure/upstash/vector.ts
-│                                       #   (VS8 重構後 Search BC 可直接查企業知識庫)
+│       └── vector-search.adapter.ts    # ← lib/upstash/vector
+│                                       #   (VS8 重構後可直接查企業知識庫)
 │
-├── interface/
+├── interfaces/
 │   └── hooks/
 │       └── use-global-search.ts        # ← global-search.slice/ hooks
 │
+├── ports/
+│   └── i-search-provider.port.ts       # 各模組實作此 Port，Search 模組聚合呼叫
+│
 └── index.ts
 ```
 
-#### BC: portal（門戶殼層，橫切輔助）
+#### modules/portal（門戶殼層，橫切輔助）
 
-> `portal` 是 App Shell 的狀態橋接 BC，不擁有業務領域資料，負責協調各 BC 的 UI 狀態（側欄、通知計數、全域 Loading 等）。
+> `portal` 是 App Shell 的狀態橋接模組，不擁有業務領域資料，負責協調各模組的 UI 狀態（側欄、通知計數、全域 Loading 等）。
 
 ```
-contexts/portal/
-├── domain/
-│   ├── value-objects/
-│   │   └── portal-state.vo.ts          # 殼層 UI 狀態 VO (sidebar open/close, active tab…)
-│   └── ports/
-│       └── i-portal-bridge.port.ts     # 各 BC 可向 portal 推送 UI 狀態變更
+modules/portal/
+├── domains/
+│   └── value-objects/
+│       └── portal-state.vo.ts          # 殼層 UI 狀態 VO
 │
 ├── application/
 │   ├── commands/
-│   │   └── shell/                      # 殼層狀態控制 (展開側欄 / 切換主題…)
+│   │   └── shell/
 │   └── queries/
-│       └── shell/                      # 當前殼層狀態查詢
+│       └── shell/
 │
 ├── infrastructure/
-│   └── adapters/
-│       └── (無外部 I/O — 純 in-memory state)
+│   └── (無外部 I/O — 純 in-memory state)
 │
-├── interface/
+├── interfaces/
 │   └── hooks/
 │       └── use-portal-state.ts         # ← portal.slice/core/_hooks/use-portal-state.ts
+│
+├── ports/
+│   └── i-portal-bridge.port.ts         # 各模組向 portal 推送 UI 狀態
 │
 └── index.ts
 ```
@@ -793,48 +818,48 @@ contexts/portal/
 
 | 現況路徑 | MDDD 目標路徑 | 層 | 備註 |
 |---------|-------------|---|------|
-| `features/workspace.slice/core/_actions.ts` | `contexts/workspace/application/commands/workspace/` | Application | 命令處理器 |
-| `features/workspace.slice/core/_queries.ts` | `contexts/workspace/application/queries/workspace/` | Application | 查詢處理器 |
-| `features/workspace.slice/core/_hooks/` | `contexts/workspace/interface/hooks/` | Interface | Presenter |
-| `features/workspace.slice/core/_components/` | `contexts/workspace/interface/components/shell/` | Interface | UI |
-| `features/workspace.slice/domain.tasks/_actions/` | `contexts/workspace/application/commands/task/` | Application | |
-| `features/workspace.slice/domain.tasks/_entity.ts` | `contexts/workspace/domain/entities/task.entity.ts` | Domain | |
-| `features/workspace.slice/domain.workflow/` | `contexts/workspace/domain/aggregates/` + `application/commands/workflow/` | Domain+App | |
-| `features/workspace.slice/gov.audit/` | `contexts/workspace/application/commands/governance/audit/` + `interface/components/governance/` | App+Interface | |
-| `features/workspace.slice/gov.role/` | `contexts/workspace/application/commands/governance/roles/` | Application | |
-| `features/workforce-scheduling.slice/domain.core/aggregate/` | `contexts/scheduling/domain/aggregates/` | Domain | ✅ 已接近 MDDD |
-| `features/workforce-scheduling.slice/domain.core/rules/` | `contexts/scheduling/domain/` 或 `domain/services/` | Domain | ✅ 已接近 |
-| `features/workforce-scheduling.slice/domain.application/` | `contexts/scheduling/application/` | Application | ✅ 已接近 |
-| `features/workforce-scheduling.slice/domain.ports/` | `contexts/scheduling/domain/ports/` | Domain | ✅ 已接近 |
-| `features/workforce-scheduling.slice/domain.ui/` | `contexts/scheduling/interface/` | Interface | ✅ 已接近 |
-| `features/organization.slice/core/` | `contexts/organization/application/commands/org/` + `interface/` | App+Interface | |
-| `features/organization.slice/gov.members/` | `contexts/organization/application/commands/members/` + `interface/components/members/` | App+Interface | |
-| `features/finance.slice/` | `contexts/finance/` | All | 整體遷移 |
+| `features/workspace.slice/core/_actions.ts` | `modules/workspace/application/commands/workspace/` | Application | 命令處理器 |
+| `features/workspace.slice/core/_queries.ts` | `modules/workspace/application/queries/workspace/` | Application | 查詢處理器 |
+| `features/workspace.slice/core/_hooks/` | `modules/workspace/interfaces/hooks/` | Interfaces | Presenter |
+| `features/workspace.slice/core/_components/` | `modules/workspace/interfaces/components/shell/` | Interfaces | UI |
+| `features/workspace.slice/domain.tasks/_actions/` | `modules/workspace/application/commands/task/` | Application | |
+| `features/workspace.slice/domain.tasks/_entity.ts` | `modules/workspace/domains/entities/task.entity.ts` | Domains | |
+| `features/workspace.slice/domain.workflow/` | `modules/workspace/domains/aggregates/` + `application/commands/workflow/` | Domains+App | |
+| `features/workspace.slice/gov.audit/` | `modules/workspace/application/commands/governance/audit/` + `interfaces/components/governance/` | App+Interfaces | |
+| `features/workspace.slice/gov.role/` | `modules/workspace/application/commands/governance/roles/` | Application | |
+| `features/workforce-scheduling.slice/domain.core/aggregate/` | `modules/scheduling/domains/aggregates/` | Domains | ✅ 已接近 MDDD |
+| `features/workforce-scheduling.slice/domain.core/rules/` | `modules/scheduling/domains/` 或 `domains/services/` | Domains | ✅ 已接近 |
+| `features/workforce-scheduling.slice/domain.application/` | `modules/scheduling/application/` | Application | ✅ 已接近 |
+| `features/workforce-scheduling.slice/domain.ports/` | `modules/scheduling/ports/` | Ports | ✅ 已接近（升至獨立層）|
+| `features/workforce-scheduling.slice/domain.ui/` | `modules/scheduling/interfaces/` | Interfaces | ✅ 已接近 |
+| `features/organization.slice/core/` | `modules/organization/application/commands/org/` + `interfaces/` | App+Interfaces | |
+| `features/organization.slice/gov.members/` | `modules/organization/application/commands/members/` + `interfaces/components/members/` | App+Interfaces | |
+| `features/finance.slice/` | `modules/finance/` | All | 整體遷移 |
 | `features/semantic-graph.slice/` | *(不遷移至 MDDD — 見第 9 節重構計畫)* | — | ⚠️ VS8 獨立重構 |
-| `features/account.slice/domain.profile/` | `contexts/account/` | All | |
-| `features/skill-xp.slice/_aggregate.ts` | `contexts/skill-xp/domain/aggregates/` | Domain | |
-| `features/notification-hub.slice/` | `contexts/notification/` | All | |
-| `features/global-search.slice/` | `contexts/search/` | All | 橫切輔助 BC |
-| `features/portal.slice/` | `contexts/portal/` | All | 橫切輔助 BC |
-| `features/identity.slice/` | `contexts/identity/` | All | 認證 BC |
+| `features/account.slice/domain.profile/` | `modules/account/` | All | |
+| `features/skill-xp.slice/_aggregate.ts` | `modules/skill-xp/domains/aggregates/` | Domains | |
+| `features/notification-hub.slice/` | `modules/notification/` | All | |
+| `features/global-search.slice/` | `modules/search/` | All | 橫切輔助模組 |
+| `features/portal.slice/` | `modules/portal/` | All | 橫切輔助模組 |
+| `features/identity.slice/` | `modules/identity/` | All | 認證模組 |
 
 ### 5.2 Shared Infrastructure 對映
 
 | 現況路徑 | MDDD 目標路徑 | 備註 |
 |---------|-------------|------|
-| `shared-infra/projection-bus/workspace-view/` | `contexts/workspace/application/projections/workspace-view/` | BC 內部 Read Model |
-| `shared-infra/projection-bus/tasks-view/` | `contexts/workspace/application/projections/tasks-view/` | |
-| `shared-infra/projection-bus/organization-view/` | `contexts/organization/application/projections/organization-view/` | |
-| `shared-infra/projection-bus/account-view/` | `contexts/account/application/projections/account-view/` | |
-| `shared-infra/projection-bus/account-schedule-view/` | `contexts/scheduling/application/projections/` | |
-| `shared-infra/projection-bus/demand-board-view/` | `contexts/scheduling/application/projections/` | |
-| `shared-infra/projection-bus/finance-staging-pool-view/` | `contexts/finance/application/projections/` | |
+| `shared-infra/projection-bus/workspace-view/` | `modules/workspace/application/projections/workspace-view/` | 模組內部 Read Model |
+| `shared-infra/projection-bus/tasks-view/` | `modules/workspace/application/projections/tasks-view/` | |
+| `shared-infra/projection-bus/organization-view/` | `modules/organization/application/projections/organization-view/` | |
+| `shared-infra/projection-bus/account-view/` | `modules/account/application/projections/account-view/` | |
+| `shared-infra/projection-bus/account-schedule-view/` | `modules/scheduling/application/projections/` | |
+| `shared-infra/projection-bus/demand-board-view/` | `modules/scheduling/application/projections/` | |
+| `shared-infra/projection-bus/finance-staging-pool-view/` | `modules/finance/application/projections/` | |
 | `shared-infra/projection-bus/tag-snapshot-view/` | VS8 重構後移入企業知識庫 `knowledge/` 模組（見第 9 節）| ⚠️ VS8 獨立重構 |
-| `shared-infra/projection-bus/wallet-balance-view/` | `contexts/account/application/projections/` | |
-| `shared-infra/firebase-client/firestore/repositories/workspace*.ts` | `contexts/workspace/infrastructure/persistence/` | |
-| `shared-infra/firebase-client/firestore/repositories/workspace-business.tasks.repository.ts` | `contexts/workspace/infrastructure/persistence/task.repo.ts` | |
-| `shared-infra/gateway-command/` | `infrastructure/event-bus/` 或各 BC `infrastructure/` | |
-| `shared-infra/gateway-query/` | `infrastructure/event-bus/` 或各 BC `infrastructure/` | |
+| `shared-infra/projection-bus/wallet-balance-view/` | `modules/account/application/projections/` | |
+| `shared-infra/firebase-client/firestore/repositories/workspace*.ts` | `modules/workspace/infrastructure/persistence/` | |
+| `shared-infra/firebase-client/firestore/repositories/workspace-business.tasks.repository.ts` | `modules/workspace/infrastructure/persistence/task.repo.ts` | |
+| `shared-infra/gateway-command/` | `infrastructure/event-bus/` 或各模組 `infrastructure/` | |
+| `shared-infra/gateway-query/` | `infrastructure/event-bus/` 或各模組 `infrastructure/` | |
 | `shared-infra/event-router/` | `infrastructure/event-bus/event-router.ts` | |
 | `shared-infra/outbox-relay/` | `infrastructure/event-bus/outbox-relay.ts` | |
 | `shared-infra/dlq-manager/` | `infrastructure/event-bus/dlq-manager.ts` | |
@@ -843,13 +868,13 @@ contexts/portal/
 
 | 現況內容 | MDDD 後位置 | 說明 |
 |---------|-----------|------|
-| `shared-kernel/types/workspace*.ts` | `contexts/workspace/domain/` 或留 SK | 若只屬一個 BC → 移入 BC |
-| `shared-kernel/types/finance.ts` | `contexts/finance/domain/` 或留 SK | 同上 |
-| `shared-kernel/ports/` | `shared-kernel/ports/` (保留) | 跨 BC Port → 留 SK |
-| `shared-kernel/value-objects/` | `shared-kernel/value-objects/` (保留) | WorkspaceId, TaskId, Money |
-| `shared-kernel/data-contracts/` | `shared-kernel/data-contracts/` (保留) | 跨 BC 契約 |
-| `shared-kernel/constants/` | `shared-kernel/constants/` 或各 BC | 依使用範圍判斷 |
-| `shared-kernel/observability/` | `shared-kernel/observability/` (保留) | 跨 BC 可觀測性 |
+| `shared-kernel/types/workspace*.ts` | `modules/workspace/domains/` 或留 SK | 若只屬一個模組 → 移入模組 |
+| `shared-kernel/types/finance.ts` | `modules/finance/domains/` 或留 SK | 同上 |
+| `shared-kernel/ports/` | `shared/kernel/ports/` (保留) | 跨模組 Port → 留 SK |
+| `shared-kernel/value-objects/` | `shared/kernel/value-objects/` (保留) | WorkspaceId, TaskId, Money |
+| `shared-kernel/data-contracts/` | `shared/kernel/data-contracts/` (保留) | 跨模組契約 |
+| `shared-kernel/constants/` | `shared/kernel/constants/` 或各模組 | 依使用範圍判斷 |
+| `shared-kernel/observability/` | `shared/kernel/observability/` (保留) | 跨模組可觀測性 |
 
 ---
 
@@ -909,28 +934,28 @@ scheduling.slice
 
 ### Wave 1 — 建立 BC 框架（低風險）
 
-**目標：** 建立 `contexts/` 目錄結構，不移動任何檔案，只建立 BC 的 `index.ts` 公開 API。
+**目標：** 建立 `modules/` 目錄結構，不移動任何檔案，只建立各模組的 `index.ts` 公開 API。
 
 ```
 工作項目：
-□ 建立 contexts/<bc-name>/ 目錄骨架（共 11 個 BC）
-□ 各 BC 建立 index.ts，re-export 現有 features/* 內容
-□ 建立 BC 邊界規則文件 (contexts/<bc-name>/AGENTS.md)
-□ 更新 tsconfig.json 路徑別名：@/contexts/<bc> → src/contexts/<bc>
+□ 建立 modules/<feature-name>/ 目錄骨架（共 10 個模組）
+□ 各模組建立 index.ts，re-export 現有 features/* 內容
+□ 建立模組邊界規則文件 (modules/<feature>/AGENTS.md)
+□ 更新 tsconfig.json 路徑別名：@/modules/<feature> → src/modules/<feature>
 □ 建立 docs/mddd-migration-progress.md 追蹤進度
 ```
 
 ### Wave 2 — 精煉 Shared Kernel（中風險）
 
-**目標：** 清理 `shared-kernel`，只留下真正跨 BC 共用的內容。
+**目標：** 清理 `shared-kernel`，只留下真正跨模組共用的內容，並遷移至 `shared/kernel/`。
 
 ```
 工作項目：
-□ 識別 shared-kernel/types/ 中屬於單一 BC 的類型
-□ 將 BC 專用類型遷移至對應 BC 的 domain/
-□ 強化 shared-kernel/value-objects/ (完善 VOs)
-□ 建立 shared-kernel/events/ 跨 BC 領域事件目錄
-□ 確保 shared-kernel 不反向依賴任何 BC
+□ 識別 shared-kernel/types/ 中屬於單一模組的類型
+□ 將模組專用類型遷移至對應模組的 domains/
+□ 強化 shared/kernel/value-objects/ (完善 VOs)
+□ 建立 shared/kernel/events/ 跨模組領域事件目錄
+□ 確保 shared/kernel/ 不反向依賴任何模組
 ```
 
 ### Wave 3 — 分散 Projections & Repositories（高工作量）
@@ -939,44 +964,45 @@ scheduling.slice
 
 ```
 優先順序（依耦合度從低到高）：
-1. scheduling BC：projection-bus/* → contexts/scheduling/application/projections/
-2. finance BC：finance-staging-pool-view → contexts/finance/application/projections/
-3. account BC：account-*/wallet-balance → contexts/account/application/projections/
-4. workspace BC：workspace-*/tasks-view → contexts/workspace/application/projections/
-5. organization BC：organization-*/eligible-member → contexts/organization/application/projections/
+1. scheduling 模組：projection-bus/* → modules/scheduling/application/projections/
+2. finance 模組：finance-staging-pool-view → modules/finance/application/projections/
+3. account 模組：account-*/wallet-balance → modules/account/application/projections/
+4. workspace 模組：workspace-*/tasks-view → modules/workspace/application/projections/
+5. organization 模組：organization-*/eligible-member → modules/organization/application/projections/
 
 # ⚠️ tag-snapshot-view 屬於 VS8，將隨 VS8 重構（見第 9 節），不在此 Wave 處理
 
 Repositories：
-6. workspace Firestore repos → contexts/workspace/infrastructure/persistence/
-7. 其他 BC repositories 按需遷移
+6. workspace Firestore repos → modules/workspace/infrastructure/persistence/
+7. 其他模組 repositories 按需遷移
 ```
 
 ### Wave 4 — 實作 ACL & 完整 Domain 層（最高風險）
 
-**目標：** 建立完整的 Domain 層，消除 BC 間的直接依賴。
+**目標：** 建立完整的 Domains 層，消除模組間的直接依賴，正式建立 `ports/` 為獨立層。
 
 ```
 工作項目：
-□ 各 BC 建立 domain/entities/ (從現有 _types.ts 萃取)
-□ 將 BC 事件匯流排事件遷移至 domain/events/
-□ 跨 BC 通訊改用領域事件或 Anti-Corruption Layer
-□ 建立 BC 整合測試，驗證邊界隔離
+□ 各模組建立 domains/entities/ (從現有 _types.ts 萃取)
+□ 將模組事件匯流排事件遷移至 domains/events/
+□ domain.ports/ 升格為頂層 ports/ 層（獨立於 domains/）
+□ 跨模組通訊改用領域事件或 Anti-Corruption Layer
+□ 建立模組整合測試，驗證邊界隔離
 □ 移除 features/ 目錄（或保留為向後相容 re-export stub）
 ```
 
 ### 遷移決策矩陣
 
-| BC | 現況成熟度 | 遷移優先順序 | 建議 Wave |
+| 模組 | 現況成熟度 | 遷移優先順序 | 建議 Wave |
 |----|----------|------------|----------|
-| `scheduling` | ⭐⭐⭐⭐ (已有 domain/app/ports 分層) | 🔵 最先 | Wave 2 |
+| `scheduling` | ⭐⭐⭐⭐ (已有 domains/app/ports 分層) | 🔵 最先 | Wave 2 |
 | `finance` | ⭐⭐⭐ (結構清晰) | 🔵 優先 | Wave 2-3 |
 | `notification` | ⭐⭐⭐ (有 domain 子目錄) | 🔵 優先 | Wave 3 |
 | `skill-xp` | ⭐⭐⭐ (有 aggregate, 規模小) | 🟡 中等 | Wave 3 |
 | `organization` | ⭐⭐ (gov.* 混合) | 🟡 中等 | Wave 3-4 |
 | `account` | ⭐⭐ (domain.* + gov.*) | 🟡 中等 | Wave 3-4 |
 | `identity` | ⭐⭐ (薄 UI slice，需 IAuthPort 整合) | 🟡 中等 | Wave 3 |
-| `search` | ⭐⭐ (橫切，依賴其他 BC 穩定後) | 🟡 中等 | Wave 3-4 |
+| `search` | ⭐⭐ (橫切，依賴其他模組穩定後) | 🟡 中等 | Wave 3-4 |
 | `portal` | ⭐⭐ (純狀態橋接，影響範圍廣) | 🟡 中等 | Wave 4 |
 | `workspace` | ⭐ (最大 VS，高耦合) | 🔴 最後 | Wave 4 |
 | `semantic-graph` | — | ⚠️ **不遷移 MDDD** | 見第 9 節 |
@@ -999,7 +1025,7 @@ Repositories：
 
 | 決策 | 選項 A | 選項 B | 建議 |
 |------|--------|--------|------|
-| **contexts/ vs features/** | 新目錄 `contexts/` | 原地重構 `features/` | 建議 A：降低遷移風險 |
+| **contexts/ vs features/** | 新目錄 `modules/` | 原地重構 `features/` | 建議 A：降低遷移風險 |
 | **global-audit-view 歸屬** | 獨立 audit BC | 分散至各 BC | 建議 A：稽核是跨域橫切 |
 | **portal.slice** | 保留為 app-level concern | 建立 portal BC | 建議 A：不是業務 BC |
 | **Firestore 直存** | 完全透過 Port | 保留部分直存 | 建議 A：MDDD 原則優先 |
@@ -1011,49 +1037,59 @@ Repositories：
 - `src/app/` — Next.js App Router 結構維持不變
 - `src/infrastructure/firebase/` — SDK 初始化適配器維持共享
 - `src/infrastructure/upstash/` — 同上
-- `src/lib-ui/` — UI 元件庫維持共享
-- `src/shared-kernel/ports/` — Port 介面維持在 SK
+- `src/lib-ui/` → 最終重命名為 `src/ui/`，但內容不需重構
+- `src/shared/kernel/ports/` — Port 介面維持在 Shared Kernel
 
 ---
 
 ## 附錄：MDDD 目錄樹快速參考
 
+> 📄 完整展開版請見 **[docs/mddd-target-tree.md](./mddd-target-tree.md)**
+
 ```
 src/
-├── app/                        ← Next.js routes（不動）
-├── app-runtime/                ← Runtime providers（不動）
-├── contexts/                   ← ★ 新增：BC 根目錄
+├── app/                          ← Next.js routes（不動）
+├── modules/                      ← ★ 新增：功能模組根目錄
 │   ├── workspace/
-│   │   ├── domain/
-│   │   ├── application/
-│   │   ├── infrastructure/
-│   │   ├── interface/
+│   │   ├── domains/              ← 領域層（entities / value-objects / aggregates / events / services）
+│   │   ├── application/          ← 應用層（commands / queries / projections / sagas）
+│   │   ├── infrastructure/       ← 基礎設施層（persistence / adapters）
+│   │   ├── interfaces/           ← 介面層（components / hooks）
+│   │   ├── ports/                ← Port 契約層（i-*.repo.ts / i-*.port.ts）
 │   │   └── index.ts
-│   ├── organization/           ← 同上結構
-│   ├── scheduling/             ← 同上結構（最接近完成）
-│   ├── finance/                ← 同上結構
-│   ├── account/                ← 同上結構
-│   ├── skill-xp/               ← 同上結構
-│   ├── notification/           ← 同上結構
-│   ├── identity/               ← 認證 BC
-│   ├── search/                 ← 橫切輔助 BC
-│   └── portal/                 ← 殼層 BC
+│   ├── organization/             ← 同上結構
+│   ├── scheduling/               ← 同上結構（最接近完成）
+│   ├── finance/                  ← 同上結構
+│   ├── account/                  ← 同上結構
+│   ├── skill-xp/                 ← 同上結構
+│   ├── notification/             ← 同上結構
+│   ├── identity/                 ← 認證模組
+│   ├── search/                   ← 橫切輔助模組
+│   └── portal/                   ← 殼層橋接模組
 │
 │   # ⚠️ semantic-graph (VS8) 不在此目錄
 │   #    → 保留 features/semantic-graph.slice/，重構為企業知識庫（見第 9 節）
-├── shared-kernel/              ← 精煉後的 SK
-│   ├── value-objects/
-│   ├── events/
-│   ├── ports/
-│   ├── data-contracts/
-│   └── index.ts
-├── infrastructure/             ← SDK 適配器（保留 + event-bus 新增）
+│
+├── infrastructure/               ← SDK 適配器（保留 + event-bus 新增）
 │   ├── firebase/
 │   ├── upstash/
 │   ├── document-ai/
-│   └── event-bus/              ← ★ 新增：跨 BC 事件匯流排
-├── lib-ui/                     ← UI 庫（不動）
-└── config/                     ← 全域配置（不動）
+│   └── event-bus/                ← ★ 新增：跨模組事件匯流排
+├── interfaces/                   ← ★ 新增：全域 API / Adapter
+│   ├── api/                      ←    Command / Query Gateway
+│   └── webhooks/
+├── shared/                       ← ★ 新增（← shared-kernel/ 精煉）
+│   ├── kernel/
+│   │   ├── value-objects/
+│   │   ├── ports/
+│   │   ├── events/
+│   │   └── data-contracts/
+│   └── utils/
+├── ui/                           ← ★ 重命名（← lib-ui/）
+└── lib/                          ← ★ 新增：第三方 SDK 薄包裝
+    ├── firebase/
+    ├── upstash/
+    └── ai/
 ```
 
 ---
