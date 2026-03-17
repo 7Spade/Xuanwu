@@ -20,12 +20,17 @@
 6. [差距分析](#6-差距分析)
 7. [遷移路徑](#7-遷移路徑)
 8. [風險與注意事項](#8-風險與注意事項)
+9. [VS8 企業知識庫重構（獨立路線）](#9-vs8-企業知識庫重構獨立路線)
 
 ---
 
 ## 1. 概覽
 
 本文件分析 Xuanwu 專案從現有 **Vertical Slice Architecture (VS)** 轉換至 **Micro Domain-Driven Design (MDDD)** 架構的結構差異、對映關係與遷移策略。
+
+> ⚠️ **重要說明：VS8 不納入 MDDD 遷移**
+>
+> `semantic-graph.slice`（VS8）將被**獨立重構**為企業知識庫，採用 **Upstash SDK**（Vector + Redis + QStash），新結構為 `knowledge/`、`taxonomy/`、`vector-ingestion/`。VS8 的重構計畫詳見 [第 9 節](#9-vs8-企業知識庫重構獨立路線)，本文件其餘章節的 MDDD 遷移分析**不包含 VS8**。
 
 ### 什麼是 MDDD？
 
@@ -73,7 +78,7 @@ src/
 │   ├── notification-hub.slice/ # VS?: 通知路由
 │   ├── organization.slice/     # VS2: 組織治理
 │   ├── portal.slice/           # 門戶殼層狀態橋接 (橫切)
-│   ├── semantic-graph.slice/   # VS8: 語意知識圖譜
+│   ├── semantic-graph.slice/   # VS8: 企業知識庫 (⚠️ 獨立重構，不納入 MDDD 遷移)
 │   ├── skill-xp.slice/         # VS7: 技能經驗值
 │   ├── workforce-scheduling.slice/ # VS6: 人力排班
 │   └── workspace.slice/        # VS3-5: 工作區綜合管理
@@ -197,7 +202,7 @@ organization.slice/
 |-------|---------|---------|
 | `account.slice` | `domain.profile/` + `domain.wallet/` + `gov.policy/` + `gov.role/` | 帳號 / 個人資料 / 錢包 / 權限 |
 | `finance.slice` | 平坦式 `_actions/queries/components/hooks/services/` | 財務追蹤 / 預算 / 週期 |
-| `semantic-graph.slice` | 平坦式 + `projections/` + `subscribers/` + `outbox/` | 語意圖譜 / 標籤 / 提案流 |
+| `semantic-graph.slice` | `knowledge/` + `taxonomy/` + `vector-ingestion/` (**重構中**) | 企業知識庫 / 語意分類 / 向量嵌入 (Upstash SDK) ⚠️ 不納入 MDDD 遷移 |
 | `skill-xp.slice` | 平坦式 + `_aggregate/ledger/projector/tag-pool` | 技能 XP / 分類帳 / 標籤池 |
 | `notification-hub.slice` | `domain.notification/` + `gov.notification-router/` | 通知路由 / 交付 |
 | `global-search.slice` | 平坦式 | 跨域搜尋 |
@@ -285,7 +290,6 @@ src/
 │   ├── workspace/              # BC: 工作區管理 (含 task / daily / file / workflow)
 │   ├── organization/           # BC: 組織治理 (含 member / team / partner / policy)
 │   ├── scheduling/             # BC: 人力排班
-│   ├── semantic-graph/         # BC: 語意知識圖譜
 │   ├── finance/                # BC: 財務追蹤
 │   ├── account/                # BC: 帳號 / 個人資料 / 錢包
 │   ├── skill-xp/               # BC: 技能經驗值
@@ -293,6 +297,8 @@ src/
 │   ├── identity/               # BC: 身分認證 (登入/註冊)
 │   ├── search/                 # BC: 跨域搜尋 (橫切輔助)
 │   └── portal/                 # BC: 門戶殼層 (橫切輔助)
+│
+│   # ⚠️ semantic-graph (VS8) 不在 contexts/ 內 — 獨立重構為企業知識庫，見第 9 節
 │
 ├── shared-kernel/              # Shared Kernel (精煉後)
 │   ├── value-objects/          # 跨 BC 共用 VO (WorkspaceId, TaskId, Money…)
@@ -538,43 +544,9 @@ contexts/scheduling/
 └── index.ts
 ```
 
-#### BC: semantic-graph（語意知識圖譜）
+#### ⚠️ VS8 semantic-graph（不納入 MDDD 遷移）
 
-```
-contexts/semantic-graph/
-├── domain/
-│   ├── entities/
-│   │   └── semantic-tag.entity.ts      # ← semantic-graph.slice/_types.ts
-│   ├── aggregates/
-│   │   └── semantic-graph.aggregate.ts # ← semantic-graph.slice/_aggregate.ts
-│   ├── events/                         # ← semantic-graph.slice/_bus.ts
-│   ├── services/
-│   │   ├── cost-classifier.service.ts  # ← _cost-classifier.ts
-│   │   └── semantic-authority.service.ts # ← _semantic-authority.ts
-│   └── ports/
-│       └── i-semantic-graph.repo.ts
-│
-├── application/
-│   ├── commands/                       # ← semantic-graph.slice/_actions.ts
-│   ├── queries/                        # ← semantic-graph.slice/_queries.ts
-│   ├── projections/
-│   │   ├── tag-snapshot-view/          # ← shared-infra/projection-bus/tag-snapshot-view/
-│   │   └── global-audit-view/          # ← shared-infra/projection-bus/global-audit-view/ (partial)
-│   └── sagas/
-│       └── tag-lifecycle.saga.ts       # ← _services.ts + subscribers/
-│
-├── infrastructure/
-│   └── persistence/
-│       └── semantic-graph.repo.ts
-│
-├── interface/
-│   ├── components/
-│   │   └── wiki-editor/                # ← semantic-graph.slice/wiki-editor/
-│   └── hooks/
-│       └── proposal-stream/            # ← semantic-graph.slice/proposal-stream/
-│
-└── index.ts
-```
+> `semantic-graph.slice` 將被獨立重構為**企業知識庫**（Enterprise Knowledge Base），採用 Upstash Vector + Redis，新結構為 `knowledge/`、`taxonomy/`、`vector-ingestion/`，詳見[第 9 節](#9-vs8-企業知識庫重構獨立路線)。此 BC **不存在於** `contexts/` 目錄中。
 
 #### BC: finance（財務追蹤）
 
@@ -717,6 +689,102 @@ contexts/notification/
 └── index.ts
 ```
 
+#### BC: identity（身分認證）
+
+```
+contexts/identity/
+├── domain/
+│   ├── value-objects/
+│   │   ├── email.vo.ts                 # Email 格式 VO
+│   │   └── auth-token.vo.ts            # 認證 Token VO
+│   ├── services/
+│   │   └── auth-policy.service.ts      # 登入策略 (重試限制 / MFA)
+│   └── ports/
+│       └── i-auth.port.ts              # ← shared-kernel/ports/i-auth.service.ts
+│
+├── application/
+│   ├── commands/
+│   │   ├── login/                      # ← identity.slice/ 登入 actions
+│   │   ├── register/                   # ← identity.slice/ 註冊 actions
+│   │   └── reset-password/             # ← identity.slice/ 密碼重置 actions
+│   └── queries/
+│       └── session/                    # 目前登入會話查詢
+│
+├── infrastructure/
+│   └── adapters/
+│       └── firebase-auth.adapter.ts    # ← infrastructure/firebase/client/auth
+│                                       #   實作 IAuthPort (Firebase Authentication)
+│
+├── interface/
+│   └── components/
+│       ├── login-form.tsx              # ← identity.slice/ login page
+│       ├── register-form.tsx           # ← identity.slice/ register page
+│       └── reset-password-form.tsx     # ← app/(shell)/(public)/@modal/reset-password
+│
+└── index.ts
+```
+
+#### BC: search（跨域搜尋，橫切輔助）
+
+> `search` 是橫切輔助 BC，不擁有業務資料，僅作為查詢路由器——接收搜尋請求、扇出至各 BC 的 `application/queries/`，並彙整結果。
+
+```
+contexts/search/
+├── domain/
+│   ├── value-objects/
+│   │   └── search-query.vo.ts          # 搜尋關鍵字 + 篩選條件 VO
+│   └── ports/
+│       └── i-search-provider.port.ts   # 各 BC 實作此 Port，Search BC 聚合呼叫
+│
+├── application/
+│   ├── queries/
+│   │   └── global-search/              # ← global-search.slice/_actions.ts + _queries.ts
+│   │       ├── federated-search.handler.ts   # 扇出至各 BC Provider
+│   │       └── result-merger.ts              # 彙整並排序搜尋結果
+│   └── projections/
+│       └── (各 BC 自行維護其 SemanticIndexEntry，Search BC 讀取)
+│
+├── infrastructure/
+│   └── adapters/
+│       └── vector-search.adapter.ts    # ← infrastructure/upstash/vector.ts
+│                                       #   (VS8 重構後 Search BC 可直接查企業知識庫)
+│
+├── interface/
+│   └── hooks/
+│       └── use-global-search.ts        # ← global-search.slice/ hooks
+│
+└── index.ts
+```
+
+#### BC: portal（門戶殼層，橫切輔助）
+
+> `portal` 是 App Shell 的狀態橋接 BC，不擁有業務領域資料，負責協調各 BC 的 UI 狀態（側欄、通知計數、全域 Loading 等）。
+
+```
+contexts/portal/
+├── domain/
+│   ├── value-objects/
+│   │   └── portal-state.vo.ts          # 殼層 UI 狀態 VO (sidebar open/close, active tab…)
+│   └── ports/
+│       └── i-portal-bridge.port.ts     # 各 BC 可向 portal 推送 UI 狀態變更
+│
+├── application/
+│   ├── commands/
+│   │   └── shell/                      # 殼層狀態控制 (展開側欄 / 切換主題…)
+│   └── queries/
+│       └── shell/                      # 當前殼層狀態查詢
+│
+├── infrastructure/
+│   └── adapters/
+│       └── (無外部 I/O — 純 in-memory state)
+│
+├── interface/
+│   └── hooks/
+│       └── use-portal-state.ts         # ← portal.slice/core/_hooks/use-portal-state.ts
+│
+└── index.ts
+```
+
 ---
 
 ## 5. 現況 → MDDD 對映表
@@ -742,7 +810,7 @@ contexts/notification/
 | `features/organization.slice/core/` | `contexts/organization/application/commands/org/` + `interface/` | App+Interface | |
 | `features/organization.slice/gov.members/` | `contexts/organization/application/commands/members/` + `interface/components/members/` | App+Interface | |
 | `features/finance.slice/` | `contexts/finance/` | All | 整體遷移 |
-| `features/semantic-graph.slice/_aggregate.ts` | `contexts/semantic-graph/domain/aggregates/` | Domain | |
+| `features/semantic-graph.slice/` | *(不遷移至 MDDD — 見第 9 節重構計畫)* | — | ⚠️ VS8 獨立重構 |
 | `features/account.slice/domain.profile/` | `contexts/account/` | All | |
 | `features/skill-xp.slice/_aggregate.ts` | `contexts/skill-xp/domain/aggregates/` | Domain | |
 | `features/notification-hub.slice/` | `contexts/notification/` | All | |
@@ -761,7 +829,7 @@ contexts/notification/
 | `shared-infra/projection-bus/account-schedule-view/` | `contexts/scheduling/application/projections/` | |
 | `shared-infra/projection-bus/demand-board-view/` | `contexts/scheduling/application/projections/` | |
 | `shared-infra/projection-bus/finance-staging-pool-view/` | `contexts/finance/application/projections/` | |
-| `shared-infra/projection-bus/tag-snapshot-view/` | `contexts/semantic-graph/application/projections/` | |
+| `shared-infra/projection-bus/tag-snapshot-view/` | VS8 重構後移入企業知識庫 `knowledge/` 模組（見第 9 節）| ⚠️ VS8 獨立重構 |
 | `shared-infra/projection-bus/wallet-balance-view/` | `contexts/account/application/projections/` | |
 | `shared-infra/firebase-client/firestore/repositories/workspace*.ts` | `contexts/workspace/infrastructure/persistence/` | |
 | `shared-infra/firebase-client/firestore/repositories/workspace-business.tasks.repository.ts` | `contexts/workspace/infrastructure/persistence/task.repo.ts` | |
@@ -873,14 +941,15 @@ scheduling.slice
 優先順序（依耦合度從低到高）：
 1. scheduling BC：projection-bus/* → contexts/scheduling/application/projections/
 2. finance BC：finance-staging-pool-view → contexts/finance/application/projections/
-3. semantic-graph BC：tag-snapshot-view → contexts/semantic-graph/application/projections/
-4. account BC：account-*/wallet-balance → contexts/account/application/projections/
-5. workspace BC：workspace-*/tasks-view → contexts/workspace/application/projections/
-6. organization BC：organization-*/eligible-member → contexts/organization/application/projections/
+3. account BC：account-*/wallet-balance → contexts/account/application/projections/
+4. workspace BC：workspace-*/tasks-view → contexts/workspace/application/projections/
+5. organization BC：organization-*/eligible-member → contexts/organization/application/projections/
+
+# ⚠️ tag-snapshot-view 屬於 VS8，將隨 VS8 重構（見第 9 節），不在此 Wave 處理
 
 Repositories：
-7. workspace Firestore repos → contexts/workspace/infrastructure/persistence/
-8. 其他 BC repositories 按需遷移
+6. workspace Firestore repos → contexts/workspace/infrastructure/persistence/
+7. 其他 BC repositories 按需遷移
 ```
 
 ### Wave 4 — 實作 ACL & 完整 Domain 層（最高風險）
@@ -903,11 +972,14 @@ Repositories：
 | `scheduling` | ⭐⭐⭐⭐ (已有 domain/app/ports 分層) | 🔵 最先 | Wave 2 |
 | `finance` | ⭐⭐⭐ (結構清晰) | 🔵 優先 | Wave 2-3 |
 | `notification` | ⭐⭐⭐ (有 domain 子目錄) | 🔵 優先 | Wave 3 |
-| `semantic-graph` | ⭐⭐⭐ (有 aggregate) | 🟡 中等 | Wave 3 |
 | `skill-xp` | ⭐⭐⭐ (有 aggregate, 規模小) | 🟡 中等 | Wave 3 |
 | `organization` | ⭐⭐ (gov.* 混合) | 🟡 中等 | Wave 3-4 |
 | `account` | ⭐⭐ (domain.* + gov.*) | 🟡 中等 | Wave 3-4 |
+| `identity` | ⭐⭐ (薄 UI slice，需 IAuthPort 整合) | 🟡 中等 | Wave 3 |
+| `search` | ⭐⭐ (橫切，依賴其他 BC 穩定後) | 🟡 中等 | Wave 3-4 |
+| `portal` | ⭐⭐ (純狀態橋接，影響範圍廣) | 🟡 中等 | Wave 4 |
 | `workspace` | ⭐ (最大 VS，高耦合) | 🔴 最後 | Wave 4 |
+| `semantic-graph` | — | ⚠️ **不遷移 MDDD** | 見第 9 節 |
 
 ---
 
@@ -959,7 +1031,6 @@ src/
 │   │   └── index.ts
 │   ├── organization/           ← 同上結構
 │   ├── scheduling/             ← 同上結構（最接近完成）
-│   ├── semantic-graph/         ← 同上結構
 │   ├── finance/                ← 同上結構
 │   ├── account/                ← 同上結構
 │   ├── skill-xp/               ← 同上結構
@@ -967,6 +1038,9 @@ src/
 │   ├── identity/               ← 認證 BC
 │   ├── search/                 ← 橫切輔助 BC
 │   └── portal/                 ← 殼層 BC
+│
+│   # ⚠️ semantic-graph (VS8) 不在此目錄
+│   #    → 保留 features/semantic-graph.slice/，重構為企業知識庫（見第 9 節）
 ├── shared-kernel/              ← 精煉後的 SK
 │   ├── value-objects/
 │   ├── events/
@@ -984,6 +1058,164 @@ src/
 
 ---
 
-*文件版本：1.0*
+## 9. VS8 企業知識庫重構（獨立路線）
+
+> `semantic-graph.slice`（VS8）**不進行 MDDD 遷移**。其職責將被全面重構為**企業知識庫 (Enterprise Knowledge Base)**，採用 **Upstash SDK**（Vector、Redis、QStash），形成以向量語意搜尋為核心的知識服務。
+
+### 9.1 重構動機
+
+| 現況問題 | 重構方向 |
+|---------|---------|
+| `_services.ts` 使用 in-memory `Map` 作為語意索引，無法跨節點持久化 | → Upstash **Vector** 持久化向量索引 |
+| 標籤查詢無語意相似度排序 | → 向量相似度搜尋 (cosine similarity) |
+| 知識圖譜僅在客戶端記憶體中 | → Redis 快取 + Vector 持久化 |
+| 無嵌入 (embedding) 管線 | → vector-ingestion 模組負責文字 → 向量 |
+| proposal-stream 依賴 in-memory 推播 | → QStash 佇列驅動的知識提案工作流 |
+
+### 9.2 目標結構（AS-IS → TO-BE）
+
+#### 現況 semantic-graph.slice（AS-IS）
+
+```
+features/semantic-graph.slice/
+├── _aggregate.ts           # 時序衝突偵測 + 分類法驗證
+├── _actions.ts             # 標籤 CRUD (Server Actions)
+├── _bus.ts                 # 標籤事件匯流排 (in-process)
+├── _cost-classifier.ts     # 費用項目語意分類
+├── _queries.ts             # 讀取 Port
+├── _semantic-authority.ts  # 搜尋域 + 分類維度定義
+├── _services.ts            # ⚠️ in-memory Map 語意索引
+├── _types.ts               # 領域類型
+├── outbox/                 # 標籤 outbox
+├── projections/            # 投影選擇器
+│   ├── context-selectors.ts
+│   ├── graph-selectors.ts
+│   └── tag-snapshot.slice.ts
+├── proposal-stream/        # 提案流
+├── subscribers/            # 生命週期訂閱者
+└── wiki-editor/            # 知識圖譜視覺化
+```
+
+#### 目標 Enterprise Knowledge Base（TO-BE）
+
+```
+features/semantic-graph.slice/          # 保留路徑，重構內部結構
+├── knowledge/                          # ★ 企業知識庫核心模組
+│   ├── _entity.ts                      # KnowledgeItem entity (id, title, content, tags, embedding[])
+│   ├── _actions.ts                     # 知識項目 CRUD + upsert to Upstash Vector
+│   │                                   #   import { vectorIndex } from '@/infrastructure/upstash/vector'
+│   ├── _queries.ts                     # 語意搜尋 (vector similarity) + metadata filter
+│   │                                   #   import { vectorIndex } from '@/infrastructure/upstash/vector'
+│   ├── _cache.ts                       # Redis 快取層 (熱門知識項目 + 分類結果)
+│   │                                   #   import { redis } from '@/infrastructure/upstash/redis'
+│   └── index.ts
+│
+├── taxonomy/                           # ★ 分類法管理模組
+│   ├── _aggregate.ts                   # ← semantic-graph.slice/_aggregate.ts (精煉)
+│   │                                   #   保留：分類法驗證、時序衝突偵測
+│   │                                   #   移除：in-memory index 邏輯（已移至 knowledge/）
+│   ├── _semantic-authority.ts          # ← semantic-graph.slice/_semantic-authority.ts
+│   │                                   #   搜尋域定義 + TaxonomyDimension
+│   ├── _cost-classifier.ts             # ← semantic-graph.slice/_cost-classifier.ts
+│   │                                   #   純 keyword-based 分類，零 SDK 依賴
+│   ├── _actions.ts                     # 分類法 CRUD (新增/更新/棄用分類維度)
+│   ├── _queries.ts                     # 分類法查詢 (getTaxonomyTree, validatePath)
+│   └── index.ts
+│
+├── vector-ingestion/                   # ★ 向量嵌入管線模組
+│   ├── _embedder.ts                    # 文字 → 向量 (OpenAI / Genkit embedding)
+│   │                                   #   import { genkit } from '@/infrastructure/document-ai/genkit'
+│   ├── _chunker.ts                     # 長文件分塊策略 (fixed / semantic chunking)
+│   ├── _ingestor.ts                    # 批次寫入 Upstash Vector
+│   │                                   #   import { vectorIndex } from '@/infrastructure/upstash/vector'
+│   ├── _pipeline.ts                    # 完整管線：document → chunk → embed → upsert
+│   │                                   #   可由 QStash 工作佇列驅動
+│   │                                   #   import { qstash } from '@/infrastructure/upstash/qstash'
+│   └── index.ts
+│
+├── _bus.ts                             # 保留：標籤事件匯流排 (供其他 VS 訂閱)
+├── _types.ts                           # 精煉後的領域類型
+├── outbox/                             # 保留：標籤 outbox
+└── index.ts                            # 精煉後的公開 API
+```
+
+### 9.3 Upstash SDK 整合對映
+
+| 模組 | 使用 SDK | 用途 |
+|------|---------|------|
+| `knowledge/_actions.ts` | `vectorIndex()` (Upstash Vector) | upsert 知識項目嵌入向量 + metadata |
+| `knowledge/_queries.ts` | `vectorIndex()` (Upstash Vector) | query by vector / metadata filter |
+| `knowledge/_cache.ts` | `redis` (Upstash Redis) | 快取熱門知識項目 TTL 300s |
+| `vector-ingestion/_ingestor.ts` | `vectorIndex()` (Upstash Vector) | 批次 upsert |
+| `vector-ingestion/_pipeline.ts` | `qstash` (Upstash QStash) | 非同步嵌入工作佇列 |
+| `vector-ingestion/_embedder.ts` | Genkit (Google AI) | 文字 → float32[] embedding |
+
+#### Upstash Vector 資料結構
+
+```typescript
+// 每筆知識項目在 Upstash Vector 中的結構
+interface KnowledgeVectorRecord {
+  id: string;                  // 唯一識別碼 (e.g., "kb:tag:skill-react")
+  vector: number[];            // 嵌入向量 (1536-dim for text-embedding-3-small)
+  metadata: {
+    title: string;
+    content: string;           // 摘要 / 原文節錄
+    domain: string;            // taxonomy domain (e.g., "skill", "tool", "process")
+    tags: string[];            // 關聯標籤 slugs
+    source: 'tag' | 'wiki' | 'document' | 'manual';
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+```
+
+### 9.4 現況 → 目標 對映
+
+| 現況檔案 | 去向 | 說明 |
+|---------|------|------|
+| `_services.ts` (in-memory Map) | `knowledge/_queries.ts` (Upstash Vector) | **核心變更**：記憶體 → 向量資料庫 |
+| `_actions.ts` (tag CRUD) | `knowledge/_actions.ts` + `taxonomy/_actions.ts` | 按知識 vs 分類法分開 |
+| `_aggregate.ts` | `taxonomy/_aggregate.ts` | 保留分類法驗證邏輯 |
+| `_cost-classifier.ts` | `taxonomy/_cost-classifier.ts` | 保留，純函式無依賴 |
+| `_semantic-authority.ts` | `taxonomy/_semantic-authority.ts` | 保留搜尋域定義 |
+| `_queries.ts` | `knowledge/_queries.ts` | 語意搜尋改用 Vector query |
+| `_bus.ts` | `_bus.ts` (保留) | 標籤事件機制保持不變 |
+| `outbox/tag-outbox.ts` | `outbox/` (保留) | Outbox 模式保持不變 |
+| `projections/tag-snapshot.slice.ts` | `knowledge/_cache.ts` (部分) | Read Model 遷移至 Redis 快取 |
+| `proposal-stream/` | `vector-ingestion/_pipeline.ts` | 提案流 → QStash 工作佇列 |
+| `wiki-editor/` | `knowledge/` (保留為 interface) | 知識圖譜視覺化移入 knowledge 模組 |
+| `subscribers/lifecycle-subscriber.ts` | `knowledge/_actions.ts` (訂閱觸發) | 生命週期事件 → 觸發 vector upsert |
+
+### 9.5 重構路徑
+
+```
+Phase 1 — 建立新模組骨架（不移動現有程式碼）
+□ 建立 knowledge/ taxonomy/ vector-ingestion/ 目錄骨架
+□ 建立各模組 index.ts (re-export 現有邏輯)
+□ 驗證現有 unit tests 仍通過
+
+Phase 2 — 接入 Upstash Vector
+□ 實作 knowledge/_actions.ts (vectorIndex().upsert)
+□ 實作 knowledge/_queries.ts (vectorIndex().query)
+□ 實作 vector-ingestion/_embedder.ts (Genkit embedding)
+□ 實作 vector-ingestion/_ingestor.ts (批次 upsert)
+□ 撰寫整合測試 (mock vectorIndex)
+
+Phase 3 — 遷移現有邏輯
+□ 將 _services.ts (in-memory Map) 替換為 Upstash Vector 查詢
+□ 將 proposal-stream/ 遷移至 QStash 工作佇列
+□ 將 tag-snapshot.slice.ts 遷移至 Redis 快取
+□ 更新 shared-infra/projection-bus/tag-snapshot-view/ 指向新實作
+
+Phase 4 — 清理
+□ 移除 _services.ts 中的 in-memory Map
+□ 更新 index.ts 公開 API
+□ 更新 docs 與 AGENTS.md
+```
+
+---
+
+*文件版本：1.1*
 *分析日期：2026-03-16*
+*更新日期：2026-03-17（新增 VS8 企業知識庫重構章節；移除 VS8 的 MDDD 遷移規劃）*
 *分析範疇：xuanwu 專案 src/ 目錄完整結構*
